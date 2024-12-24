@@ -3,7 +3,7 @@ import threading
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import canopen
-from electrak import ElectrakMD
+from .electrak import ElectrakMD
 
 
 class ActuatorManager:
