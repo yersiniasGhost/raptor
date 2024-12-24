@@ -3,6 +3,7 @@ import threading
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import canopen
+from importlib import resources
 from .electrak import ElectrakMD
 
 
@@ -44,9 +45,10 @@ class ActuatorManager:
             self.network = None
             return False
                 
-    def add_actuator(self, actuator_id: int, node_id: int, eds_file: str = 'Electrak_MD.eds'):
+    def add_actuator(self, actuator_id: int, node_id: int):
         """Add a new actuator to the management system"""
         print(f"Adding actuator {actuator_id}")
+
         
         # Check if actuator already exists without lock
         if actuator_id in self.actuators:
@@ -65,6 +67,7 @@ class ActuatorManager:
             
             # Create actuator instance
             print(f"Creating actuator instance {actuator_id}")
+            eds_file = str(resources.files('data.canbus') / 'Electrak_MD.eds')
             actuator = ElectrakMD(
                 network=self.network,
                 node_id=node_id,

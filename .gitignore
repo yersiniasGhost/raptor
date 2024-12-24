@@ -73,7 +73,7 @@ Thumbs.db
 
 # Project specific
 logs/
-data/
+#data/
 *.bak
 *.tmp
 *.temp
