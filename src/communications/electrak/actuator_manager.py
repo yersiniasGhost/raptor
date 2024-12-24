@@ -68,7 +68,7 @@ class ActuatorManager:
             # Create actuator instance
             print(f"Creating actuator instance {actuator_id}")
             base_dir = Path(__file__).resolve().parent.parent.parent
-            eds_file = base_dir / 'data' / 'canbus' / 'Electrak_MD.eds'
+            eds_file = str(base_dir / 'data' / 'canbus' / 'Electrak_MD.eds')
 
             actuator = ElectrakMD(
                 network=self.network,
