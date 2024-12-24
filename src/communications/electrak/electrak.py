@@ -173,11 +173,11 @@ class ElectrakMD:
 
         try:
             print("\nStarting move sequence...")
-            with self.operation_lock:
-                current_pos = self.get_position()
-                if current_pos is None:
-                    print("Failed to read initial position.")
-                    return False
+            # with self.operation_lock:
+            current_pos = self.get_position()
+            if current_pos is None:
+                print("Failed to read initial position.")
+                return False
 
             print(f"Current position: {current_pos:.1f}mm")
             print(f"Target position: {position_mm}mm")
@@ -225,9 +225,10 @@ class ElectrakMD:
                 time.sleep(update_interval)  # Small delay between checks
 
                 current_time = time.time()
-                current_pos = None
-                with self.operation_lock:
-                    current_pos = self.get_position()
+                current_pos = self.get_position()
+                # current_pos = None
+                # with self.operation_lock:
+                #     current_pos = self.get_position()
                 
                 if current_pos is None:
                     continue
@@ -314,25 +315,25 @@ class ElectrakMD:
 
 
 
-    # def get_position(self) -> Optional[float]:
-    #     """Get measured position with retries"""
-    #     max_retries = 3
-    #     retry_delay = 0.1
-    #
-    #     for attempt in range(max_retries):
-    #         try:
-    #             with self.operation_lock:  # Ensure exclusive SDO access
-    #                 position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
-    #                 return position_raw / 10.0
-    #         except Exception as e:
-    #             if attempt < max_retries - 1:
-    #                 time.sleep(retry_delay)
-    #                 continue
-    #     return None
-
-
-
     def get_position(self) -> Optional[float]:
+        """Get measured position with retries"""
+        max_retries = 3
+        retry_delay = 0.1
+
+        for attempt in range(max_retries):
+            try:
+                with self.operation_lock:  # Ensure exclusive SDO access
+                    position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
+                    return position_raw / 10.0
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    continue
+        return None
+
+
+
+    def get_position_no_lock(self) -> Optional[float]:
         """
         Get measured position
 
