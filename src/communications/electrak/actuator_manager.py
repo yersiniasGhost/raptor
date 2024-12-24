@@ -1,9 +1,9 @@
+from pathlib import Path
 from typing import Dict, Optional
 import threading
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import canopen
-from importlib import resources
 from .electrak import ElectrakMD
 
 
@@ -67,7 +67,9 @@ class ActuatorManager:
             
             # Create actuator instance
             print(f"Creating actuator instance {actuator_id}")
-            eds_file = str(resources.files('data.canbus') / 'Electrak_MD.eds')
+            base_dir = Path(__file__).resolve().parent.parent.parent
+            eds_file = base_dir / 'data' / 'canbus' / 'Electrak_MD.eds'
+
             actuator = ElectrakMD(
                 network=self.network,
                 node_id=node_id,
