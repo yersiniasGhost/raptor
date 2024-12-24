@@ -314,37 +314,37 @@ class ElectrakMD:
 
 
 
-    def get_position(self) -> Optional[float]:
-        """Get measured position with retries"""
-        max_retries = 3
-        retry_delay = 0.1
-
-        for attempt in range(max_retries):
-            try:
-                with self.operation_lock:  # Ensure exclusive SDO access
-                    position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
-                    return position_raw / 10.0
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    time.sleep(retry_delay)
-                    continue
-        return None
-
-
-    #
     # def get_position(self) -> Optional[float]:
-    #     """
-    #     Get measured position
+    #     """Get measured position with retries"""
+    #     max_retries = 3
+    #     retry_delay = 0.1
     #
-    #     Returns:
-    #         float: Position in mm, or None if error
-    #     """
-    #     try:
-    #         position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
-    #         return position_raw / 10.0  # Convert from 0.1mm to mm
-    #     except Exception as e:
-    #         print(f"Position read error: {e}")
-    #         return None
+    #     for attempt in range(max_retries):
+    #         try:
+    #             with self.operation_lock:  # Ensure exclusive SDO access
+    #                 position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
+    #                 return position_raw / 10.0
+    #         except Exception as e:
+    #             if attempt < max_retries - 1:
+    #                 time.sleep(retry_delay)
+    #                 continue
+    #     return None
+
+
+
+    def get_position(self) -> Optional[float]:
+        """
+        Get measured position
+
+        Returns:
+            float: Position in mm, or None if error
+        """
+        try:
+            position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
+            return position_raw / 10.0  # Convert from 0.1mm to mm
+        except Exception as e:
+            print(f"Position read error: {e}")
+            return None
 
     def get_motion_status(self) -> Optional[MotionFlags]:
         """Get motion status flags"""
