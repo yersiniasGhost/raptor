@@ -445,58 +445,58 @@ class ElectrakMD:
             print(f"State transition to {target_state} failed: {e}")
             
 
-    def clear_errors(self):
-        """Non-blocking error clear with timeout"""
-        try:
-            print("Attempting to clear errors...")
-            
-            # Quick reset sequence
-            self._safe_state_transition('RESET', timeout=0.2)
-            self._safe_state_transition('PRE-OPERATIONAL', timeout=0.2)
-            self._safe_state_transition('OPERATIONAL', timeout=0.2)
-            
-            # Quick error check
-            try:
-                error_status = self.get_error_status()
-                if error_status and any(vars(error_status).values()):
-                    print("Failed to clear errors")
-                    return False
-            except Exception as e:
-                print(f"Error status check failed: {e}")
-                return False
-                
-            return True
-            
-        except Exception as e:
-            print(f"Error clearing failed: {e}")
-            return False
-
-
     # def clear_errors(self):
-    #     """Enhanced error clearing with verification"""
+    #     """Non-blocking error clear with timeout"""
     #     try:
     #         print("Attempting to clear errors...")
-    #         # Send NMT reset
-    #         self.node.nmt.state = 'RESET'
-    #         time.sleep(0.5)
     #
-    #         # Return to operational
-    #         self.node.nmt.state = 'PRE-OPERATIONAL'
-    #         time.sleep(0.5)
-    #         self.node.nmt.state = 'OPERATIONAL'
-    #         time.sleep(0.5)
+    #         # Quick reset sequence
+    #         self._safe_state_transition('RESET', timeout=0.2)
+    #         self._safe_state_transition('PRE-OPERATIONAL', timeout=0.2)
+    #         self._safe_state_transition('OPERATIONAL', timeout=0.2)
     #
-    #         # Verify errors are cleared
-    #         error_status = self.get_error_status()
-    #         if error_status and any(vars(error_status).values()):
-    #             print("Failed to clear errors")
+    #         # Quick error check
+    #         try:
+    #             error_status = self.get_error_status()
+    #             if error_status and any(vars(error_status).values()):
+    #                 print("Failed to clear errors")
+    #                 return False
+    #         except Exception as e:
+    #             print(f"Error status check failed: {e}")
     #             return False
     #
-    #         print("Errors cleared successfully")
     #         return True
+    #
     #     except Exception as e:
     #         print(f"Error clearing failed: {e}")
     #         return False
+
+
+    def clear_errors(self):
+        """Enhanced error clearing with verification"""
+        try:
+            print("Attempting to clear errors...")
+            # Send NMT reset
+            self.node.nmt.state = 'RESET'
+            time.sleep(0.5)
+
+            # Return to operational
+            self.node.nmt.state = 'PRE-OPERATIONAL'
+            time.sleep(0.5)
+            self.node.nmt.state = 'OPERATIONAL'
+            time.sleep(0.5)
+
+            # Verify errors are cleared
+            error_status = self.get_error_status()
+            if error_status and any(vars(error_status).values()):
+                print("Failed to clear errors")
+                return False
+
+            print("Errors cleared successfully")
+            return True
+        except Exception as e:
+            print(f"Error clearing failed: {e}")
+            return False
 
 
     def close(self):
