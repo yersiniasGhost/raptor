@@ -16,22 +16,20 @@ class GPIOController:
         """
         self.chip_label = chip_label
         self.line_number = line_number
+        self.current_state = False  # Track state internally
         self.verify_gpio()
+        # Ensure we start in OFF state
+        self.set_relay(False)
 
 
 
     def verify_gpio(self):
-        """Verify the GPIO chip exists and line is available"""
+        """Verify the GPIO chip exists"""
         try:
             # Check if GPIO chip exists
             result = subprocess.run(["gpiodetect"], capture_output=True, text=True)
             if self.chip_label not in result.stdout:
                 raise Exception(f"GPIO chip {self.chip_label} not found")
-
-            # Check if GPIO line is available
-            result = subprocess.run(["gpioinfo", self.chip_label], capture_output=True, text=True)
-            if "Device or resource busy" in result.stdout:
-                raise Exception(f"GPIO line {self.line_number} is busy")
 
         except subprocess.CalledProcessError as e:
             raise Exception(f"Error verifying GPIO: {e}")
@@ -50,6 +48,7 @@ class GPIOController:
             value = "1" if state else "0"
             cmd = ["gpioset", self.chip_label, f"{self.line_number}={value}"]
             subprocess.run(cmd, check=True)
+            self.current_state = state  # Update internal state tracking
             return True
         except subprocess.CalledProcessError as e:
             print(f"Error setting GPIO: {e}")
@@ -58,27 +57,18 @@ class GPIOController:
 
 
     def get_relay_state(self):
-        """Get current relay state using gpioget
+        """Get current relay state from internal tracking
 
         Returns:
-            Boolean indicating current state, or None on error
+            Boolean indicating current state
         """
-        try:
-            cmd = ["gpioget", self.chip_label, str(self.line_number)]
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            return result.stdout.strip() == "1"
-        except subprocess.CalledProcessError as e:
-            print(f"Error getting GPIO state: {e}")
-            return None
+        return self.current_state
 
 
 
     def toggle_relay(self):
         """Toggle relay state"""
-        current_state = self.get_relay_state()
-        if current_state is not None:
-            return self.set_relay(not current_state)
-        return False
+        return self.set_relay(not self.current_state)
 
 
 def signal_handler(signum, frame):
@@ -116,9 +106,8 @@ if __name__ == "__main__":
                     state = "on" if gpio.get_relay_state() else "off"
                     print(f"Relay toggled {state}")
             elif cmd == "status":
-                state = gpio.get_relay_state()
-                if state is not None:
-                    print(f"Relay is {'on' if state else 'off'}")
+                state = "on" if gpio.get_relay_state() else "off"
+                print(f"Relay is {state}")
             elif cmd in ["quit", "exit", "q"]:
                 gpio.set_relay(False)  # Turn off relay before exit
                 break
