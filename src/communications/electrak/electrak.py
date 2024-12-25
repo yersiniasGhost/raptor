@@ -232,9 +232,9 @@ class ElectrakMD:
                 
                 if current_pos is None:
                     continue
-
-                print(f"Position: {current_pos:.1f}mm, "
-                      f"Current: {self.node.sdo[self.OD['MEASURED_CURRENT']].raw/10:.1f}A")
+                # consider LOG:
+                # print(f"Position: {current_pos:.1f}mm, "
+                #       f"Current: {self.node.sdo[self.OD['MEASURED_CURRENT']].raw/10:.1f}A")
                 
                 # Check for errors
                 with self.operation_lock:
