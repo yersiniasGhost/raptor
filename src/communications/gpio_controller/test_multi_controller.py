@@ -1,6 +1,6 @@
 import sys
 import signal
-from banner_alarm import BannerAlarm
+from multi_relay_controller import MultiRelayController
 
 
 def signal_handler(signum, frame):
@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     try:
         config = {"blue": 1, "green": 2, "red": 3, "alarm": 4, "polarity": "high"}
-        controller = BannerAlarm(configuration=config)
+        controller = MultiRelayController(configuration=config)
 
         print("Multi-relay controller initialized")
         print("Commands:")
