@@ -59,7 +59,8 @@ async def get_actuator_status(actuator_id: int) -> Dict:
 
 
 @app.post("/actuator/{actuator_id}/move")
-async def move_actuator(actuator_id: int, target_position: float = Form(...), target_speed: float = Form(...)):
+async def move_actuator(actuator_id: int, target_position: float = Form(...),
+                        target_speed: float = Form(...), activate_alarm: bool = Form(False)):
     """Move single actuator"""
     logger.info("Getting actuator.")
     actuator = manager.get_actuator(actuator_id)
@@ -77,7 +78,8 @@ async def move_actuator(actuator_id: int, target_position: float = Form(...), ta
 
 
 @app.post("/move-multiple")
-async def move_multiple_actuators(target_position: float = Form(...), target_speed: float = Form(...)):
+async def move_multiple_actuators(target_position: float = Form(...),
+                                  target_speed: float = Form(...), activate_alarm: bool = Form(False)):
     """Move multiple actuators simultaneously"""
     try:
         # Convert input format to manager format
@@ -216,6 +218,10 @@ async def root():
                     <input type="number" id="target-speed-1" min="1" max="100" step="1" required>
                     <span>%</span>
                 </div>
+                 <div class="checkbox-group">
+                    <input type="checkbox" id="activate-alarm-1">
+                    <label for="activate-alarm-1">Activate Alarm</label>
+                </div>
                 <button type="submit" id="move-button-1">Move Actuator</button>
             </form>
         </div>
@@ -265,6 +271,10 @@ async def root():
                     <input type="number" id="target-speed-2" min="1" max="100" step="1" required>
                     <span>%</span>
                 </div>
+                 <div class="checkbox-group">
+                    <input type="checkbox" id="activate-alarm-2">
+                    <label for="activate-alarm-2">Activate Alarm</label>
+                </div>
                 <button type="submit" id="move-button-2">Move Actuator</button>
             </form>
         </div>
@@ -284,6 +294,10 @@ async def root():
                     <label for="target-speed-both">Target Speed:</label>
                     <input type="number" id="target-speed-both" step="0.1" required>
                     <span>mm/s</span>
+                </div>
+                 <div class="checkbox-group">
+                    <input type="checkbox" id="activate-alarm-both">
+                    <label for="activate-alarm-both">Activate Alarm</label>
                 </div>
                 <button type="submit" id="move-button-both">Move Both Actuators</button>
             </form>
@@ -354,10 +368,12 @@ async def root():
             
             const targetPosition = document.getElementById(`target-position-${actuatorId}`).value;
             const targetSpeed = document.getElementById(`target-speed-${actuatorId}`).value;
+            const activateAlarm = document.getElementById(`activate-alarm-${actuatorId}`).checked;
             
             const formData = new FormData();
             formData.append('target_position', targetPosition);
             formData.append('target_speed', targetSpeed);
+            formData.append('activate_alarm', activateAlarm);
 
             try {
                 const response = await fetch(`/actuator/${actuatorId}/move`, {
@@ -393,10 +409,13 @@ async def root():
             
             const targetPosition = document.getElementById('target-position-both').value;
             const targetSpeed = document.getElementById('target-speed-both').value;
+            const activateAlarm = document.getElementById(`activate-alarm-both`).checked;
             
             const formData = new FormData();
             formData.append('target_position', targetPosition);
             formData.append('target_speed', targetSpeed);
+            formData.append('activate_alarm', activateAlarm);
+
 
             try {
                 const response = await fetch('/move-multiple', {

@@ -1,7 +1,11 @@
-#!/usr/bin/python3
 import subprocess
-import signal
-import sys
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class GPIOException(Exception):
+    pass
 
 
 class GPIOController:
@@ -28,10 +32,10 @@ class GPIOController:
             # Check if GPIO chip exists
             result = subprocess.run(["gpiodetect"], capture_output=True, text=True)
             if self.chip_label not in result.stdout:
-                raise Exception(f"GPIO chip {self.chip_label} not found")
+                raise GPIOException(f"GPIO chip {self.chip_label} not found")
 
         except subprocess.CalledProcessError as e:
-            raise Exception(f"Error verifying GPIO: {e}")
+            raise GPIOException(f"Error verifying GPIO: {e}")
 
 
 
@@ -50,7 +54,7 @@ class GPIOController:
             self.current_state = state  # Update internal state tracking
             return True
         except subprocess.CalledProcessError as e:
-            print(f"Error setting GPIO: {e}")
+            logger.error(f"Error setting GPIO: {e}")
             return False
 
 
@@ -68,51 +72,3 @@ class GPIOController:
     def toggle_relay(self):
         """Toggle relay state"""
         return self.set_relay(not self.current_state)
-
-
-def signal_handler(signum, frame):
-    """Handle cleanup on signal"""
-    print("\nExiting...")
-    if 'gpio' in globals():
-        gpio.set_relay(False)  # Turn off relay on exit
-    sys.exit(0)
-
-
-if __name__ == "__main__":
-    # Set up signal handlers for clean exit
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
-    try:
-        # Initialize GPIO controller - using DIO header pin 1 (GPIO 1)
-        gpio = GPIOController(chip_label="50004010.fpga_gpio", line_number=1)
-
-        print(f"GPIO controller initialized for {gpio.chip_label} line {gpio.line_number}")
-        print("Commands: on, off, toggle, status, quit")
-
-        # Command loop
-        while True:
-            cmd = input("> ").lower().strip()
-
-            if cmd == "on":
-                if gpio.set_relay(True):
-                    print("Relay turned on")
-            elif cmd == "off":
-                if gpio.set_relay(False):
-                    print("Relay turned off")
-            elif cmd == "toggle":
-                if gpio.toggle_relay():
-                    state = "on" if gpio.get_relay_state() else "off"
-                    print(f"Relay toggled {state}")
-            elif cmd == "status":
-                state = "on" if gpio.get_relay_state() else "off"
-                print(f"Relay is {state}")
-            elif cmd in ["quit", "exit", "q"]:
-                gpio.set_relay(False)  # Turn off relay before exit
-                break
-            else:
-                print("Unknown command")
-
-    except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
