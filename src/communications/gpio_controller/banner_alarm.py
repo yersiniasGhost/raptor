@@ -73,12 +73,12 @@ class BannerAlarm:
     def alternate_pattern(self):
         """Pattern thread for alternating red and blue"""
         while not self.stop_thread.is_set():
-            self.controller.set_relay("red", True)
+            self.controller.set_relay("green", True)
             self.controller.set_relay("blue", False)
             time.sleep(self.FLASH_INTERVAL)
             if self.stop_thread.is_set():
                 break
-            self.controller.set_relay("red", False)
+            self.controller.set_relay("green", False)
             self.controller.set_relay("blue", True)
             time.sleep(self.FLASH_INTERVAL)
 
@@ -114,14 +114,20 @@ class BannerAlarm:
             elif alarm_mode == AlarmMode.FLASH_RED:
                 self.pattern_thread = threading.Thread(target=self.flash_red_pattern)
                 self.pattern_thread.start()
+                time.sleep(self.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+                success = self.controller.set_relay("alarm", True)
 
             elif alarm_mode == AlarmMode.FLASH_ALL:
                 self.pattern_thread = threading.Thread(target=self.flash_all_pattern)
                 self.pattern_thread.start()
+                time.sleep(self.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+                success = self.controller.set_relay("alarm", True)
 
             elif alarm_mode == AlarmMode.ALTERNATE:
                 self.pattern_thread = threading.Thread(target=self.alternate_pattern)
                 self.pattern_thread.start()
+                time.sleep(self.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+                success = self.controller.set_relay("alarm", True)
 
             self.active_mode = alarm_mode
             logger.info(f"Status after alarm mode: {alarm_mode}: {self.controller.get_status_all()}")
