@@ -13,7 +13,7 @@ class AlarmMode(Enum):
     DEFAULT = "default"  # Green light + alarm after delay
     FLASH_RED = "flash_red"  # Flashing red light
     FLASH_ALL = "flash_all"  # All lights flash in sequence
-    ALTERNATE = "alternate"  # Red and yellow alternate
+    ALTERNATE = "alternate"  # Red and blue alternate
 
 
 class BannerAlarmException(Exception):
@@ -62,7 +62,7 @@ class BannerAlarm:
 
     def flash_all_pattern(self):
         """Pattern thread for sequencing through all lights"""
-        lights = ["red", "yellow", "green"]
+        lights = ["red", "blue", "green"]
         current = 0
         while not self.stop_thread.is_set():
             self.controller.set_all(False)
@@ -71,15 +71,15 @@ class BannerAlarm:
             time.sleep(self.FLASH_INTERVAL)
 
     def alternate_pattern(self):
-        """Pattern thread for alternating red and yellow"""
+        """Pattern thread for alternating red and blue"""
         while not self.stop_thread.is_set():
             self.controller.set_relay("red", True)
-            self.controller.set_relay("yellow", False)
+            self.controller.set_relay("blue", False)
             time.sleep(self.FLASH_INTERVAL)
             if self.stop_thread.is_set():
                 break
             self.controller.set_relay("red", False)
-            self.controller.set_relay("yellow", True)
+            self.controller.set_relay("blue", True)
             time.sleep(self.FLASH_INTERVAL)
 
     def activate_alarm(self, mode: str) -> Dict[str, str]:
