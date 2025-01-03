@@ -1,4 +1,5 @@
 from typing import Dict
+import time
 import logging
 from multi_relay_controller import MultiRelayController, MultiRelayError
 from gpio_controller import GPIOException
@@ -10,6 +11,7 @@ class BannerAlarmException(Exception):
 
 
 class BannerAlarm:
+    DELAY_BETWEEN_LIGHTS_AND_ALARM = 2000
 
     def __init__(self, configuration: Dict, polarity: str):
         self.polarity = polarity
@@ -46,6 +48,10 @@ class BannerAlarm:
             logger.info(f"Activating alarm with mode: {mode}. Status before: {status}")
             if mode:
                 success = self.controller.set_relay("green", self.on)
+                if not success:
+                    raise BannerAlarmException(f"Failed to set alarm to mode: {mode}")
+                time.sleep(self.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+                success = self.controller.set_relay("alarm", self.on)
                 if not success:
                     raise BannerAlarmException(f"Failed to set alarm to mode: {mode}")
                 logger.info(f"Status after: {self.controller.get_status_all()}")
