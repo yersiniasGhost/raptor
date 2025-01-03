@@ -17,7 +17,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        config = {"blue": 1, "green": 2, "red": 3, "alarm": 4, "polarity": "high"}
+        config = {"blue": 1, "green": 2, "red": 3, "alarm": 4}
         controller = MultiRelayController(configuration=config)
 
         print("Multi-relay controller initialized")

@@ -11,8 +11,8 @@ class BannerAlarmException(Exception):
 
 class BannerAlarm:
 
-    def __init__(self, configuration: Dict):
-        self.polarity = configuration.get("polarity", "high")
+    def __init__(self, configuration: Dict, polarity: str):
+        self.polarity = polarity
         if self.polarity == "high":
             self.on = True
             self.off = False
@@ -20,13 +20,15 @@ class BannerAlarm:
             self.on = False
             self.off = True
 
-        config = {"blue": 1, "green": 2, "red": 3, "alarm": 4, }
         try:
-            self.controller = MultiRelayController(config=config)
+            self.controller = MultiRelayController(config=configuration)
         except GPIOException:
             raise
         except Exception as e:
             raise BannerAlarmException(f"Unexpected error setting alarm: {str(e)}") from e
+
+    def cleanup(self):
+        self.controller.cleanup(self.polarity)
 
 
     def activate_alarm(self, mode: str) -> Dict[str, str]:
@@ -43,7 +45,7 @@ class BannerAlarm:
             status = self.controller.get_status_all()
             logger.info(f"Activating alarm with mode: {mode}. Status before: {status}")
             if mode:
-                success = self.controller.set_relay("red", self.on)
+                success = self.controller.set_relay("green", self.on)
                 if not success:
                     raise BannerAlarmException(f"Failed to set alarm to mode: {mode}")
                 logger.info(f"Status after: {self.controller.get_status_all()}")

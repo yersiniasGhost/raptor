@@ -36,6 +36,7 @@ class MultiRelayController:
         """Get status of all relays"""
         return {name: relay.get_relay_state() for name, relay in self.relays.items()}
 
-    def cleanup(self):
+    def cleanup(self, polarity: str):
         """Turn off all relays"""
-        self.set_all(False)
+        state = False if polarity == "high" else True
+        self.set_all(state)
