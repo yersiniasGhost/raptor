@@ -5,22 +5,13 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import canopen
 from .electrak import ElectrakMD
+from utils import Singleton
 
 
-class ActuatorManager:
+class ActuatorManager(metaclass=Singleton):
     """Singleton manager for handling multiple actuators"""
-    _instance = None
-    _lock = threading.Lock()
-    
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:  # Double-check pattern
-                    cls._instance = super(ActuatorManager, cls).__new__(cls)
-                    cls._instance.initialize()
-        return cls._instance
-            
-    def initialize(self):
+
+    def __init__(self):
         """Initialize the manager's resources"""
         print("Initializing ActuatorManager")
         self.actuators: Dict[int, ElectrakMD] = {}
@@ -28,7 +19,8 @@ class ActuatorManager:
         self.executor = ThreadPoolExecutor(max_workers=4)
         self.connection_lock = threading.RLock()  # Using RLock instead of Lock
         self.operation_locks: Dict[int, threading.Lock] = {}
-        
+        self.alarm = BannerAlarm
+
     def setup_network(self, channel: str = 'can0'):
         """Initialize CAN network connection"""
         print('Setting up network...')

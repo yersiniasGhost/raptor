@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Form
 from fastapi.responses import HTMLResponse
+import asyncio
 import uvicorn
 from typing import Dict
 import logging
 from communications.electrak.actuator_manager import ActuatorManager
+from communications.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 
 logging.basicConfig(level=logging.INFO)  # Reduced from DEBUG to save resources
 logger = logging.getLogger(__name__)
@@ -36,9 +38,40 @@ async def lifespan(inner_app: FastAPI):
             manager.cleanup()
 
 
+# Initialize BannerAlarm (configuration should match your setup)
+alarm_config = { "relays": {"blue": 1, "green": 2, "red": 4, "alarm": 3},
+                   "polarity": "high"}
+banner_alarm = BannerAlarm(configuration=alarm_config)
+
+
 app = FastAPI(title="Multi-Actuator Control System", lifespan=lifespan)
 
 
+async def activate_warning_alarm() -> None:
+    """Activate warning alarm and wait for delay"""
+    try:
+        result = banner_alarm.activate_alarm("default")
+        if result["status"] != "success":
+            raise BannerAlarmException("Failed to activate alarm")
+
+        # Wait for the warning period
+        await asyncio.sleep(banner_alarm.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+
+    except Exception as e:
+        logger.error(f"Error activating warning alarm: {e}")
+        banner_alarm.deactivate_alarm()  # Cleanup on error
+        raise BannerAlarmException(f"Failed to activate warning alarm: {str(e)}")
+
+
+async def deactivate_warning_alarm() -> None:
+    """Deactivate warning alarm"""
+    try:
+        result = banner_alarm.deactivate_alarm()
+        if result["status"] != "success":
+            raise BannerAlarmException("Failed to deactivate alarm")
+    except Exception as e:
+        logger.error(f"Error deactivating warning alarm: {e}")
+        raise BannerAlarmException(f"Failed to deactivate warning alarm: {str(e)}")
 @app.get("/actuator/{actuator_id}/status")
 async def get_actuator_status(actuator_id: int) -> Dict:
     """Get current status of specified actuator"""
@@ -68,9 +101,21 @@ async def move_actuator(actuator_id: int, target_position: float = Form(...),
         raise HTTPException(status_code=404, detail="Actuator not found")
     
     try:
+        if activate_alarm:
+            try:
+                await activate_warning_alarm()
+            except BannerAlarmException as e:
+                logger.error(f"Failed to activate alarm {e}")
         success = await actuator.move_to(target_position, target_speed)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if activate_alarm:
+            try:
+                await deactivate_alarm()
+            except BannerAlarmException as e:
+                logger.error(f"Failed to DEactivate alarm {e}")
+
     if success:
         return {"message": f"Moving actuator {actuator_id}", "status": "success"}
     else:
@@ -99,6 +144,13 @@ async def move_multiple_actuators(target_position: float = Form(...),
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Make sure to clean up on application shutdown
+@app.on_event("shutdown")
+async def shutdown_event():
+    try:
+        banner_alarm.cleanup()
+    except Exception as e:
+        logger.error(f"Error cleaning up banner alarm: {e}")
 
 
 @app.get("/", response_class=HTMLResponse)
