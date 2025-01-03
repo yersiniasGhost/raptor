@@ -19,11 +19,8 @@ if __name__ == "__main__":
     try:
         # BANNER Alarm configuration:
         config = { "relays": {"blue": 1, "green": 2, "red": 4, "alarm": 3},
-                   "polarity": "high",
-                   "modes": { "default": ['red', 'green' 'blue'],
-                              "rotate"}}
-        config =
-        controller = BannerAlarm(configuration=config, polarity="low")
+                   "polarity": "high"}
+        controller = BannerAlarm(configuration=config)
 
         print("Multi-relay controller initialized")
         print("Commands:")
