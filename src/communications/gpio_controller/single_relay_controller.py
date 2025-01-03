@@ -8,19 +8,21 @@ class GPIOException(Exception):
     pass
 
 
-class GPIOController:
+class SingleRelayController:
 
-    def __init__(self, chip_label="50004010.fpga_gpio", line_number=1):
+    def __init__(self, chip_label="50004010.fpga_gpio", line_number: int = 1, polarity: str = "high"):
         """Initialize GPIO controller using libgpiod commands
 
         Args:
             chip_label: The GPIO chip label (e.g., '50004010.fpga_gpio')
             line_number: The GPIO line number to control
+            polarity: The Relay switches can be set to high or low polarity
         """
         self.chip_label = chip_label
         self.line_number = line_number
         self.current_state = False  # Track state internally
         self.verify_gpio()
+        self.polarity = polarity
         # Ensure we start in OFF state
         self.set_relay(False)
 
@@ -39,7 +41,7 @@ class GPIOController:
 
 
 
-    def set_relay(self, state):
+    def set_relay(self, state: bool) -> bool:
         """Set relay state using gpioset
 
         Args:
@@ -48,7 +50,10 @@ class GPIOController:
             Boolean indicating success
         """
         try:
+
             value = "1" if state else "0"
+            if self.polarity == "high":
+                value = "0" if state else "1"
             cmd = ["gpioset", self.chip_label, f"{self.line_number}={value}"]
             subprocess.run(cmd, check=True)
             self.current_state = state  # Update internal state tracking
@@ -59,11 +64,8 @@ class GPIOController:
 
 
 
-    def get_relay_state(self):
+    def get_relay_state(self) -> bool:
         """Get current relay state from internal tracking
-
-        Returns:
-            Boolean indicating current state
         """
         return self.current_state
 

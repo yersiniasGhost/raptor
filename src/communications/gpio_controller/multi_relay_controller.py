@@ -1,5 +1,5 @@
 from typing import Dict
-from gpio_controller import GPIOController
+from single_relay_controller import SingleRelayController
 
 
 class MultiRelayError(Exception):
@@ -8,9 +8,11 @@ class MultiRelayError(Exception):
 
 
 class MultiRelayController:
-    def __init__(self, config: Dict[str, int], fpga_gpio_label="50004010.fpga_gpio"):
+    def __init__(self, config: Dict[str, int], polarity: str = "low", fpga_gpio_label: str = "50004010.fpga_gpio"):
         self.label = fpga_gpio_label
-        self.relays: Dict[str, GPIOController] = {name: GPIOController(chip_label=self.label, line_number=line) for name, line in config.items()}
+        self.relays: Dict[str, SingleRelayController] = {
+            name: SingleRelayController(chip_label=self.label, line_number=line, polarity=polarity) for name, line in
+            config.items()}
         self.verify_gpio()
 
 
@@ -24,7 +26,7 @@ class MultiRelayController:
     def verify_gpio(self):
         list(self.relays.values())[0].verify_gpio()
 
-    def set_all(self, state):
+    def set_all(self, state: bool) -> bool:
         """Set all relays to the same state"""
         success = True
         for relay in self.relays.values():
@@ -36,7 +38,6 @@ class MultiRelayController:
         """Get status of all relays"""
         return {name: relay.get_relay_state() for name, relay in self.relays.items()}
 
-    def cleanup(self, polarity: str):
+    def cleanup(self):
         """Turn off all relays"""
-        state = False if polarity == "high" else True
-        self.set_all(state)
+        self.set_all(False)
