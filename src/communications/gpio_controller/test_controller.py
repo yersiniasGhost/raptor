@@ -17,7 +17,12 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        config = {"blue": 1, "green": 2, "red": 4, "alarm": 3}
+        # BANNER Alarm configuration:
+        config = { "relays": {"blue": 1, "green": 2, "red": 4, "alarm": 3},
+                   "polarity": "high",
+                   "modes": { "default": ['red', 'green' 'blue'],
+                              "rotate"}}
+        config =
         controller = BannerAlarm(configuration=config, polarity="low")
 
         print("Multi-relay controller initialized")
@@ -34,8 +39,12 @@ if __name__ == "__main__":
             if parts[0] == "quit":
                 controller.cleanup()
                 break
-            if parts[0] == "on":
-                controller.activate_alarm("mode")
+            if parts[0] == "on1":
+                controller.activate_alarm("default")
+            if parts[0] == "on2":
+                controller.activate_alarm("flash_all")
+            if parts[0] == "on3":
+                controller.activate_alarm("alternate")
             elif parts[0] == "off":
                 controller.deactivate_alarm()
             else:
