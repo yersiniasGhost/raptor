@@ -3,8 +3,8 @@ import time
 import logging
 import threading
 from enum import Enum
-from multi_relay_controller import MultiRelayController, MultiRelayError
-from single_relay_controller import GPIOException
+from .multi_relay_controller import MultiRelayController, MultiRelayError
+from .single_relay_controller import GPIOException
 logger = logging.getLogger(__name__)
 
 

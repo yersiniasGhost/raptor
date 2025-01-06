@@ -1,5 +1,5 @@
 from typing import Dict
-from single_relay_controller import SingleRelayController
+from .single_relay_controller import SingleRelayController
 
 
 class MultiRelayError(Exception):

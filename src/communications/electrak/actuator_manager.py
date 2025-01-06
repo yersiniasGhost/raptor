@@ -5,6 +5,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import canopen
 from .electrak import ElectrakMD
+from communications.gpio_controller.banner_alarm import BannerAlarm
 from utils import Singleton
 
 
