@@ -1,6 +1,5 @@
 from pymodbus.client import ModbusSerialClient
 from pymodbus.framer import FramerType
-from pymodbus.utilities import computeCRC
 import binascii
 import logging
 import sys
@@ -9,6 +8,20 @@ import sys
 logging.basicConfig()
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
+
+ 
+
+def calculate_crc(data):
+    """Calculate CRC16 for Modbus RTU"""
+    crc = 0xFFFF
+    for byte in data:
+        crc ^= byte
+        for _ in range(8):
+            if crc & 0x0001:
+                crc = (crc >> 1) ^ 0xA001
+            else:
+                crc >>= 1
+    return crc
 
 
 def print_message_with_crc(slave_id, function_code, register_address, register_count):
@@ -24,7 +37,7 @@ def print_message_with_crc(slave_id, function_code, register_address, register_c
     ])
 
     # Calculate CRC
-    crc = computeCRC(message)
+    crc = calculate_crc(message)
 
     # Complete message with CRC
     complete_message = message + bytes([crc & 0xFF, crc >> 8])
@@ -42,7 +55,7 @@ def print_message_with_crc(slave_id, function_code, register_address, register_c
     return complete_message
 
 
-def test_modbus_with_crc(port='/dev/ttyS11', slave_id=1, register_address=2):
+def test_modbus_with_crc(port='/dev/ttyS11', slave_id=0, register_address=2):
     """Test Modbus RTU communication with CRC checking"""
 
     # Show the expected message

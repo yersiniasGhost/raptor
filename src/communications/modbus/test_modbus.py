@@ -57,12 +57,12 @@ def test_modbus_connection(port='/dev/ttyS11', slave_id=1, register_address=1560
         retries=3
     )
 
-    print(f"Client configuration:")
-    print(f"- Port: {client.params.port}")
-    print(f"- Baudrate: {client.params.baudrate}")
-    print(f"- Parity: {client.params.parity}")
-    print(f"- Stopbits: {client.params.stopbits}")
-    print(f"- Bytesize: {client.params.bytesize}")
+    #print(f"Client configuration:")
+    #print(f"- Port: {client.params.port}")
+    #print(f"- Baudrate: {client.params.baudrate}")
+    #print(f"- Parity: {client.params.parity}")
+    #print(f"- Stopbits: {client.params.stopbits}")
+    #print(f"- Bytesize: {client.params.bytesize}")
 
     try:
         # Try to connect
@@ -115,13 +115,6 @@ if __name__ == "__main__":
     print("Testing first RS-485 port...")
     test_modbus_connection(
         port='/dev/ttyS11',
-        slave_id=1,  # Try changing this if device address is different
-        register_address=1560
-    )
-
-    print("\nTesting second RS-485 port...")
-    test_modbus_connection(
-        port='/dev/ttyS12',
-        slave_id=1,
-        register_address=1560
+        slave_id=0,  # Try changing this if device address is different
+        register_address=2
     )
