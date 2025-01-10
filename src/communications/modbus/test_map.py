@@ -5,6 +5,8 @@ from datetime import datetime
 import os
 import time
 
+from modbus_map import ModbusMap, ModbusRegister
+
 # CRC Tables as specified in the document
 AUCHCRCHI = [ 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
 0x00, 0xC1, 0x81,
@@ -92,7 +94,7 @@ def calculate_crc(message):
     return (crc_hi << 8 | crc_lo)
 
 
-def test_bms_communication(port='/dev/ttyS11', slave_id=1):
+def test_bms_communication(register_map: ModbusMap, port: str='/dev/ttyS11', slave_id: int=1) -> list:
     """
     Test BMS communication using specified parameters
     """
@@ -110,7 +112,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
     try:
         if not client.connect():
             print("Failed to connect!")
-            return
+            return []
 
         #print(f"Connected to {port}")
 
@@ -124,28 +126,24 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
             #(0x0005, "Full capacity (10mAH), "uint16"")
         ]
         output = []
-        for register, description, d_type in registers_to_read:
-            
-            #print(f"\nReading {description}")
+        for register in register_map.get_registers():
+            print(register)
+            address = register.get_addresses()[0]
             # Create the message as per specification
             message = bytes([
                 slave_id,  # Slave Address (0x01-0x10)
                 0x03,  # Function Code (Read Registers)
-                register >> 8,  # Starting Address (Hi)
-                register & 0xFF,  # Starting Address (Lo)
+                address >> 8,  # Starting Address (Hi)
+                address & 0xFF,  # Starting Address (Lo)
                 0x00,  # Number of Registers (Hi)
                 0x01  # Number of Registers (Lo)
             ])
-            #print(message)
             # Calculate CRC per specification
-            crc = calculate_crc(message)
-
-            #print(f"Message: {binascii.hexlify(message).decode()}")
-            #print(f"Calculated CRC: {hex(crc)}")
+            # crc = calculate_crc(message)
 
             # Attempt to read
             result = client.read_holding_registers(
-                address=register,
+                address=address,
                 count=1,
                 slave=slave_id
             )
@@ -157,28 +155,16 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
             else:
                 #print(f"Value: {result.registers[0]}")
                 uint16_value = result.registers[0]
-                if d_type == "int16":
+                if register.data_type == "int16":
                     if uint16_value > 32767:
-                        value = (uint16_value - 65535) / 100
+                        value = (uint16_value - 65535) * register.conversion_factor
                     else:
-                        value = uint16_value / 100
+                        value = uint16_value * register.conversion_factor
                 else:
                     value = uint16_value
 
-                print(f"UNit: {slave_id} {description}: {d_type}: {value}")
-                #print(uint16_value)
-                output.append((description, value))
-                # For INT8, you need to extract the bytes
-                # Higher byte
-                int8_high = (result.registers[0] >> 8) & 0xFF
-                # Lower byte
-                int8_low = result.registers[0] & 0xFF
-
-                #print(f"INT16 Value: {int16_value}")
-                #print(f"UINT16 Value: {uint16}")
-                #print(f"INT8 High Byte: {int8_high}")
-                #print(f"INT8 Low Byte: {int8_low}")
-
+                print(f"Unit: {slave_id} {register.description}: {register.data_type}: {value}")
+                output.append((register.description, value))
 
             # Wait for frame interval as specified (>100ms)
             time.sleep(0.15)
@@ -188,13 +174,14 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
     finally:
         client.close()
 
+
 def write_to_csv(slave_id, data_list):
     """
     Write Modbus data to CSV with timestamp
     data_list: List of tuples [(name, value)]
     """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'modbus_slave_{slave_id}.csv'
+    filename = f'map_modbus_slave_{slave_id}.csv'
     file_exists = os.path.exists(filename)
     
     with open(filename, 'a', newline='') as csvfile:
@@ -210,7 +197,31 @@ def write_to_csv(slave_id, data_list):
         row_data.update({name: value for name, value in data_list})
         writer.writerow(row_data)
 
+
+
 if __name__ == "__main__":
+
+    mb_map = {
+        "registers": [
+            {
+                "name": "Current (10mA)",
+                "data_type": "int16",
+                "address": 0x0000,
+                "units": "A",
+                "conversion_factor": 0.01,
+                "description": "Actually battery charging current in A"
+            },
+            {
+                "name": "SOC (%)",
+                "data_type": "uint8",
+                "address": 0x0002,
+                "units": "%",
+                "conversion_factor": 0.01,
+                "description": "Actually battery charging current in A"
+            }
+        ]
+    }
+
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
@@ -230,15 +241,3 @@ if __name__ == "__main__":
         print("---------")
         cnt += 1
         time.sleep(30)
-
-
-#if __name__ == "__main__":
-    # Test with default slave ID 1 (0x01)
-    #cnt = 0
-    #while(cnt < 100):
-        #test_bms_communication(slave_id=1)
-        #test_bms_communication(slave_id=2)
-        #test_bms_communication(slave_id=3)
-        #print("---------")
-        #cnt += 1
-        ##time.sleep(5)
