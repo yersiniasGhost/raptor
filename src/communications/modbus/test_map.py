@@ -156,8 +156,7 @@ def read_holding_registers(register_map: ModbusMap, port: str='/dev/ttyS11', sla
 
             # Wait for frame interval as specified (>100ms)
             time.sleep(0.05)
-        print(output)
-        return output 
+        return output
     except Exception as e:
         print(f"Error: {e}")
     finally:

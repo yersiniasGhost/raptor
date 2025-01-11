@@ -165,7 +165,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
                 else:
                     value = uint16_value
 
-                print(f"UNit: {slave_id} {description}: {d_type}: {value}")
+                print(f"Unit: {slave_id} {description}: {d_type}: {value}")
                 #print(uint16_value)
                 output.append((description, value))
                 # For INT8, you need to extract the bytes
