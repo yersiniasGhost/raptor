@@ -120,7 +120,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
             #(0x0001, "Voltage of pack (10mV)", "uint16"),
             (0x0002, "SOC (%)", "uint16"),
             #(0x0003, "SOH (%)", "uint16"),
-            #(0x0004, "Remain capacity (10mAH)", "uint16"),
+            (0x0004, "Remain capacity (10mAH)", "uint16"),
             #(0x0005, "Full capacity (10mAH), "uint16"")
         ]
         output = []
@@ -138,7 +138,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
             ])
             #print(message)
             # Calculate CRC per specification
-            crc = calculate_crc(message)
+            # crc = calculate_crc(message)
 
             #print(f"Message: {binascii.hexlify(message).decode()}")
             #print(f"Calculated CRC: {hex(crc)}")
@@ -163,7 +163,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
                     else:
                         value = uint16_value / 100
                 else:
-                    value = uint16_value
+                    value = uint16_value / 100
 
                 print(f"Unit: {slave_id} {description}: {d_type}: {value}")
                 #print(uint16_value)
@@ -181,7 +181,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
 
 
             # Wait for frame interval as specified (>100ms)
-            time.sleep(0.15)
+            time.sleep(0.05)
         return output 
     except Exception as e:
         print(f"Error: {e}")
