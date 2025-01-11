@@ -4,7 +4,7 @@
 <head>
     <title>BMS Data - Raptor Control System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
@@ -24,9 +24,22 @@
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);  /* Two columns */
+        gap: 20px;
+        padding: 10px;
+    }
     .chart {
-        height: 300px;
-        margin-bottom: 20px;
+        height: 400px;  /* Made taller since we have more horizontal space */
+        padding: 10px;
+    }
+    .chart-title {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        color: #333;
+        font-weight: 500;
+        text-align: center;
     }
 
         .back-link {
@@ -127,7 +140,10 @@
                         row.Timestamp && // ensure timestamp exists
                         Object.values(row).every(val => val !== null && val !== undefined)
                     );
-
+                    // Limit to most recent 1728 points
+                    if (data.length > 1728) {
+                        data = data.slice(-1728);
+                    }
                     if (!data.length) {
                         console.error("No valid data after filtering");
                         return;
@@ -141,6 +157,11 @@
                     const chartContainer = document.getElementById(`charts-unit${unitId}`);
                     chartContainer.innerHTML = ''; // Clear existing charts
 
+                 // Create grid container
+                    const gridContainer = document.createElement('div');
+                    gridContainer.className = 'charts-grid';
+                    chartContainer.appendChild(gridContainer);
+
                     // Create a chart for each column
                     columns.forEach(column => {
                         const chartWrapper = document.createElement('div');
@@ -150,10 +171,10 @@
                         titleDiv.className = 'chart-title';
                         titleDiv.textContent = column;
                         chartWrapper.appendChild(titleDiv);
-                        
+
                         const canvas = document.createElement('canvas');
                         chartWrapper.appendChild(canvas);
-                        chartContainer.appendChild(chartWrapper);
+                        gridContainer.appendChild(chartWrapper);
 
                         // Prepare data for Chart.js
                         const chartData = {
@@ -304,52 +325,52 @@
     </script>
 </head>
 <body>
-    <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
-    <h1>Battery Management System Data</h1>
-    
-    <div id="error-message" class="error" style="display: none;"></div>
+<a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+<h1>Battery Management System Data</h1>
 
-    <div class="metadata">
-        <div>
-            Number of Units: <span id="unit-count">-</span>
-        </div>
-        <div class="status-indicator">
-            Last refresh: <span id="last-refresh">-</span>
-        </div>
+<div id="error-message" class="error" style="display: none;"></div>
+
+<div class="metadata">
+    <div>
+        Number of Units: <span id="unit-count">-</span>
     </div>
-
-    {% if register_map %}
-        {% for unit_id in [1,2,3] %}  {# Replace with your actual unit IDs #}
-        <div class="unit-container">
-            <h2>Unit {{ unit_id }}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Value</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for reg in register_map.registers %}
-                    <tr>
-                        <td>{{ reg.name }}</td>
-                        <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
-                            -
-                        </td>
-                        <td>{{ reg.description }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-	    <div class="chart-container">
-    <h3>Historical Data</h3>
-    <div id="charts-unit{{ unit_id }}">
-        <div class="text-gray-500">Loading charts...</div>
+    <div class="status-indicator">
+        Last refresh: <span id="last-refresh">-</span>
     </div>
 </div>
-        </div>
+
+{% if register_map %}
+{% for unit_id in [1,2,3] %} {# Replace with your actual unit IDs #}
+<div class="unit-container">
+    <h2>Unit {{ unit_id }}</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for reg in register_map.registers %}
+        <tr>
+            <td>{{ reg.name }}</td>
+            <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
+                -
+            </td>
+            <td>{{ reg.description }}</td>
+        </tr>
         {% endfor %}
-    {% endif %}
+        </tbody>
+    </table>
+    <div class="chart-container">
+        <h3>Historical Data</h3>
+        <div id="charts-unit{{ unit_id }}">
+            <div class="text-gray-500">Loading charts...</div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 </body>
 </html>
