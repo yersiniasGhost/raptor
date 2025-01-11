@@ -100,7 +100,6 @@
         const UPDATE_FREQUENCY = 30000; // 30 seconds
         let lastValues = {};
     async function loadHistoricalData(unitId) {
-	    console.log(`Loading ${unitId}`);
         try {
             const response = await fetch(`/bms/historical/${unitId}`);
             const result = await response.json();
@@ -202,6 +201,10 @@
 
 
         async function updateBMSData() {
+	    const units = [1, 2, 3]; // Match your unit IDs
+        units.forEach(unitId => {
+            loadHistoricalData(unitId);
+        });	
             try {
                 const response = await fetch('/bms/data');
                 const result = await response.json();
@@ -286,7 +289,6 @@
             loadHistoricalData(unitId);
         });	
             updateInterval = setInterval(updateBMSData, UPDATE_FREQUENCY);
-            updateInterval = setInterval(loadAllHistoricalData, UPDATE_FREQUENCY);
 		
         });
 
@@ -297,7 +299,6 @@
             } else {
                 updateBMSData();
                 updateInterval = setInterval(updateBMSData, UPDATE_FREQUENCY);
-                updateInterval = setInterval(loadAllHistoricalData, UPDATE_FREQUENCY);
             }
         });
     </script>
