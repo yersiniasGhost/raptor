@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import time
 
-from modbus_map import ModbusMap, ModbusRegister
+from .modbus_map import ModbusMap, ModbusRegister
 
 # CRC Tables as specified in the document
 AUCHCRCHI = [ 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -94,7 +94,7 @@ def calculate_crc(message):
     return (crc_hi << 8 | crc_lo)
 
 
-def test_bms_communication(register_map: ModbusMap, port: str='/dev/ttyS11', slave_id: int=1) -> list:
+def read_holding_registers(register_map: ModbusMap, port: str='/dev/ttyS11', slave_id: int=1) -> dict:
     """
     Test BMS communication using specified parameters
     """
@@ -112,22 +112,11 @@ def test_bms_communication(register_map: ModbusMap, port: str='/dev/ttyS11', sla
     try:
         if not client.connect():
             print("Failed to connect!")
-            return []
+            return {}
 
-        #print(f"Connected to {port}")
-
-        # Test reading registers (starting from 0x0000 as per spec)
-        registers_to_read = [
-            (0x0000, "Current (10mA)", "int16"),
-            #(0x0001, "Voltage of pack (10mV)", "uint16"),
-            (0x0002, "SOC (%)", "uint16"),
-            #(0x0003, "SOH (%)", "uint16"),
-            #(0x0004, "Remain capacity (10mAH)", "uint16"),
-            #(0x0005, "Full capacity (10mAH), "uint16"")
-        ]
-        output = []
+        output = {}
         for register in register_map.get_registers():
-            print(register)
+            #print(register)
             address = register.get_addresses()[0]
             # Create the message as per specification
             message = bytes([
@@ -153,7 +142,6 @@ def test_bms_communication(register_map: ModbusMap, port: str='/dev/ttyS11', sla
             elif hasattr(result, 'isError') and result.isError():
                 print(f"Error reading register: {result}")
             else:
-                #print(f"Value: {result.registers[0]}")
                 uint16_value = result.registers[0]
                 if register.data_type == "int16":
                     if uint16_value > 32767:
@@ -164,10 +152,11 @@ def test_bms_communication(register_map: ModbusMap, port: str='/dev/ttyS11', sla
                     value = uint16_value
 
                 print(f"Unit: {slave_id} {register.description}: {register.data_type}: {value}")
-                output.append((register.description, value))
+                output[register.name] = value
 
             # Wait for frame interval as specified (>100ms)
-            time.sleep(0.15)
+            time.sleep(0.05)
+        print(output)
         return output 
     except Exception as e:
         print(f"Error: {e}")
@@ -209,7 +198,7 @@ if __name__ == "__main__":
                 "address": 0x0000,
                 "units": "A",
                 "conversion_factor": 0.01,
-                "description": "Actually battery charging current in A"
+                "description": "Battery current in A"
             },
             {
                 "name": "SOC (%)",
@@ -217,17 +206,18 @@ if __name__ == "__main__":
                 "address": 0x0002,
                 "units": "%",
                 "conversion_factor": 0.01,
-                "description": "Actually battery charging current in A"
+                "description": "SOC (%)"
             }
         ]
     }
 
+    modbus_map = ModbusMap.from_dict(mb_map)
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
-        r1 = test_bms_communication(slave_id=1)
-        r2 = test_bms_communication(slave_id=2)
-        r3 = test_bms_communication(slave_id=3)
+        r1 = test_bms_communication(modbus_map,slave_id=1)
+        r2 = test_bms_communication(modbus_map,slave_id=2)
+        r3 = test_bms_communication(modbus_map,slave_id=3)
         
         # Write data for each slave to its own CSV file
         if r1:  # Only write if we got valid data

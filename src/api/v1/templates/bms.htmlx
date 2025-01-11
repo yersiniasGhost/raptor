@@ -1,0 +1,101 @@
+{# templates/bms.html #}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BMS Data - Raptor Control System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .unit-container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .metadata {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .units {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+    <h1>Battery Management System Data</h1>
+    
+    <div class="metadata">
+        Number of Units: {{ bms_data|length }}
+        <br>
+        Last Updated: {{ last_updated }}
+    </div>
+
+    {% for unit_id, values in bms_data.items() %}
+    <div class="unit-container">
+        <h2>Unit ID: {{ unit_id }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in register_map.registers %}
+                <tr>
+                    <td>{{ reg.name }}</td>
+                    <td>
+                        {% if reg.name in values %}
+                            {{ (values[reg.name])|round(3) }}
+                            {% if reg.units %}
+                                <span class="units">{{ reg.units }}</span>
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ reg.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</body>
+</html>

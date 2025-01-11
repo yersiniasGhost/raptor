@@ -1,0 +1,20 @@
+{
+        "registers": [
+            {
+                "name": "Current (10mA)",
+                "data_type": "int16",
+                "address": 0,
+                "units": "A",
+                "conversion_factor": 0.01,
+                "description": "Charge/discharging current in A"
+            },
+            {
+                "name": "SOC (%)",
+                "data_type": "uint8",
+                "address": 2,
+                "units": "%",
+                "conversion_factor": 0.01,
+                "description": "Battery state of charge (%)"
+            }
+        ]
+    }

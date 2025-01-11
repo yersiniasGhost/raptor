@@ -1,0 +1,354 @@
+{# templates/bms.html #}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BMS Data - Raptor Control System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    .chart-container {
+        margin-top: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .chart {
+        height: 300px;
+        margin-bottom: 20px;
+    }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .unit-container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .metadata {
+            color: #666;
+            font-size: 0.9em;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .units {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .error {
+            background-color: #fff3f3;
+            border: 1px solid #ff8080;
+            color: #dc3545;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+        .value-cell {
+            transition: background-color 0.3s;
+        }
+        .value-updated {
+            background-color: #f0f7ff;
+        }
+    </style>
+
+
+    <script>
+        let updateInterval;
+        const UPDATE_FREQUENCY = 30000; // 30 seconds
+        let lastValues = {};
+    async function loadHistoricalData(unitId) {
+	    console.log(`Loading ${unitId}`);
+        try {
+            const response = await fetch(`/bms/historical/${unitId}`);
+            const result = await response.json();
+            
+            if (result.error || !result.data) {
+                console.error(`Error loading historical data for unit ${unitId}:`, result.error);
+                return;
+            }
+
+            // Parse CSV data
+            Papa.parse(result.data, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                transformHeader: function(header) {
+                    return header.split('(')[0].trim();
+                },
+                complete: function(results) {
+                    if (results.errors.length > 0) {
+                        console.error("CSV parsing errors:", results.errors);
+                        return;
+                    }
+
+                    const data = results.data.filter(row => 
+                        row.Timestamp && // ensure timestamp exists
+                        Object.values(row).every(val => val !== null && val !== undefined)
+                    );
+
+                    if (!data.length) {
+                        console.error("No valid data after filtering");
+                        return;
+                    }
+
+                    // Get all columns except timestamp
+                    const columns = Object.keys(data[0])
+                        .filter(key => key.toLowerCase() !== 'timestamp');
+                    
+                    // Create chart container
+                    const chartContainer = document.getElementById(`charts-unit${unitId}`);
+                    chartContainer.innerHTML = ''; // Clear existing charts
+
+                    // Create a chart for each column
+                    columns.forEach(column => {
+                        const chartWrapper = document.createElement('div');
+                        chartWrapper.className = 'chart';
+                        
+                        const titleDiv = document.createElement('div');
+                        titleDiv.className = 'chart-title';
+                        titleDiv.textContent = column;
+                        chartWrapper.appendChild(titleDiv);
+                        
+                        const canvas = document.createElement('canvas');
+                        chartWrapper.appendChild(canvas);
+                        chartContainer.appendChild(chartWrapper);
+
+                        // Prepare data for Chart.js
+                        const chartData = {
+                            labels: data.map(row => row.Timestamp),
+                            datasets: [{
+                                label: column,
+                                data: data.map(row => row[column]),
+                                borderColor: '#8884d8',
+                                tension: 0.1,
+                                pointRadius: 0
+                            }]
+                        };
+
+                        // Create the chart using Chart.js
+                        new Chart(canvas, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: column
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        ticks: {
+                                            maxRotation: 45,
+                                            minRotation: 45
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+
+        } catch (error) {
+            console.error(`Error loading historical data for unit ${unitId}:`, error);
+        }
+    }
+
+
+        async function updateBMSData() {
+            try {
+                const response = await fetch('/bms/data');
+                const result = await response.json();
+                if (result.error) {
+                    showError(result.error);
+                    return;
+                }
+
+                const unitData = result.data;
+                if (!unitData) {
+                    return;
+                }
+
+                // Initialize lastValues for new units
+                for (const unitId in unitData) {
+                    if (!lastValues[unitId]) {
+                        lastValues[unitId] = {};
+                    }
+                }
+
+                // Update each unit's values
+                for (const [unitId, values] of Object.entries(unitData)) {
+                    for (const [name, value] of Object.entries(values)) {
+                        const cell = document.getElementById(`value-${unitId}-${name}`);
+                        if (cell) {
+                            const formattedValue = formatValue(value, name);
+                            if (lastValues[unitId][name] !== formattedValue) {
+                                cell.textContent = formattedValue;
+                                highlightUpdate(cell);
+                                lastValues[unitId][name] = formattedValue;
+                            }
+                        }
+                    }
+                }
+
+                // Update last refresh time
+                document.getElementById('last-refresh').textContent = 
+                    new Date().toLocaleTimeString();
+
+                // Update number of units
+                document.getElementById('unit-count').textContent = 
+                    Object.keys(unitData).length;
+
+            } catch (error) {
+                console.error('Error updating BMS data:', error);
+                showError('Failed to update BMS data');
+            }
+        }
+
+        function formatValue(value, name) {
+            if (typeof value === 'number') {
+                return value.toFixed(2);
+            }
+            return value;
+        }
+
+        function highlightUpdate(element) {
+            element.classList.add('value-updated');
+            setTimeout(() => {
+                element.classList.remove('value-updated');
+            }, 1000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+        }
+        function loadAllHistoricalData() {
+	    const units = [1, 2, 3]; // Match your unit IDs
+        units.forEach(unitId => {
+            loadHistoricalData(unitId);
+        });	
+	}
+        // Start updates when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBMSData();
+	    const units = [1, 2, 3]; // Match your unit IDs
+        units.forEach(unitId => {
+            loadHistoricalData(unitId);
+        });	
+            updateInterval = setInterval(updateBMSData, UPDATE_FREQUENCY);
+            updateInterval = setInterval(loadAllHistoricalData, UPDATE_FREQUENCY);
+		
+        });
+
+        // Clean up when page is hidden/closed
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(updateInterval);
+            } else {
+                updateBMSData();
+                updateInterval = setInterval(updateBMSData, UPDATE_FREQUENCY);
+                updateInterval = setInterval(loadAllHistoricalData, UPDATE_FREQUENCY);
+            }
+        });
+    </script>
+</head>
+<body>
+    <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+    <h1>Battery Management System Data</h1>
+    
+    <div id="error-message" class="error" style="display: none;"></div>
+
+    <div class="metadata">
+        <div>
+            Number of Units: <span id="unit-count">-</span>
+        </div>
+        <div class="status-indicator">
+            Last refresh: <span id="last-refresh">-</span>
+        </div>
+    </div>
+
+    {% if register_map %}
+        {% for unit_id in [1,2,3] %}  {# Replace with your actual unit IDs #}
+        <div class="unit-container">
+            <h2>Unit {{ unit_id }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in register_map.registers %}
+                    <tr>
+                        <td>{{ reg.name }}</td>
+                        <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
+                            -
+                        </td>
+                        <td>{{ reg.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+	    <div class="chart-container">
+    <h3>Historical Data</h3>
+    <div id="charts-unit{{ unit_id }}">
+        <div class="text-gray-500">Loading charts...</div>
+    </div>
+</div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>
