@@ -92,7 +92,77 @@ def calculate_crc(message):
     return (crc_hi << 8 | crc_lo)
 
 
-def test_bms_communication(port='/dev/ttyS11', slave_id=1):
+
+def decode_bms_status(register_value: int):
+    """
+    Decode BMS status register bits and return a dictionary of states
+    Args:
+        register_value: UINT16 value from Modbus register
+    """
+    # Dictionary to store all states
+    status = {
+        # Fault bits (0-7)
+        'charging_mosfet_fault': bool(register_value & (1 << 0)),
+        'discharging_mosfet_fault': bool(register_value & (1 << 1)),
+        'temp_sensor_fault': bool(register_value & (1 << 2)),
+        'battery_cell_fault': bool(register_value & (1 << 4)),
+        'frontend_comm_fault': bool(register_value & (1 << 5)),
+
+        # Status bits (8-15)
+        'state_of_charge': bool(register_value & (1 << 8)),
+        'state_of_discharge': bool(register_value & (1 << 9)),
+        'charging_mosfet_on': bool(register_value & (1 << 10)),
+        'discharging_mosfet_on': bool(register_value & (1 << 11)),
+        'charging_limiter_on': bool(register_value & (1 << 12)),
+        'charger_inversed': bool(register_value & (1 << 14)),
+        'heater_on': bool(register_value & (1 << 15))
+    }
+
+
+
+    def print_status():
+        print("BMS Status Report:")
+        print("\nFaults:")
+        if any([status['charging_mosfet_fault'],
+                status['discharging_mosfet_fault'],
+                status['temp_sensor_fault'],
+                status['battery_cell_fault'],
+                status['frontend_comm_fault']]):
+            if status['charging_mosfet_fault']:
+                print("❌ Charging MOSFET Fault detected")
+            if status['discharging_mosfet_fault']:
+                print("❌ Discharging MOSFET Fault detected")
+            if status['temp_sensor_fault']:
+                print("❌ Temperature Sensor Fault detected")
+            if status['battery_cell_fault']:
+                print("❌ Battery Cell Fault detected")
+            if status['frontend_comm_fault']:
+                print("❌ Frontend Communication Fault detected")
+        else:
+            print("✅ No faults detected")
+
+        print("\nOperating Status:")
+        print(f"{'✓' if status['state_of_charge'] else '✗'} State of Charge")
+        print(f"{'✓' if status['state_of_discharge'] else '✗'} State of Discharge")
+        print(f"{'✓' if status['charging_mosfet_on'] else '✗'} Charging MOSFET")
+        print(f"{'✓' if status['discharging_mosfet_on'] else '✗'} Discharging MOSFET")
+        print(f"{'✓' if status['charging_limiter_on'] else '✗'} Charging Limiter")
+        print(f"{'✓' if status['charger_inversed'] else '✗'} Charger Inversed")
+        print(f"{'✓' if status['heater_on'] else '✗'} Heater")
+
+
+
+    # Return both the dictionary and print function
+    return status, print_status
+
+
+# Example usage:
+def process_bms_status(modbus_value):
+
+    return status_dict
+
+
+def get_status(port='/dev/ttyS11', slave_id=1):
     """
     Test BMS communication using specified parameters
     """
@@ -112,21 +182,12 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
             print("Failed to connect!")
             return
 
-        #print(f"Connected to {port}")
-
         # Test reading registers (starting from 0x0000 as per spec)
         registers_to_read = [
-            (0x0000, "Current (10mA)", "int16", 0.01),
-            #(0x0001, "Voltage of pack (10mV)", "uint16"),
-            (0x0002, "SOC (%)", "uint8", 1.0),
-            #(0x0003, "SOH (%)", "uint16"),
-            (0x0004, "Remain capacity (10mAH)", "uint16", 0.01),
-            #(0x0005, "Full capacity (10mAH), "uint16"")
+            (0x0011, "Status flags", "uint16"),
         ]
-        output = []
-        for register, description, d_type, conv in registers_to_read:
+        for register, description, d_type in registers_to_read:
             
-            #print(f"\nReading {description}")
             # Create the message as per specification
             message = bytes([
                 slave_id,  # Slave Address (0x01-0x10)
@@ -153,86 +214,32 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
                 uint16_value = result.registers[0]
                 if d_type == "int16":
                     if uint16_value > 32767:
-                        value = (uint16_value - 65535) * conv
+                        value = (uint16_value - 65535) / 100
                     else:
-                        value = uint16_value*conv
+                        value = uint16_value / 100
                 else:
-                    value = uint16_value*conv
-
-                print(f"Unit: {slave_id} {description}: {d_type}: {value}")
-                #print(uint16_value)
-                output.append((description, value))
-                # For INT8, you need to extract the bytes
-                # Higher byte
-                int8_high = (result.registers[0] >> 8) & 0xFF
-                # Lower byte
-                int8_low = result.registers[0] & 0xFF
-
-                #print(f"INT16 Value: {int16_value}")
-                #print(f"UINT16 Value: {uint16}")
-                #print(f"INT8 High Byte: {int8_high}")
-                #print(f"INT8 Low Byte: {int8_low}")
+                    status_dict, status_printer = decode_bms_status(uint16_value)
+                    status_printer()
 
 
-            # Wait for frame interval as specified (>100ms)
             time.sleep(0.05)
-        return output 
     except Exception as e:
         print(f"Error: {e}")
     finally:
         client.close()
 
-def write_to_csv(slave_id, data_list):
-    """
-    Write Modbus data to CSV with timestamp
-    data_list: List of tuples [(name, value)]
-    """
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'modbus_slave_{slave_id}.csv'
-    file_exists = os.path.exists(filename)
-    
-    with open(filename, 'a', newline='') as csvfile:
-        fieldnames = ['Timestamp'] + [name for name, _ in data_list]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        
-        # Write header if file is new
-        if not file_exists:
-            writer.writeheader()
-        
-        # Create row with timestamp and values
-        row_data = {'Timestamp': timestamp}
-        row_data.update({name: value for name, value in data_list})
-        writer.writerow(row_data)
 
 if __name__ == "__main__":
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
-        r1 = test_bms_communication(slave_id=1)
-        r2 = test_bms_communication(slave_id=2)
-        r3 = test_bms_communication(slave_id=3)
-        
-        # Write data for each slave to its own CSV file
-        if r1:  # Only write if we got valid data
-            write_to_csv(1, r1)
-        if r2:
-            write_to_csv(2, r2)
-        if r3:
-            write_to_csv(3, r3)
-            
+        get_status(slave_id=1)
+        get_status(slave_id=2)
+        get_status(slave_id=3)
+
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
         cnt += 1
-        time.sleep(29)
+        time.sleep(30)
 
 
-#if __name__ == "__main__":
-    # Test with default slave ID 1 (0x01)
-    #cnt = 0
-    #while(cnt < 100):
-        #test_bms_communication(slave_id=1)
-        #test_bms_communication(slave_id=2)
-        #test_bms_communication(slave_id=3)
-        #print("---------")
-        #cnt += 1
-        ##time.sleep(5)
