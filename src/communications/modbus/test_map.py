@@ -149,7 +149,7 @@ def read_holding_registers(register_map: ModbusMap, port: str='/dev/ttyS11', sla
                     else:
                         value = uint16_value * register.conversion_factor
                 else:
-                    value = uint16_value
+                    value = uint16_value * register.conversion_factor
 
                 print(f"Unit: {slave_id} {register.description}: {register.data_type}: {value}")
                 output[register.name] = value
