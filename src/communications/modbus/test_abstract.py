@@ -50,7 +50,16 @@ if __name__ == "__main__":
                 "units": "%",
                 "conversion_factor": 0.01,
                 "description": "SOC (%)"
+            },
+            {
+                "name": "Remain capacity (10mAH)",
+                "data_type": "uint16",
+                "address": 0x0004,
+                "units": "AH",
+                "conversion_factor": 0.01,
+                "description": "The remaining capacity of the battery in AH"
             }
+
         ]
     }
 
