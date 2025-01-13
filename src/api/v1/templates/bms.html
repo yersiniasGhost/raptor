@@ -136,13 +136,13 @@
                         return;
                     }
 
-                    const data = results.data.filter(row => 
+                    let data = results.data.filter(row => 
                         row.Timestamp && // ensure timestamp exists
                         Object.values(row).every(val => val !== null && val !== undefined)
                     );
                     // Limit to most recent 1728 points
                     if (data.length > 1728) {
-                        data = data.slice(-1728);
+                        data = data.slice(-4320);
                     }
                     if (!data.length) {
                         console.error("No valid data after filtering");

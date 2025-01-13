@@ -6,15 +6,23 @@
                 "address": 0,
                 "units": "A",
                 "conversion_factor": 0.01,
-                "description": "Charge/discharging current in A"
+                "description": "Charge/discharging current (A)"
             },
             {
                 "name": "SOC (%)",
                 "data_type": "uint8",
                 "address": 2,
                 "units": "%",
-                "conversion_factor": 0.01,
+                "conversion_factor": 1.0,
                 "description": "Battery state of charge (%)"
+            },
+            {
+                "name": "Capacity",
+                "data_type": "uint16",
+                "address": 4,
+                "units": "Ah",
+                "conversion_factor": 0.01,
+                "description": "Battery remaining capacity (Ah)"
             }
         ]
     }

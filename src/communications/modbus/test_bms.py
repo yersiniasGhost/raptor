@@ -116,15 +116,15 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
 
         # Test reading registers (starting from 0x0000 as per spec)
         registers_to_read = [
-            (0x0000, "Current (10mA)", "int16"),
+            (0x0000, "Current (10mA)", "int16", 0.01),
             #(0x0001, "Voltage of pack (10mV)", "uint16"),
-            (0x0002, "SOC (%)", "uint16"),
+            (0x0002, "SOC (%)", "uint8", 1.0),
             #(0x0003, "SOH (%)", "uint16"),
-            (0x0004, "Remain capacity (10mAH)", "uint16"),
+            (0x0004, "Remain capacity (10mAH)", "uint16", 0.01),
             #(0x0005, "Full capacity (10mAH), "uint16"")
         ]
         output = []
-        for register, description, d_type in registers_to_read:
+        for register, description, d_type, conv in registers_to_read:
             
             #print(f"\nReading {description}")
             # Create the message as per specification
@@ -153,11 +153,11 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
                 uint16_value = result.registers[0]
                 if d_type == "int16":
                     if uint16_value > 32767:
-                        value = (uint16_value - 65535) / 100
+                        value = (uint16_value - 65535) * conv
                     else:
-                        value = uint16_value / 100
+                        value = uint16_value*conv
                 else:
-                    value = uint16_value / 100
+                    value = uint16_value*conv
 
                 print(f"Unit: {slave_id} {description}: {d_type}: {value}")
                 #print(uint16_value)
@@ -223,7 +223,7 @@ if __name__ == "__main__":
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
         cnt += 1
-        time.sleep(30)
+        time.sleep(29)
 
 
 #if __name__ == "__main__":
