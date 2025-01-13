@@ -71,18 +71,14 @@ if __name__ == "__main__":
     while cnt < 1000000000:
         start = time.time_ns()
         # Get data from each slave
-        r1 = modbus_data_acquisition(eve_battery, modbus_map, port, slave_id=1)
-        r2 = modbus_data_acquisition(eve_battery, modbus_map, port, slave_id=2)
-        r3 = modbus_data_acquisition(eve_battery, modbus_map, port, slave_id=3)
+        r = []
+        for i in range(3):
+            s = i + 1
+            read_values = modbus_data_acquisition(eve_battery, modbus_map, port, slave_id=s)
+            print(f"Slave: {s}, {read_values}")
+            if read_values:
+                write_to_csv(s, read_values)
 
-        # Write data for each slave to its own CSV file
-        if r1:  # Only write if we got valid data
-            write_to_csv(1, r1)
-        if r2:
-            write_to_csv(2, r2)
-        if r3:
-            write_to_csv(3, r3)
-            
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
         cnt += 1
