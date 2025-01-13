@@ -3,7 +3,7 @@ import csv
 from datetime import datetime
 import os
 import time
-from modbus_map import ModbusMap, ModbusRegister
+from modbus_map import ModbusMap, ModbusRegister, ModbusAcquisitionType
 from modbus import modbus_data_acquisition
 from eve_battery import EveBattery
 
@@ -58,6 +58,15 @@ if __name__ == "__main__":
                 "units": "AH",
                 "conversion_factor": 0.01,
                 "description": "The remaining capacity of the battery in AH"
+            },
+            {
+                "name": "BMS Status Flag",
+                "data_type": "flag16",
+                "address": 0x0011,
+                "units": "",
+                "conversion_factor": 1,
+                "description": "The status and fault flags from the BMS",
+                "data_acquisition": "debug"
             }
 
         ]
@@ -75,9 +84,11 @@ if __name__ == "__main__":
         for i in range(3):
             s = i + 1
             read_values = modbus_data_acquisition(eve_battery, modbus_map, port, slave_id=s)
-            print(f"Slave: {s}, {read_values}")
+            print_output = { k.name: v for k, v in read_values.items()}
+            print(f"Slave: {s}, {print_output}")
             if read_values:
-                write_to_csv(s, read_values)
+                save_output = {k.name: v for k, v in read_values.items() if k.data_acquisition == ModbusAcquisitionType.STORE}
+                write_to_csv(s, save_output)
 
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")

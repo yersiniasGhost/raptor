@@ -1,31 +1,9 @@
-from typing import Tuple, Optional
-from dataclasses import dataclass
-from pymodbus.client import ModbusSerialClient
-from pymodbus.framer import FramerType
+from typing import Tuple, Optional, Dict
 from modbus_hardware import ModbusHardware
-from modbus_map import ModbusRegister
+from modbus_map import ModbusRegister, ModbusDatatype
 
 
-@dataclass
 class EveBattery(ModbusHardware):
-
-    framer: FramerType = FramerType.RTU
-    baudrate: int = 9600  # Default as specified
-    parity: str = 'N'  # No parity as specified
-    stopbits: int = 1  # 1 stop-bit as specified
-    bytesize: int = 8  # 8 data bits as specified
-    timeout: float = 0.2
-
-    def get_modbus_serial_client(self, port: str) -> ModbusSerialClient:
-        return ModbusSerialClient(
-            port=port,
-            framer=FramerType.RTU,
-            baudrate=self.baudrate,  # Default as specified
-            parity=self.parity,  # No parity as specified
-            stopbits=self.stopbits,  # 1 stop-bit as specified
-            bytesize=self.bytesize,  # 8 data bits as specified
-            timeout=self.timeout  # 200ms as specified
-        )
 
     # Return the message and the CRC value if required.
     def create_read_message(self, register: ModbusRegister, slave_id: int) -> Tuple[bytes, Optional[int]]:
@@ -39,4 +17,68 @@ class EveBattery(ModbusHardware):
             0x01  # Number of Registers (Lo)
         ])
         return message, None
+
+
+    def decode_flag_status(self, register: ModbusRegister, register_value: int) -> Dict[str, bool]:
+        """
+        Decode BMS status register bits and return a dictionary of states
+        Args:
+            register: ModbusRegister the register we are interested in
+            register_value: UINT16 value from Modbus register
+        """
+
+        if register.data_type == ModbusDatatype.FLAG16:
+            # Dictionary to store all states
+            status = {
+                # Fault bits (0-7)
+                'charging_mosfet_fault': bool(register_value & (1 << 0)),
+                'discharging_mosfet_fault': bool(register_value & (1 << 1)),
+                'temp_sensor_fault': bool(register_value & (1 << 2)),
+                'battery_cell_fault': bool(register_value & (1 << 4)),
+                'frontend_comm_fault': bool(register_value & (1 << 5)),
+
+                # Status bits (8-15)
+                'state_of_charge': bool(register_value & (1 << 8)),
+                'state_of_discharge': bool(register_value & (1 << 9)),
+                'charging_mosfet_on': bool(register_value & (1 << 10)),
+                'discharging_mosfet_on': bool(register_value & (1 << 11)),
+                'charging_limiter_on': bool(register_value & (1 << 12)),
+                'charger_inversed': bool(register_value & (1 << 14)),
+                'heater_on': bool(register_value & (1 << 15))
+            }
+        else:
+            status = {}
+
+
+
+        print("BMS Status Report:")
+        print("\nFaults:")
+        if any([status['charging_mosfet_fault'],
+                status['discharging_mosfet_fault'],
+                status['temp_sensor_fault'],
+                status['battery_cell_fault'],
+                status['frontend_comm_fault']]):
+            if status['charging_mosfet_fault']:
+                print("❌ Charging MOSFET Fault detected")
+            if status['discharging_mosfet_fault']:
+                print("❌ Discharging MOSFET Fault detected")
+            if status['temp_sensor_fault']:
+                print("❌ Temperature Sensor Fault detected")
+            if status['battery_cell_fault']:
+                print("❌ Battery Cell Fault detected")
+            if status['frontend_comm_fault']:
+                print("❌ Frontend Communication Fault detected")
+        else:
+            print("✅ No faults detected")
+
+        print("\nOperating Status:")
+        print(f"{'✓' if status['state_of_charge'] else '✗'} State of Charge")
+        print(f"{'✓' if status['state_of_discharge'] else '✗'} State of Discharge")
+        print(f"{'✓' if status['charging_mosfet_on'] else '✗'} Charging MOSFET")
+        print(f"{'✓' if status['discharging_mosfet_on'] else '✗'} Discharging MOSFET")
+        print(f"{'✓' if status['charging_limiter_on'] else '✗'} Charging Limiter")
+        print(f"{'✓' if status['charger_inversed'] else '✗'} Charger Inversed")
+        print(f"{'✓' if status['heater_on'] else '✗'} Heater")
+
+        return status
 

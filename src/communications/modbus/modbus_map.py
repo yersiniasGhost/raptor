@@ -9,6 +9,13 @@ class ModbusDatatype(Enum):
     INT16 = "int16"
     INT8 = "int8"
     UINT8 = "uint8"
+    FLAG16 = "flag16"   # 16 bit binary flags
+
+
+class ModbusAcquisitionType(Enum):
+    STORE = "store"
+    DEBUG = "debug"
+    INFO = "info"
 
 
 @dataclass
@@ -20,7 +27,7 @@ class ModbusRegister:
     units: str = ""
     conversion_factor: float = 1.0  # e.g., 1/1000 for mV to V
     description: str = ""
-    data_acquisition: bool = True
+    acquisition_type: Union[ModbusAcquisitionType, str] = ModbusAcquisitionType.STORE
 
     def __post_init__(self):
         # Convert string to enum if string was provided
@@ -29,6 +36,11 @@ class ModbusRegister:
                 self.data_type = ModbusDatatype(self.data_type)
             except ValueError:
                 raise ValueError(f"Invalid data type: {self.data_type}")
+        if isinstance(self.acquisition_type, str):
+            try:
+                self.acquisition_type = ModbusAcquisitionType(self.acquisition_type)
+            except ValueError:
+                raise ValueError(f"Invalid data type: {self.acquisition_type}")
 
     def get_addresses(self) -> List[int]:
         """Returns list of all addresses if this is a range register"""
