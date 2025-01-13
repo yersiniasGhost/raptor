@@ -9,11 +9,11 @@ from modbus_map import ModbusRegister
 @dataclass
 class EveBattery(ModbusHardware):
 
-    framer: FramerType = FramerType.RTU,
-    baudrate: int = 9600,  # Default as specified
-    parity: str = 'N',  # No parity as specified
-    stopbits: int = 1,  # 1 stop-bit as specified
-    bytesize: int = 8,  # 8 data bits as specified
+    framer: FramerType = FramerType.RTU
+    baudrate: int = 9600  # Default as specified
+    parity: str = 'N'  # No parity as specified
+    stopbits: int = 1  # 1 stop-bit as specified
+    bytesize: int = 8  # 8 data bits as specified
     timeout: float = 0.2
 
     def get_modbus_serial_client(self, port: str) -> ModbusSerialClient:
