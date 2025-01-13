@@ -40,6 +40,7 @@ except Exception as e:
     logger.error(f"Failed to load modbus_map.json: {e}")
     register_map = None
 
+
 @app.get("/bms/data")
 async def get_bms_data():
     try:

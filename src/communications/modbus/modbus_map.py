@@ -1,19 +1,34 @@
 from typing import Optional, List, Union, Iterable
+from enum import Enum
 from dataclasses import dataclass
 import json
+
+
+class ModbusDatatype(Enum):
+    UINT16 = "uint16"
+    INT16 = "int16"
+    INT8 = "int8"
+    UINT8 = "uint8"
 
 
 @dataclass
 class ModbusRegister:
     name: str
     address: int
-    data_type: str  # "UINT16", "INT16", "UINT8"
+    data_type: Union[ModbusDatatype, str]
     range_size: Optional[int] = None  # Number of consecutive registers
     units: str = ""
     conversion_factor: float = 1.0  # e.g., 1/1000 for mV to V
     description: str = ""
-    data_acquisition: bool = False
+    data_acquisition: bool = True
 
+    def __post_init__(self):
+        # Convert string to enum if string was provided
+        if isinstance(self.data_type, str):
+            try:
+                self.data_type = ModbusDatatype(self.data_type)
+            except ValueError:
+                raise ValueError(f"Invalid data type: {self.data_type}")
 
     def get_addresses(self) -> List[int]:
         """Returns list of all addresses if this is a range register"""
@@ -54,3 +69,8 @@ class ModbusMap:
     def get_registers(self) -> Iterable[ModbusRegister]:
         for reg in self.registers:
             yield reg
+
+    def get_data_acquisition_registers(self) -> Iterable[ModbusRegister]:
+        for reg in self.registers:
+            if reg.data_acquisition:
+                yield reg
