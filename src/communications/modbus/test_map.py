@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import time
 
-from .modbus_map import ModbusMap, ModbusRegister
+from modbus_map import ModbusMap, ModbusRegister
 
 # CRC Tables as specified in the document
 AUCHCRCHI = [ 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -169,11 +169,11 @@ def write_to_csv(slave_id, data_list):
     data_list: List of tuples [(name, value)]
     """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'map_modbus_slave_{slave_id}.csv'
+    filename = f'cell_voltage_{slave_id}.csv'
     file_exists = os.path.exists(filename)
     
     with open(filename, 'a', newline='') as csvfile:
-        fieldnames = ['Timestamp'] + [name for name, _ in data_list]
+        fieldnames = ['Timestamp'] + list(data_list.keys())
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
         # Write header if file is new
@@ -182,42 +182,38 @@ def write_to_csv(slave_id, data_list):
         
         # Create row with timestamp and values
         row_data = {'Timestamp': timestamp}
-        row_data.update({name: value for name, value in data_list})
+        row_data.update({name: value for name, value in data_list.items()})
         writer.writerow(row_data)
 
 
 
 if __name__ == "__main__":
 
-    mb_map = {
-        "registers": [
+
+    registers = []
+    for offset in range(16):
+        addr = 0x0031 + offset
+        registers.append(
             {
-                "name": "Current (10mA)",
+                "name": f"Cell voltage {offset}",
                 "data_type": "int16",
-                "address": 0x0000,
-                "units": "A",
-                "conversion_factor": 0.01,
-                "description": "Battery current in A"
-            },
-            {
-                "name": "SOC (%)",
-                "data_type": "uint8",
-                "address": 0x0002,
-                "units": "%",
-                "conversion_factor": 0.01,
-                "description": "SOC (%)"
-            }
-        ]
-    }
+                "address": addr,
+                "units": "V",
+                "conversion_factor": 10.0,
+                "description": f"Cell voltage {offset} (V)"
+            })
+
+
+    mb_map = { "registers": registers }
 
     modbus_map = ModbusMap.from_dict(mb_map)
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
-        r1 = test_bms_communication(modbus_map,slave_id=1)
-        r2 = test_bms_communication(modbus_map,slave_id=2)
-        r3 = test_bms_communication(modbus_map,slave_id=3)
-        
+        r1 = read_holding_registers(modbus_map,slave_id=1)
+        r2 = read_holding_registers(modbus_map,slave_id=2)
+        r3 = read_holding_registers(modbus_map,slave_id=3)
+        x 
         # Write data for each slave to its own CSV file
         if r1:  # Only write if we got valid data
             write_to_csv(1, r1)
@@ -229,4 +225,4 @@ if __name__ == "__main__":
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
         cnt += 1
-        time.sleep(30)
+        time.sleep(120)

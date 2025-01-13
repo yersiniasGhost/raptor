@@ -14,7 +14,7 @@ def write_to_csv(slave_id, data_list: dict):
     data_list: List of tuples [(name, value)]
     """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'abs_modbus_slave_{slave_id}.csv'
+    filename = f'modbus_slave_{slave_id}.csv'
     file_exists = os.path.exists(filename)
     
     with open(filename, 'a', newline='') as csvfile:
@@ -48,7 +48,7 @@ if __name__ == "__main__":
                 "data_type": "uint8",
                 "address": 0x0002,
                 "units": "%",
-                "conversion_factor": 0.01,
+                "conversion_factor": 1.0,
                 "description": "SOC (%)"
             },
             {
