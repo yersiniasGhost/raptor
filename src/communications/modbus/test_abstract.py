@@ -3,9 +3,9 @@ import csv
 from datetime import datetime
 import os
 import time
-from .modbus_map import ModbusMap, ModbusRegister
-from .modbus import modbus_data_acquisition
-from .eve_battery import EveBattery
+from modbus_map import ModbusMap, ModbusRegister
+from modbus import modbus_data_acquisition
+from eve_battery import EveBattery
 
 
 def write_to_csv(slave_id, data_list: dict):
