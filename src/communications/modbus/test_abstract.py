@@ -1,3 +1,4 @@
+from typing import Dict, Union
 import csv
 from datetime import datetime
 import os
@@ -7,7 +8,7 @@ from .modbus import modbus_data_acquisition
 from .eve_battery import EveBattery
 
 
-def write_to_csv(slave_id, data_list):
+def write_to_csv(slave_id, data_list: dict):
     """
     Write Modbus data to CSV with timestamp
     data_list: List of tuples [(name, value)]
@@ -17,7 +18,7 @@ def write_to_csv(slave_id, data_list):
     file_exists = os.path.exists(filename)
     
     with open(filename, 'a', newline='') as csvfile:
-        fieldnames = ['Timestamp'] + [name for name, _ in data_list]
+        fieldnames = ['Timestamp'] + [name for name, _ in data_list.keys()]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
         # Write header if file is new
@@ -25,8 +26,8 @@ def write_to_csv(slave_id, data_list):
             writer.writeheader()
         
         # Create row with timestamp and values
-        row_data = {'Timestamp': timestamp}
-        row_data.update({name: value for name, value in data_list})
+        row_data: dict = {'Timestamp': timestamp}
+        row_data.update(data_list)
         writer.writerow(row_data)
 
 
