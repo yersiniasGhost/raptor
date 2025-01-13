@@ -18,7 +18,7 @@ def write_to_csv(slave_id, data_list: dict):
     file_exists = os.path.exists(filename)
     
     with open(filename, 'a', newline='') as csvfile:
-        fieldnames = ['Timestamp'] + [name for name, _ in data_list.keys()]
+        fieldnames = ['Timestamp'] + list(data_list.keys())
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
         # Write header if file is new
@@ -77,5 +77,5 @@ if __name__ == "__main__":
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
         cnt += 1
-        sleep = (time.time_ns() - start) / 1e9
+        sleep = 30 - (time.time_ns() - start) / 1e9
         time.sleep(sleep)
