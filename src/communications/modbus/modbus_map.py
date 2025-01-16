@@ -53,6 +53,15 @@ class ModbusRegister:
         """Apply conversion factor to raw value"""
         return value * self.conversion_factor
 
+    def __hash__(self):
+        # Use a combination of fields that uniquely identify the register
+        return hash((self.name, self.address))
+
+    def __eq__(self, other):
+        if not isinstance(other, ModbusRegister):
+            return NotImplemented
+        return self.name == other.name and self.address == other.address
+
 
 @dataclass
 class ModbusMap:
@@ -84,5 +93,5 @@ class ModbusMap:
 
     def get_data_acquisition_registers(self) -> Iterable[ModbusRegister]:
         for reg in self.registers:
-            if reg.data_acquisition:
+            if reg.acquisition_type == ModbusAcquisitionType.STORE:
                 yield reg

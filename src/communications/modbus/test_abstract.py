@@ -33,9 +33,8 @@ def write_to_csv(slave_id, data_list: dict):
 
 if __name__ == "__main__":
 
-    mb_map = {
-        "registers": [
-            {
+    registers = [
+             {
                 "name": "Current (10mA)",
                 "data_type": "int16",
                 "address": 0x0000,
@@ -66,12 +65,23 @@ if __name__ == "__main__":
                 "units": "",
                 "conversion_factor": 1,
                 "description": "The status and fault flags from the BMS",
-                "data_acquisition": "debug"
+                "acquisition_type": "debug"
             }
 
         ]
-    }
-
+    for offset in range(16):
+        addr = 0x0015 + offset
+        registers.append(
+            {
+                "name": f"Cell voltage {offset}",
+                "data_type": "int16",
+                "address": addr,
+                "units": "V",
+                "conversion_factor": 0.001,
+                "description": f"Cell voltage {offset} (V)",
+                "acquisition_type": "debug"
+            })
+    mb_map = {"registers": registers}
     modbus_map = ModbusMap.from_dict(mb_map)
     eve_battery = EveBattery()
     port: str = '/dev/ttyS11'
@@ -84,10 +94,10 @@ if __name__ == "__main__":
         for i in range(3):
             s = i + 1
             read_values = modbus_data_acquisition(eve_battery, modbus_map, port, slave_id=s)
-            print_output = { k.name: v for k, v in read_values.items()}
-            print(f"Slave: {s}, {print_output}")
             if read_values:
-                save_output = {k.name: v for k, v in read_values.items() if k.data_acquisition == ModbusAcquisitionType.STORE}
+                print_output = { k.name: v for k, v in read_values.items()}
+                print(f"Slave: {s}, {print_output}")
+                save_output = {k.name: v for k, v in read_values.items() if k.acquisition_type == ModbusAcquisitionType.STORE}
                 write_to_csv(s, save_output)
 
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

@@ -21,6 +21,8 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
         # UINT8: 0 to 255
         # Assuming it's in the low byte
         value = raw_value & 0xFF  # Mask to get only lower 8 bits
+    elif data_type == ModbusDatatype.FLAG16:
+        value = 0
     else:
         raise ValueError(f"Unsupported data type: {data_type}")
 
@@ -37,7 +39,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             return {}
 
         output: Dict[ModbusRegister, Union[float, int]] = {}
-        for register in modbus_map.get_data_acquisition_registers():
+        for register in modbus_map.get_registers():
             # Calculate CRC if necessary...
             # message, crc = modbus_hardware.create_read_message(register, slave_id)
 
