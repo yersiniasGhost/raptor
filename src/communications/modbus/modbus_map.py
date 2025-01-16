@@ -1,6 +1,6 @@
-from typing import Optional, List, Union, Iterable
+from typing import Optional, List, Union, Iterable, Dict
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 
 
@@ -9,6 +9,8 @@ class ModbusDatatype(Enum):
     INT16 = "int16"
     INT8 = "int8"
     UINT8 = "uint8"
+    BOOL = "bool"
+    ENUM = "enum"
     FLAG16 = "flag16"   # 16 bit binary flags
 
 
@@ -16,6 +18,8 @@ class ModbusAcquisitionType(Enum):
     STORE = "store"
     DEBUG = "debug"
     INFO = "info"
+    ALARM = "alarm"
+    STATUS = "status"
 
 
 @dataclass
@@ -28,6 +32,7 @@ class ModbusRegister:
     conversion_factor: float = 1.0  # e.g., 1/1000 for mV to V
     description: str = ""
     acquisition_type: Union[ModbusAcquisitionType, str] = ModbusAcquisitionType.STORE
+    enum_values: Dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self):
         # Convert string to enum if string was provided

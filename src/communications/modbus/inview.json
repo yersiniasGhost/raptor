@@ -1,0 +1,111 @@
+{
+    "registers": [
+        {
+            "name": "Overall_System_Status",
+            "data_type": "uint16",
+            "address": 0,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "Overall status of the system",
+            "acquisition_type": "status",
+            "values": {
+                "0": "unknown",
+                "1": "system healthy",
+                "2": "at least one minor alarm (no major)",
+                "3": "at least one major alarm"
+            }
+        },
+        {
+            "name": "Number_Of_Events",
+            "data_type": "uint16",
+            "address": 1,
+            "units": "count",
+            "conversion_factor": 1,
+            "description": "Number of events",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Number_Of_Notifications",
+            "data_type": "uint16",
+            "address": 2,
+            "units": "count",
+            "conversion_factor": 1,
+            "description": "Number of notifications",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Number_Of_Minor_Alarms",
+            "data_type": "uint16",
+            "address": 3,
+            "units": "count",
+            "conversion_factor": 1,
+            "description": "Number of minor alarms",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Number_Of_Major_Alarms",
+            "data_type": "uint16",
+            "address": 4,
+            "units": "count",
+            "conversion_factor": 1,
+            "description": "Number of major alarms",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Test_Minor_Alarm",
+            "data_type": "boolean",
+            "address": 5,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "Test Minor Alarm",
+            "acquisition_type": "alarm",
+            "access": "RW"
+        },
+        {
+            "name": "Test_Major_Alarm",
+            "data_type": "boolean",
+            "address": 8,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "Test Major Alarm",
+            "acquisition_type": "alarm",
+            "access": "RW"
+        },
+        {
+            "name": "DC_Saturated",
+            "data_type": "boolean",
+            "address": 12,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "DC Saturated alarm status",
+            "acquisition_type": "alarm"
+        },
+        {
+            "name": "DC_Overload",
+            "data_type": "boolean",
+            "address": 13,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "DC Overload alarm status",
+            "acquisition_type": "alarm"
+        },
+        {
+            "name": "DC_Failure",
+            "data_type": "boolean",
+            "address": 14,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "DC Failure alarm status",
+            "acquisition_type": "alarm"
+        },
+        {
+            "name": "DC_Out_Off",
+            "data_type": "boolean",
+            "address": 15,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "DC Out Off alarm status",
+            "acquisition_type": "alarm"
+        }
+    ]
+}
