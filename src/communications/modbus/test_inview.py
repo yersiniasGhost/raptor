@@ -1,11 +1,15 @@
+# Notes:  
+#  ip addr add 10.250.250.2/24 dev end0
 from pymodbus.client import ModbusSerialClient
 from pymodbus.framer import FramerType
 import csv
 from datetime import datetime
 import os
 import time
+from inview_gateway import InviewGateway
 
 from modbus_map import ModbusMap, ModbusRegister
+from modbus_hardware import ModbusHardware
 
 def read_holding_registers(inview: ModbusHardware, register_map: ModbusMap, slave_id: int =0) -> dict:
     """
@@ -19,9 +23,9 @@ def read_holding_registers(inview: ModbusHardware, register_map: ModbusMap, slav
             print("Failed to connect!")
             return {}
 
-        output = {}
+        output = [] 
         for register in register_map.get_registers():
-            print(register)
+            #print(register)
             address = register.get_addresses()[0]
             # Attempt to read
             result = client.read_holding_registers(
@@ -44,8 +48,8 @@ def read_holding_registers(inview: ModbusHardware, register_map: ModbusMap, slav
                 else:
                     value = uint16_value * register.conversion_factor
 
-                print(f"Unit: {slave_id} {register.description}: {register.data_type}: {value}")
-                output[register.name] = value
+                print(f"Unit: {slave_id} addr: {register.address} : {register.description}: {register.data_type}: {value}")
+                output.append((register.name, value))
 
             # Wait for frame interval as specified (>100ms)
             time.sleep(0.05)
@@ -55,67 +59,42 @@ def read_holding_registers(inview: ModbusHardware, register_map: ModbusMap, slav
     finally:
         client.close()
 
-
 def write_to_csv(slave_id, data_list):
     """
     Write Modbus data to CSV with timestamp
     data_list: List of tuples [(name, value)]
     """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'cell_voltage_{slave_id}.csv'
+    filename = f'inview_slave_{slave_id}.csv'
     file_exists = os.path.exists(filename)
-    
+
     with open(filename, 'a', newline='') as csvfile:
-        fieldnames = ['Timestamp'] + list(data_list.keys())
+        fieldnames = ['Timestamp'] + [name for name, _ in data_list]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        
+
         # Write header if file is new
         if not file_exists:
             writer.writeheader()
-        
+
         # Create row with timestamp and values
         row_data = {'Timestamp': timestamp}
-        row_data.update({name: value for name, value in data_list.items()})
+        row_data.update({name: value for name, value in data_list})
         writer.writerow(row_data)
-
 
 
 if __name__ == "__main__":
 
 
-    registers = []
-    for offset in range(16):
-        addr = 0x0031 + offset
-        registers.append(
-            {
-                "name": f"Cell voltage {offset}",
-                "data_type": "int16",
-                "address": addr,
-                "units": "V",
-                "conversion_factor": 10.0,
-                "description": f"Cell voltage {offset} (V)"
-            })
-
-
-    mb_map = { "registers": registers }
-
-    modbus_map = ModbusMap.from_dict(mb_map)
+    modbus_map = ModbusMap.from_json("inview_alarm.json")
+    inview = InviewGateway(host="10.250.250.1", port=502)
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
-        r1 = read_holding_registers(modbus_map,slave_id=1)
-        r2 = read_holding_registers(modbus_map,slave_id=2)
-        r3 = read_holding_registers(modbus_map,slave_id=3)
-        x 
+        r1 = read_holding_registers(inview, modbus_map,slave_id=0)
+        #r2 = read_holding_registers(inview, modbus_map,slave_id=1)
         # Write data for each slave to its own CSV file
-        if r1:  # Only write if we got valid data
-            write_to_csv(1, r1)
-        if r2:
-            write_to_csv(2, r2)
-        if r3:
-            write_to_csv(3, r3)
-            
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
+        print(r1)
         cnt += 1
-        time.sleep(120)
+        time.sleep(2)

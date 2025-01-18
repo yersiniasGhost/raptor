@@ -16,6 +16,7 @@ class ModbusDatatype(Enum):
 
 class ModbusAcquisitionType(Enum):
     STORE = "store"
+    DATA = "data"
     DEBUG = "debug"
     INFO = "info"
     ALARM = "alarm"
@@ -33,6 +34,8 @@ class ModbusRegister:
     description: str = ""
     acquisition_type: Union[ModbusAcquisitionType, str] = ModbusAcquisitionType.STORE
     enum_values: Dict[str, str] = field(default_factory=dict)
+    length: int = 1
+    read_write: str = "RO"
 
     def __post_init__(self):
         # Convert string to enum if string was provided
@@ -45,7 +48,7 @@ class ModbusRegister:
             try:
                 self.acquisition_type = ModbusAcquisitionType(self.acquisition_type)
             except ValueError:
-                raise ValueError(f"Invalid data type: {self.acquisition_type}")
+                raise ValueError(f"Invalid acquisition type: {self.acquisition_type}")
 
     def get_addresses(self) -> List[int]:
         """Returns list of all addresses if this is a range register"""
@@ -57,6 +60,15 @@ class ModbusRegister:
     def convert_value(self, value: Union[int, float]) -> float:
         """Apply conversion factor to raw value"""
         return value * self.conversion_factor
+
+    def __hash__(self):
+        # Use a combination of fields that uniquely identify the register
+        return hash((self.name, self.address))
+
+    def __eq__(self, other):
+        if not isinstance(other, ModbusRegister):
+            return NotImplemented
+        return self.name == other.name and self.address == other.address
 
 
 @dataclass
@@ -89,5 +101,5 @@ class ModbusMap:
 
     def get_data_acquisition_registers(self) -> Iterable[ModbusRegister]:
         for reg in self.registers:
-            if reg.data_acquisition:
+            if reg.acquisition_type == ModbusAcquisitionType.STORE:
                 yield reg

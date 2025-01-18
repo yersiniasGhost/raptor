@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import time
 
-from modbus_map import ModbusMap, ModbusRegister
+from .modbus_map import ModbusMap, ModbusRegister
 
 # CRC Tables as specified in the document
 AUCHCRCHI = [ 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
