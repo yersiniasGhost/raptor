@@ -1,9 +1,11 @@
 from typing import Tuple, Optional, Dict
-from modbus_hardware import ModbusHardware
+from modbus_hardware import ModbusHardware, ModbusClientType
 from modbus_map import ModbusRegister, ModbusDatatype
 
 
 class EveBattery(ModbusHardware):
+    def __post_init__(self):
+        self.client_type = ModbusClientType.RTU
 
     # Return the message and the CRC value if required.
     def create_read_message(self, register: ModbusRegister, slave_id: int) -> Tuple[bytes, Optional[int]]:
@@ -18,8 +20,8 @@ class EveBattery(ModbusHardware):
         ])
         return message, None
 
-
-    def decode_flag_status(self, register: ModbusRegister, register_value: int) -> Dict[str, bool]:
+    @staticmethod
+    def decode_flag_status(register: ModbusRegister, register_value: int) -> Dict[str, bool]:
         """
         Decode BMS status register bits and return a dictionary of states
         Args:
@@ -48,8 +50,6 @@ class EveBattery(ModbusHardware):
             }
         else:
             status = {}
-
-
 
         print("BMS Status Report:")
         print("\nFaults:")
