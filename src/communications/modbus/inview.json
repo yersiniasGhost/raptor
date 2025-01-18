@@ -8,7 +8,7 @@
             "conversion_factor": 1,
             "description": "Overall status of the system",
             "acquisition_type": "status",
-            "values": {
+            "enum_values": {
                 "0": "unknown",
                 "1": "system healthy",
                 "2": "at least one minor alarm (no major)",
@@ -58,8 +58,7 @@
             "units": "",
             "conversion_factor": 1,
             "description": "Test Minor Alarm",
-            "acquisition_type": "alarm",
-            "access": "RW"
+            "acquisition_type": "alarm"
         },
         {
             "name": "Test_Major_Alarm",
@@ -68,8 +67,7 @@
             "units": "",
             "conversion_factor": 1,
             "description": "Test Major Alarm",
-            "acquisition_type": "alarm",
-            "access": "RW"
+            "acquisition_type": "alarm"
         },
         {
             "name": "DC_Saturated",

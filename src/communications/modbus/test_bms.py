@@ -211,6 +211,7 @@ if __name__ == "__main__":
         r1 = test_bms_communication(slave_id=1)
         r2 = test_bms_communication(slave_id=2)
         r3 = test_bms_communication(slave_id=3)
+        r4 = test_bms_communication(slave_id=4)
         
         # Write data for each slave to its own CSV file
         if r1:  # Only write if we got valid data
@@ -219,6 +220,8 @@ if __name__ == "__main__":
             write_to_csv(2, r2)
         if r3:
             write_to_csv(3, r3)
+        if r4:
+            write_to_csv(4, r4)
             
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")

@@ -39,7 +39,8 @@ class ModbusHardware(ABC):
 
     def get_modbus_tcp_client(self) -> ModbusTcpClient:
         # TODO Error checking required or rely on library?
-        return ModbusTcpClient(host=self.host, port=self.port)
+        return ModbusTcpClient(host=self.host, port=self.port) #, source_address=('10.250.250.2', 0))
+
 
     def get_modbus_client(self) -> Union[ModbusTcpClient, ModbusSerialClient]:
         if self.client_type == ModbusClientType.RTU:
@@ -47,7 +48,7 @@ class ModbusHardware(ABC):
         elif self.client_type == ModbusClientType.TCP:
             return self.get_modbus_tcp_client()
         else:
-            raise Exception("Invalid Modbus Hardware specification")
+            raise Exception(f"Invalid Modbus Hardware specification {self.client_type}")
 
 
     def create_read_message(self, register, slave_id) -> Tuple[bytes, int]:

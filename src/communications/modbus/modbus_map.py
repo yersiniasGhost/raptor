@@ -16,6 +16,7 @@ class ModbusDatatype(Enum):
 
 class ModbusAcquisitionType(Enum):
     STORE = "store"
+    DATA = "data"
     DEBUG = "debug"
     INFO = "info"
     ALARM = "alarm"
@@ -33,6 +34,8 @@ class ModbusRegister:
     description: str = ""
     acquisition_type: Union[ModbusAcquisitionType, str] = ModbusAcquisitionType.STORE
     enum_values: Dict[str, str] = field(default_factory=dict)
+    length: int = 1
+    read_write: str = "RO"
 
     def __post_init__(self):
         # Convert string to enum if string was provided
@@ -45,7 +48,7 @@ class ModbusRegister:
             try:
                 self.acquisition_type = ModbusAcquisitionType(self.acquisition_type)
             except ValueError:
-                raise ValueError(f"Invalid data type: {self.acquisition_type}")
+                raise ValueError(f"Invalid acquisition type: {self.acquisition_type}")
 
     def get_addresses(self) -> List[int]:
         """Returns list of all addresses if this is a range register"""
