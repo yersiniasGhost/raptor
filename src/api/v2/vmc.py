@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
-from routes import actuator, bms
+from routes import actuator, bms, configuration
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -24,7 +24,7 @@ templates = Jinja2Templates(directory="templates")
 # Include routers
 app.include_router(actuator.router)
 app.include_router(bms.router)
-
+app.include_router(configuration.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
