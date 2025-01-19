@@ -208,20 +208,20 @@ if __name__ == "__main__":
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
-        r1 = test_bms_communication(slave_id=1)
-        r2 = test_bms_communication(slave_id=2)
-        r3 = test_bms_communication(slave_id=3)
-        r4 = test_bms_communication(slave_id=4)
+        r1 = test_bms_communication(slave_id=0)
+        r2 = test_bms_communication(slave_id=1)
+        r3 = test_bms_communication(slave_id=2)
+        r4 = test_bms_communication(slave_id=3)
         
         # Write data for each slave to its own CSV file
         if r1:  # Only write if we got valid data
-            write_to_csv(1, r1)
+            write_to_csv(0, r1)
         if r2:
-            write_to_csv(2, r2)
+            write_to_csv(1, r2)
         if r3:
-            write_to_csv(3, r3)
+            write_to_csv(2, r3)
         if r4:
-            write_to_csv(4, r4)
+            write_to_csv(3, r4)
             
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")

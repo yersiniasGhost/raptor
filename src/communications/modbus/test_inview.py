@@ -48,7 +48,7 @@ def read_holding_registers(inview: ModbusHardware, register_map: ModbusMap, slav
                 else:
                     value = uint16_value * register.conversion_factor
 
-                print(f"Unit: {slave_id} addr: {register.address} : {register.description}: {register.data_type}: {value}")
+                print(f"Unit: {slave_id} addr: {register.address} : {register.description}: {value} {register.units}")
                 output.append((register.name, value))
 
             # Wait for frame interval as specified (>100ms)
@@ -85,16 +85,17 @@ def write_to_csv(slave_id, data_list):
 if __name__ == "__main__":
 
 
-    modbus_map = ModbusMap.from_json("inview_alarm.json")
+    modbus_map = ModbusMap.from_json("inview2.json")
     inview = InviewGateway(host="10.250.250.1", port=502)
     cnt = 0
     while(cnt < 1000000000):
         # Get data from each slave
         r1 = read_holding_registers(inview, modbus_map,slave_id=0)
+        write_to_csv(0, r1)
         #r2 = read_holding_registers(inview, modbus_map,slave_id=1)
         # Write data for each slave to its own CSV file
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
         print(r1)
         cnt += 1
-        time.sleep(2)
+        time.sleep(29)
