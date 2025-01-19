@@ -34,7 +34,7 @@ templates = Jinja2Templates(directory="templates")
 
 # Load register map
 try:
-    register_map = ModbusMap.from_json("modbus_map.json")
+    register_map = ModbusMap.from_json("../../../data/Esslix/modbus_map.json")
 except Exception as e:
     logger.error(f"Failed to load modbus_map.json: {e}")
     register_map = None

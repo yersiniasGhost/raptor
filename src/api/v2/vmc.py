@@ -27,11 +27,8 @@ app.include_router(bms.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse(
-        "home.html",
-        {"request": request}
-    )
+    return templates.TemplateResponse("home.html", {"request": request})
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

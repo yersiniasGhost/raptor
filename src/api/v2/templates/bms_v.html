@@ -120,9 +120,10 @@
 </div>
 
 {% if register_map %}
-{% for unit_id in [1,2,3] %} {# Replace with your actual unit IDs #}
+{% for battery in batteries %}
+{% unit_id = battery.slave_id %}
 <div class="unit-container">
-    <h2>Unit {{ unit_id }}</h2>
+    <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>
     <table>
         <thead>
         <tr>
@@ -154,7 +155,7 @@
 {% endif %}
 {% endblock %}
 
-<% block scripts %}
+{% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -162,7 +163,7 @@
         let updateInterval;
         const UPDATE_FREQUENCY = 30000; // 30 seconds
         let lastValues = {};
-    async function loadHistoricalData(unitId) {
+        async function loadHistoricalData(unitId) {
         try {
             const response = await fetch(`/bms/historical/${unitId}`);
             const result = await response.json();
@@ -272,7 +273,7 @@
 
 
         async function updateBMSData() {
-	    const units = [1, 2, 3]; // Match your unit IDs
+	    const units = {% batteries.get_slave_ids() %}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
@@ -347,7 +348,7 @@
             }
         }
         function loadAllHistoricalData() {
-	    const units = [1, 2, 3]; // Match your unit IDs
+	    const units = {% batteries.get_slave_ids() %}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
@@ -355,7 +356,7 @@
         // Start updates when page loads
         document.addEventListener('DOMContentLoaded', () => {
             updateBMSData();
-	    const units = [1, 2, 3]; // Match your unit IDs
+	    const units = {% batteries.get_slave_ids() %}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
