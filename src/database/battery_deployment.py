@@ -23,7 +23,7 @@ class BatteryDeployment:
         for bat in self.batteries:
             self.battery_look_up[bat.slave_id] = bat
         if self.hardware["type"] == "EsslixV1":
-            self.battery_hardware = EveBattery()
+            self.battery_hardware = EveBattery(port=self.hardware['port'])
 
     @classmethod
     def from_json(cls, json_file: str) -> 'BatteryDeployment':
@@ -34,7 +34,8 @@ class BatteryDeployment:
     @classmethod
     def from_dict(cls, battery_map: dict) -> 'BatteryDeployment':
         batteries = [BatteryDefinition(**bat) for bat in battery_map['batteries']]
-        return cls(batteries=batteries)
+        hardware = battery_map['hardware']
+        return cls(batteries=batteries, hardware=hardware)
 
     def get_slave_ids(self) -> List[int]:
         return [bat.slave_id for bat in self.batteries]

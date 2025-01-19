@@ -1,8 +1,8 @@
 from typing import Dict, Union
 import time
 
-from modbus_map import ModbusMap, ModbusDatatype, ModbusRegister
-from modbus_hardware import ModbusHardware
+from .modbus_map import ModbusMap, ModbusDatatype, ModbusRegister
+from .modbus_hardware import ModbusHardware
 
 
 def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
