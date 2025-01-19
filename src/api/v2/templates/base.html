@@ -1,0 +1,21 @@
+{# templates/base.html #}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %} - Raptor Control System</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('actuator.index') }}">Actuator Control</a>
+        <a href="{{ url_for('bms.index') }}">BMS Data</a>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
