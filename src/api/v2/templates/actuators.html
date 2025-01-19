@@ -1,8 +1,8 @@
-{# templates/bms.html #}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Actuator Control System</title>
+{# templates/actuators.html #}
+{% extends "base.html" %}
+
+{% block title %} BMS {% endblock %}
+{% block head %}
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -65,8 +65,9 @@
             color: blue;
         }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <h1>Actuator Control System</h1>
     
     <!-- Actuator 1 Panel -->
@@ -198,7 +199,9 @@
             </form>
         </div>
     </div>
+{% endblock %}
 
+{% block scripts %}
     <script>
         // Track movement state
         const movementState = {
@@ -352,5 +355,4 @@
         // Start the status updates
         startStatusUpdates();
     </script>
-</body>
-</html>
+{% endblock %}
