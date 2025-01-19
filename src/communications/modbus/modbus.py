@@ -30,15 +30,15 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
 
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
-                            modbus_map: ModbusMap, port: str, slave_id: int) -> Dict[ModbusRegister, Union[float, int]]:
+                            modbus_map: ModbusMap, slave_id: int) -> Dict[str, Union[float, int]]:
 
-    client = modbus_hardware.get_modbus_serial_client(port)
+    client = modbus_hardware.get_modbus_serial_client()
     try:
         if not client.connect():
             print("Failed to connect")
             return {}
 
-        output: Dict[ModbusRegister, Union[float, int]] = {}
+        output: Dict[str, Union[float, int]] = {}
         for register in modbus_map.get_registers():
             # Calculate CRC if necessary...
             # message, crc = modbus_hardware.create_read_message(register, slave_id)
@@ -48,21 +48,11 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             result = client.read_holding_registers(address=address, count=1, slave=slave_id)
 
             if result is None:
-                print(f"No response received from port {port}, slave: {slave_id}")
+                print(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
                 print(f"Error reading register: {result}")
             else:
-                output[register] = convert_register_value(result.registers[0], register)
-                # if register.data_type == ModbusDatatype.UINT16:
-                #     output[register] = result.registers[0] * register.conversion_factor
-                # elif register.data_type == ModbusDatatype.INT16:
-                #     value = result.registers[0]
-                #     value = (value - 65536) if value > 32767 else value
-                #     output[register] = value * register.conversion_factor
-                # elif register.data_type == ModbusDatatype.UINT8:
-                #     output[register] = result.registers[0] * register.conversion_factor
-                # else:  # what's this?
-                #     output[register] = result.registers[0] * register.conversion_factor
+                output[register.name] = convert_register_value(result.registers[0], register)
             time.sleep(modbus_hardware.MODBUS_SLEEP_BETWEEN_READS)
 
         return output

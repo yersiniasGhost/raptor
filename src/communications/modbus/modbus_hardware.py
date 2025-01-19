@@ -26,9 +26,9 @@ class ModbusHardware(ABC):
 
     MODBUS_SLEEP_BETWEEN_READS: float = 0.05
 
-    def get_modbus_serial_client(self, port: str) -> ModbusSerialClient:
+    def get_modbus_serial_client(self) -> ModbusSerialClient:
         return ModbusSerialClient(
-            port=port,
+            port=self.port,
             framer=self.framer,
             baudrate=self.baudrate,  # Default as specified
             parity=self.parity,  # No parity as specified

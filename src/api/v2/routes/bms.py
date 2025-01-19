@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from . import templates
 import logging
-from communications.modbus.test_map import read_holding_registers
+from communications.modbus.modbus import modbus_data_acquisition
 from bms_store import BMSDataStore, ModbusMap
 from database.battery_deployment import BatteryDeployment
 
@@ -33,7 +33,7 @@ async def get_bms_data():
         # Update each unit
         for unit_id in batteries.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
-            values = read_holding_registers(register_map, slave_id=unit_id)
+            values = modbus_data_acquisition(batteries.battery_hardware, register_map, slave_id=unit_id)
             if isinstance(values, dict):  # Ensure values is a dictionary
                 await bms_store.update_unit_data(unit_id, values)
             else:

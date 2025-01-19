@@ -1,6 +1,8 @@
-from typing import List, Iterator, Dict
+from typing import List, Iterator, Dict, Optional
 from dataclasses import dataclass, field
 import json
+from communications.modbus.modbus_hardware import ModbusHardware
+from communications.modbus.eve_battery import EveBattery
 
 
 @dataclass
@@ -11,12 +13,17 @@ class BatteryDefinition:
 
 @dataclass
 class BatteryDeployment:
+    hardware: Dict[str, str]
     batteries: List[BatteryDefinition]
     battery_look_up: Dict[int, BatteryDefinition] = field(default_factory=dict)
+    battery_hardware: Optional[ModbusHardware] = None
+
 
     def __post_init__(self):
         for bat in self.batteries:
             self.battery_look_up[bat.slave_id] = bat
+        if self.hardware["type"] == "EsslixV1":
+            self.battery_hardware = EveBattery()
 
     @classmethod
     def from_json(cls, json_file: str) -> 'BatteryDeployment':
@@ -25,8 +32,8 @@ class BatteryDeployment:
             return cls.from_dict(data)
 
     @classmethod
-    def from_dict(cls, battery_map: List[dict]) -> 'BatteryDeployment':
-        batteries = [BatteryDefinition(**bat) for bat in battery_map]
+    def from_dict(cls, battery_map: dict) -> 'BatteryDeployment':
+        batteries = [BatteryDefinition(**bat) for bat in battery_map['batteries']]
         return cls(batteries=batteries)
 
     def get_slave_ids(self) -> List[int]:
