@@ -20,6 +20,7 @@ app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
 
 # Initialize templates
 templates = Jinja2Templates(directory="templates")
+
 # Include routers
 app.include_router(actuator.router)
 app.include_router(bms.router)

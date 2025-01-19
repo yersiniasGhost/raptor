@@ -120,8 +120,8 @@
 </div>
 
 {% if register_map %}
-{% for battery in batteries %}
-{% unit_id = battery.slave_id %}
+{% for battery in batteries.each_battery() %}
+{% set unit_id = battery.slave_id %}
 <div class="unit-container">
     <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>
     <table>
@@ -273,7 +273,7 @@
 
 
         async function updateBMSData() {
-	    const units = {% batteries.get_slave_ids() %}  // [1, 2, 3]; // Match your unit IDs
+	    const units = {{ batteries.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
@@ -348,7 +348,7 @@
             }
         }
         function loadAllHistoricalData() {
-	    const units = {% batteries.get_slave_ids() %}  // [1, 2, 3]; // Match your unit IDs
+	    const units = {{ batteries.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
@@ -356,7 +356,7 @@
         // Start updates when page loads
         document.addEventListener('DOMContentLoaded', () => {
             updateBMSData();
-	    const units = {% batteries.get_slave_ids() %}  // [1, 2, 3]; // Match your unit IDs
+	    const units = {{ batteries.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });

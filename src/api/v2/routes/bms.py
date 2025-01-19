@@ -19,6 +19,8 @@ try:
     bms_store = BMSDataStore()
     update_task = None
     batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
+    print("BATTERIES")
+    print(batteries)
     register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
 except Exception as e:
     logger.error(f"Failed to load Battery configuration files: {e}")
@@ -81,7 +83,7 @@ async def bms(request: Request):
     except Exception as e:
         logger.error(f"Error in BMS route: {e}")
         return templates.TemplateResponse(
-            "bms.html",
+            "bms_v.html",
             {
                 "batteries": [],
                 "request": request,

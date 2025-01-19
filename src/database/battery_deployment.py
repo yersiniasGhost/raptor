@@ -25,8 +25,8 @@ class BatteryDeployment:
             return cls.from_dict(data)
 
     @classmethod
-    def from_dict(cls, battery_map: dict) -> 'BatteryDeployment':
-        batteries = [BatteryDefinition(**bat) for bat in battery_map['batteries']]
+    def from_dict(cls, battery_map: List[dict]) -> 'BatteryDeployment':
+        batteries = [BatteryDefinition(**bat) for bat in battery_map]
         return cls(batteries=batteries)
 
     def get_slave_ids(self) -> List[int]:
@@ -35,3 +35,8 @@ class BatteryDeployment:
     def iterate_slave_ids(self) -> Iterator[int]:
         for bat in self.batteries:
             yield bat.slave_id
+
+    def each_battery(self) -> Iterator[BatteryDefinition]:
+        for bat in self.batteries:
+            yield bat
+

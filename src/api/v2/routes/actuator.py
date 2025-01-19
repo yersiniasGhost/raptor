@@ -4,7 +4,7 @@ from . import templates
 router = APIRouter(prefix="/actuator", tags=["actuator"])
 
 
-@router.get("/")
+@router.get("/", name="actuator_index")
 async def index(request: Request):
     return templates.TemplateResponse(
         "actuator/index.html",
