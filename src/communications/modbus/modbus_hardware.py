@@ -20,7 +20,7 @@ class ModbusHardware(ABC):
     stopbits: int = 1  # 1 stop-bit as specified
     bytesize: int = 8  # 8 data bits as specified
     timeout: float = 0.2
-    client_type: ModbusClientType = ModbusClientType.NA
+    client_type: ModbusClientType = ModbusClientType.RTU
     host: str = ""
     port: Optional[Union[str, int]] = None
 

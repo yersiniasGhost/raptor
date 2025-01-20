@@ -1,9 +1,11 @@
 from typing import Dict, Union
 import time
+import logging
 
 from .modbus_map import ModbusMap, ModbusDatatype, ModbusRegister
 from .modbus_hardware import ModbusHardware
 
+logger = logging.getLogger(__name__)
 
 def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
     """Convert raw register value based on data type and apply conversion factor"""
@@ -31,7 +33,7 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             modbus_map: ModbusMap, slave_id: int) -> Dict[str, Union[float, int]]:
-
+    print(modbus_hardware)
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():

@@ -5,6 +5,7 @@ from .modbus_map import ModbusRegister, ModbusDatatype
 
 class EveBattery(ModbusHardware):
     def __post_init__(self):
+        print("Evebattery post")
         self.client_type = ModbusClientType.RTU
 
     # Return the message and the CRC value if required.
