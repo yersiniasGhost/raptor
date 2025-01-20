@@ -1,0 +1,144 @@
+{
+    "registers": [
+        {
+            "name": "Overall_System_Status",
+            "data_type": "uint16",
+            "address": 0,
+            "units": "",
+            "conversion_factor": 1,
+            "description": "Overall status of the system",
+            "acquisition_type": "status",
+            "enum_values": {
+                "0": "unknown",
+                "1": "system healthy",
+                "2": "at least one minor alarm (no major)",
+                "3": "at least one major alarm"
+            }
+        },
+        {
+            "name": "DC Voltage",
+            "data_type": "uint16",
+            "address": 1131,
+            "units": "V",
+            "conversion_factor": 0.1,
+            "description": "DC Voltage",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "DC Current",
+            "data_type": "int16",
+            "address": 1132,
+            "units": "A",
+            "conversion_factor": 0.1,
+            "description": "DC Current",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "DC Power",
+            "data_type": "int16",
+            "address": 1133,
+            "units": "W",
+            "conversion_factor": 10,
+            "description": "DC Power",
+            "acquisition_type": "data"
+        },{
+            "name": "Phase1Voltage",
+            "data_type": "uint16",
+            "address": 1561,
+            "units": "Volts",
+            "length": 1,
+            "conversion_factor": 0.1,
+            "description": "Phase 1 voltage",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1Current",
+            "data_type": "int16",
+            "address": 1562,
+            "units": "Amps",
+            "length": 1,
+            "conversion_factor": 0.1,
+            "description": "Phase 1 current",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1Frequency",
+            "data_type": "uint16",
+            "address": 1563,
+            "units": "Hz",
+            "length": 1,
+            "conversion_factor": 0.01,
+            "description": "Phase 1 frequency",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1PowerFactor",
+            "data_type": "uint16",
+            "address": 1564,
+            "units": "",
+            "length": 1,
+            "conversion_factor": 0.01,
+            "description": "Phase 1 power factor",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1TrueOutputPower",
+            "data_type": "int16",
+            "address": 1565,
+            "units": "W",
+            "length": 1,
+            "conversion_factor": 10,
+            "description": "Phase 1 true output power",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1ApparentOutputPower",
+            "data_type": "int16",
+            "address": 1566,
+            "units": "VA",
+            "length": 1,
+            "conversion_factor": 10,
+            "description": "Phase 1 apparent output power",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1AvailablePowerW",
+            "data_type": "uint16",
+            "address": 1567,
+            "units": "W",
+            "length": 1,
+            "conversion_factor": 10,
+            "description": "Phase 1 available power in Watts",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1AvailablePowerVA",
+            "data_type": "uint16",
+            "address": 1568,
+            "units": "VA",
+            "length": 1,
+            "conversion_factor": 10,
+            "description": "Phase 1 available power in VA",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        },
+        {
+            "name": "Phase1InstalledPowerW",
+            "data_type": "uint16",
+            "address": 1569,
+            "units": "W",
+            "length": 1,
+            "conversion_factor": 10,
+            "description": "Phase 1 installed power in Watts",
+            "acquisition_type": "data",
+            "read_write": "RO"
+        }
+    ]
+}
