@@ -32,7 +32,7 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             modbus_map: ModbusMap, slave_id: int) -> Dict[str, Union[float, int]]:
 
-    client = modbus_hardware.get_modbus_serial_client()
+    client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():
             print("Failed to connect")

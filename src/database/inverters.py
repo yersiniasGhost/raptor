@@ -5,12 +5,15 @@ from pathlib import Path
 import json
 
 from communications.modbus.modbus_hardware import ModbusHardware
+from communications.modbus import InviewGateway
 
 
 # TODO:  Add the load/save of inverters to the SQLite local database.
 
 def load_inverter_from_dict(hardware_config: dict) -> ModbusHardware:
-    class_path = hardware_config.get("type")
+    hardware_def = hardware_config.get('hardware')
+    class_path = hardware_def.get("type")
+
     if not class_path:
         raise ValueError(f"Invalid configuration data.  Missing hardware type")
 
@@ -22,14 +25,15 @@ def load_inverter_from_dict(hardware_config: dict) -> ModbusHardware:
 
     try:
         # Import the module and get the class
-        module = importlib.import_module(module_path)
-        cls = getattr(module, class_name)
+        #module = importlib.import_module(module_path)
+        #cls = getattr(module, class_name)
+        cls = globals()[class_name]
 
         # Verify it's a subclass of ModbusHardware
         if not inspect.isclass(cls) or not issubclass(cls, ModbusHardware):
             raise ValueError(f"Class {class_name} is not a subclass of ModbusHardware")
 
-        constructor_config = hardware_config.get("parameters", {})
+        constructor_config = hardware_def.get("parameters", {})
         return cls(**constructor_config)
 
     except ImportError:

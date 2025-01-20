@@ -4,6 +4,8 @@ import csv
 from datetime import datetime
 import os
 import time
+from communications.modbus import InviewGateway
+
 from database.inverters import load_inverter_from_json_file
 from communications.modbus.modbus import modbus_data_acquisition
 from communications.modbus.modbus_map import ModbusMap
@@ -19,7 +21,7 @@ def write_to_csv(slave_id, data_list):
     file_exists = os.path.exists(filename)
 
     with open(filename, 'a', newline='') as csvfile:
-        fieldnames = ['Timestamp'] + [name for name, _ in data_list]
+        fieldnames = ['Timestamp'] + list(data_list.keys())
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         # Write header if file is new
@@ -28,19 +30,20 @@ def write_to_csv(slave_id, data_list):
 
         # Create row with timestamp and values
         row_data = {'Timestamp': timestamp}
-        row_data.update({name: value for name, value in data_list})
+        row_data.update({name: value for name, value in data_list.items()})
         writer.writerow(row_data)
 
 
 if __name__ == "__main__":
 
-    modbus_map = ModbusMap.from_json("../../../data/Sierra25/modbus_map_basic.json")
-    inview = load_inverter_from_json_file("../../../data/Sierra25/converter_deployment.json")
+    modbus_map = ModbusMap.from_json("../../data/Sierra25/modbus_map_basic.json")
+    inview = load_inverter_from_json_file("../../data/Sierra25/converter_deployment.json")
     cnt = 0
 
     while(cnt < 1000000000):
         # Get data from each slave
         values = modbus_data_acquisition(inview, modbus_map, slave_id=1)
+        print(values)
         write_to_csv(0, values)
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
