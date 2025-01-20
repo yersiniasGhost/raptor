@@ -1,0 +1,15 @@
+{
+  "hardware": {
+	"type": "InviewGateway",
+	"parameters": {
+	  "host": "10.250.250.1",
+	  "port": 502
+	}
+  },
+  "devices": [
+	{
+	  "mac": "MACAddr1",
+	  "slave_id": 1
+	}
+  ]
+}
