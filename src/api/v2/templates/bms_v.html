@@ -22,7 +22,7 @@
 {% set unit_id = battery.slave_id %}
 <div class="unit-container">
     <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>
-    {% include '_on_demand_modbus_form.html' with unit_id=unit_id %}
+    {% include '_on_demand_modbus_form.html' %}
 
     <h3>Status Table</h3>
     <table>

@@ -8,7 +8,7 @@ import logging
 from communications.modbus.modbus import modbus_data_acquisition
 from bms_store import BMSDataStore, ModbusMap
 from database.battery_deployment import BatteryDeployment
-from hardware_deployment import HardwareDeployment, get_hardware
+from .hardware_deployment import HardwareDeployment, get_hardware
 
 DATA_PATH = "/root/raptor/data"
 
@@ -88,7 +88,9 @@ async def read_modbus_register(data: str):
 
 
 @router.get("/")
-async def bms(request: Request):
+async def bms(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+    batteries = hardware.batteries
+    register_map = hardware.battery_register_map
     try:
         bms_data = await bms_store.get_all_data()
         return templates.TemplateResponse(
