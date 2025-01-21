@@ -1,0 +1,19 @@
+{
+  "hardware_type": "CANbus",
+  "hardware": {
+        "type": "Electrak",
+        "parameters": {
+            "port": "/dev/ttyS11"
+        }
+    },
+  "devices": [
+	{
+	  "mac": "NA",
+	  "node_id": "0x1B"
+	},
+	{
+	  "mac": "NA2",
+	  "node_id": "0x1C"
+	}
+  ]
+}

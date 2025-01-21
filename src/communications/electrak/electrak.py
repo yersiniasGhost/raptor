@@ -116,8 +116,6 @@ class ElectrakMD:
                 }
 
 
-
-
     def set_pdo_timeout(self, timeout_ms: int = 5000):
         """Set the PDO timeout value"""
         try:

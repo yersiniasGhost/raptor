@@ -1,37 +1,55 @@
-# routes/bms.py
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from . import templates
 import logging
-from communications.modbus.modbus import modbus_data_acquisition
 from bms_store import BMSDataStore, ModbusMap
 from database.battery_deployment import BatteryDeployment
+from communications.modbus.modbus import modbus_data_acquisition
 
 DATA_PATH = "/root/raptor/data"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/bms", tags=["bms"])
+router = APIRouter(prefix="/inverters", tags=["inverters"])
 
 # Load register map
 try:
     # Initialize BMS data store
     bms_store = BMSDataStore()
     update_task = None
-    batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
-    register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
+    hardware = BatteryDeployment.from_json(f"{DATA_PATH}/Sierra25/converter_deployment.json")
+    register_map = ModbusMap.from_json(f"{DATA_PATH}/Sierra25/modbus_map_basic.json")
 except Exception as e:
-    logger.error(f"Failed to load Battery configuration files: {e}")
+    logger.error(f"Failed to load Inverter configuration files: {e}")
     register_map = None
+
+
+@router.get("/")
+async def inverters(request: Request):
+    try:
+        return templates.TemplateResponse(
+            "inverters.html",
+            {
+                "error": None
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error in Inverters route: {e}")
+        return templates.TemplateResponse(
+            "inverters.html",
+            {
+                "error": str(e)
+            }
+        )
 
 
 @router.get("/data")
 async def get_bms_data():
     try:
         # Update each unit
-        for unit_id in batteries.iterate_slave_ids():
+        for unit_id in hardware.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
-            values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=unit_id)
+            values = modbus_data_acquisition(hardware.hardware, register_map, slave_id=unit_id)
             if isinstance(values, dict):  # Ensure values is a dictionary
                 await bms_store.update_unit_data(unit_id, values)
             else:
@@ -49,7 +67,7 @@ async def get_bms_data():
 async def get_historical_data(unit_id: int):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"modbus_slave_{unit_id}.csv"
+        filename = f"inverter_{unit_id}.csv"
 
         # Use Python's file handling
         with open(filename, 'r') as file:
@@ -62,31 +80,3 @@ async def get_historical_data(unit_id: int):
     except Exception as e:
         logger.error(f"Error reading historical data for unit {unit_id}: {e}")
         return JSONResponse(content={"data": None, "error": str(e)})
-
-
-@router.get("/")
-async def bms(request: Request):
-    try:
-        bms_data = await bms_store.get_all_data()
-        return templates.TemplateResponse(
-            "bms_v.html",
-            {
-                "batteries": batteries,
-                "request": request,
-                "bms_data": bms_data,
-                "register_map": register_map,
-                "error": None
-            }
-        )
-    except Exception as e:
-        logger.error(f"Error in BMS route: {e}")
-        return templates.TemplateResponse(
-            "bms_v.html",
-            {
-                "batteries": [],
-                "request": request,
-                "bms_data": {},
-                "register_map": register_map,
-                "error": str(e)
-            }
-        )

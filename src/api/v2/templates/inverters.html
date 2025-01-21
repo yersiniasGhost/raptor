@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %} Inverter systems {% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<h1>Inverter / Converter Systems Data</h1>
+
+<div id="error-message" class="error" style="display: none;"></div>
+
+<div class="metadata">
+    <div>
+        Number of Units: <span id="unit-count">-</span>
+    </div>
+    <div class="status-indicator">
+        Last refresh: <span id="last-refresh">-</span>
+    </div>
+</div>
+
+{% if register_map %}
+{% for modbus_hardware in hardware.each_unit() %}
+{% set unit_id = modbus_hardware.slave_id %}
+<div class="unit-container">
+    <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ unit_id }}</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for reg in register_map.registers %}
+        <tr>
+            <td>{{ reg.name }}</td>
+            <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
+                -
+            </td>
+            <td>{{ reg.description }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="chart-container">
+        <h3>Historical Data</h3>
+        <div id="charts-unit{{ unit_id }}">
+            <div class="text-gray-500">Loading charts...</div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -1,0 +1,32 @@
+from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse, HTMLResponse
+from . import templates
+import logging
+from communications.modbus.modbus import modbus_data_acquisition
+from bms_store import BMSDataStore, ModbusMap
+from database.battery_deployment import BatteryDeployment
+
+DATA_PATH = "/root/raptor/data"
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/analysis", tags=["analysis"])
+
+
+@router.get("/")
+async def bms(request: Request):
+    try:
+        return templates.TemplateResponse(
+            "analysis.html",
+            {
+                "error": None
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error in Analysis route: {e}")
+        return templates.TemplateResponse(
+            "analysis.html",
+            {
+                "error": str(e)
+            }
+        )

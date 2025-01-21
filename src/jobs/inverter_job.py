@@ -51,7 +51,7 @@ if __name__ == "__main__":
         if values:
             write_to_csv("inverter", 0, values)
         for battery in batteries.each_battery():
-            values = modbus_data_acquisition(batteries.battery_hardware, register_map, slave_id=battery.slave_id)
+            values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=battery.slave_id)
             if values:
                 write_to_csv("battery", battery.slave_id, values)
 
