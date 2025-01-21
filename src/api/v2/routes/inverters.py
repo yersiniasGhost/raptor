@@ -1,10 +1,11 @@
 import json
-from fastapi import APIRouter, Request
+from typing import Annotated
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse, HTMLResponse
 from . import templates
 import logging
 from bms_store import BMSDataStore, ModbusMap
-from database.battery_deployment import BatteryDeployment
+from .hardware_deployment import HardwareDeployment, get_hardware
 from communications.modbus.modbus import modbus_data_acquisition
 
 DATA_PATH = "/root/raptor/data"
@@ -18,18 +19,19 @@ try:
     # Initialize BMS data store
     bms_store = BMSDataStore()
     update_task = None
-    hardware = BatteryDeployment.from_json(f"{DATA_PATH}/Sierra25/converter_deployment.json")
-    register_map = ModbusMap.from_json(f"{DATA_PATH}/Sierra25/modbus_map_basic.json")
 except Exception as e:
     logger.error(f"Failed to load Inverter configuration files: {e}")
-    register_map = None
+
+
+def get_inverter(deployment: HardwareDeployment):
+    return deployment.inverter, deployment.inverter_register_map
 
 
 @router.get("/")
-async def inverters(request: Request):
+async def inverters(request: Request, deployment: Annotated[HardwareDeployment, Depends(get_hardware)]):
     try:
         data = await bms_store.get_all_data()
-        print(hardware)
+        hardware, register_map = get_inverter(deployment)
         return templates.TemplateResponse(
             "inverters.html",
             {
@@ -54,8 +56,9 @@ async def inverters(request: Request):
 
 
 @router.get("/data")
-async def get_bms_data():
+async def get_bms_data(deployment: Annotated[HardwareDeployment, Depends(get_hardware)]):
     try:
+        hardware, register_map = get_inverter(deployment)
         # Update each unit
         for unit_id in hardware.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
@@ -74,7 +77,9 @@ async def get_bms_data():
 
 
 @router.get("/modbus_register/{data}")
-async def read_modbus_register(data: str):
+async def read_modbus_register(data: str, deployment: Annotated[HardwareDeployment, Depends(get_hardware)]):
+    hardware, register_map = get_inverter(deployment)
+
     parsed_data = json.loads(data)
     unit_id = parsed_data['unit_id']
     m_map = ModbusMap.from_dict({ "registers": [
