@@ -27,10 +27,13 @@ except Exception as e:
 @router.get("/")
 async def inverters(request: Request):
     try:
+        data = await bms_store.get_all_data()
+        print(hardware)
         return templates.TemplateResponse(
             "inverters.html",
             {
                 "request": request,
+                "data": data,
                 "error": None
             }
         )
