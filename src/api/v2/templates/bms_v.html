@@ -16,6 +16,18 @@
         Last refresh: <span id="last-refresh">-</span>
     </div>
 </div>
+<div>
+    <span>Number of data points: </span>
+    <input
+    type="number"
+    id="lookback"
+    min="100"
+    step="1"
+    value="4000"
+    onkeydown="return event.keyCode !== 190"
+    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+>
+</div>
 
 {% if register_map %}
 {% for battery in batteries.each_unit() %}
@@ -92,9 +104,10 @@
                         row.Timestamp && // ensure timestamp exists
                         Object.values(row).every(val => val !== null && val !== undefined)
                     );
-                    // Limit to most recent 1728 points
-                    if (data.length > 1728) {
-                        data = data.slice(-4320);
+                    // Limit to most recent  points
+                    let value = parseInt(document.getElementById('lookback').value);
+                    if (data.length > value) {
+                        data = data.slice(-value);
                     }
                     if (!data.length) {
                         console.error("No valid data after filtering");
