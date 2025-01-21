@@ -22,26 +22,8 @@
 {% set unit_id = battery.slave_id %}
 <div class="unit-container">
     <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>
-             <h3>On Demand Register Read</h3>
-        <div class="form-group">
-            <label for="register_address_{{unit_id}}">Register Address:</label>
-            <input type="number" id="register_address_{{unit_id}}" min="0" required>
-        </div>
+    {% include '_on_demand_modbus_form.html' with unit_id=unit_id %}
 
-        <div class="form-group">
-            <label for="register_type_{{unit_id}}">Register Type:</label>
-            <select id="register_type_{{unit_id}}">
-                <option value="int8">INT8</option>
-                <option value="int16">INT16</option>
-                <option value="uint16">UINT16</option>
-            </select>
-        </div>
-
-        <button onclick="fetchRegisterData({{unit_id}})">Read Register</button>
-            <div class="form-group">
-            <label for="result_{{unit_id}}">Result:</label>
-            <input type="text" id="result_{{unit_id}}" readonly>
-        </div>
     <h3>Status Table</h3>
     <table>
         <thead>
@@ -190,30 +172,6 @@
         }
     }
 
-    async function fetchRegisterData(unitId) {
-            const registerAddress = document.getElementById(`register_address_${unitId}`).value;
-            const registerType = document.getElementById(`register_type_${unitId}`).value;
-
-            if (!registerAddress) {
-                alert('Please enter a register address');
-                return;
-            }
-
-            const data = {
-                unit_id: unitId,
-                register: parseInt(registerAddress),
-                type: registerType
-            };
-
-            try {
-                const response = await fetch(`/bms/modbus_register/${JSON.stringify(data)}`);
-                const result = await response.json();
-                document.getElementById(`result_${unitId}`).value = result.value;
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to fetch register data');
-            }
-        }
 
         async function updateBMSData() {
 	    const units = {{ batteries.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs

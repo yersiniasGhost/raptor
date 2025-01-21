@@ -1,12 +1,14 @@
 # routes/bms.py
+from typing import Annotated
 import json
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi import APIRouter, Request, Depends
+from fastapi.responses import JSONResponse
 from . import templates
 import logging
 from communications.modbus.modbus import modbus_data_acquisition
 from bms_store import BMSDataStore, ModbusMap
 from database.battery_deployment import BatteryDeployment
+from hardware_deployment import HardwareDeployment, get_hardware
 
 DATA_PATH = "/root/raptor/data"
 
@@ -19,17 +21,19 @@ try:
     # Initialize BMS data store
     bms_store = BMSDataStore()
     update_task = None
-    batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
-    register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
+    # batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
+    # register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
 except Exception as e:
     logger.error(f"Failed to load Battery configuration files: {e}")
-    register_map = None
+    # register_map = None
 
 
 @router.get("/data")
-async def get_bms_data():
+async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     try:
         # Update each unit
+        batteries = hardware.batteries
+        register_map = hardware.battery_register_map
         for unit_id in batteries.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
             values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=unit_id)
@@ -68,7 +72,7 @@ async def get_historical_data(unit_id: int):
 async def read_modbus_register(data: str):
     parsed_data = json.loads(data)
     unit_id = parsed_data['unit_id']
-    m_map = ModbusMap.from_dict({ "registers": [
+    m_map = ModbusMap.from_dict({"registers": [
         {
             "name": "ODQ",
             "data_type": parsed_data['type'],
