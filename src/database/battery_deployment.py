@@ -64,7 +64,7 @@ class BatteryDeployment:
         for bat in self.batteries:
             yield bat.slave_id
 
-    def each_battery(self) -> Iterator[BatteryDefinition]:
+    def each_unit(self) -> Iterator[BatteryDefinition]:
         for bat in self.batteries:
             yield bat
 

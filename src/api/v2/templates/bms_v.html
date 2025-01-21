@@ -18,7 +18,7 @@
 </div>
 
 {% if register_map %}
-{% for battery in batteries.each_battery() %}
+{% for battery in batteries.each_unit() %}
 {% set unit_id = battery.slave_id %}
 <div class="unit-container">
     <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>

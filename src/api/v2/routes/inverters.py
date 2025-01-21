@@ -32,8 +32,10 @@ async def inverters(request: Request):
         return templates.TemplateResponse(
             "inverters.html",
             {
+                "hardware": hardware,
                 "request": request,
                 "data": data,
+                "register_map": register_map,
                 "error": None
             }
         )
@@ -42,7 +44,9 @@ async def inverters(request: Request):
         return templates.TemplateResponse(
             "inverters.html",
             {
+                "hardware": [],
                 "request": request,
+                "register_map": register_map,
                 "error": str(e)
             }
         )
