@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import time
 
-from database.inverters import load_inverter_from_json_file
+from database.hardware import load_hardware_from_json_file
 from database.battery_deployment import BatteryDeployment
 from communications.modbus.modbus import modbus_data_acquisition
 from communications.modbus.modbus_map import ModbusMap
@@ -39,7 +39,7 @@ def write_to_csv(filename: str, slave_id: int, data_list: dict):
 if __name__ == "__main__":
 
     modbus_map = ModbusMap.from_json("../../data/Sierra25/modbus_map_basic.json")
-    inview = load_inverter_from_json_file("../../data/Sierra25/converter_deployment.json")
+    inview = load_hardware_from_json_file("../../data/Sierra25/converter_deployment.json")
 
     batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
     register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")

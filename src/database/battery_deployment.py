@@ -2,8 +2,10 @@ from typing import List, Iterator, Dict, Optional
 from dataclasses import dataclass, field
 import json
 from communications.modbus.modbus_hardware import ModbusHardware
-from communications.modbus.eve_battery import EveBattery
+from database.hardware import load_hardware_from_dict
 import logging
+
+logger = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +26,13 @@ class BatteryDeployment:
     def __post_init__(self):
         for bat in self.batteries:
             self.battery_look_up[bat.slave_id] = bat
-        if self.hardware["type"] == "EsslixV1":
-            self.battery_hardware = EveBattery(port=self.hardware['port'])
-            print(self.battery_hardware)
+        self.battery_hardware = load_hardware_from_dict(self.hardware)
 
     @classmethod
     def from_json(cls, json_file: str) -> 'BatteryDeployment':
         with open(json_file, 'r') as f:
             data = json.load(f)
-            logger.info(f"Loaded battery deployment configuration JSON: {data}")
+            logger.debug(f"Loaded JSON file:{json_file} \nDATA\n{data}")
             return cls.from_dict(data)
 
     @classmethod

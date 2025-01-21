@@ -6,11 +6,12 @@ import json
 
 from communications.modbus.modbus_hardware import ModbusHardware
 from communications.modbus import InviewGateway
+from communications.modbus import EveBattery
 
 
-# TODO:  Add the load/save of inverters to the SQLite local database.
+# TODO:  Add the load/save of hardware to the SQLite local database.
 
-def load_inverter_from_dict(hardware_config: dict) -> ModbusHardware:
+def load_hardware_from_dict(hardware_config: dict) -> ModbusHardware:
     hardware_def = hardware_config.get('hardware')
     class_path = hardware_def.get("type")
 
@@ -42,7 +43,7 @@ def load_inverter_from_dict(hardware_config: dict) -> ModbusHardware:
         raise ImportError(f"Could not find class {class_name} in module {module_path}")
 
 
-def load_inverter_from_json_file(json_file: Union[Path, str]) -> ModbusHardware:
+def load_hardware_from_json_file(json_file: Union[Path, str]) -> ModbusHardware:
     json_path = Path(json_file)
     if not json_path.exists():
         raise FileNotFoundError(f"Configuration file not found: {json_file}")
@@ -50,6 +51,6 @@ def load_inverter_from_json_file(json_file: Union[Path, str]) -> ModbusHardware:
     with json_path.open('r') as f:
         try:
             data = json.load(f)
-            return load_inverter_from_dict(data)
+            return load_hardware_from_dict(data)
         except json.JSONDecodeError:
             raise ValueError(f"Invalid JSON in configuration file: {json_file}")
