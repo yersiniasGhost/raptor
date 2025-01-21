@@ -30,6 +30,7 @@ async def inverters(request: Request):
         return templates.TemplateResponse(
             "inverters.html",
             {
+                "request": request,
                 "error": None
             }
         )
@@ -38,6 +39,7 @@ async def inverters(request: Request):
         return templates.TemplateResponse(
             "inverters.html",
             {
+                "request": request,
                 "error": str(e)
             }
         )

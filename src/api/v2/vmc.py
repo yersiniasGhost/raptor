@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
-from routes import actuator, bms, configuration, analysis
+from routes import actuator, bms, configuration, analysis, inverters
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +26,7 @@ app.include_router(actuator.router)
 app.include_router(bms.router)
 app.include_router(configuration.router)
 app.include_router(analysis.router)
+app.include_router(inverters.router)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -34,4 +35,4 @@ async def home(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8002)

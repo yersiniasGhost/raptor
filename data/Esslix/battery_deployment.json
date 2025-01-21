@@ -1,6 +1,6 @@
 {
     "hardware": {
-        "type": "EsslixV1",
+        "type": "communications.modbug.EveBattery",
         "parameters": {
             "port": "/dev/ttyS11"
         }
