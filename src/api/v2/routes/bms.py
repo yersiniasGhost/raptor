@@ -64,6 +64,24 @@ async def get_historical_data(unit_id: int):
         logger.error(f"Error reading historical data for unit {unit_id}: {e}")
         return JSONResponse(content={"data": None, "error": str(e)})
 
+@router.get("/modbus_register/{data}")
+async def read_modbus_register(data: str):
+    parsed_data = json.loads(data)
+    unit_id = parsed_data['unit_id']
+    m_map = ModbusMap.from_dict({ "registers": [
+        {
+            "name": "ODQ",
+            "data_type": parsed_data['type'],
+            "address": parsed_data['register'],
+            "units": "",
+            "conversion_factor": 1.0,
+            "description": "On demand query"
+        }
+    ]})
+    values = modbus_data_acquisition(batteries.hardware, m_map, slave_id=unit_id)
+    # Handle the modbus read operation here
+    return {"success": True, "value": values['ODQ']}
+
 
 @router.get("/")
 async def bms(request: Request):

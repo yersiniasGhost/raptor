@@ -208,7 +208,7 @@
             };
 
             try {
-                const response = await fetch(`/bms/modbus_register/${JSON.stringify(data)}`);
+                const response = await fetch(`/inverters/modbus_register/${JSON.stringify(data)}`);
                 const result = await response.json();
                 document.getElementById(`result_${unitId}`).value = result.value;
             } catch (error) {
