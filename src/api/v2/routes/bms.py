@@ -7,10 +7,7 @@ from . import templates
 import logging
 from communications.modbus.modbus import modbus_data_acquisition
 from bms_store import BMSDataStore, ModbusMap
-from database.battery_deployment import BatteryDeployment
 from .hardware_deployment import HardwareDeployment, get_hardware
-
-DATA_PATH = "/root/raptor/data"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,19 +18,19 @@ try:
     # Initialize BMS data store
     bms_store = BMSDataStore()
     update_task = None
-    # batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
-    # register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
 except Exception as e:
     logger.error(f"Failed to load Battery configuration files: {e}")
-    # register_map = None
+
+
+def get_batteries(deployment: HardwareDeployment):
+    return deployment.batteries, deployment.battery_register_map
 
 
 @router.get("/data")
 async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     try:
         # Update each unit
-        batteries = hardware.batteries
-        register_map = hardware.battery_register_map
+        batteries, register_map = get_batteries(hardware)
         for unit_id in batteries.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
             values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=unit_id)
@@ -68,8 +65,9 @@ async def get_historical_data(unit_id: int):
         logger.error(f"Error reading historical data for unit {unit_id}: {e}")
         return JSONResponse(content={"data": None, "error": str(e)})
 
+
 @router.get("/modbus_register/{data}")
-async def read_modbus_register(data: str):
+async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     parsed_data = json.loads(data)
     unit_id = parsed_data['unit_id']
     m_map = ModbusMap.from_dict({"registers": [
@@ -82,6 +80,7 @@ async def read_modbus_register(data: str):
             "description": "On demand query"
         }
     ]})
+    batteries, _ = get_batteries(hardware)
     values = modbus_data_acquisition(batteries.hardware, m_map, slave_id=unit_id)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}
@@ -89,8 +88,7 @@ async def read_modbus_register(data: str):
 
 @router.get("/")
 async def bms(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
-    batteries = hardware.batteries
-    register_map = hardware.battery_register_map
+    batteries, register_map = get_batteries(hardware)
     try:
         bms_data = await bms_store.get_all_data()
         return templates.TemplateResponse(

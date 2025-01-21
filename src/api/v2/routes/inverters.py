@@ -8,8 +8,6 @@ from bms_store import BMSDataStore, ModbusMap
 from .hardware_deployment import HardwareDeployment, get_hardware
 from communications.modbus.modbus import modbus_data_acquisition
 
-DATA_PATH = "/root/raptor/data"
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/inverters", tags=["inverters"])
