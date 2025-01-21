@@ -116,12 +116,17 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
 
         # Test reading registers (starting from 0x0000 as per spec)
         registers_to_read = [
-            (0x0000, "Current (10mA)", "int16", 0.01),
+            (0, "Current (10mA)", "int16", 0.01),
             #(0x0001, "Voltage of pack (10mV)", "uint16"),
-            (0x0002, "SOC (%)", "uint8", 1.0),
+            (2, "SOC (%)", "uint8", 1.0),
             #(0x0003, "SOH (%)", "uint16"),
-            (0x0004, "Remain capacity (10mAH)", "uint16", 0.01),
-            #(0x0005, "Full capacity (10mAH), "uint16"")
+            (4, "Remain capacity (10mAH)", "uint16", 0.01),
+            #(0x0005, "Full capacity (10mAH), "uint16""),
+            (9, "Warning flag", "uint16", 1),
+            (10, "Protection flag", "uint16", 1),
+            (11, "Status/Fault", "uint16",1),
+            (12, "Balance status", "uint16", 1),
+            
         ]
         output = []
         for register, description, d_type, conv in registers_to_read:
@@ -159,7 +164,7 @@ def test_bms_communication(port='/dev/ttyS11', slave_id=1):
                 else:
                     value = uint16_value*conv
 
-                print(f"Unit: {slave_id} {description}: {d_type}: {value}")
+                print(f"Unit: {slave_id} {description}: addr: : {register},  {d_type}: {value}")
                 #print(uint16_value)
                 output.append((description, value))
                 # For INT8, you need to extract the bytes
@@ -188,7 +193,7 @@ def write_to_csv(slave_id, data_list):
     data_list: List of tuples [(name, value)]
     """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'modbus_slave_{slave_id}.csv'
+    filename = f'status_slave_{slave_id}.csv'
     file_exists = os.path.exists(filename)
     
     with open(filename, 'a', newline='') as csvfile:

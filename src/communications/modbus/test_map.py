@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import time
 
-from .modbus_map import ModbusMap, ModbusRegister
+from communications.modbus.modbus_map import ModbusMap, ModbusRegister
 
 # CRC Tables as specified in the document
 AUCHCRCHI = [ 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -151,7 +151,7 @@ def read_holding_registers(register_map: ModbusMap, port: str='/dev/ttyS11', sla
                 else:
                     value = uint16_value * register.conversion_factor
 
-                print(f"Unit: {slave_id} {register.description}: {register.data_type}: {value}")
+                print(f"Unit: {slave_id} {register.description}: {register.address}: {value}")
                 output[register.name] = value
 
             # Wait for frame interval as specified (>100ms)
@@ -192,14 +192,14 @@ if __name__ == "__main__":
 
     registers = []
     for offset in range(16):
-        addr = 0x0031 + offset
+        addr = 15 + offset
         registers.append(
             {
                 "name": f"Cell voltage {offset}",
                 "data_type": "int16",
                 "address": addr,
                 "units": "V",
-                "conversion_factor": 10.0,
+                "conversion_factor": .001,
                 "description": f"Cell voltage {offset} (V)"
             })
 

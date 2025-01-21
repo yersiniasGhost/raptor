@@ -106,39 +106,6 @@
             "description": "Phase 1 apparent output power",
             "acquisition_type": "data",
             "read_write": "RO"
-        },
-        {
-            "name": "Phase1AvailablePowerW",
-            "data_type": "uint16",
-            "address": 1567,
-            "units": "W",
-            "length": 1,
-            "conversion_factor": 10,
-            "description": "Phase 1 available power in Watts",
-            "acquisition_type": "data",
-            "read_write": "RO"
-        },
-        {
-            "name": "Phase1AvailablePowerVA",
-            "data_type": "uint16",
-            "address": 1568,
-            "units": "VA",
-            "length": 1,
-            "conversion_factor": 10,
-            "description": "Phase 1 available power in VA",
-            "acquisition_type": "data",
-            "read_write": "RO"
-        },
-        {
-            "name": "Phase1InstalledPowerW",
-            "data_type": "uint16",
-            "address": 1569,
-            "units": "W",
-            "length": 1,
-            "conversion_factor": 10,
-            "description": "Phase 1 installed power in Watts",
-            "acquisition_type": "data",
-            "read_write": "RO"
         }
     ]
 }

@@ -48,10 +48,12 @@ if __name__ == "__main__":
     while(cnt < 1000000000):
         # Get data from each slave
         values = modbus_data_acquisition(inview, modbus_map, slave_id=1)
-        write_to_csv("inverter", 0, values)
+        if values:
+            write_to_csv("inverter", 0, values)
         for battery in batteries.each_battery():
             values = modbus_data_acquisition(batteries.battery_hardware, register_map, slave_id=battery.slave_id)
-            write_to_csv("battery", battery.slave_id, values)
+            if values:
+                write_to_csv("battery", battery.slave_id, values)
 
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")
