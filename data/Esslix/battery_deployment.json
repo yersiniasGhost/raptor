@@ -1,9 +1,11 @@
 {
     "hardware": {
         "type": "EsslixV1",
-        "port": "/dev/ttyS11"
+        "parameters": {
+            "port": "/dev/ttyS11"
+        }
     },
-    "batteries": [
+    "devices": [
         {
             "mac": "12345",
             "slave_id": 0

@@ -4,16 +4,19 @@ from typing import Union
 from pathlib import Path
 import json
 
+
 from communications.modbus.modbus_hardware import ModbusHardware
 from communications.modbus import InviewGateway
 from communications.modbus import EveBattery
+import logging
+logger = logging.getLogger(__name__)
 
 
 # TODO:  Add the load/save of hardware to the SQLite local database.
 
 def load_hardware_from_dict(hardware_config: dict) -> ModbusHardware:
-    hardware_def = hardware_config.get('hardware')
-    class_path = hardware_def.get("type")
+    logger.info(hardware_config)
+    class_path = hardware_config.get("type")
 
     if not class_path:
         raise ValueError(f"Invalid configuration data.  Missing hardware type")
@@ -34,7 +37,7 @@ def load_hardware_from_dict(hardware_config: dict) -> ModbusHardware:
         if not inspect.isclass(cls) or not issubclass(cls, ModbusHardware):
             raise ValueError(f"Class {class_name} is not a subclass of ModbusHardware")
 
-        constructor_config = hardware_def.get("parameters", {})
+        constructor_config = hardware_config.get("parameters", {})
         return cls(**constructor_config)
 
     except ImportError:
