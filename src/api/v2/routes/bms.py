@@ -51,7 +51,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
 async def get_historical_data(unit_id: int):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"modbus_slave_{unit_id}.csv"
+        filename = f"battery_{unit_id}.csv"
 
         # Use Python's file handling
         with open(filename, 'r') as file:
