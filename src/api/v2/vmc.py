@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
@@ -23,6 +24,7 @@ def get_hardware_deployment() -> HardwareDeployment:
 
 
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Initialize templates
 templates = Jinja2Templates(directory="templates")
