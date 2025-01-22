@@ -14,12 +14,19 @@
 </div>
 
 <button onclick="fetchRegisterData({{unit_id}})">Read Register</button>
-<button onclick="writeRegisterData({{unit_id}})">Write Register</button>
 
 <div class="form-group">
     <label for="result_{{unit_id}}">Result:</label>
     <input type="text" id="result_{{unit_id}}" readonly>
 </div>
+
+<div class="form-group">
+    <label for="register_value_{{unit_id}}">Value to Write:</label>
+    <input type="number" id="register_value_{{unit_id}}" min="0" required>
+</div>
+<button onclick="writeRegisterData({{unit_id}})">Write Register</button>
+
+
 <script>
     function getRegisterData(unitId) {
         const registerAddress = document.getElementById(`register_address_${unitId}`).value;
@@ -38,8 +45,15 @@
         };
     }
     async function writeRegisterData(unitId) {
-            const data = getRegisterData(unitId)
+            data = getRegisterData(unitId)
             if (!data) return;
+            const writeValue = document.getElementById(`register_value_${unitId}`).value;
+            if (!writeValue && writeValue !== '0') {
+                alert('Please enter a value to write');
+                return null;
+            }
+            data.value = parseInt(writeValue);
+
             try {
                 const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
                 const result = await response.json();

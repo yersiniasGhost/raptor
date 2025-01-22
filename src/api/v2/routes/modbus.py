@@ -34,7 +34,8 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
         hardware = hardware_def.batteries.hardware
     elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
-    values = modbus_data_write(hardware, m_map, slave_id=unit_id)
+    values = modbus_data_write(hardware, m_map, slave_id=unit_id,
+                               register_name="ODW", value=parsed_data['value'])
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}
 
