@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
-from routes import actuator, bms, configuration, analysis, inverters
+from routes import actuator, bms, configuration, analysis, inverters, modbus
 from api.v2.routes.hardware_deployment import HardwareDeployment
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -33,6 +33,7 @@ app.include_router(bms.router)
 app.include_router(configuration.router)
 app.include_router(analysis.router)
 app.include_router(inverters.router)
+app.include_router(modbus.router)
 
 
 @app.get("/", response_class=HTMLResponse)
