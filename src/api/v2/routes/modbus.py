@@ -18,6 +18,7 @@ router = APIRouter(prefix="/modbus", tags=["modbus"])
 @router.get("/modbus_register/{data}")
 async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeployment, Depends(get_hardware)]):
     parsed_data = json.loads(data)
+    print(parsed_data)
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
 

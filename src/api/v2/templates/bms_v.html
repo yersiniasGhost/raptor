@@ -30,7 +30,7 @@
 <div class="unit-container">
     <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>
     {% with page = "BMS" %}
-        {% include '_on_demand_modbus_form.html' set page="Battery"%}
+        {% include '_on_demand_modbus_form.html'%}
     {% endwith %}
 
     <h3>Status Table</h3>
