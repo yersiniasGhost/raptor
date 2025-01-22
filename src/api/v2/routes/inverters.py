@@ -74,27 +74,6 @@ async def get_bms_data(deployment: Annotated[HardwareDeployment, Depends(get_har
         return JSONResponse(content={"data": None, "error": str(e)})
 
 
-@router.get("/modbus_register/{data}")
-async def read_modbus_register(data: str, deployment: Annotated[HardwareDeployment, Depends(get_hardware)]):
-    hardware, register_map = get_inverter(deployment)
-
-    parsed_data = json.loads(data)
-    unit_id = parsed_data['unit_id']
-    m_map = ModbusMap.from_dict({ "registers": [
-        {
-            "name": "ODQ",
-            "data_type": parsed_data['type'],
-            "address": parsed_data['register'],
-            "units": "",
-            "conversion_factor": 1.0,
-            "description": "On demand query"
-        }
-    ]})
-    values = modbus_data_acquisition(hardware.hardware, m_map, slave_id=unit_id)
-    # Handle the modbus read operation here
-    return {"success": True, "value": values['ODQ']}
-
-
 @router.get("/historical/{unit_id}")
 async def get_historical_data(unit_id: int):
     try:

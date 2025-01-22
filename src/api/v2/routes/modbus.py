@@ -34,7 +34,7 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
     ]})
     if page == "BMS":
         hardware = hardware_def.batteries.hardware
-    else:
+    elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
     values = modbus_data_acquisition(hardware, m_map, slave_id=unit_id)
     # Handle the modbus read operation here

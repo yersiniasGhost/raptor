@@ -29,26 +29,10 @@
 {% set unit_id = modbus_hardware.slave_id %}
 <div class="unit-container">
     <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ unit_id }}</h2>
-         <h3>On Demand Register Read</h3>
-        <div class="form-group">
-            <label for="register_address_{{unit_id}}">Register Address:</label>
-            <input type="number" id="register_address_{{unit_id}}" min="0" required>
-        </div>
+    {% with page = "Inverter" %}
+        {% include '_on_demand_modbus_form.html'%}
+    {% endwith %}
 
-        <div class="form-group">
-            <label for="register_type_{{unit_id}}">Register Type:</label>
-            <select id="register_type_{{unit_id}}">
-                <option value="int8">INT8</option>
-                <option value="int16">INT16</option>
-                <option value="uint16">UINT16</option>
-            </select>
-        </div>
-
-        <button onclick="fetchRegisterData({{unit_id}})">Read Register</button>
-            <div class="form-group">
-            <label for="result_{{unit_id}}">Result:</label>
-            <input type="text" id="result_{{unit_id}}" readonly>
-        </div>
     <h3>Status Table</h3>
     <table>
         <thead>
