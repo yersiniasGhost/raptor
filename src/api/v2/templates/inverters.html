@@ -182,30 +182,6 @@
         }
     }
 
-    async function fetchRegisterData(unitId) {
-            const registerAddress = document.getElementById(`register_address_${unitId}`).value;
-            const registerType = document.getElementById(`register_type_${unitId}`).value;
-
-            if (!registerAddress) {
-                alert('Please enter a register address');
-                return;
-            }
-
-            const data = {
-                unit_id: unitId,
-                register: parseInt(registerAddress),
-                type: registerType
-            };
-
-            try {
-                const response = await fetch(`/inverters/modbus_register/${JSON.stringify(data)}`);
-                const result = await response.json();
-                document.getElementById(`result_${unitId}`).value = result.value;
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to fetch register data');
-            }
-        }
         async function updateData() {
 	    const units = {{ hardware.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
