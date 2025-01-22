@@ -18,6 +18,7 @@ router = APIRouter(prefix="/modbus", tags=["modbus"])
 @router.get("/modbus_write/{data}")
 async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeployment, Depends(get_hardware)]):
     parsed_data = json.loads(data)
+    print(parsed_data)
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
     m_map = ModbusMap.from_dict({"registers": [
@@ -27,7 +28,8 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
             "address": parsed_data['register'],
             "units": "",
             "conversion_factor": 1.0,
-            "description": "On demand write"
+            "description": "On demand write",
+            "read_write": "RW"
         }
     ]})
     if page == "BMS":
@@ -37,7 +39,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     values = modbus_data_write(hardware, m_map, slave_id=unit_id,
                                register_name="ODW", value=parsed_data['value'])
     # Handle the modbus read operation here
-    return {"success": True, "value": values['ODQ']}
+    return {"success": True, "value":values }
 
 
 
@@ -63,5 +65,6 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
     elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
     values = modbus_data_acquisition(hardware, m_map, slave_id=unit_id)
+    print(values)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}
