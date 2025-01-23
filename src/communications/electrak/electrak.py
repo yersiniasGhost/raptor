@@ -62,6 +62,7 @@ class ElectrakMD:
             'TEMPERATURE': 0x200F,
             'VOLTAGE': 0x2010
         }
+        self.setup()
 
 
     def setup(self):
@@ -69,10 +70,10 @@ class ElectrakMD:
         with self.operation_lock:
             try:
                 self.node.nmt.state = 'PRE-OPERATIONAL'
-                time.sleep(0.5)
+                time.sleep(0.25)
                 
                 self.node.nmt.state = 'OPERATIONAL'
-                time.sleep(0.5)
+                time.sleep(0.25)
                 
                 # Configure PDO timing
                 self.node.sdo[0x2006].raw = 100

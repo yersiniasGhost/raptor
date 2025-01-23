@@ -50,11 +50,11 @@
 
 {% block content %}
     <h1>Actuator Control System</h1>
-    
-    <!-- Actuator 1 Panel -->
+    {% for a_id, actuator in manager.actuators.items() %}
+    <!-- Actuator Panels -->
     <div class="actuator-panel">
-        <h2>Actuator 1</h2>
-        <table id="actuator1-table">
+        <h2>Actuator {{a_id}}</h2>
+        <table id="actuator{{a_id}}-table">
             <tr>
                 <th>Parameter</th>
                 <th>Value</th>
@@ -62,105 +62,54 @@
             </tr>
             <tr>
                 <td>Position</td>
-                <td id="act1-position">Loading...</td>
+                <td id="act{{a_id}}-position">Loading...</td>
                 <td>mm</td>
             </tr>
             <tr>
                 <td>Current</td>
-                <td id="act1-current">Loading...</td>
+                <td id="act{{a_id}}-current">Loading...</td>
                 <td>A</td>
             </tr>
             <tr>
                 <td>Speed</td>
-                <td id="act1-speed">Loading...</td>
+                <td id="act{{a_id}}-speed">Loading...</td>
                 <td>%</td>
             </tr>
             <tr>
                 <td>Voltage</td>
-                <td id="act1-voltage">Loading...</td>
+                <td id="act{{a_id}}-voltage">Loading...</td>
                 <td>V</td>
             </tr>
         </table>
 
         <div class="control-form">
             <h3>Control Panel</h3>
-            <form id="actuator1-form" onsubmit="moveActuator(1, event)">
+            <form id="actuator{{a_id}}-form" onsubmit="moveActuator(1, event)">
                 <div class="form-group">
-                    <label for="target-position-1">Target Position:</label>
-                    <input type="number" id="target-position-1" step="0.1" required>
+                    <label for="target-position-{{a_id}}">Target Position:</label>
+                    <input type="number" id="target-position-{{a_id}}" step="0.1" required>
                     <span>mm</span>
                 </div>
                 <div class="form-group">
-                    <label for="target-speed-1">Target Speed:</label>
-                    <input type="number" id="target-speed-1" min="1" max="100" step="1" required>
+                    <label for="target-speed-{{a_id}}">Target Speed:</label>
+                    <input type="number" id="target-speed-{{a_id}}" min="1" max="100" step="1" required>
                     <span>%</span>
                 </div>
                  <div class="checkbox-group">
-                    <input type="checkbox" id="activate-alarm-1">
-                    <label for="activate-alarm-1">Activate Alarm</label>
+                    <input type="checkbox" id="activate-alarm-{{a_id}}">
+                    <label for="activate-alarm-{{a_id}}">Activate Alarm</label>
                 </div>
-                <button type="submit" id="move-button-1">Move Actuator</button>
+                <button type="submit" id="move-button-{{a_id}}">Move Actuator</button>
             </form>
         </div>
     </div>
+    {% endfor %}
 
-    <!-- Actuator 2 Panel -->
-    <div class="actuator-panel">
-        <h2>Actuator 2</h2>
-        <table id="actuator2-table">
-            <tr>
-                <th>Parameter</th>
-                <th>Value</th>
-                <th>Units</th>
-            </tr>
-            <tr>
-                <td>Position</td>
-                <td id="act2-position">Loading...</td>
-                <td>mm</td>
-            </tr>
-            <tr>
-                <td>Current</td>
-                <td id="act2-current">Loading...</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>Speed</td>
-                <td id="act2-speed">Loading...</td>
-                <td>%</td>
-            </tr>
-            <tr>
-                <td>Voltage</td>
-                <td id="act2-voltage">Loading...</td>
-                <td>V</td>
-            </tr>
-        </table>
-
-        <div class="control-form">
-            <h3>Control Panel</h3>
-            <form id="actuator2-form" onsubmit="moveActuator(2, event)">
-                <div class="form-group">
-                    <label for="target-position-2">Target Position:</label>
-                    <input type="number" id="target-position-2" step="0.1" required>
-                    <span>mm</span>
-                </div>
-                <div class="form-group">
-                    <label for="target-speed-2">Target Speed:</label>
-                    <input type="number" id="target-speed-2" min="1" max="100" step="1" required>
-                    <span>%</span>
-                </div>
-                 <div class="checkbox-group">
-                    <input type="checkbox" id="activate-alarm-2">
-                    <label for="activate-alarm-2">Activate Alarm</label>
-                </div>
-                <button type="submit" id="move-button-2">Move Actuator</button>
-            </form>
-        </div>
-    </div>
     <!-- Combined Control Panel -->
     <div class="actuator-panel" id="combined-control-panel">
         <h2>Combined Actuator Control</h2>
         <div class="control-form">
-            <h3>Move Both Actuators</h3>
+            <h3>Move All Actuators</h3>
             <form id="combined-form" onsubmit="moveBothActuators(event)">
                 <div class="form-group">
                     <label for="target-position-both">Target Position:</label>
@@ -323,7 +272,7 @@
         // Initialize status updates with dynamic polling rate
         function startStatusUpdates() {
             const updateInterval = 2000; // 2000ms base interval
-            
+            const num_actuators = {% len(manager.actuators) %}
             setInterval(() => {
                 const pollRate = (movementState[1] || movementState[2]) ? 100 : 500;
                 if (Math.random() < updateInterval / pollRate) {

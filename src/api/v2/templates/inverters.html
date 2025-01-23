@@ -183,7 +183,7 @@
     }
 
         async function updateData() {
-	    const units = {{ hardware.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
+	    const units = {{ hardware.get_slave_ids() | tojson | safe  }}
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
