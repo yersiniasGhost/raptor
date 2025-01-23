@@ -13,13 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/bms", tags=["bms"])
 
-# Load register map
-try:
-    # Initialize BMS data store
-    bms_store = BMSDataStore()
-    update_task = None
-except Exception as e:
-    logger.error(f"Failed to load Battery configuration files: {e}")
+bms_store = BMSDataStore()
 
 
 def get_batteries(deployment: HardwareDeployment):

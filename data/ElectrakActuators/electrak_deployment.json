@@ -1,14 +1,14 @@
 {
-  "hardware_type": "CANbus",
   "hardware": {
-        "type": "Electrak",
+        "type": "communications.electrak.ActuatorManager",
         "parameters": {
-            "port": "/dev/ttyS11"
+            "channel": "can0",
+		  	"eds": "/root/raptor/ElectrakActuators/Electrak_MD.eds"
         }
     },
   "devices": [
 	{
-	  "mac": "NA",
+	  "mac": "NA1",
 	  "node_id": "0x1B"
 	},
 	{
