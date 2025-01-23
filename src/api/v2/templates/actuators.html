@@ -272,12 +272,12 @@
         // Initialize status updates with dynamic polling rate
         function startStatusUpdates() {
             const updateInterval = 2000; // 2000ms base interval
-            const num_actuators = {% len(manager.actuators) %}
+            const num_actuators = {{ manager.actuators|length }};
             setInterval(() => {
                 const pollRate = (movementState[1] || movementState[2]) ? 100 : 500;
                 if (Math.random() < updateInterval / pollRate) {
-                    updateActuatorStatus(1);
-                    updateActuatorStatus(2);
+                    for(let i=1; i<=num_actuators; i++) {
+                    updateActuatorStatus(i);
                 }
             }, updateInterval);
         }

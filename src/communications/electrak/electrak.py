@@ -62,31 +62,33 @@ class ElectrakMD:
             'TEMPERATURE': 0x200F,
             'VOLTAGE': 0x2010
         }
-        self.setup()
+        self.is_setup: bool = False
 
 
     def setup(self):
-        """Initialize the actuator with error handling"""
-        with self.operation_lock:
-            try:
-                self.node.nmt.state = 'PRE-OPERATIONAL'
-                time.sleep(0.25)
-                
-                self.node.nmt.state = 'OPERATIONAL'
-                time.sleep(0.25)
-                
-                # Configure PDO timing
-                self.node.sdo[0x2006].raw = 100
-                
-                if self.node.nmt.state != 'OPERATIONAL':
-                    raise RuntimeError("Failed to enter operational state")
-                    
-            except Exception as e:
-                print(f"Actuator setup error: {e}")
-                raise
- 
+        if not self.is_setup:
+            """Initialize the actuator with error handling"""
+            with self.operation_lock:
+                try:
+                    self.node.nmt.state = 'PRE-OPERATIONAL'
+                    time.sleep(0.25)
+
+                    self.node.nmt.state = 'OPERATIONAL'
+                    time.sleep(0.25)
+
+                    # Configure PDO timing
+                    self.node.sdo[0x2006].raw = 100
+
+                    if self.node.nmt.state != 'OPERATIONAL':
+                        raise RuntimeError("Failed to enter operational state")
+
+                except Exception as e:
+                    print(f"Actuator setup error: {e}")
+                    raise
+        self.is_setup = True
 
     def current_state(self) -> dict:
+        self.setup()
         """Get current state with improved SDO handling and retries"""
         max_retries = 3
         retry_delay = 0.1
@@ -116,6 +118,7 @@ class ElectrakMD:
 
 
     def set_pdo_timeout(self, timeout_ms: int = 5000):
+        self.setup()
         """Set the PDO timeout value"""
         try:
             self.node.sdo[0x2005].raw = timeout_ms
@@ -131,7 +134,7 @@ class ElectrakMD:
         """
         Non-blocking movement command with proper complete handling and thread safety
         """
-        
+        self.setup()
         if self.is_moving:
             print("Movement already in progress")
             return False
@@ -164,6 +167,7 @@ class ElectrakMD:
         """
         Move actuator using PDO messaging with continuous updates
         """
+        self.setup()
         movement_successful = False
         cob_id = 0x200 + self.node_id
         pdo_data = bytearray(8)
@@ -314,6 +318,7 @@ class ElectrakMD:
 
     def get_position(self) -> Optional[float]:
         """Get measured position with retries"""
+        self.setup()
         max_retries = 3
         retry_delay = 0.1
 
@@ -337,6 +342,7 @@ class ElectrakMD:
         Returns:
             float: Position in mm, or None if error
         """
+        self.setup()
         try:
             position_raw = self.node.sdo[self.OD['MEASURED_POSITION']].raw
             return position_raw / 10.0  # Convert from 0.1mm to mm
@@ -364,6 +370,7 @@ class ElectrakMD:
 
 
     def get_error_status(self) -> Optional[ErrorFlags]:
+        self.setup()
         """Get error status flags"""
         try:
             flags = self.node.sdo[self.OD['ERROR_FLAGS']].raw
@@ -383,6 +390,7 @@ class ElectrakMD:
 
 
     def check_current_state(self):
+        self.setup()
         """Check all relevant parameters for current status"""
         try:
             print("\nCurrent State Check:")
@@ -410,6 +418,7 @@ class ElectrakMD:
 
 
     def get_diagnostics(self) -> Optional[dict]:
+        self.setup()
         """
         Get comprehensive diagnostic information
         
@@ -441,37 +450,11 @@ class ElectrakMD:
             time.sleep(min(timeout, 0.5))  # Cap timeout at 0.5 seconds
         except Exception as e:
             print(f"State transition to {target_state} failed: {e}")
-            
-
-    # def clear_errors(self):
-    #     """Non-blocking error clear with timeout"""
-    #     try:
-    #         print("Attempting to clear errors...")
-    #
-    #         # Quick reset sequence
-    #         self._safe_state_transition('RESET', timeout=0.2)
-    #         self._safe_state_transition('PRE-OPERATIONAL', timeout=0.2)
-    #         self._safe_state_transition('OPERATIONAL', timeout=0.2)
-    #
-    #         # Quick error check
-    #         try:
-    #             error_status = self.get_error_status()
-    #             if error_status and any(vars(error_status).values()):
-    #                 print("Failed to clear errors")
-    #                 return False
-    #         except Exception as e:
-    #             print(f"Error status check failed: {e}")
-    #             return False
-    #
-    #         return True
-    #
-    #     except Exception as e:
-    #         print(f"Error clearing failed: {e}")
-    #         return False
 
 
     def clear_errors(self):
         """Enhanced error clearing with verification"""
+        self.setup()
         try:
             print("Attempting to clear errors...")
             # Send NMT reset
