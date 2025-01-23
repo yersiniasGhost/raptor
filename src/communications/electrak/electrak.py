@@ -44,7 +44,6 @@ class ElectrakMD:
         
         # Add node to existing network
         self.node = self.network.add_node(node_id, eds_file)
-        self.setup()
         
         # Object dictionary entries
         self.OD = {
@@ -63,7 +62,6 @@ class ElectrakMD:
             'TEMPERATURE': 0x200F,
             'VOLTAGE': 0x2010
         }
-        self.setup()
 
 
     def setup(self):
