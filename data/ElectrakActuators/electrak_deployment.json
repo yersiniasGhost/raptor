@@ -3,17 +3,17 @@
         "type": "communications.electrak.ActuatorManager",
         "parameters": {
             "channel": "can0",
-		  	"eds": "/root/raptor/ElectrakActuators/Electrak_MD.eds"
+	    "eds": "/root/raptor/data/ElectrakActuators/Electrak_MD.eds"
         }
     },
   "devices": [
 	{
 	  "mac": "NA1",
-	  "node_id": "0x1B"
+	  "node_id":27 
 	},
 	{
 	  "mac": "NA2",
-	  "node_id": "0x1C"
+	  "node_id":28 
 	}
   ]
 }

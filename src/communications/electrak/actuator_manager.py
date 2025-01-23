@@ -9,6 +9,7 @@ from .electrak import ElectrakMD
 from communications.gpio_controller.banner_alarm import BannerAlarm
 from utils import Singleton
 import logging
+import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -80,6 +81,7 @@ class ActuatorManager(metaclass=Singleton):
                 
         except Exception as e:
             logger.error(f"Failed to add actuator {actuator_id}: {e}")
+            print(traceback.format_exc())
             # Cleanup if failure
             if actuator_id in self.operation_locks:
                 del self.operation_locks[actuator_id]
