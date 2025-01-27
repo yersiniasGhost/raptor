@@ -1,6 +1,6 @@
 from pathlib import Path
 import json
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, List
 import threading
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
@@ -90,6 +90,9 @@ class ActuatorManager(metaclass=Singleton):
     def get_actuator(self, actuator_id: int) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
         return self.actuators.get(actuator_id)
+
+    def get_slave_ids(self) -> List[int]:
+        return list(self.actuators.keys())
 
         
     async def move_multiple(self, target_position: float, target_speed: float):

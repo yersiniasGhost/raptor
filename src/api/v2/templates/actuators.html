@@ -283,8 +283,8 @@
             setInterval(() => {
                 const pollRate = (movementState[1] || movementState[2]) ? 100 : 500;
                 if (Math.random() < updateInterval / pollRate) {
-                    for(let i=1; i<=num_actuators; i++) {
-                        updateActuatorStatus(i);
+                    {% for act_id in manager.get_slave_ids() %}
+                        updateActuatorStatus({{ act_id }});
                     }
                 }
             }, updateInterval);
