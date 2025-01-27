@@ -154,7 +154,14 @@
             try {
                 const response = await fetch(`/actuator/${actuatorId}/status`);
                 const data = await response.json();
-                
+                if (!response.ok) {
+                    if (data.detail === "Actuator not found") {
+                        console.error(`Actuator ${actuatorId} not found`);
+                        // Handle the specific case - maybe update UI state
+                        return null;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 // Update display
                 document.getElementById(`act${actuatorId}-position`).textContent = data.position.toFixed(1);
                 document.getElementById(`act${actuatorId}-current`).textContent = data.current.toFixed(2);
@@ -277,7 +284,8 @@
                 const pollRate = (movementState[1] || movementState[2]) ? 100 : 500;
                 if (Math.random() < updateInterval / pollRate) {
                     for(let i=1; i<=num_actuators; i++) {
-                    updateActuatorStatus(i);
+                        updateActuatorStatus(i);
+                    }
                 }
             }, updateInterval);
         }
