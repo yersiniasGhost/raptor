@@ -16,8 +16,7 @@ def get_actuators(deployment: HardwareDeployment) -> ActuatorManager:
 
 
 @router.get("/{actuator_id}/status")
-async def get_actuator_status(actuator_id: int, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]) -> dict:
-    print("HERE")
+async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]) -> dict:
     actuator_manager = get_actuators(hardware)
     actuator = actuator_manager.get_actuator(actuator_id)
     if not actuator:
