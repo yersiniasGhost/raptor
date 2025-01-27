@@ -76,7 +76,8 @@
         let lastValues = {};
         async function loadHistoricalData(unitId) {
         try {
-            const response = await fetch(`/inverters/historical/${unitId}`);
+            const num_points = document.getElementById('lookback').value;
+            const response = await fetch(`/inverters/historical/${unitId}?num_points=${num_points}`);
             const result = await response.json();
 
             if (result.error || !result.data) {
@@ -102,10 +103,10 @@
                         row.Timestamp && // ensure timestamp exists
                         Object.values(row).every(val => val !== null && val !== undefined)
                     );
-                   let value = parseInt(document.getElementById('lookback').value);
-                    if (data.length > value) {
-                        data = data.slice(-value);
-                    }
+<!--                   let value = parseInt(document.getElementById('lookback').value);-->
+<!--                    if (data.length > value) {-->
+<!--                        data = data.slice(-value);-->
+<!--                    }-->
                     if (!data.length) {
                         console.error("No valid data after filtering");
                         return;
