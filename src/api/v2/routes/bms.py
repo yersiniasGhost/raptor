@@ -1,7 +1,9 @@
 # routes/bms.py
+import csv
 from typing import Annotated
+from collections import deque
 import json
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
 from . import templates
 import logging
@@ -42,16 +44,18 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
 
 
 @router.get("/historical/{unit_id}")
-async def get_historical_data(unit_id: int):
+async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
         filename = f"battery_{unit_id}.csv"
-
-        # Use Python's file handling
+        last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
-            content = file.read()
+            header = file.readline().strip()
+            for line in file:
+                last_points.append(line)
 
-        return JSONResponse(content={"data": content, "error": None})
+        csv_data = header + '\n' + '\n'.join(last_points)
+        return JSONResponse(content={"data": csv_data, "error": None})
     except FileNotFoundError:
         logger.error(f"CSV file not found for unit {unit_id}")
         return JSONResponse(content={"data": None, "error": f"No historical data found for unit {unit_id}"})

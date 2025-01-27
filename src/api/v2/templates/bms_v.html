@@ -19,7 +19,7 @@
 <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
     <div>
         <label for="my_integer">Number of chart data points:</label>
-        <input type="number" id="lookback" min="100" step="100">
+        <input type="number" id="lookback" value="4000" min="100" step="100">
     </div>
     <button onclick="updateBMSData()">Refresh</button>
 </div>
@@ -75,7 +75,8 @@
         let lastValues = {};
         async function loadHistoricalData(unitId) {
         try {
-            const response = await fetch(`/bms/historical/${unitId}`);
+            const num_points = document.getElementById('lookback').value;
+            const response = await fetch(`/bms/historical/${unitId}?num_points=${num_points}`);
             const result = await response.json();
 
             if (result.error || !result.data) {
@@ -102,10 +103,10 @@
                         Object.values(row).every(val => val !== null && val !== undefined)
                     );
                     // Limit to most recent  points
-                    let value = parseInt(document.getElementById('lookback').value);
-                    if (data.length > value) {
-                        data = data.slice(-value);
-                    }
+<!--                    let value = parseInt(document.getElementById('lookback').value);-->
+<!--                    if (data.length > value) {-->
+<!--                        data = data.slice(-value);-->
+<!--                    }-->
                     if (!data.length) {
                         console.error("No valid data after filtering");
                         return;

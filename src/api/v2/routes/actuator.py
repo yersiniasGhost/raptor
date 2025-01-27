@@ -14,6 +14,7 @@ router = APIRouter(prefix="/actuator", tags=["actuator"])
 def get_actuators(deployment: HardwareDeployment) -> ActuatorManager:
     return deployment.actuator_manager
 
+
 @router.get("/{actuator_id}/status")
 async def get_actuator_status(actuator_id: int, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]) -> dict:
     actuator_manager = get_actuators(hardware)
