@@ -18,11 +18,11 @@ class ActuatorManager(metaclass=Singleton):
 
     def __init__(self, channel: str, eds: str):
         """Initialize the manager's resources"""
-        self.actuators: Dict[int, ElectrakMD] = {}
+        self.actuators: Dict[str, ElectrakMD] = {}
         self.network = None
         self.executor = ThreadPoolExecutor(max_workers=4)
         self.connection_lock = threading.RLock()  # Using RLock instead of Lock
-        self.operation_locks: Dict[int, threading.Lock] = {}
+        self.operation_locks: Dict[str, threading.Lock] = {}
         self.alarm = BannerAlarm
         self.channel = channel
         self.eds_file = eds
@@ -43,7 +43,7 @@ class ActuatorManager(metaclass=Singleton):
             self.network = None
             return False
                 
-    def add_actuator(self, actuator_id: int, node_id: int):
+    def add_actuator(self, actuator_id: str, node_id: int):
         """Add a new actuator to the management system"""
         logger.info(f"Adding actuator {actuator_id}")
 
@@ -87,11 +87,11 @@ class ActuatorManager(metaclass=Singleton):
                 del self.operation_locks[actuator_id]
             return False
                 
-    def get_actuator(self, actuator_id: int) -> Optional[ElectrakMD]:
+    def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
         return self.actuators.get(actuator_id)
 
-    def get_slave_ids(self) -> List[int]:
+    def get_slave_ids(self) -> List[str]:
         return list(self.actuators.keys())
 
         
