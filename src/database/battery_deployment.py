@@ -54,7 +54,7 @@ class BatteryDeployment:
         except (ValueError, TypeError) as e:
             logger.error(f"Invalid battery configuration: {e}")
             raise ValueError(f"Failed to create battery definition: {e}")
-        return cls(batteries=batteries, hardware_definition=hardware)
+        return cls(hardware_definition=battery_map, batteries=batteries)
 
 
     def get_slave_ids(self) -> List[int]:

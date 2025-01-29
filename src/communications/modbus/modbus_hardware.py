@@ -39,7 +39,7 @@ class ModbusHardware(ABC):
 
     def get_modbus_tcp_client(self) -> ModbusTcpClient:
         # TODO Error checking required or rely on library?
-        return ModbusTcpClient(host=self.host, port=self.port) #, source_address=('10.250.250.2', 0))
+        return ModbusTcpClient(host=self.host, port=int(self.port)) #, source_address=('10.250.250.2', 0))
 
 
     def get_modbus_client(self) -> Union[ModbusTcpClient, ModbusSerialClient]:
