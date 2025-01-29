@@ -1,32 +1,23 @@
-from fastapi import APIRouter, Request, UploadFile, File, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File
 from fastapi.responses import JSONResponse
 from . import templates
 import json
-from typing import Dict, Optional
+from typing import Dict, Annotated
 import logging
-from .system_configuration import SystemConfiguration
+from .hardware_deployment import HardwareDeployment, get_hardware
 
 
 router = APIRouter(prefix="/configuration", tags=["configuration"])
 
-# Dictionary to store the current configurations
-configurations: Dict[str, dict] = {
-    "actuator": None,
-    "bms": None,
-    "inverter": None,
-    "generation": None
-}
-
-
-# Create a global instance of SystemConfiguration
-system_config = SystemConfiguration()
-
 
 @router.get("/", name="configuration_index")
-async def index(request: Request):
+async def index(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     return templates.TemplateResponse(
         "configuration.html",
-        {"request": request}
+        {
+            "hardware": hardware,
+            "request": request
+        }
     )
 
 
@@ -35,8 +26,6 @@ async def upload_configuration(
         section: str,
         file: UploadFile = File(...),
 ):
-    if section not in configurations:
-        raise HTTPException(status_code=400, detail="Invalid configuration section")
 
     try:
         content = await file.read()

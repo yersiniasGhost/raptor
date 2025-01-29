@@ -26,6 +26,7 @@ class ActuatorManager(metaclass=Singleton):
         self.alarm = BannerAlarm
         self.channel = channel
         self.eds_file = eds
+        self.hardware_definition: dict = {}
 
     def setup_network(self):
         """Initialize CAN network connection"""
@@ -158,6 +159,7 @@ class ActuatorManager(metaclass=Singleton):
             raise
         try:
             manager = cls(**parameters)
+            manager.hardware_definition = actuator_map
             for device in devices:
                 manager.add_actuator(device['mac'], device['node_id'])
         except (ValueError, TypeError) as e:

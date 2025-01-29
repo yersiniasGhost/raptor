@@ -56,8 +56,9 @@
             Upload Actuator Config
         </button>
     </form>
-    <div id="actuatorConfigDisplay" class="json-display">
-        No configuration loaded
+    <div id="actuatorConfigDisplay" class="json-display" contenteditable="true">
+        {% set definition = hardware.get_hardware_definition("Actuators") %}
+        {{ definition | tojson(indent=4) if definition else "No configuration loaded" }}
     </div>
 </div>
 
@@ -69,8 +70,9 @@
             Upload BMS Config
         </button>
     </form>
-    <div id="bmsConfigDisplay" class="json-display">
-        No configuration loaded
+    <div id="bmsConfigDisplay" class="json-display" contenteditable="true">
+        {% set definition = hardware.get_hardware_definition("BMS") %}
+        {{ definition | tojson(indent=4) if definition else "No configuration loaded" }}
     </div>
 </div>
 
@@ -82,8 +84,9 @@
             Upload Inverter Config
         </button>
     </form>
-    <div id="inverterConfigDisplay" class="json-display">
-        No configuration loaded
+    <div id="inverterConfigDisplay" class="json-display" contenteditable="true">
+        {% set definition = hardware.get_hardware_definition("Inverter") %}
+        {{ definition | tojson(indent=4) if definition else "No configuration loaded" }}
     </div>
 </div>
 
@@ -95,7 +98,7 @@
             Upload Generation Config
         </button>
     </form>
-    <div id="generationConfigDisplay" class="json-display">
+    <div id="generationConfigDisplay" class="json-display" contenteditable="true">
         No configuration loaded
     </div>
 </div>
