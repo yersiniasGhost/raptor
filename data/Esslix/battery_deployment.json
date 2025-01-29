@@ -1,6 +1,6 @@
 {
     "hardware": {
-        "type": "communications.modbug.EveBattery",
+        "type": "communications.modbus.EveBattery",
         "parameters": {
             "port": "/dev/ttyS11"
         }
