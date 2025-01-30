@@ -71,7 +71,7 @@
         </div>
     </div>
     <div class="config-controls">
-        <button class="test-button" onclick="testConfig('{{ config | lower }}')">Test {{ config }}</button>
+        <button class="test-button" onclick="testConfig('{{ config }}')">Test {{ config }}</button>
         <textarea id="{{ section }}Response" class="json-display" readonly></textarea>
         <button class="test-button" onclick="resetConfig('{{ config | lower }}')">Reset {{ config }}</button>
     </div>
