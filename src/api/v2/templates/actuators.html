@@ -138,18 +138,21 @@
 
         // Track movement state
         const movementState = {
-            1: false,
-            2: false
+            {% for act_id in manager.get_slave_ids() %}
+                {{act_id}}: false{{ "," if not loop.last }}
+            {% endfor %}
         };
 
         let lastPosition = {
-            1: null,
-            2: null
+            {% for act_id in manager.get_slave_ids() %}
+                {{act_id}}: null{{ "," if not loop.last }}
+            {% endfor %}
         };
 
         let stableCount = {
-            1: 0,
-            2: 0
+            {% for act_id in manager.get_slave_ids() %}
+                {{act_id}}: 0{{ "," if not loop.last }}
+            {% endfor %}
         };
 
         // Update actuator status with optimized polling
@@ -198,9 +201,7 @@
 
         // Move actuator with state tracking
         async function moveActuator(actuatorId, event) {
-		            console.log("Actuator ID");
-            console.log(actuatorId);
-            event.preventDefault();
+		    event.preventDefault();
             
             const button = document.getElementById(`move-button-${actuatorId}`);
             button.disabled = true;
@@ -242,14 +243,12 @@
             const button = document.getElementById('move-button-both');
             button.disabled = true;
 
-            // Set movement state for both actuators
-            movementState[1] = true;
-            movementState[2] = true;
-            lastPosition[1] = null;
-            lastPosition[2] = null;
-            stableCount[1] = 0;
-            stableCount[2] = 0;
-            
+            // Set movement state for all actuators
+            {% for act_id in manager.get_slave_ids() %}
+                movementState[{{act_id}}] = true;
+                lastPosition[{{act_id}}] = null;
+                stableCount[{{act_id}}] = 0;
+            {% endfor %}
             const targetPosition = document.getElementById('target-position-both').value;
             const targetSpeed = document.getElementById('target-speed-both').value;
             const activateAlarm = document.getElementById(`activate-alarm-both`).checked;
