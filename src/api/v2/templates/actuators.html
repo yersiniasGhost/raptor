@@ -133,8 +133,8 @@
 
 {% block scripts %}
     <script>
-        const MOVING_POLL_RATE = 1000;  // 1000ms when moving
-        const IDLE_POLL_RATE = 15000;    // 1500ms when idle
+        const MOVING_POLL_RATE = 500;  // 1000ms when moving
+        const IDLE_POLL_RATE = 1000;    // 1500ms when idle
 
         // Track movement state
         const movementState = {
@@ -290,11 +290,9 @@
             const num_actuators = {{ manager.actuators|length }};
             setInterval(() => {
                 const pollRate = (movementState[1] || movementState[2]) ? MOVING_POLL_RATE : IDLE_POLL_RATE;
-                if (Math.random() < updateInterval / pollRate) {
-                    {% for act_id in manager.get_slave_ids() %}
-                        updateActuatorStatus("{{act_id}}");
-                    {% endfor %} 
-                }
+                {% for act_id in manager.get_slave_ids() %}
+                    updateActuatorStatus("{{act_id}}");
+                {% endfor %}
             }, updateInterval);
         }
 
