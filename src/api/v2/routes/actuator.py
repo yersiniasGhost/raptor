@@ -92,6 +92,29 @@ async def move_actuator(actuator_id: str, target_position: float = Form(...),
         raise HTTPException(status_code=409, detail="Movement failed")
 
 
+@router.post("/move-multiple")
+async def move_multiple_actuators(target_position: float = Form(...),
+                                  target_speed: float = Form(...), activate_alarm: bool = Form(False),
+                                  hardware: Annotated[HardwareDeployment, Depends(get_hardware)] = None):
+    """Move multiple actuators simultaneously"""
+    try:
+        # Convert input format to manager format
+        manager = hardware.actuator_manager
+        success = await manager.move_multiple(target_position, target_speed)
+        if success:
+            return {
+                "message": "Moving multiple actuators",
+                "status": "commands_sent"
+            }
+        else:
+            raise HTTPException(
+                status_code=409,
+                detail="One or more movements failed"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/", name="actuator_index")
 async def index(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     am = get_actuators(hardware)
