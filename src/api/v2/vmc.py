@@ -1,3 +1,4 @@
+import subprocess
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -23,11 +24,16 @@ def get_hardware_deployment() -> HardwareDeployment:
     return app.state.hardware
 
 
+def get_git_version():
+    return subprocess.check_output(["git", "describe", "--tags", "--always"]).decode().strip()
+
+
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Initialize templates
 templates = Jinja2Templates(directory="templates")
+templates.env.globals["version"] = get_git_version()
 
 # Include routers
 app.include_router(actuator.router)

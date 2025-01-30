@@ -23,10 +23,12 @@ async def index(request: Request, hardware: Annotated[HardwareDeployment, Depend
 
 
 @router.post("/ping/{section}")
-async def ping_hardware(section: str):
+async def ping_hardware(section: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     try:
         if section == "Actuators":
-            result = subprocess.run(["ip", "-details", "link", "show", "can0"], capture_output=True, text=True)
+            manager = hardware.actuator_manager
+
+            result = subprocess.run(["ip", "-details", "link", "show", manager.channel], capture_output=True, text=True)
             return {"output": result.stdout if result.returncode == 0 else result.stderr}
         else:
             # Execute the ping command (limited to 2 pings for safety)
