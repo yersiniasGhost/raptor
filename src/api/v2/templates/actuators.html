@@ -134,7 +134,7 @@
 {% block scripts %}
     <script>
         const MOVING_POLL_RATE = 500;  // 1000ms when moving
-        const IDLE_POLL_RATE = 1000;    // 1500ms when idle
+        const IDLE_POLL_RATE = 5000;    // 1500ms when idle
 
         // Track movement state
         const movementState = {
@@ -261,7 +261,7 @@
 
 
             try {
-                const response = await fetch('/move-multiple', {
+                const response = await fetch('/actuator/move-multiple', {
                     method: 'POST',
                     body: formData
                 });
@@ -283,6 +283,7 @@
         }
 
 
+        let statusUpdateInterval;
 
         // Initialize status updates with dynamic polling rate
         function startStatusUpdates() {
