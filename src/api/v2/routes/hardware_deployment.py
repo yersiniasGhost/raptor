@@ -24,7 +24,7 @@ class HardwareDeployment:
 
         self.actuator_manager = ActuatorManager.from_json(f"{DATA_PATH}/ElectrakActuators/electrak_deployment.json")
 
-    def get_hardware(self, hardware_type: str) -> Optional[dict]:
+    def get_hardware_definition(self, hardware_type: str) -> Optional[dict]:
         if hardware_type == "BMS":
             return self.batteries.hardware_definition
         if hardware_type == "Inverter":
