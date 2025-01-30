@@ -72,6 +72,7 @@
     </div>
     <div class="config-controls">
         <button class="test-button" onclick="testConfig('{{ config | lower }}')">Test {{ config }}</button>
+        <textarea id="{{ section }}Response" class="json-display" readonly></textarea>
         <button class="test-button" onclick="resetConfig('{{ config | lower }}')">Reset {{ config }}</button>
     </div>
 </div>
@@ -81,7 +82,14 @@
 {% block scripts %}
 <script>
     function testConfig(config) {
-        alert(`Testing ${config} configuration`);
+        const responseBox = document.getElementById(`${section}Response`);
+        try {
+            const response = await fetch(`/ping/${section}`, { method: 'POST' });
+            const data = await response.json();
+            responseBox.value = data.output || data.error;
+        } catch (error) {
+            responseBox.value = "Error executing hardware test.";
+        }
     }
 
     function resetConfig(config) {

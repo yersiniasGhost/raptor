@@ -3,7 +3,7 @@
         "type": "communications.electrak.ActuatorManager",
         "parameters": {
             "channel": "can0",
-	    "eds": "/root/raptor/data/ElectrakActuators/Electrak_MD.eds"
+	    	"eds": "/root/raptor/data/ElectrakActuators/Electrak_MD.eds"
         }
     },
   "devices": [

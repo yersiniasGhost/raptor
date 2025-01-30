@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File
 from fastapi.responses import JSONResponse
+import subprocess
 from . import templates
 import json
 from typing import Dict, Annotated
@@ -21,11 +22,22 @@ async def index(request: Request, hardware: Annotated[HardwareDeployment, Depend
     )
 
 
+@router.post("/ping/{section}")
+async def ping_hardware(section: str):
+    try:
+        if section == "Actuators":
+            result = subprocess.run(["ip", "-details", "link", "show", "can0"], capture_output=True, text=True)
+            return {"output": result.stdout if result.returncode == 0 else result.stderr}
+        else:
+            # Execute the ping command (limited to 2 pings for safety)
+            result = subprocess.run(["ping", "-c", "2", section], capture_output=True, text=True)
+            return {"output": result.stdout if result.returncode == 0 else result.stderr}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/upload/{section}")
-async def upload_configuration(
-        section: str,
-        file: UploadFile = File(...),
-):
+async def upload_configuration(section: str, file: UploadFile = File(...),):
 
     try:
         content = await file.read()
