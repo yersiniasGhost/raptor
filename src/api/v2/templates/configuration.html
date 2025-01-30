@@ -61,8 +61,8 @@
     <div class="config-section">
         <h3 class="config-title">{{ config }} Configuration</h3>
         <form class="upload-form" id="{{ config | lower }}ConfigForm">
-            <input type="file" accept=".json" id="{{ config | lower }}ConfigFile" style="display: none;">
-            <button type="button" class="upload-button" onclick="document.getElementById('{{ config | lower }}ConfigFile').click()">
+            <input type="file" accept=".json" id="{{ config }}ConfigFile" style="display: none;">
+            <button type="button" class="upload-button" onclick="document.getElementById('{{ config }}ConfigFile').click()">
                 Upload {{ config }} Config
             </button>
         </form>
@@ -72,9 +72,9 @@
         </div>
     </div>
     <div class="config-controls">
-        <button class="test-button" onclick="testConfig('{{ config | lower }}')">Test {{ config }}</button>
-        <textarea id="{{ section }}Response" class="json-display" readonly></textarea>
-        <button class="test-button" onclick="resetConfig('{{ config | lower }}')">Reset {{ config }}</button>
+        <button class="test-button" onclick="testConfig('{{ config }}')">Test {{ config }}</button>
+        <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
+        <button class="test-button" onclick="resetConfig('{{ config }}')">Reset {{ config }}</button>
     </div>
 </div>
 {% endfor %}
@@ -82,10 +82,10 @@
 
 {% block scripts %}
 <script>
-    function testConfig(config) {
+    async function testConfig(section) {
         const responseBox = document.getElementById(`${section}Response`);
         try {
-            const response = await fetch(`/ping/${section}`, { method: 'POST' });
+            const response = await fetch(`/configuration/ping/${section}`, { method: 'POST' });
             const data = await response.json();
             responseBox.value = data.output || data.error;
         } catch (error) {
@@ -96,8 +96,8 @@
     function resetConfig(config) {
         document.getElementById(`${config}ConfigDisplay`).textContent = "No configuration loaded";
     }
-    const configSections = ['actuator', 'bms', 'inverter', 'generation'];
-
+    
+    const configSections = ["Actuators", "BMS", "Inverter", "Generation"];
     configSections.forEach(section => {
         const fileInput = document.getElementById(`${section}ConfigFile`);
         const display = document.getElementById(`${section}ConfigDisplay`);
