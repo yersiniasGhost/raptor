@@ -10,6 +10,10 @@
 	{
 	  "mac": "NA1",
 	  "node_id":27 
+	},
+	{
+	  "mac": "Act-damaged",
+	  "node_id":28
 	}
   ]
 }

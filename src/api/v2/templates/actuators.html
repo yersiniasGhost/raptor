@@ -293,7 +293,7 @@
                 {% for act_id in manager.get_slave_ids() %}
                     updateActuatorStatus("{{act_id}}");
                 {% endfor %}
-            }, updateInterval);
+            }, pollRate);
         }
 
         // Start the status updates
