@@ -60,7 +60,7 @@ async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDepl
 
 
 @router.post("/{actuator_id}/move")
-async def move_actuator(actuator_id: int, target_position: float = Form(...),
+async def move_actuator(actuator_id: str, target_position: float = Form(...),
                         target_speed: float = Form(...), activate_alarm: bool = Form(False),
                         hardware: Annotated[HardwareDeployment, Depends(get_hardware)] = None):
     """Move single actuator"""
