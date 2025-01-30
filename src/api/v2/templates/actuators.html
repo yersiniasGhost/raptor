@@ -288,8 +288,11 @@
         function startStatusUpdates() {
             const updateInterval = 2000; // 2000ms base interval
             const num_actuators = {{ manager.actuators|length }};
-            setInterval(() => {
-                const pollRate = (movementState[1] || movementState[2]) ? MOVING_POLL_RATE : IDLE_POLL_RATE;
+            if (statusUpdateInterval) {
+               clearInterval(statusUpdateInterval);
+            }
+            const pollRate = (movementState[1] || movementState[2]) ? MOVING_POLL_RATE : IDLE_POLL_RATE;
+            statusUpdateInterval = setInterval(() => {
                 {% for act_id in manager.get_slave_ids() %}
                     updateActuatorStatus("{{act_id}}");
                 {% endfor %}
