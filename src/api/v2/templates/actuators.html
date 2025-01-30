@@ -133,6 +133,9 @@
 
 {% block scripts %}
     <script>
+        const MOVING_POLL_RATE = 1000;  // 1000ms when moving
+        const IDLE_POLL_RATE = 15000;    // 1500ms when idle
+
         // Track movement state
         const movementState = {
             1: false,
@@ -215,9 +218,6 @@
             formData.append('activate_alarm', activateAlarm);
 
             try {
-		console.log("HER");
-		    console.log(actuatorId);
-
                 const response = await fetch(`/actuator/${actuatorId}/move`, {
                     method: 'POST',
                     body: formData
@@ -226,6 +226,7 @@
                 if (!response.ok) {
                     throw new Error('Movement command failed');
                 }
+                startStatusUpdates();
             } catch (error) {
                 console.error('Error moving actuator:', error);
                 alert('Error sending movement command');
@@ -288,7 +289,7 @@
             const updateInterval = 2000; // 2000ms base interval
             const num_actuators = {{ manager.actuators|length }};
             setInterval(() => {
-                const pollRate = (movementState[1] || movementState[2]) ? 100 : 500;
+                const pollRate = (movementState[1] || movementState[2]) ? MOVING_POLL_RATE : IDLE_POLL_RATE;
                 if (Math.random() < updateInterval / pollRate) {
                     {% for act_id in manager.get_slave_ids() %}
                         updateActuatorStatus("{{act_id}}");
