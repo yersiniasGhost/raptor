@@ -134,24 +134,24 @@
 {% block scripts %}
     <script>
         const MOVING_POLL_RATE = 500;  // 1000ms when moving
-        const IDLE_POLL_RATE = 5000;    // 1500ms when idle
+        const IDLE_POLL_RATE = 2500;    // 1500ms when idle
 
         // Track movement state
         const movementState = {
             {% for act_id in manager.get_slave_ids() %}
-                {{act_id}}: false{{ "," if not loop.last }}
+                "{{act_id}}": false{{ "," if not loop.last }}
             {% endfor %}
         };
 
         let lastPosition = {
             {% for act_id in manager.get_slave_ids() %}
-                {{act_id}}: null{{ "," if not loop.last }}
+                "{{act_id}}": null{{ "," if not loop.last }}
             {% endfor %}
         };
 
         let stableCount = {
             {% for act_id in manager.get_slave_ids() %}
-                {{act_id}}: 0{{ "," if not loop.last }}
+                "{{act_id}}": 0{{ "," if not loop.last }}
             {% endfor %}
         };
 
@@ -179,9 +179,9 @@
                 // Check if movement has completed
                 if (movementState[actuatorId]) {
                     if (lastPosition[actuatorId] !== null) {
-                        if (Math.abs(data.position - lastPosition[actuatorId]) < 0.1) {
+                        if (Math.abs(data.position - lastPosition[actuatorId]) <= 0.1) {
                             stableCount[actuatorId]++;
-                            if (stableCount[actuatorId] >= 5) {
+                            if (stableCount[actuatorId] >= 2) {
                                 movementState[actuatorId] = false;
                                 document.getElementById(`move-button-${actuatorId}`).disabled = false;
                                 document.getElementById(`move-button-both`).disabled = false;
@@ -245,9 +245,9 @@
 
             // Set movement state for all actuators
             {% for act_id in manager.get_slave_ids() %}
-                movementState[{{act_id}}] = true;
-                lastPosition[{{act_id}}] = null;
-                stableCount[{{act_id}}] = 0;
+                movementState["{{act_id}}"] = true;
+                lastPosition["{{act_id}}"] = null;
+                stableCount["{{act_id}}"] = 0;
             {% endfor %}
             const targetPosition = document.getElementById('target-position-both').value;
             const targetSpeed = document.getElementById('target-speed-both').value;
