@@ -1,14 +1,42 @@
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from . import templates
 import logging
 from .hardware_deployment import get_hardware, HardwareDeployment
 from communications.electrak.actuator_manager import ActuatorManager
+from communications.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/actuator", tags=["actuator"])
+
+
+async def activate_warning_alarm(banner_alarm: BannerAlarm) -> None:
+    """Activate warning alarm and wait for delay"""
+    try:
+        result = banner_alarm.activate_alarm("default")
+        if result["status"] != "success":
+            raise BannerAlarmException("Failed to activate alarm")
+
+        # Wait for the warning period
+        await asyncio.sleep(banner_alarm.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+
+    except Exception as e:
+        logger.error(f"Error activating warning alarm: {e}")
+        banner_alarm.deactivate_alarm()  # Cleanup on error
+        raise BannerAlarmException(f"Failed to activate warning alarm: {str(e)}")
+
+
+async def deactivate_warning_alarm(banner_alarm: BannerAlarm) -> None:
+    """Deactivate warning alarm"""
+    try:
+        result = banner_alarm.deactivate_alarm()
+        if result["status"] != "success":
+            raise BannerAlarmException("Failed to deactivate alarm")
+    except Exception as e:
+        logger.error(f"Error deactivating warning alarm: {e}")
+        raise BannerAlarmException(f"Failed to deactivate warning alarm: {str(e)}")
 
 
 def get_actuators(deployment: HardwareDeployment) -> ActuatorManager:
@@ -29,6 +57,39 @@ async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDepl
     if status is None:
         raise HTTPException(status_code=503, detail="Failed to read status")
     return status
+
+
+@router.post("/{actuator_id}/move")
+async def move_actuator(actuator_id: int, target_position: float = Form(...),
+                        target_speed: float = Form(...), activate_alarm: bool = Form(False),
+                        hardware: Annotated[HardwareDeployment, Depends(get_hardware)] = None):
+    """Move single actuator"""
+    logger.info("Getting actuator.")
+    manager = hardware.actuator_manager
+    actuator = manager.get_actuator(actuator_id)
+    if not actuator:
+        raise HTTPException(status_code=404, detail="Actuator not found")
+
+    try:
+        if activate_alarm:
+            try:
+                await activate_warning_alarm()
+            except BannerAlarmException as e:
+                logger.error(f"Failed to activate alarm {e}")
+        success = await actuator.move_to(target_position, target_speed)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if activate_alarm:
+            try:
+                await deactivate_warning_alarm()
+            except BannerAlarmException as e:
+                logger.error(f"Failed to Deactivate alarm {e}")
+
+    if success:
+        return {"message": f"Moving actuator {actuator_id}", "status": "success"}
+    else:
+        raise HTTPException(status_code=409, detail="Movement failed")
 
 
 @router.get("/", name="actuator_index")
