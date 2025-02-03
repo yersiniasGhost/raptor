@@ -34,7 +34,6 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             modbus_map: ModbusMap, slave_id: int) -> Dict[str, Union[float, int]]:
-    print("MB", modbus_hardware)
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():
@@ -49,7 +48,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             # Attempt the read.
             address = register.get_addresses()[0]
             result = client.read_holding_registers(address=address, count=1, slave=slave_id)
-
+            print("MB", address, "slave", slave_id,  result)
             if result is None:
                 print(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
