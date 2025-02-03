@@ -1,0 +1,35 @@
+from typing import Annotated
+import csv
+from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from . import templates
+import logging
+from utils.system_status import collect_system_stats
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/system-status", tags=["system-status"])
+
+
+@router.get("/")
+async def system_status(request: Request):
+    # Read the last 60 minutes of data
+    data = []
+    with open('system_stats.csv', 'r') as f:
+        reader = csv.DictReader(f)
+        data = list(reader)[-60:]  # Last 60 entries
+
+    current_stats = data[-1] if data else collect_system_stats()
+
+    timestamps = [row['timestamp'] for row in data]
+    cpu_history = [float(row['cpu_percent']) for row in data]
+    memory_history = [float(row['memory_percent']) for row in data]
+
+    return templates.TemplateResponse("system_status.html", {
+        "request": request,
+        "current_stats": current_stats,
+        "timestamps": timestamps,
+        "cpu_history": cpu_history,
+        "memory_history": memory_history
+    })
+

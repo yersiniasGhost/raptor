@@ -9,6 +9,7 @@ from database.hardware import load_hardware_from_json_file
 from database.battery_deployment import BatteryDeployment
 from communications.modbus.modbus import modbus_data_acquisition
 from communications.modbus.modbus_map import ModbusMap
+from utils.system_status import collect_system_stats
 
 DATA_PATH = "/root/raptor/data/"
 
@@ -54,6 +55,9 @@ if __name__ == "__main__":
             values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=battery.slave_id)
             if values:
                 write_to_csv("battery", battery.slave_id, values)
+
+        sbc_state = collect_system_stats()
+        write_to_csv("system", 0, sbc_state)
 
         print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------")

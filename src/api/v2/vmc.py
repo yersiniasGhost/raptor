@@ -25,7 +25,7 @@ def get_hardware_deployment() -> HardwareDeployment:
 
 
 def get_git_version():
-    return subprocess.check_output(["git", "describe", "--tags", "--always"]).decode().strip()
+    return subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]).decode().strip()
 
 
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
