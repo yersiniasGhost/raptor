@@ -15,13 +15,13 @@ router = APIRouter(prefix="/system-status", tags=["system-status"])
 async def system_status(request: Request):
     # Read the last 60 minutes of data
     data = []
-    with open('system_stats.csv', 'r') as f:
+    with open('system_0.csv', 'r') as f:
         reader = csv.DictReader(f)
         data = list(reader)[-60:]  # Last 60 entries
 
     current_stats = data[-1] if data else collect_system_stats()
 
-    timestamps = [row['timestamp'] for row in data]
+    timestamps = [row['Timestamp'] for row in data]
     cpu_history = [float(row['cpu_percent']) for row in data]
     memory_history = [float(row['memory_percent']) for row in data]
 

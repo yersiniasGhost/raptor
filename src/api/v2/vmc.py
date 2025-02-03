@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
-from routes import actuator, bms, configuration, analysis, inverters, modbus
+from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status
 from api.v2.routes.hardware_deployment import HardwareDeployment
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -25,7 +25,10 @@ def get_hardware_deployment() -> HardwareDeployment:
 
 
 def get_git_version():
-    return subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]).decode().strip()
+    try:
+        return subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]).decode().strip()
+    except:
+        return "V0.1.0"
 
 
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
@@ -42,6 +45,7 @@ app.include_router(configuration.router)
 app.include_router(analysis.router)
 app.include_router(inverters.router)
 app.include_router(modbus.router)
+app.include_router(system_status.router)
 
 
 @app.get("/", response_class=HTMLResponse)
