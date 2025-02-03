@@ -1,20 +1,33 @@
 {# templates/actuators.html #}
 {% extends "base.html" %}
 
-{% block title %} BMS {% endblock %}
+{% block title %} Actuators {% endblock %}
 {% block head %}
     <style>
+
         .actuator-panel {
             border: 1px solid #ccc;
             padding: 20px;
-            margin: 20px 0;
             border-radius: 5px;
+            margin: 20px 0;
+        }
+        .panel-content {
+            display: flex;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .status-table {
+            flex: 1;
+            min-width: 200px;
         }
         .control-form {
-            margin-top: 20px;
+            flex: 1;
+            margin-top: 0;
             padding: 15px;
             background-color: #f9f9f9;
             border-radius: 5px;
+            min-width: 300px;
         }
         .form-group {
             margin: 8px 0;
@@ -54,37 +67,40 @@
     <!-- Actuator Panels -->
     <div class="actuator-panel">
         <h2>Actuator {{a_id}}</h2>
-        <table id="actuator{{a_id}}-table">
-            <tr>
-                <th>Parameter</th>
-                <th>Value</th>
-                <th>Units</th>
-            </tr>
-            <tr>
-                <td>Position</td>
-                <td id="act{{a_id}}-position">Loading...</td>
-                <td>mm</td>
-            </tr>
-            <tr>
-                <td>Current</td>
-                <td id="act{{a_id}}-current">Loading...</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>Speed</td>
-                <td id="act{{a_id}}-speed">Loading...</td>
-                <td>%</td>
-            </tr>
-            <tr>
-                <td>Voltage</td>
-                <td id="act{{a_id}}-voltage">Loading...</td>
-                <td>V</td>
-            </tr>
-        </table>
+        <div class="panel-content">
+            <div class="status-table">
+            <table id="actuator{{a_id}}-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                    <th>Units</th>
+                </tr>
+                <tr>
+                    <td>Position</td>
+                    <td id="act{{a_id}}-position">Loading...</td>
+                    <td>mm</td>
+                </tr>
+                <tr>
+                    <td>Current</td>
+                    <td id="act{{a_id}}-current">Loading...</td>
+                    <td>A</td>
+                </tr>
+                <tr>
+                    <td>Speed</td>
+                    <td id="act{{a_id}}-speed">Loading...</td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <td>Voltage</td>
+                    <td id="act{{a_id}}-voltage">Loading...</td>
+                    <td>V</td>
+                </tr>
+            </table>
+        </div>
 
         <div class="control-form">
             <h3>Control Panel</h3>
-            <form id="actuator{{a_id}}-form" onsubmit="moveActuator(1, event)">
+        <form id="actuator{{a_id}}-form" onsubmit="moveActuator('{{a_id}}', event)">
                 <div class="form-group">
                     <label for="target-position-{{a_id}}">Target Position:</label>
                     <input type="number" id="target-position-{{a_id}}" step="0.1" required>
@@ -102,6 +118,7 @@
                 <button type="submit" id="move-button-{{a_id}}">Move Actuator</button>
             </form>
         </div>
+    </div>
     </div>
     {% endfor %}
 
@@ -133,25 +150,31 @@
 
 {% block scripts %}
     <script>
+        const MOVING_POLL_RATE = 500;  // 1000ms when moving
+        const IDLE_POLL_RATE = 2500;    // 1500ms when idle
+
         // Track movement state
         const movementState = {
-            1: false,
-            2: false
+            {% for act_id in manager.get_slave_ids() %}
+                "{{act_id}}": false{{ "," if not loop.last }}
+            {% endfor %}
         };
 
         let lastPosition = {
-            1: null,
-            2: null
+            {% for act_id in manager.get_slave_ids() %}
+                "{{act_id}}": null{{ "," if not loop.last }}
+            {% endfor %}
         };
 
         let stableCount = {
-            1: 0,
-            2: 0
+            {% for act_id in manager.get_slave_ids() %}
+                "{{act_id}}": 0{{ "," if not loop.last }}
+            {% endfor %}
         };
 
         // Update actuator status with optimized polling
         async function updateActuatorStatus(actuatorId) {
-            try {
+		    try {
                 const response = await fetch(`/actuator/${actuatorId}/status`);
                 const data = await response.json();
                 if (!response.ok) {
@@ -171,9 +194,9 @@
                 // Check if movement has completed
                 if (movementState[actuatorId]) {
                     if (lastPosition[actuatorId] !== null) {
-                        if (Math.abs(data.position - lastPosition[actuatorId]) < 0.1) {
+                        if (Math.abs(data.position - lastPosition[actuatorId]) <= 0.1) {
                             stableCount[actuatorId]++;
-                            if (stableCount[actuatorId] >= 5) {
+                            if (stableCount[actuatorId] >= 2) {
                                 movementState[actuatorId] = false;
                                 document.getElementById(`move-button-${actuatorId}`).disabled = false;
                                 document.getElementById(`move-button-both`).disabled = false;
@@ -193,7 +216,7 @@
 
         // Move actuator with state tracking
         async function moveActuator(actuatorId, event) {
-            event.preventDefault();
+		    event.preventDefault();
             
             const button = document.getElementById(`move-button-${actuatorId}`);
             button.disabled = true;
@@ -219,6 +242,7 @@
                 if (!response.ok) {
                     throw new Error('Movement command failed');
                 }
+                startStatusUpdates();
             } catch (error) {
                 console.error('Error moving actuator:', error);
                 alert('Error sending movement command');
@@ -234,14 +258,12 @@
             const button = document.getElementById('move-button-both');
             button.disabled = true;
 
-            // Set movement state for both actuators
-            movementState[1] = true;
-            movementState[2] = true;
-            lastPosition[1] = null;
-            lastPosition[2] = null;
-            stableCount[1] = 0;
-            stableCount[2] = 0;
-            
+            // Set movement state for all actuators
+            {% for act_id in manager.get_slave_ids() %}
+                movementState["{{act_id}}"] = true;
+                lastPosition["{{act_id}}"] = null;
+                stableCount["{{act_id}}"] = 0;
+            {% endfor %}
             const targetPosition = document.getElementById('target-position-both').value;
             const targetSpeed = document.getElementById('target-speed-both').value;
             const activateAlarm = document.getElementById(`activate-alarm-both`).checked;
@@ -253,7 +275,7 @@
 
 
             try {
-                const response = await fetch('/move-multiple', {
+                const response = await fetch('/actuator/move-multiple', {
                     method: 'POST',
                     body: formData
                 });
@@ -275,19 +297,21 @@
         }
 
 
+        let statusUpdateInterval;
 
         // Initialize status updates with dynamic polling rate
         function startStatusUpdates() {
             const updateInterval = 2000; // 2000ms base interval
             const num_actuators = {{ manager.actuators|length }};
-            setInterval(() => {
-                const pollRate = (movementState[1] || movementState[2]) ? 100 : 500;
-                if (Math.random() < updateInterval / pollRate) {
-                    {% for act_id in manager.get_slave_ids() %}
-                        updateActuatorStatus({{ act_id }});
-                    }
-                }
-            }, updateInterval);
+            if (statusUpdateInterval) {
+               clearInterval(statusUpdateInterval);
+            }
+            const pollRate = (movementState[1] || movementState[2]) ? MOVING_POLL_RATE : IDLE_POLL_RATE;
+            statusUpdateInterval = setInterval(() => {
+                {% for act_id in manager.get_slave_ids() %}
+                    updateActuatorStatus("{{act_id}}");
+                {% endfor %}
+            }, pollRate);
         }
 
         // Start the status updates

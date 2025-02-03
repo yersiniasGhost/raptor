@@ -44,7 +44,6 @@ class BatteryDeployment:
     @classmethod
     def from_dict(cls, battery_map: dict) -> 'BatteryDeployment':
         try:
-            hardware = battery_map['hardware']
             battery_configs = battery_map['devices']
         except KeyError as e:
             logger.error(f"Missing required configuration field: {e}")

@@ -1,42 +1,45 @@
-from fastapi import APIRouter, Request, UploadFile, File, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File
 from fastapi.responses import JSONResponse
+import subprocess
 from . import templates
 import json
-from typing import Dict, Optional
+from typing import Dict, Annotated
 import logging
-from .system_configuration import SystemConfiguration
+from .hardware_deployment import HardwareDeployment, get_hardware
 
 
 router = APIRouter(prefix="/configuration", tags=["configuration"])
 
-# Dictionary to store the current configurations
-configurations: Dict[str, dict] = {
-    "actuator": None,
-    "bms": None,
-    "inverter": None,
-    "generation": None
-}
-
-
-# Create a global instance of SystemConfiguration
-system_config = SystemConfiguration()
-
 
 @router.get("/", name="configuration_index")
-async def index(request: Request):
+async def index(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
     return templates.TemplateResponse(
         "configuration.html",
-        {"request": request}
+        {
+            "hardware": hardware,
+            "request": request
+        }
     )
 
 
+@router.post("/ping/{section}")
+async def ping_hardware(section: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+    try:
+        if section == "Actuators":
+            manager = hardware.actuator_manager
+
+            result = subprocess.run(["ip", "-details", "link", "show", manager.channel], capture_output=True, text=True)
+            return {"output": result.stdout if result.returncode == 0 else result.stderr}
+        else:
+            # Execute the ping command (limited to 2 pings for safety)
+            result = subprocess.run(["ping", "-c", "2", section], capture_output=True, text=True)
+            return {"output": result.stdout if result.returncode == 0 else result.stderr}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/upload/{section}")
-async def upload_configuration(
-        section: str,
-        file: UploadFile = File(...),
-):
-    if section not in configurations:
-        raise HTTPException(status_code=400, detail="Invalid configuration section")
+async def upload_configuration(section: str, file: UploadFile = File(...),):
 
     try:
         content = await file.read()
