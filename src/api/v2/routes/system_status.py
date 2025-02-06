@@ -17,7 +17,7 @@ async def system_status(request: Request):
     data = []
     with open('system_0.csv', 'r') as f:
         reader = csv.DictReader(f)
-        data = list(reader)[-60:]  # Last 60 entries
+        data = list(reader)[-1500:]  # Last 60 entries
 
     current_stats = data[-1] if data else collect_system_stats()
 
