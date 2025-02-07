@@ -9,6 +9,7 @@ idna==3.10
 Jinja2==3.1.5
 msgpack==1.1.0
 packaging==24.2
+paho-mqtt==2.1.0
 psutil==6.1.0
 pydantic==2.10.3
 pydantic-core==2.27.1
