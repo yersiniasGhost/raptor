@@ -46,7 +46,8 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             # message, crc = modbus_hardware.create_read_message(register, slave_id)
 
             # Attempt the read.
-            address = register.get_addresses()[0]
+            address = int(register.get_addresses()[0])
+            print("reading", address)
             result = client.read_holding_registers(address=address, count=1, slave=slave_id)
             print("MB", address, "slave", slave_id,  result)
             if result is None:
