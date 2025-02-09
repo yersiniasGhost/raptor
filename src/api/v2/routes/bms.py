@@ -42,11 +42,14 @@ def linear_regression(x: List[float], y: List[float]) -> float:
     return numerator / denominator
 
 
-def calculate_soc_trend(timestamps: List[str], capacities: List[float]) -> float:
+def calculate_soc_trend(trend_data: List[Dict]) -> float:
     """
     Calculate the trend in SOC/Capacity data using linear regression.
     Returns the slope in capacity units per hour.
     """
+    print(trend_data)
+    timestamps = [data_dict["Timestamp"] for data_dict in trend_data]
+    capacities = [data_dict["Capacity"] for data_dict in trend_data]
     if len(timestamps) < 2:
         return 0.0
 
