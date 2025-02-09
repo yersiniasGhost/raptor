@@ -37,6 +37,7 @@ def linear_regression(x: List[float], y: List[float]) -> float:
     y_mean = sum(y) / n
     numerator = sum((x[i] - x_mean) * (y[i] - y_mean) for i in range(n))
     denominator = sum((x[i] - x_mean) ** 2 for i in range(n))
+    print(denominator, "d")
     if abs(denominator) < 1e-10:
         return 0.0
     return numerator / denominator
@@ -47,9 +48,8 @@ def calculate_soc_trend(trend_data: List[Dict]) -> float:
     Calculate the trend in SOC/Capacity data using linear regression.
     Returns the slope in capacity units per hour.
     """
-    print(trend_data)
     timestamps = [data_dict["Timestamp"] for data_dict in trend_data]
-    capacities = [data_dict["Capacity"] for data_dict in trend_data]
+    capacities = [float(data_dict["Capacity"]) for data_dict in trend_data]
     if len(timestamps) < 2:
         return 0.0
 
@@ -138,17 +138,17 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
             filename = f"battery_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
             trend = calculate_soc_trend(trending_data)
-            current_soc = trending_data[-1]["Capacity"]
+            current_soc = float(trending_data[-1]["Capacity"])
             time_to_go, soc_1hr, soc_2hr = calculate_charge_projections(current_soc, trend)
             trend_data = {
                 "trend": trend,
-                "time_to_go": time_to_go,
-                "soc_1hr": soc_1hr,
-                "soc_2hr": soc_2hr
+                "time-to-go": time_to_go,
+                "soc-1hr": soc_1hr,
+                "soc-2hr": soc_2hr
             }
             if isinstance(values, dict):  # Ensure values is a dictionary
                 await bms_store.update_unit_data(unit_id, values)
-                await bms_store.update_unit_data(trend_data)
+                await bms_store.add_unit_data(unit_id, trend_data)
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()

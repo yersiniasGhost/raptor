@@ -63,7 +63,7 @@
         <form class="upload-form" id="{{ config | lower }}ConfigForm">
             <input type="file" accept=".json" id="{{ config }}ConfigFile" style="display: none;">
             <button type="button" class="upload-button" onclick="document.getElementById('{{ config }}ConfigFile').click()">
-                Upload {{ config }} Config
+                Request {{ config }} Config
             </button>
         </form>
         <div id="{{ config | lower }}ConfigDisplay" class="json-display" contenteditable="true">
