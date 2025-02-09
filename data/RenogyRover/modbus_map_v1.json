@@ -3,7 +3,7 @@
         {
             "name": "Solar_Voltage",
             "data_type": "uint16",
-            "address": "0x0107",
+            "address": 100,
             "units": "V",
             "conversion_factor": 0.1,
             "description": "Solar Panel Input Voltage",
@@ -28,25 +28,6 @@
             "acquisition_type": "data"
         },
         {
-            "name": "Charging_State",
-            "data_type": "uint16",
-            "address": "0x0120",
-            "units": "",
-            "conversion_factor": 1,
-            "description": "Current Charging State",
-            "acquisition_type": "status",
-            "bitmask": "0xFF",
-            "enum_values": {
-                "0": "Deactivated",
-                "1": "Activated",
-                "2": "MPPT",
-                "3": "Equalizing",
-                "4": "Boost",
-                "5": "Float",
-                "6": "Current Limiting"
-            }
-        },
-        {
             "name": "Daily_Max_Charging_Power",
             "data_type": "uint16",
             "address": "0x010F",
@@ -54,7 +35,7 @@
             "conversion_factor": 1,
             "description": "Maximum Charging Power Today",
             "acquisition_type": "data"
-        }
+        },
         {
             "name": "Daily_Charging_AH",
             "data_type": "uint16",
@@ -75,23 +56,21 @@
         },
         {
             "name": "Total_Charging_AH",
-            "data_type": "uint32",
+            "data_type": "uint16",
             "address": "0x0118",
             "units": "Ah",
             "conversion_factor": 1,
             "description": "Total Charging Amp Hours",
-            "acquisition_type": "data",
-            "register_size": 4
+            "acquisition_type": "data"
         },
         {
             "name": "Total_Power_Generation",
-            "data_type": "uint32",
+            "data_type": "uint16",
             "address": "0x011C",
             "units": "kWh",
             "conversion_factor": 0.001,
             "description": "Total Power Generation",
-            "acquisition_type": "data",
-            "register_size": 4
+            "acquisition_type": "data"
         }
     ]
 }

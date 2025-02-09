@@ -33,7 +33,9 @@ def on_message(client, userdata, msg):
 
 def send_to_crem3(macaddr: str, data: dict):
     print("sending to CREM3")
-    client.publish(f"devices/{macaddr}/readings", json.dumps(data))
+    topic = f"devices/{macaddr}/readings"
+    print(topic)
+    client.publish(topic, json.dumps(data))
 
 
 if __name__ == "__main__":
