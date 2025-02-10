@@ -1,9 +1,5 @@
-# models.py
-from dataclasses import dataclass
-from typing import List, Optional, Dict
-import json
+from typing import Dict
 from asyncio import Lock
-from communications.modbus.modbus_map import ModbusMap, ModbusRegister
 
 
 # Store for BMS data
@@ -19,6 +15,10 @@ class BMSDataStore:
             
         async with self.lock:
             self.units_data[unit_id] = register_values
+
+    async def add_unit_data(self, unit_id, values: Dict[str, float]):
+        async with self.lock:
+            self.units_data[unit_id] = self.units_data[unit_id] | values
 
     async def get_all_data(self) -> Dict[str, Dict[str, float]]:
         async with self.lock:
