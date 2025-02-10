@@ -7,8 +7,8 @@ import time
 
 from database.hardware import load_hardware_from_json_file
 from database.battery_deployment import BatteryDeployment
-from communications.modbus.modbus import modbus_data_acquisition
-from communications.modbus.modbus_map import ModbusMap
+from hardware.modbus.modbus import modbus_data_acquisition
+from hardware.modbus.modbus_map import ModbusMap
 from utils.system_status import collect_system_stats
 
 DATA_PATH = "/root/raptor/data/"

@@ -3,7 +3,7 @@ from fastapi import Request
 import logging
 from bms_store import ModbusMap
 from database.battery_deployment import BatteryDeployment
-from communications.electrak.actuator_manager import ActuatorManager
+from hardware.electrak.actuator_manager import ActuatorManager
 
 
 DATA_PATH = "/root/raptor/data"

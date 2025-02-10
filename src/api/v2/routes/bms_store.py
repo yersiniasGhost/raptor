@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict
 import json
 from asyncio import Lock
-from communications.modbus.modbus_map import ModbusMap, ModbusRegister
+from hardware.modbus.modbus_map import ModbusMap, ModbusRegister
 
 
 # Store for BMS data

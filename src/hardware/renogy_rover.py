@@ -1,6 +1,6 @@
 from typing import Tuple, Optional, Dict
-from communications.modbus.modbus_hardware import ModbusHardware, ModbusClientType
-from communications.modbus.modbus_map import ModbusRegister, ModbusDatatype
+from hardware.modbus.modbus_hardware import ModbusHardware, ModbusClientType
+from hardware.modbus.modbus_map import ModbusRegister, ModbusDatatype
 
 
 class RenogyRover(ModbusHardware):

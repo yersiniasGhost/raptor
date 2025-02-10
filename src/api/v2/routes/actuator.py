@@ -3,8 +3,8 @@ from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from . import templates
 import logging
 from .hardware_deployment import get_hardware, HardwareDeployment
-from communications.electrak.actuator_manager import ActuatorManager
-from communications.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
+from hardware.electrak.actuator_manager import ActuatorManager
+from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 
 
 logging.basicConfig(level=logging.INFO)

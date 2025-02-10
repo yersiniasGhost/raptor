@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from . import templates
 import logging
-from communications.modbus.modbus import modbus_data_acquisition
+from hardware.modbus.modbus import modbus_data_acquisition
 from bms_store import BMSDataStore, ModbusMap
 from database.battery_deployment import BatteryDeployment
 

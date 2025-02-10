@@ -5,8 +5,8 @@ import asyncio
 import uvicorn
 from typing import Dict
 import logging
-from communications.electrak.actuator_manager import ActuatorManager
-from communications.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
+from hardware.electrak.actuator_manager import ActuatorManager
+from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 
 logging.basicConfig(level=logging.INFO)  # Reduced from DEBUG to save resources
 logger = logging.getLogger(__name__)

@@ -5,9 +5,9 @@ from pathlib import Path
 import json
 
 
-from communications.modbus.modbus_hardware import ModbusHardware
-from communications.modbus import InviewGateway
-from communications.modbus import EveBattery
+from hardware.modbus.modbus_hardware import ModbusHardware
+from hardware.modbus import InviewGateway
+from hardware.modbus import EveBattery
 from hardware.renogy_rover import RenogyRover
 import logging
 logger = logging.getLogger(__name__)

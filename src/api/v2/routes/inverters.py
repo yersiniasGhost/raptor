@@ -6,7 +6,7 @@ from . import templates
 import logging
 from bms_store import BMSDataStore
 from .hardware_deployment import HardwareDeployment, get_hardware
-from communications.modbus.modbus import modbus_data_acquisition
+from hardware.modbus.modbus import modbus_data_acquisition
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

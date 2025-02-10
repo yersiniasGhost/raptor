@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Request, Depends
 from . import templates
 import logging
-from communications.modbus.modbus import modbus_data_acquisition, modbus_data_write
+from hardware.modbus.modbus import modbus_data_acquisition, modbus_data_write
 from bms_store import ModbusMap
 from .hardware_deployment import HardwareDeployment, get_hardware
 

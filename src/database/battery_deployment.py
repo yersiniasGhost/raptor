@@ -1,7 +1,7 @@
 from typing import List, Iterator, Dict, Optional
 from dataclasses import dataclass, field
 import json
-from communications.modbus.modbus_hardware import ModbusHardware
+from hardware.modbus.modbus_hardware import ModbusHardware
 from database.hardware import load_hardware_from_dict
 import logging
 
