@@ -136,7 +136,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
             # Assuming read_holding_registers returns a Dict[str, float]
             values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=unit_id)
             filename = f"battery_{unit_id}.csv"
-            trending_data = read_last_n_tail(filename, 5)
+            trending_data = read_last_n_tail(filename, 8)
             trend = calculate_soc_trend(trending_data)
             current_soc = float(trending_data[-1]["Capacity"])
             time_to_go, soc_1hr, soc_2hr = calculate_charge_projections(current_soc, trend)

@@ -8,6 +8,15 @@
                 "conversion_factor": 0.01,
                 "description": "Charge/discharging current (A)"
             },
+	    {
+		    "name": "Pack Voltage",
+		    "data_type": "uint16",
+		    "address": 1,
+		    "units": "V",
+		    "conversion_factor": 0.01,
+		    "description": "Voltage of battery pack (V)"
+	    },
+
             {
                 "name": "SOC (%)",
                 "data_type": "uint8",
