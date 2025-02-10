@@ -100,7 +100,7 @@ class FirmwareUpdater:
         """Restart all configured screen sessions."""
         from config.services import sessions
         success = True
-        for session in sessions:
+        for session in sessions['sessions']:
             name = session['name']
             command = session['command']
 
