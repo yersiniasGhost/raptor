@@ -37,7 +37,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():
-            print("Failed to connect")
+            logger.error("Failed to connect")
             return {}
 
         output: Dict[str, Union[float, int]] = {}
@@ -47,19 +47,17 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
 
             # Attempt the read.
             address = int(register.get_addresses()[0])
-            print("reading", address)
             result = client.read_holding_registers(address=address, count=1, slave=slave_id)
-            print("MB", address, "slave", slave_id,  result)
             if result is None:
-                print(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
+                logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
-                print(f"Error reading register: {result}")
+                logger.info(f"Error reading register: {result}")
             else:
                 output[register.name] = convert_register_value(result.registers[0], register)
 
         return output
     except Exception as e:
-        print(f"Error reading modbus: {e}")
+        logger.exception(f"Error reading modbus: {e}")
     finally:
         client.close()
 
@@ -88,7 +86,7 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
         try:
             converted_value = prepare_value_for_register(value, register)
         except ValueError as e:
-            print(f"Error converting value: {e}")
+            logger.exception(f"Error converting value: {e}")
             return False
 
         # Attempt write to register
