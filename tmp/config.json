@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "timestamp": "2025-02-04T12:00:00Z",
+    "update_id": "update_12345",
+    "checksum": "sha256_hash_here"
+  },
+  "hardware": {
+    "driver_path": "hardware.modbus.eve_battery",
+    "name": "EVE Battery Management System",
+    "config": {
+	  "port": "/dev/ttyUSB0",
+      "baud_rate": 9600,
+      "parity": "none",
+      "stop_bits": 1,
+      "timeout": 1.0,
+      "retry_count": 3
+    },
+    "enabled": true,
+    "devices": [
+      {
+        "name": "Temperature Controller TC-100",
+        "device_id": "1",
+        "config": {
+          "slave_id": 1
+        },
+        "enabled": true,
+        "data_points": [
+          {
+            "name": "Process Temperature",
+            "data_type": "float",
+            "access_type": "read",
+            "address": "40001",
+            "scaling_factor": 0.1,
+            "offset": 0.0,
+            "units": "°C"
+          },
+          {
+            "name": "Temperature Setpoint",
+            "data_type": "float",
+            "access_type": "read_write",
+            "address": "40002",
+            "scaling_factor": 0.1,
+            "offset": 0.0,
+            "units": "°C"
+          },
+          {
+            "name": "Control Mode",
+            "data_type": "int",
+            "access_type": "read_write",
+            "address": "40003",
+            "scaling_factor": 1.0,
+            "offset": 0.0,
+            "units": null
+          }
+        ]
+      },
+      {
+        "name": "Flow Meter FM-200",
+        "device_id": "2",
+        "config": {
+          "slave_id": 2,
+          "protocol": "modbus_rtu",
+          "response_timeout": 500
+        },
+        "enabled": true,
+        "data_points": [
+          {
+            "name": "Flow Rate",
+            "data_type": "float",
+            "access_type": "read",
+            "address": "30001",
+            "scaling_factor": 0.01,
+            "offset": 0.0,
+            "units": "L/min"
+          },
+          {
+            "name": "Total Flow",
+            "data_type": "float",
+            "access_type": "read",
+            "address": "30003",
+            "scaling_factor": 0.1,
+            "offset": 0.0,
+            "units": "m³"
+          }
+        ]
+      }
+    ]
+  }
+}

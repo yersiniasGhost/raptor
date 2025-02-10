@@ -66,8 +66,7 @@ async def get_bms_data(deployment: Annotated[HardwareDeployment, Depends(get_har
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()
-        print(data)
-        print('-----')
+
         return JSONResponse(content={"data": data, "error": None})
     except Exception as e:
         logger.error(f"Error getting BMS data: {e}")

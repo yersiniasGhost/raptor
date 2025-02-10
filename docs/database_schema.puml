@@ -1,0 +1,61 @@
+@startuml Database Schema
+
+!define table(x) class x << (T,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+!define foreign_key(x) <i>x</i>
+
+table(hardware) {
+  + primary_key(id): INTEGER
+  + driver_path: TEXT
+  + name: TEXT
+  + config: JSON
+  + enabled: BOOLEAN
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+table(devices) {
+  + primary_key(id): INTEGER
+  + foreign_key(hardware_id): INTEGER
+  +
+  + name: TEXT
+  + device_id: TEXT
+  + config: JSON
+  + enabled: BOOLEAN
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+table(device_data_points) {
+  + primary_key(id): INTEGER
+  + foreign_key(device_id): INTEGER
+  + name: TEXT
+  + data_type: TEXT
+  + access_type: TEXT
+  + address: TEXT
+  + scaling_factor: FLOAT
+  + offset: FLOAT
+  + units: TEXT
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+hardware "1" -- "*" devices : has
+devices "1" -- "*" device_data_points : has
+
+note right of hardware::config
+  Stores hardware-specific config
+  (port, baud rate, etc.)
+end note
+
+note right of devices::device_id
+  e.g., Modbus address
+  or CAN ID
+end note
+
+note right of device_data_points::access_type
+  Values: 'read', 'write',
+  'read_write'
+end note
+
+@enduml
