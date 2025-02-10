@@ -144,7 +144,7 @@ class FirmwareUpdater:
             return True
 
         except Exception as e:
-            logging.error(f"Unexpected error during update: {e}")
+            logging.exception(f"Unexpected error during update: {e}")
             if current:
                 self.rollback(current)
             return False
