@@ -67,14 +67,15 @@ class FirmwareUpdater:
         backup_ref = self.backup_current_state()
 
         # Try to update to target reference
-        _, checkout_success = run_command(['git', 'checkout', target_ref], logger)
-        if not checkout_success:
-            logging.error(f"Failed to checkout {target_ref}")
-            self.rollback(backup_ref)
-            return False
+        if target_ref.startswith('v'):
+            _, checkout_success = run_command(['git', 'checkout', target_ref], logger)
+            if not checkout_success:
+                logging.error(f"Failed to checkout {target_ref}")
+                self.rollback(backup_ref)
+                return False
 
         # Pull latest changes if it's a branch
-        if not target_ref.startswith('v'):
+        else:
             _, pull_success = run_command(['git', 'pull'], logger)
             if not pull_success:
                 logging.error("Failed to pull updates")
@@ -84,9 +85,8 @@ class FirmwareUpdater:
         self.target_version = target_ref
         return True
 
-
-
-    def rollback(self, backup_ref: str):
+    @staticmethod
+    def rollback(backup_ref: str):
         """Rollback to the backup reference."""
         logging.warning(f"Rolling back to {backup_ref}")
         _, success = run_command(['git', 'checkout', backup_ref], logger)
@@ -95,7 +95,8 @@ class FirmwareUpdater:
             sys.exit(1)
 
 
-    def restart_screen_sessions(self) -> bool:
+    @staticmethod
+    def restart_screen_sessions() -> bool:
         """Restart all configured screen sessions."""
         from config.services import sessions
         success = True
