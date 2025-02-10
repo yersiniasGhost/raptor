@@ -1,0 +1,76 @@
+{
+    "registers": [
+        {
+            "name": "Solar_Voltage",
+            "data_type": "uint16",
+            "address": 100,
+            "units": "V",
+            "conversion_factor": 0.1,
+            "description": "Solar Panel Input Voltage",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Solar_Current",
+            "data_type": "uint16",
+            "address": "0x0108",
+            "units": "A",
+            "conversion_factor": 0.01,
+            "description": "Solar Panel Input Current",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Solar_Power",
+            "data_type": "uint16",
+            "address": "0x0109",
+            "units": "W",
+            "conversion_factor": 1,
+            "description": "Solar Panel Input Power",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Daily_Max_Charging_Power",
+            "data_type": "uint16",
+            "address": "0x010F",
+            "units": "W",
+            "conversion_factor": 1,
+            "description": "Maximum Charging Power Today",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Daily_Charging_AH",
+            "data_type": "uint16",
+            "address": "0x0111",
+            "units": "Ah",
+            "conversion_factor": 1,
+            "description": "Charging Amp Hours Today",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Daily_Power_Generation",
+            "data_type": "uint16",
+            "address": "0x0113",
+            "units": "W",
+            "conversion_factor": 1,
+            "description": "Power Generation Today",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Total_Charging_AH",
+            "data_type": "uint16",
+            "address": "0x0118",
+            "units": "Ah",
+            "conversion_factor": 1,
+            "description": "Total Charging Amp Hours",
+            "acquisition_type": "data"
+        },
+        {
+            "name": "Total_Power_Generation",
+            "data_type": "uint16",
+            "address": "0x011C",
+            "units": "kWh",
+            "conversion_factor": 0.001,
+            "description": "Total Power Generation",
+            "acquisition_type": "data"
+        }
+    ]
+}

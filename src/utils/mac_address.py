@@ -1,9 +1,15 @@
+import uuid
 from typing import Optional
 import psutil
 import logging
 
 
-def get_system_mac() -> Optional[str]:
+def get_mac_address():
+    return ':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff)
+                     for elements in range(0, 2 * 6, 2)][::-1])
+
+
+def get_system_mac_psutil() -> Optional[str]:
     """
     Get the MAC address of the first non-loopback network interface.
     Returns:

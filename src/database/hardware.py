@@ -8,6 +8,7 @@ import json
 from communications.modbus.modbus_hardware import ModbusHardware
 from communications.modbus import InviewGateway
 from communications.modbus import EveBattery
+from hardware.renogy_rover import RenogyRover
 import logging
 logger = logging.getLogger(__name__)
 

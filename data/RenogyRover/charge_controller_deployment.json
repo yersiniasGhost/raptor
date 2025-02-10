@@ -1,0 +1,14 @@
+{
+  "hardware": {
+ 	"type": "hardware.renogy_rover.RenogyRover",
+	 "parameters": {
+            "port": "/dev/ttyS12"
+        }
+    },
+    "devices": [
+        {
+            "mac": "12345",
+            "slave_id": 1
+        }
+  ]
+}
