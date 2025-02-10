@@ -97,8 +97,9 @@ class FirmwareUpdater:
 
     def restart_screen_sessions(self) -> bool:
         """Restart all configured screen sessions."""
+        from config.services import sessions
         success = True
-        for session in self.screen_sessions:
+        for session in sessions:
             name = session['name']
             command = session['command']
 
