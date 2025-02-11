@@ -103,6 +103,7 @@ class FirmwareUpdater:
         for session in sessions['sessions']:
             name = session['name']
             command = session['command']
+            cwd = session['cwd']
 
             logging.info(f"Restarting screen session: {name}")
 
@@ -112,7 +113,7 @@ class FirmwareUpdater:
                 continue
 
             # Start new session
-            if not start_screen_session(name, command, logger):
+            if not start_screen_session(name, command, cwd, logger):
                 success = False
                 continue
 

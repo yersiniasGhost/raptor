@@ -49,7 +49,8 @@ def kill_screen_session(session_name: str, logger: Optional[Logger] = None) -> b
         return False
 
 
-def start_screen_session(session_name: str, command: str, logger: Optional[Logger] = None) -> bool:
+def start_screen_session(session_name: str, command: str, cwd: Optional[str] = None,
+                         logger: Optional[Logger] = None) -> bool:
     """Start a new screen session."""
     logger = local_logger(logger)
     try:
@@ -59,7 +60,7 @@ def start_screen_session(session_name: str, command: str, logger: Optional[Logge
             '-dmS',  # Create and detach
             session_name,
             'bash', '-c', command
-        ], check=True)
+        ], cwd=cwd, check=True)
         logger.info(f"Started screen session: {session_name}")
         return True
     except Exception as e:
