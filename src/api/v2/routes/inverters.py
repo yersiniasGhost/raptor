@@ -11,6 +11,7 @@ from communications.modbus.modbus import modbus_data_acquisition
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/inverters", tags=["inverters"])
+BASE_DIR = Path(__file__).resolve().parent
 
 # Load register map
 try:
@@ -78,7 +79,7 @@ async def get_bms_data(deployment: Annotated[HardwareDeployment, Depends(get_har
 async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"inverter_{unit_id}.csv"
+        filename = f"{BASE_DIR}/inverter_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()
