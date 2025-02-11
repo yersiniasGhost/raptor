@@ -40,7 +40,6 @@ def linear_regression(x: List[float], y: List[float]) -> float:
     y_mean = sum(y) / n
     numerator = sum((x[i] - x_mean) * (y[i] - y_mean) for i in range(n))
     denominator = sum((x[i] - x_mean) ** 2 for i in range(n))
-    print(denominator, "d")
     if abs(denominator) < 1e-10:
         return 0.0
     return numerator / denominator
@@ -170,7 +169,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
 
 
 @router.get("/historical/{unit_id}")
-async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
+async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=1, le=20000)):
     try:
         # battery = batteries.get_definition(unit_id)
         filename = f"{BASE_DIR}/../battery_{unit_id}.csv"
