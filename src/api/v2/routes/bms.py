@@ -142,7 +142,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
         for unit_id in batteries.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
             values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=unit_id)
-            filename = f"{BASE_DIR}/battery_{unit_id}.csv"
+            filename = f"{BASE_DIR}/../battery_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 8)
             trend = calculate_soc_trend(trending_data)
             current_soc = float(trending_data[-1]["Capacity"])
@@ -173,7 +173,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
 async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"{BASE_DIR}/battery_{unit_id}.csv"
+        filename = f"{BASE_DIR}/../battery_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()
