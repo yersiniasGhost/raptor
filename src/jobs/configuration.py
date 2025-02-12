@@ -25,6 +25,10 @@ class RaptorCommissioner:
 
 
     def commission(self):
+        if self.api_key:
+            logger.info("This VMC is already commissioned")
+            return
+
         """Commission this Raptor with the server"""
         try:
             url = f"{self.api_base_url}/api/v2/raptor/commission"
