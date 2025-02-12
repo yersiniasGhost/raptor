@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status
 from api.v2.routes.hardware_deployment import HardwareDeployment
 import logging
+from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,12 +31,12 @@ def get_git_version():
     except:
         return "V0.1.0"
 
-
+BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 # Initialize templates
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 templates.env.globals["version"] = get_git_version()
 
 # Include routers

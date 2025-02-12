@@ -19,6 +19,7 @@ async def bms(request: Request):
         return templates.TemplateResponse(
             "analysis.html",
             {
+                "request": request,
                 "error": None
             }
         )

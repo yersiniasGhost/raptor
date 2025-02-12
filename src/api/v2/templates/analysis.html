@@ -1,12 +1,233 @@
+{# templates/bms_feedback.html #}
 {% extends "base.html" %}
 
-{% block title %} System Analysis {% endblock %}
+{% block title %}System Analysis{% endblock %}
+
 {% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-Hi
-{% endblock %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">System Energy Analysis</h1>
 
-{% block scripts %}
+    <!-- Timeframe Selection -->
+    <div class="mb-6">
+        <label for="timeframe" class="block text-sm font-medium text-gray-700">Select Timeframe:</label>
+        <select id="timeframe" class="mt-1 block w-48 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="1h">1 hour</option>
+            <option value="4h">4 hours</option>
+            <option value="12h">12 hours</option>
+            <option value="1d">1 day</option>
+            <option value="2d">2 days</option>
+            <option value="5d">5 days</option>
+            <option value="all">All time</option>
+        </select>
+    </div>
+
+    <!-- Metrics Table -->
+    <div class="mb-8">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Number of BMS</td>
+                        <td class="px-6 py-4" id="bms-count">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Number of Inverters</td>
+                        <td class="px-6 py-4" id="inverter-count">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Total BMS Charge Energy</td>
+                        <td class="px-6 py-4" id="bms-charge-energy">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Total BMS Discharge Energy</td>
+                        <td class="px-6 py-4" id="bms-discharge-energy">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Total DC Energy to Inverters</td>
+                        <td class="px-6 py-4" id="dc-energy">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Total True Energy</td>
+                        <td class="px-6 py-4" id="true-energy">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Total Apparent Energy</td>
+                        <td class="px-6 py-4" id="apparent-energy">-</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Number of Gaps</td>
+                        <td class="px-6 py-4" id="gap-count">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Energy Time Series Chart -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Energy Time Series</h2>
+        <div class="bg-white p-4 rounded-lg shadow">
+            <canvas id="energyTimeSeriesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- BMS Energy Ratio Chart -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">BMS Charge vs Discharge Energy</h2>
+        <div class="bg-white p-4 rounded-lg shadow">
+            <canvas id="bmsEnergyRatioChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize charts
+let timeSeriesChart;
+let energyRatioChart;
+
+function initializeCharts() {
+    // Energy Time Series Chart
+    const timeSeriesCtx = document.getElementById('energyTimeSeriesChart').getContext('2d');
+    timeSeriesChart = new Chart(timeSeriesCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'BMS Discharge Energy',
+                    borderColor: 'rgb(75, 192, 192)',
+                    data: []
+                },
+                {
+                    label: 'True Energy',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: []
+                },
+                {
+                    label: 'Apparent Energy',
+                    borderColor: 'rgb(153, 102, 255)',
+                    data: []
+                },
+                {
+                    label: 'DC Energy',
+                    borderColor: 'rgb(255, 159, 64)',
+                    data: []
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'hour'
+                    }
+                }
+            }
+        }
+    });
+
+    // BMS Energy Ratio Chart
+    const ratioCtx = document.getElementById('bmsEnergyRatioChart').getContext('2d');
+    energyRatioChart = new Chart(ratioCtx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Charge vs Discharge Energy',
+                data: [],
+                backgroundColor: 'rgb(75, 192, 192)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Charge Energy'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Discharge Energy'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Update data based on timeframe selection
+async function updateData() {
+    const timeframe = document.getElementById('timeframe').value;
+    try {
+        // Fetch summary data
+        const summaryResponse = await fetch(`/api/bms/summary?timeframe=${timeframe}`);
+        const summaryData = await summaryResponse.json();
+
+        // Update table values
+        document.getElementById('bms-count').textContent = summaryData.bmsCount;
+        document.getElementById('inverter-count').textContent = summaryData.inverterCount;
+        document.getElementById('bms-charge-energy').textContent = summaryData.totalChargeEnergy;
+        document.getElementById('bms-discharge-energy').textContent = summaryData.totalDischargeEnergy;
+        document.getElementById('dc-energy').textContent = summaryData.totalDcEnergy;
+        document.getElementById('true-energy').textContent = summaryData.totalTrueEnergy;
+        document.getElementById('apparent-energy').textContent = summaryData.totalApparentEnergy;
+        document.getElementById('gap-count').textContent = summaryData.gapCount;
+
+        // Fetch time series data
+        const timeSeriesResponse = await fetch(`/api/bms/timeseries?timeframe=${timeframe}`);
+        const timeSeriesData = await timeSeriesResponse.json();
+
+        // Update time series chart
+        timeSeriesChart.data.labels = timeSeriesData.timestamps;
+        timeSeriesChart.data.datasets[0].data = timeSeriesData.dischargeEnergy;
+        timeSeriesChart.data.datasets[1].data = timeSeriesData.trueEnergy;
+        timeSeriesChart.data.datasets[2].data = timeSeriesData.apparentEnergy;
+        timeSeriesChart.data.datasets[3].data = timeSeriesData.dcEnergy;
+        timeSeriesChart.update();
+
+        // Fetch energy ratio data
+        const ratioResponse = await fetch(`/api/bms/energy-ratio?timeframe=${timeframe}`);
+        const ratioData = await ratioResponse.json();
+
+        // Update energy ratio chart
+        energyRatioChart.data.datasets[0].data = ratioData.map(point => ({
+            x: point.chargeEnergy,
+            y: point.dischargeEnergy
+        }));
+        energyRatioChart.update();
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        // Add error handling UI feedback here
+    }
+}
+
+// Initialize everything when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCharts();
+    updateData();
+
+    // Set up timeframe change listener
+    document.getElementById('timeframe').addEventListener('change', updateData);
+});
+</script>
 {% endblock %}
