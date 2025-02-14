@@ -5,11 +5,12 @@ from typing import Optional, Dict
 from .envvars import EnvVars
 
 
-class LoggerManager(metaclass=Singleton):
+class LogManager(metaclass=Singleton):
 
     def __init__(self):
         self._loggers: Dict[str, logging.Logger] = {}
         self._setup_base_config()
+        self._file_handler = None
 
 
     def _setup_base_config(self):

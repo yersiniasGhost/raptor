@@ -6,9 +6,9 @@ from cloud.raptor_commissioner import RaptorCommissioner
 from cloud.raptor_configuration import RaptorConfiguration
 from cloud.firmware_update import FirmwareUpdater
 from database.database_manager import DatabaseManager
-from utils import LoggerManager, EnvVars
+from utils import LogManager, EnvVars
 
-logger = LoggerManager().get_logger(__name__)
+logger = LogManager().get_logger(__name__)
 
 
 def parse_args():
