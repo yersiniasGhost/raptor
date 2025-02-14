@@ -74,6 +74,12 @@ class FirmwareUpdater:
 
         # Pull latest changes if it's a branch
         else:
+            _, branch_success = run_command(['git', 'checkout', '-B', target_ref, '-t',
+                                             f'origin/{target_ref}'], logger)
+            if not branch_success:
+                logging.error(f"Failed to checkout branch {target_ref}")
+                self.rollback(backup_ref)
+                return False
             _, pull_success = run_command(['git', 'pull', 'origin', target_ref], logger)
             if not pull_success:
                 logging.error("Failed to pull updates")
