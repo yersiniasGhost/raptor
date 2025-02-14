@@ -47,7 +47,6 @@ class RaptorCommissioner:
                 firmware_tag = data.get('firmware_tag')
                 db = DatabaseManager(envvars.db_path)
                 mqtt = json.dumps(data.get("mqtt_config"))
-                print(mqtt)
                 with db.connection as conn:
                     conn.execute("""
                     REPLACE INTO commission (raptor_id, api_key, firmware_tag, mqtt_config)
