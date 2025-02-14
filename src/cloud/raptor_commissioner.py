@@ -2,6 +2,7 @@ from typing import Optional
 import requests
 import logging
 import sqlite3
+import json
 
 from utils import EnvVars
 from utils.mac_address import get_mac_address
@@ -44,13 +45,18 @@ class RaptorCommissioner:
                 api_key = data.get('api_key')
                 firmware_tag = data.get('firmware_tag')
                 db = DatabaseManager(envvars.db_path)
+                mqtt = json.dumps(data.get("mqtt_config"))
                 with db.connection as conn:
                     conn.execute("""
                     REPLACE INTO commission (raptor_id, api_key, firmware_tag, mqtt_config)
                         VALUES (?, ?, ?, ?)
-                    """, (raptor_id, api_key, firmware_tag, data.get("mqtt_config")))
+                    """, (raptor_id, api_key, firmware_tag, mqtt))
                     conn.commit()
                 logger.info("Successfully commissioned Raptor")
+
+                from utils.db_utils import get_mqtt_config
+                print(get_mqtt_config(logger))
+
                 return True
             else:
                 logger.error(f"Commission failed: {response.text}")
