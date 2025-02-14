@@ -50,6 +50,3 @@ CREATE TABLE IF NOT EXISTS device_data_points (
     FOREIGN KEY (device_id) REFERENCES devices(id)
 );
 
--- Create indexes for better query performance
-CREATE INDEX idx_data_points_device ON device_data_points(device_id);
-CREATE INDEX idx_data_history_point ON data_history(data_point_id);
