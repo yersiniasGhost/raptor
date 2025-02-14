@@ -2,8 +2,6 @@ import logging
 import logging.handlers
 import asyncio
 import aiohttp
-import json
-from datetime import datetime
 from typing import Dict, Any, Optional
 from contextlib import contextmanager
 import sqlite3
@@ -20,32 +18,6 @@ class IoTController:
         self._setup_error_handlers()
 
 
-
-    def _setup_logging(self) -> logging.Logger:
-        logger = logging.getLogger('IoTController')
-        logger.setLevel(logging.INFO)
-
-        # File handler with rotation
-        file_handler = logging.handlers.RotatingFileHandler(
-            'iot_controller.log',
-            maxBytes=10485760,  # 10MB
-            backupCount=5
-        )
-
-        # Syslog handler for system-level logging
-        syslog_handler = logging.handlers.SysLogHandler(address='/dev/log')
-
-        # Format for detailed error tracking
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)d]'
-        )
-
-        file_handler.setFormatter(formatter)
-        syslog_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-        logger.addHandler(syslog_handler)
-
-        return logger
 
 
 

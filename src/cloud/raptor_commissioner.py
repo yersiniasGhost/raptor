@@ -54,10 +54,6 @@ class RaptorCommissioner:
                     """, (raptor_id, api_key, firmware_tag, mqtt))
                     conn.commit()
                 logger.info("Successfully commissioned Raptor")
-
-                from utils.db_utils import get_mqtt_config
-                print(get_mqtt_config(logger))
-
                 return True
             else:
                 logger.error(f"Commission failed: {response.text}")

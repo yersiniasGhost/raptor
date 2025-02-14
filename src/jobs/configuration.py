@@ -1,5 +1,4 @@
 import sys
-import logging
 import argparse
 from pathlib import Path
 
@@ -7,14 +6,9 @@ from cloud.raptor_commissioner import RaptorCommissioner
 from cloud.raptor_configuration import RaptorConfiguration
 from cloud.firmware_update import FirmwareUpdater
 from database.database_manager import DatabaseManager
-from utils import EnvVars
+from utils import LoggerManager, EnvVars
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('configuration_job')
+logger = LoggerManager().get_logger(__name__)
 
 
 def parse_args():
@@ -61,6 +55,7 @@ def main():
             logger.error("Failed to get configuration")
             sys.exit(1)
         logger.info("Raptor successfully configured")
+
 
 if __name__ == "__main__":
     main()
