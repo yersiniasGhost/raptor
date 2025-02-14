@@ -160,13 +160,13 @@ class FirmwareUpdater:
         logging.info("Starting repository cleanup")
 
         # Remove loose objects that are no longer referenced
-        _, prune_success = self.run_command(['git', 'prune', '--expire', 'now'])
+        _, prune_success = run_command(['git', 'prune', '--expire', 'now'])
         if not prune_success:
             logging.error("Failed to prune loose objects")
             return False
 
         # Run garbage collection aggressively
-        _, gc_success = self.run_command([
+        _, gc_success = run_command([
             'git', 'gc',
             '--aggressive',  # More thorough but slower GC
             '--prune=now',  # Remove all unreachable objects immediately
