@@ -31,7 +31,7 @@ def get_mqtt_config(logger: logging.Logger = logging.getLogger(__name__)) -> Opt
             if not data:
                 logger.error("Unable to access MQTT data from commission database.")
                 raise ValueError("Unable to access MQTT data from commission database.")
-            return json.loads(data)
+            return json.loads(data['mqtt_config'])
     except sqlite3.Error as e:
         logger.error(f"Failed to get commission data: {e}")
         return None
