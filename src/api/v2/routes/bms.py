@@ -8,14 +8,15 @@ import json
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
 from . import templates
-import logging
+
 from hardware.modbus.modbus import modbus_data_acquisition
 from hardware.modbus.modbus_map import ModbusMap
 from bms_store import BMSDataStore
 from .hardware_deployment import HardwareDeployment, get_hardware
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
+
 router = APIRouter(prefix="/bms", tags=["bms"])
 
 bms_store = BMSDataStore()

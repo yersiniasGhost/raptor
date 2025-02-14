@@ -3,13 +3,12 @@ from collections import deque
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
 from . import templates
-import logging
 from bms_store import BMSDataStore
 from .hardware_deployment import HardwareDeployment, get_hardware
 from hardware.modbus.modbus import modbus_data_acquisition
+from utils import LogManager
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = LogManager().get_logger(__name__)
 router = APIRouter(prefix="/inverters", tags=["inverters"])
 
 # Load register map

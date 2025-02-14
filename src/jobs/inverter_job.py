@@ -10,6 +10,9 @@ from database.battery_deployment import BatteryDeployment
 from hardware.modbus.modbus import modbus_data_acquisition
 from hardware.modbus.modbus_map import ModbusMap
 from utils.system_status import collect_system_stats
+from utils import LogManager, EnvVars
+
+logger = LogManager().get_logger(__name__)
 
 DATA_PATH = "/root/raptor/data/"
 
@@ -45,21 +48,33 @@ if __name__ == "__main__":
     batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
     register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
     cnt = 0
+    interval_seconds = EnvVars().data_acquisition_interval
 
-    while(cnt < 1000000000):
-        # Get data from each slave
-        values = modbus_data_acquisition(inview, modbus_map, slave_id=1)
-        if values:
-            write_to_csv("inverter", 0, values)
-        for battery in batteries.each_unit():
-            values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=battery.slave_id)
+    while True:
+        start_time = time.time()
+        try:
+            # Get data from each slave
+            values = modbus_data_acquisition(inview, modbus_map, slave_id=1)
             if values:
-                write_to_csv("battery", battery.slave_id, values)
+                write_to_csv("inverter", 0, values)
+            for battery in batteries.each_unit():
+                values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=battery.slave_id)
+                if values:
+                    write_to_csv("battery", battery.slave_id, values)
+        except Exception as e:
+            logger.error("Failed to perform data acquisition", exc_info=True)
+        try:
+            sbc_state = collect_system_stats()
+            write_to_csv("system", 0, sbc_state)
+        except Exception as e:
+            logger.error("Failed to perform system status acquisition", exc_info=True)
 
-        sbc_state = collect_system_stats()
-        write_to_csv("system", 0, sbc_state)
+        logger.info(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}, count: {cnt}")
+        elapsed_time = time.time() - start_time
+        sleep_time = interval_seconds - elapsed_time
 
-        print(f"Data logged at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print("---------")
+        if sleep_time > 0:
+            time.sleep(sleep_time)
+        else:
+            logger.warning(f"Data acquisition took longer than interval ({elapsed_time:.2f}s > {interval_seconds}s)")
         cnt += 1
-        time.sleep(29)

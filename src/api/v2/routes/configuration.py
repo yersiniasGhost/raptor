@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File
 from fastapi.responses import JSONResponse
-import subprocess
 from . import templates
 import json
-from typing import Dict, Annotated
-import logging
+from typing import Annotated
+
 from .hardware_deployment import HardwareDeployment, get_hardware
+from utils import LogManager, run_command
+
+logger = LogManager().get_logger(__name__)
 
 
 router = APIRouter(prefix="/configuration", tags=["configuration"])
@@ -28,11 +30,11 @@ async def ping_hardware(section: str, hardware: Annotated[HardwareDeployment, De
         if section == "Actuators":
             manager = hardware.actuator_manager
 
-            result = subprocess.run(["ip", "-details", "link", "show", manager.channel], capture_output=True, text=True)
+            result = run_command(["ip", "-details", "link", "show", manager.channel], logger)
             return {"output": result.stdout if result.returncode == 0 else result.stderr}
         else:
             # Execute the ping command (limited to 2 pings for safety)
-            result = subprocess.run(["ping", "-c", "2", section], capture_output=True, text=True)
+            result = run_command(["ping", "-c", "2", section], logger)
             return {"output": result.stdout if result.returncode == 0 else result.stderr}
     except Exception as e:
         return {"error": str(e)}
@@ -57,7 +59,7 @@ async def upload_configuration(section: str, file: UploadFile = File(...),):
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON file")
     except Exception as e:
-        logging.error(f"Error processing configuration file: {str(e)}")
+        logger.error(f"Error processing configuration file: {str(e)}")
         raise HTTPException(status_code=500, detail="Error processing configuration file")
 
 

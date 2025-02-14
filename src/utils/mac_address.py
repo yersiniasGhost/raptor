@@ -1,7 +1,8 @@
 import uuid
 from typing import Optional
 import psutil
-import logging
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 def get_mac_address():
@@ -33,7 +34,7 @@ def get_system_mac_psutil() -> Optional[str]:
                         return addr.address
 
     except Exception as e:
-        logging.error(f"Error getting MAC address: {str(e)}")
+        logger.error(f"Error getting MAC address: {str(e)}")
         return None
 
     return None

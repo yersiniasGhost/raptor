@@ -1,15 +1,13 @@
 from typing import Optional
 from fastapi import Request
-import logging
 from hardware.modbus.modbus_map import ModbusMap
 from database.battery_deployment import BatteryDeployment
 from hardware.electrak.actuator_manager import ActuatorManager
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 DATA_PATH = "/root/raptor/data"
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class HardwareDeployment:

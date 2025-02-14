@@ -9,8 +9,8 @@ from hardware.modbus.modbus_hardware import ModbusHardware
 from hardware.modbus import InviewGateway
 from hardware.modbus import EveBattery
 from hardware.renogy_rover import RenogyRover
-import logging
-logger = logging.getLogger(__name__)
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 # TODO:  Add the load/save of hardware to the SQLite local database.

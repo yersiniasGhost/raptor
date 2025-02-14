@@ -5,12 +5,12 @@ import logging
 from hardware.modbus.modbus import modbus_data_acquisition, modbus_data_write
 from .hardware_deployment import HardwareDeployment, get_hardware
 from hardware.modbus.modbus_map import ModbusMap
+from utils import LogManager
 
 
 DATA_PATH = "/root/raptor/data"
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = LogManager().get_logger(__name__)
 router = APIRouter(prefix="/modbus", tags=["modbus"])
 
 

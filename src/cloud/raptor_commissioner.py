@@ -1,6 +1,5 @@
 from typing import Optional
 import requests
-import logging
 import sqlite3
 import json
 
@@ -9,11 +8,8 @@ from utils.mac_address import get_mac_address
 from database.database_manager import DatabaseManager
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 class RaptorCommissioner:

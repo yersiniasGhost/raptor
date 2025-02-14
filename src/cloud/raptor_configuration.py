@@ -1,15 +1,10 @@
 from typing import Optional
 import json
 import requests
-import logging
 from utils import EnvVars, get_mac_address, get_api_key
+from utils import LogManager
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('raptor_configuration')
+logger = LogManager().get_logger(__name__)
 
 
 class RaptorConfiguration:

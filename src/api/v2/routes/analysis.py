@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from . import templates
-import logging
+from utils import LogManager
 
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = LogManager().get_logger(__name__)
 router = APIRouter(prefix="/analysis", tags=["analysis"])
 
 

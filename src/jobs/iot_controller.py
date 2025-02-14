@@ -1,47 +1,22 @@
-import logging
-import logging.handlers
 import asyncio
 import aiohttp
 from typing import Dict, Any, Optional
 from contextlib import contextmanager
 import sqlite3
 import backoff  # For exponential backoff in retries
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 class IoTController:
 
     def __init__(self, config_path: str):
         # Setup logging with rotation and remote logging if needed
-        self.logger = self._setup_logging()
         self.config = self._load_config(config_path)
         self.running = True
         self._setup_error_handlers()
 
 
-
-
-
-    @contextmanager
-    def db_connection(self):
-        """Context manager for database connections with error handling"""
-        conn = None
-        try:
-            conn = sqlite3.connect(self.config['database_path'])
-            yield conn
-        except sqlite3.Error as e:
-            self.logger.error(f"Database error: {str(e)}")
-            raise
-        finally:
-            if conn:
-                conn.close()
-
-
-
-    @backoff.on_exception(
-        backoff.expo,
-        (aiohttp.ClientError, asyncio.TimeoutError),
-        max_tries=5
-    )
     async def query_device(self, device_config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Query a single IoT device with retries and error handling"""
         try:

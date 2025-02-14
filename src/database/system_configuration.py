@@ -1,6 +1,8 @@
 import sqlite3
 import json
 from utils.envvars import EnvVars
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 def store_config(config_json):

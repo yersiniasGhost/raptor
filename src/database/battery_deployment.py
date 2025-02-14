@@ -3,9 +3,8 @@ from dataclasses import dataclass, field
 import json
 from hardware.modbus.modbus_hardware import ModbusHardware
 from database.hardware import load_hardware_from_dict
-import logging
-
-logger = logging.getLogger(__name__)
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 @dataclass

@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from .singleton import Singleton
-from typing import Optional, Dict
+from typing import Dict
 from .envvars import EnvVars
 
 

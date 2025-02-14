@@ -1,14 +1,12 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from . import templates
-import logging
 from .hardware_deployment import get_hardware, HardwareDeployment
 from hardware.electrak.actuator_manager import ActuatorManager
 from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 router = APIRouter(prefix="/actuator", tags=["actuator"])
 
 

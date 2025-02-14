@@ -1,13 +1,11 @@
-from typing import Annotated
 import csv
-from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from fastapi import APIRouter, Request
 from . import templates
-import logging
 from utils.system_status import collect_system_stats
 
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/system-status", tags=["system-status"])
 
 

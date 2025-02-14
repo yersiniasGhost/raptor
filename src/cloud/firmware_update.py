@@ -1,23 +1,12 @@
 from typing import Optional
-import logging
 import subprocess
 import sys
 import time
 from datetime import datetime
 from utils import run_command, kill_screen_session, start_screen_session, EnvVars
 
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('/var/log/firmware_update.log'),
-        logging.StreamHandler()
-    ]
-)
-
-logger = logging.getLogger("FirmwareUpdater")
+from utils import LogManager
+logger = LogManager().get_logger(__name__)
 
 
 class FirmwareUpdater:
@@ -43,13 +32,13 @@ class FirmwareUpdater:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         backup_ref = f"backup_{timestamp}"
         run_command(['git', 'tag', backup_ref])
-        logging.info(f"Created backup reference: {backup_ref}")
+        logger.info(f"Created backup reference: {backup_ref}")
         return backup_ref
 
 
     def update_repository(self, target_ref: str) -> bool:
         """Update the repository to the target reference."""
-        logging.info(f"Updating to: {target_ref}")
+        logger.info(f"Updating to: {target_ref}")
 
         # Fetch only the target reference
         if target_ref.startswith('v'):  # Tag
@@ -58,7 +47,7 @@ class FirmwareUpdater:
             _, fetch_success = run_command(['git', 'fetch', 'origin', target_ref], logger)
 
         if not fetch_success:
-            logging.error("Failed to fetch updates")
+            logger.error("Failed to fetch updates")
             return False
 
         # Create backup
@@ -68,7 +57,7 @@ class FirmwareUpdater:
         if target_ref.startswith('v'):
             _, checkout_success = run_command(['git', 'checkout', target_ref], logger)
             if not checkout_success:
-                logging.error(f"Failed to checkout {target_ref}")
+                logger.error(f"Failed to checkout {target_ref}")
                 self.rollback(backup_ref)
                 return False
 
@@ -77,12 +66,12 @@ class FirmwareUpdater:
             _, branch_success = run_command(['git', 'checkout', '-B', target_ref, '-t',
                                              f'origin/{target_ref}'], logger)
             if not branch_success:
-                logging.error(f"Failed to checkout branch {target_ref}")
+                logger.error(f"Failed to checkout branch {target_ref}")
                 self.rollback(backup_ref)
                 return False
             _, pull_success = run_command(['git', 'pull', 'origin', target_ref], logger)
             if not pull_success:
-                logging.error("Failed to pull updates")
+                logger.error("Failed to pull updates")
                 self.rollback(backup_ref)
                 return False
 
@@ -93,10 +82,10 @@ class FirmwareUpdater:
     @staticmethod
     def rollback(backup_ref: str):
         """Rollback to the backup reference."""
-        logging.warning(f"Rolling back to {backup_ref}")
+        logger.warning(f"Rolling back to {backup_ref}")
         _, success = run_command(['git', 'checkout', backup_ref], logger)
         if not success:
-            logging.error("Failed to rollback! Manual intervention required!")
+            logger.error("Failed to rollback! Manual intervention required!")
             sys.exit(1)
 
 
@@ -110,7 +99,7 @@ class FirmwareUpdater:
             command = session['command']
             cwd = session['cwd']
 
-            logging.info(f"Restarting screen session: {name}")
+            logger.info(f"Restarting screen session: {name}")
 
             # Kill existing session if it exists
             if not kill_screen_session(name, logger):
@@ -133,13 +122,13 @@ class FirmwareUpdater:
         """Main update procedure."""
 
         if not self.current_version and not self.force_update:
-            logging.warning("Do not have a current version of repository and no 'force_update'.")
-            logging.warning("Will not update git without force_update option.")
+            logger.warning("Do not have a current version of repository and no 'force_update'.")
+            logger.warning("Will not update git without force_update option.")
             return False
 
         try:
             # Get current version for logging
-            logging.info(f"Current version: {self.current_version}")
+            logger.info(f"Current version: {self.current_version}")
 
             # Update repository
             if not self.update_repository(self.target_tag):
@@ -147,28 +136,28 @@ class FirmwareUpdater:
 
             # Restart screen sessions
             if not self.restart_screen_sessions():
-                logging.error("Screen session restart failed, rolling back...")
+                logger.error("Screen session restart failed, rolling back...")
                 self.rollback(self.current_version)
                 return False
 
-            logging.info("Update completed successfully")
+            logger.info("Update completed successfully")
             self.cleanup_repository()
             return True
 
         except Exception as e:
-            logging.exception(f"Unexpected error during update: {e}")
+            logger.exception(f"Unexpected error during update: {e}")
             if self.current_version:
                 self.rollback(self.current_version)
             return False
 
     def cleanup_repository(self) -> bool:
         """Clean up unnecessary objects from the repository to free up space."""
-        logging.info("Starting repository cleanup")
+        logger.info("Starting repository cleanup")
 
         # Remove loose objects that are no longer referenced
         _, prune_success = run_command(['git', 'prune', '--expire', 'now'])
         if not prune_success:
-            logging.error("Failed to prune loose objects")
+            logger.error("Failed to prune loose objects")
             return False
 
         # Run garbage collection aggressively
@@ -179,16 +168,16 @@ class FirmwareUpdater:
             '--quiet'  # Reduce output for embedded systems
         ])
         if not gc_success:
-            logging.error("Failed to run garbage collection")
+            logger.error("Failed to run garbage collection")
             return False
 
         # Calculate space saved (if du command is available)
         try:
             before_size = subprocess.check_output(['du', '-sh', '.git'], cwd=self.repo_path).split()[0]
             after_size = subprocess.check_output(['du', '-sh', '.git'], cwd=self.repo_path).split()[0]
-            logging.info(f"Repository size changed from {before_size} to {after_size}")
+            logger.info(f"Repository size changed from {before_size} to {after_size}")
         except subprocess.CalledProcessError:
-            logging.debug("Could not calculate repository size difference")
+            logger.debug("Could not calculate repository size difference")
 
-        logging.info("Repository cleanup completed")
+        logger.info("Repository cleanup completed")
         return True
