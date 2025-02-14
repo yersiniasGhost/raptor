@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from .singleton import Singleton
 from typing import Optional, Dict
@@ -9,8 +10,8 @@ class LogManager(metaclass=Singleton):
 
     def __init__(self):
         self._loggers: Dict[str, logging.Logger] = {}
-        self._setup_base_config()
         self._file_handler = None
+        self._setup_base_config()
 
 
     def _setup_base_config(self):
@@ -24,7 +25,7 @@ class LogManager(metaclass=Singleton):
             log_dir = Path('.')
 
         if self._file_handler is None:
-            self._file_handler = logging.handlers.RotatingFileHandler(
+            self._file_handler = RotatingFileHandler(
                 log_dir / 'raptor.log',
                 maxBytes=10485760,  # 10MB
                 backupCount=5
