@@ -23,14 +23,14 @@ class EnvVars(metaclass=Singleton):
         self.tsdb_path = self._get_required("TSDB_PATH")
 
         # API settings
-        self.phone_home_url = self._get_required('VMC_HOME_URL')
+        # self.phone_home_url = self._get_required('VMC_HOME_URL')
         self.api_url = self._get_required('API_URL')
 
         # Repository settings
         self.repository_path = self._getenv("VMC_REPOSITORY_PATH", "/root/raptor")
 
         # Application settings
-        self.debug = self._get_bool('DEBUG', False)
+        self.debug = self._get_bool('DEBUG', "False")
         self.log_level = self._getenv('LOG_LEVEL', 'INFO')
 
 
@@ -50,8 +50,7 @@ class EnvVars(metaclass=Singleton):
             raise ValueError(f"Missing required environment variable: {key}")
         return value
 
-    @staticmethod
-    def _get_bool(self, key: str, default: bool) -> bool:
+    def _get_bool(self, key: str, default: str) -> bool:
         value = self._getenv(key, default)
         return value.lower() in ('true', '1', 'yes', 'y')
 
