@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS commission (
     raptor_id CHAR(24) NOT NULL UNIQUE,
     api_key VARCHAR(64) NOT NULL UNIQUE,
     firmware_tag VARCHAR(50),
+    mqtt_config JSON,
     CONSTRAINT valid_raptor_id CHECK (LENGTH(raptor_id) = 24)
+    CONSTRAINT valid_mqtt_json CHECK (mqtt_config IS json_valid(mqtt_config))
 );
 
 CREATE TABLE IF NOT EXISTS hardware (

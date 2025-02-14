@@ -37,6 +37,7 @@ class RaptorConfiguration:
             if response.status_code == 200:
                 config = response.json()
                 logger.info("Successfully retrieved configuration")
+                self.save_configuration(config)
                 return config
             else:
                 logger.error(f"Configuration fetch failed: {response.text}")
