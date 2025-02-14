@@ -1,11 +1,10 @@
 import json
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends
-from . import templates
+from fastapi import APIRouter, Depends
 import logging
 from hardware.modbus.modbus import modbus_data_acquisition, modbus_data_write
-from bms_store import ModbusMap
 from .hardware_deployment import HardwareDeployment, get_hardware
+from hardware.modbus.modbus_map import ModbusMap
 
 
 DATA_PATH = "/root/raptor/data"
