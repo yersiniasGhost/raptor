@@ -46,9 +46,9 @@ class RaptorCommissioner:
                 db = DatabaseManager(envvars.db_path)
                 with db.connection as conn:
                     conn.execute("""
-                    REPLACE INTO commission (raptor_id, api_key, firmware_tag)
-                        VALUES (?, ?, ?)
-                    """, (raptor_id, api_key, firmware_tag))
+                    REPLACE INTO commission (raptor_id, api_key, firmware_tag, mqtt_config)
+                        VALUES (?, ?, ?, ?)
+                    """, (raptor_id, api_key, firmware_tag, data.get("mqtt_config")))
                     conn.commit()
                 logger.info("Successfully commissioned Raptor")
                 return True
