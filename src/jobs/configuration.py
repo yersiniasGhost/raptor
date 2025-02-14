@@ -43,14 +43,14 @@ def main():
 
     if args.commission:
         # Create and attempt commissioner
-        commissioner = RaptorCommissioner(envvars.api_url)
+        commissioner = RaptorCommissioner()
         if not commissioner.commission():
             logger.error("Failed to commission Raptor")
             sys.exit(1)
         logger.info("Raptor successfully commissioned")
 
     if args.configure:
-        configurator = RaptorConfiguration(envvars.api_url)
+        configurator = RaptorConfiguration()
         # Get and save the configuration
         config = configurator.get_configuration()
         if not config:

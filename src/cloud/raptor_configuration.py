@@ -2,7 +2,7 @@ from typing import Optional
 import json
 import requests
 import logging
-from utils.mac_address import get_mac_address
+from utils import EnvVars, get_mac_address, get_api_key
 
 # Configure logging
 logging.basicConfig(
@@ -14,11 +14,10 @@ logger = logging.getLogger('raptor_configuration')
 
 class RaptorConfiguration:
 
-    def __init__(self, api_base_url: str, api_key: str):
-        self.api_base_url = api_base_url
-        self.api_key: str = api_key
+    def __init__(self):
+        self.api_base_url = EnvVars().api_url
+        self.api_key: Optional[str] = get_api_key()
         self.mac_address = get_mac_address()
-
 
 
     def get_configuration(self):

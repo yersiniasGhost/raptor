@@ -17,8 +17,8 @@ logger = logging.getLogger('raptor_commissioning')
 
 class RaptorCommissioner:
 
-    def __init__(self, api_base_url):
-        self.api_base_url = api_base_url
+    def __init__(self):
+        self.api_base_url = EnvVars().api_url
         self.api_key: Optional[str] = None
         self.mac_address = get_mac_address()
 
