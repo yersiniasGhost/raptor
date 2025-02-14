@@ -1,14 +1,22 @@
-from dotenv import load_dotenv
-import os
-from .singleton import Singleton
 from typing import Optional
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+import sys
+
+from .singleton import Singleton
 
 
 class EnvVars(metaclass=Singleton):
 
     def __init__(self):
         # Load .env file if it exists
-        load_dotenv()
+        env_path = Path("~/.env")
+        if not env_path.exists():
+            print(f"Error: .env file not found at {env_path}")
+            sys.exit(1)
+
+        load_dotenv(env_path)
         self.env_variables = {}
         # Database settings
         self.db_path = self._get_required('DB_PATH')
