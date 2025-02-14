@@ -11,7 +11,7 @@ class EnvVars(metaclass=Singleton):
 
     def __init__(self):
         # Load .env file if it exists
-        env_path = Path("~/.env")
+        env_path = Path.home() / ".env"
         if not env_path.exists():
             print(f"Error: .env file not found at {env_path}")
             sys.exit(1)
