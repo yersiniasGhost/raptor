@@ -10,7 +10,8 @@ from fastapi.responses import JSONResponse
 from . import templates
 import logging
 from hardware.modbus.modbus import modbus_data_acquisition
-from bms_store import BMSDataStore, ModbusMap
+from hardware.modbus.modbus_map import ModbusMap
+from bms_store import BMSDataStore
 from .hardware_deployment import HardwareDeployment, get_hardware
 
 logging.basicConfig(level=logging.INFO)
