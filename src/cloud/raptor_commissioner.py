@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger('raptor_commissioning')
+logger = logging.getLogger(__name__)
 
 
 class RaptorCommissioner:
@@ -38,6 +38,7 @@ class RaptorCommissioner:
             response = requests.post(url, json=payload)
 
             if response.status_code == 200:
+                logger.info("Successfully got response.")
                 data = response.json()
                 self.api_key = data.get('api_key')
                 envvars = EnvVars()
@@ -46,6 +47,7 @@ class RaptorCommissioner:
                 firmware_tag = data.get('firmware_tag')
                 db = DatabaseManager(envvars.db_path)
                 mqtt = json.dumps(data.get("mqtt_config"))
+                print(mqtt)
                 with db.connection as conn:
                     conn.execute("""
                     REPLACE INTO commission (raptor_id, api_key, firmware_tag, mqtt_config)
