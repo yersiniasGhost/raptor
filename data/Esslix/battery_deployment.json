@@ -1,8 +1,9 @@
 {
     "hardware": {
-        "type": "communications.modbus.EveBattery",
+        "type": "hardware.modbus.EveBattery",
         "parameters": {
-            "port": "/dev/ttyS11"
+            "port": "/dev/ttyS11",
+            "modbus_map": "raptor/data/Esslix/modbus_map.json"
         }
     },
     "devices": [

@@ -1,6 +1,6 @@
 {
   "hardware": {
-        "type": "communications.electrak.ActuatorManager",
+        "type": "hardware.electrak.ActuatorManager",
         "parameters": {
             "channel": "can0",
 	    	"eds": "/root/raptor/data/ElectrakActuators/Electrak_MD.eds"

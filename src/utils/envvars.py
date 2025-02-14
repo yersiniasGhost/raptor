@@ -18,13 +18,15 @@ class EnvVars(metaclass=Singleton):
         self.phone_home_url = self._get_required('VMC_HOME_URL')
         self.api_url = self._get_required('API_URL')
 
+        # Repository settings
+        self.repository_path = self._getenv("VMC_REPOSITORY_PATH", "/root/raptor")
+
         # Application settings
         self.debug = self._get_bool('DEBUG', False)
         self.log_level = self._getenv('LOG_LEVEL', 'INFO')
 
 
     def _getenv(self, variable: str, default: Optional[str] = None) -> Optional[str]:
-        # Use dict.get() directly with default value instead of checking None separately
         return self.env_variables.get(variable) or self.env_variables.setdefault(
             variable,
             os.getenv(variable, default)

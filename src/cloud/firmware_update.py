@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+from typing import Optional
 import logging
 import sys
 import time
 from datetime import datetime
-from utils.linux_utils import run_command, kill_screen_session, start_screen_session
+from utils import run_command, kill_screen_session, start_screen_session, EnvVars
 
 
 # Configure logging
@@ -16,37 +16,34 @@ logging.basicConfig(
     ]
 )
 
-logger = logging.getLogger("Updater")
+logger = logging.getLogger("FirmwareUpdater")
 
 
 class FirmwareUpdater:
 
-    def __init__(self, repo_path: str):
-        self.repo_path = repo_path
-        self.current_version = None
-        self.target_version = None
-        self.screen_sessions = []
+    def __init__(self, target_tag: str, force_update: bool):
+        self.repo_path = EnvVars().repository_path
+        self.current_version: Optional[str] = None
+        self.target_tag: str = target_tag
+        self.force_update: bool = force_update
+        self.get_current_version()
 
 
-
-    def get_current_version(self) -> str:
+    def get_current_version(self):
         """Get current git reference."""
         output, success = run_command(['git', 'rev-parse', 'HEAD'])
         if success:
             self.current_version = output
-            return output
-        return None
 
 
-
-    def backup_current_state(self):
+    @staticmethod
+    def backup_current_state():
         """Create a backup of the current state."""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         backup_ref = f"backup_{timestamp}"
         run_command(['git', 'tag', backup_ref])
         logging.info(f"Created backup reference: {backup_ref}")
         return backup_ref
-
 
 
     def update_repository(self, target_ref: str) -> bool:
@@ -82,8 +79,9 @@ class FirmwareUpdater:
                 self.rollback(backup_ref)
                 return False
 
-        self.target_version = target_ref
+        self.target_tag = target_ref
         return True
+
 
     @staticmethod
     def rollback(backup_ref: str):
@@ -124,21 +122,26 @@ class FirmwareUpdater:
 
 
 
-    def update(self, target_ref: str) -> bool:
+    def update(self) -> bool:
         """Main update procedure."""
-        current = self.get_current_version()
+
+        if not self.current_version and not self.force_update:
+            logging.warning("Do not have a current version of repository and no 'force_update'.")
+            logging.warning("Will not update git without force_update option.")
+            return False
+
         try:
             # Get current version for logging
-            logging.info(f"Current version: {current}")
+            logging.info(f"Current version: {self.current_version}")
 
             # Update repository
-            if not self.update_repository(target_ref):
+            if not self.update_repository(self.target_tag):
                 return False
 
             # Restart screen sessions
             if not self.restart_screen_sessions():
                 logging.error("Screen session restart failed, rolling back...")
-                self.rollback(current)
+                self.rollback(self.current_version)
                 return False
 
             logging.info("Update completed successfully")
@@ -146,23 +149,6 @@ class FirmwareUpdater:
 
         except Exception as e:
             logging.exception(f"Unexpected error during update: {e}")
-            if current:
-                self.rollback(current)
+            if self.current_version:
+                self.rollback(self.current_version)
             return False
-
-
-def main():
-
-    if len(sys.argv) != 2:
-        print("Usage: update_firmware.py <target_ref>")
-        sys.exit(1)
-
-    target_ref = sys.argv[1]
-    updater = FirmwareUpdater("/root/raptor")
-
-    success = updater.update(target_ref)
-    sys.exit(0 if success else 1)
-
-
-if __name__ == "__main__":
-    main()

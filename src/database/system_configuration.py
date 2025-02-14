@@ -6,7 +6,7 @@ from utils.envvars import EnvVars
 def store_config(config_json):
     """Store JSON configuration into the database."""
     env_vars = EnvVars()
-    conn = sqlite3.connect(env_vars.database_url)
+    conn = sqlite3.connect(env_vars.db_path)
     cursor = conn.cursor()
     components = config_json.get("components")
     hardware_data = config_json["hardware"]
@@ -27,7 +27,7 @@ def store_config(config_json):
 def get_config():
     """Retrieve stored configuration from the database."""
     env_vars = EnvVars()
-    conn = sqlite3.connect(env_vars.database_url)
+    conn = sqlite3.connect(env_vars.db_path)
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM hardware")
