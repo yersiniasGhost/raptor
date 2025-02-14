@@ -41,7 +41,6 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     return {"success": True, "value":values }
 
 
-
 @router.get("/modbus_register/{data}")
 async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeployment, Depends(get_hardware)]):
     parsed_data = json.loads(data)

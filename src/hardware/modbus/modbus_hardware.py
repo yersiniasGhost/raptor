@@ -7,9 +7,9 @@ from pymodbus.framer import FramerType
 
 
 class ModbusClientType(Enum):
-    TCP=1,
-    RTU=2,
-    NA=3
+    TCP = 1,
+    RTU = 2,
+    NA = 3
 
 
 @dataclass
@@ -23,6 +23,7 @@ class ModbusHardware(ABC):
     client_type: ModbusClientType = ModbusClientType.RTU
     host: str = ""
     port: Optional[Union[str, int]] = None
+    modbus_map: str = ""
 
     MODBUS_SLEEP_BETWEEN_READS: float = 0.05
 
