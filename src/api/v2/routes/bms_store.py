@@ -1,9 +1,5 @@
-# models.py
-from dataclasses import dataclass
-from typing import List, Optional, Dict
-import json
+from typing import Dict
 from asyncio import Lock
-from hardware.modbus.modbus_map import ModbusMap, ModbusRegister
 
 
 # Store for BMS data
