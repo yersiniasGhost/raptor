@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS hardware (
     enabled BOOLEAN DEFAULT true,
     external_ref TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Devices (specific devices on a hardware instance)
 CREATE TABLE IF NOT EXISTS devices (
     id INTEGER PRIMARY KEY,
-    hardware_instance_id INTEGER NOT NULL,
+    hardware_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     device_id TEXT NOT NULL,                -- e.g., Modbus address or CAN ID
     config JSON NOT NULL,                   -- Device-specific configuration
