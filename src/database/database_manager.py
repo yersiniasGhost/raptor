@@ -3,6 +3,8 @@ from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
 from utils.singleton import Singleton
+import time
+import shutil
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -11,9 +13,11 @@ logger = logging.getLogger(__name__)
 
 class DatabaseManager(metaclass=Singleton):
 
-    def __init__(self, db_path: Union[Path, str], schema_path: Union[Path, str]):
+    def __init__(self, db_path: Union[Path, str], schema_path: Optional[Union[Path, str]] = None):
         self.db_path = Path(db_path)
-        self.schema_path = Path(schema_path)
+        self.schema_path: Optional[Path] = None
+        if schema_path:
+            self.schema_path = Path(schema_path)
         self._connection: Optional[Connection] = None
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -51,12 +55,82 @@ class DatabaseManager(metaclass=Singleton):
         """Auto-close on context exit"""
         self.close()
 
-    def init_db(self):
+
+    def rebuild_db(self, backup: bool = True) -> bool:
+        """
+        Rebuilds the database from scratch using the schema file.
+
+        Args:
+            backup (bool): If True, creates a backup before rebuilding
+
+        Returns:
+            bool: True if rebuild was successful, False otherwise
+        """
+        logger.info("Starting database rebuild process")
+
+        # Close any existing connection
+        self.close()
+
         try:
-            with self.connection as conn:
-                with open('schema.sql', 'r') as f:
-                    conn.executescript(f.read())
-                    conn.commit()
-        except sqlite3.Error as e:
-            logger.error(f"Database error: {e}")
-            self.connection.close()
+            # Create backup if requested
+            if backup and self.db_path.exists():
+                backup_path = self.db_path.with_suffix(f'.bak.{int(time.time())}')
+                logger.info(f"Creating backup at {backup_path}")
+                shutil.copy2(self.db_path, backup_path)
+
+            # Remove existing database file
+            if self.db_path.exists():
+                logger.info("Removing existing database file")
+                self.db_path.unlink()
+
+            # Ensure parent directory exists
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Create new database and initialize schema
+            logger.info("Creating new database with schema")
+            with sqlite3.connect(self.db_path) as temp_conn:
+                temp_conn.row_factory = sqlite3.Row
+
+                # Set WAL mode and other pragmas
+                temp_conn.execute('PRAGMA journal_mode=WAL')
+                temp_conn.execute('PRAGMA synchronous=NORMAL')
+
+                # Read and execute schema
+                if not self.schema_path.exists():
+                    raise FileNotFoundError(f"Schema file not found: {self.schema_path}")
+
+                with open(self.schema_path, 'r') as f:
+                    schema_sql = f.read()
+                    temp_conn.executescript(schema_sql)
+
+                # Verify schema was created by checking for tables
+                cursor = temp_conn.execute("""
+                    SELECT name FROM sqlite_master 
+                    WHERE type='table' AND name NOT LIKE 'sqlite_%'
+                """)
+                tables = cursor.fetchall()
+                if not tables:
+                    raise sqlite3.Error("No tables created from schema")
+
+                temp_conn.commit()
+
+            # Reset the connection property
+            self._connection = None
+            logger.info("Database rebuild completed successfully")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to rebuild database: {e}")
+            # If backup exists and rebuild failed, try to restore
+            if backup and 'backup_path' in locals():
+                try:
+                    logger.info("Attempting to restore from backup")
+                    if self.db_path.exists():
+                        self.db_path.unlink()
+                    shutil.copy2(backup_path, self.db_path)
+                    logger.info("Restored from backup successfully")
+                except Exception as restore_error:
+                    logger.error(f"Failed to restore from backup: {restore_error}")
+
+            self._connection = None
+            return False

@@ -1,10 +1,12 @@
 import sys
 import logging
 import argparse
+from pathlib import Path
 
 from cloud.raptor_commissioner import RaptorCommissioner
 from cloud.raptor_configuration import RaptorConfiguration
 from cloud.firmware_update import FirmwareUpdater
+from database.database_manager import DatabaseManager
 from utils import EnvVars
 
 # Configure logging
@@ -23,6 +25,8 @@ def parse_args():
                         help="Optional git tag to update the system.")
     parser.add_argument('-c', '--commission', action="store_true",
                         help="Perform commissioning step")
+    parser.add_argument('-r', "--rebuild", action="store_true",
+                        help="Force the rebuilding of the SQLite databases -- performs wipe")
     parser.add_argument('-n', '--configure', action="store_true",
                         help="Download and refresh the configuration")
     return parser.parse_args()
@@ -30,18 +34,23 @@ def parse_args():
 
 def main():
     args = parse_args()
-    api_base_url = EnvVars().api_url
+    envvars = EnvVars()
+
+    if args.rebuild:
+        schema = Path('/root/raptor/src/database/schema.sql')
+        db = DatabaseManager(envvars.db_path, schema)
+        db.rebuild_db(True)
 
     if args.commission:
         # Create and attempt commissioner
-        commissioner = RaptorCommissioner(api_base_url)
+        commissioner = RaptorCommissioner(envvars.api_url)
         if not commissioner.commission():
             logger.error("Failed to commission Raptor")
             sys.exit(1)
         logger.info("Raptor successfully commissioned")
 
     if args.configure:
-        configurator = RaptorConfiguration(api_base_url)
+        configurator = RaptorConfiguration(envvars.api_url)
         # Get and save the configuration
         config = configurator.get_configuration()
         if not config:

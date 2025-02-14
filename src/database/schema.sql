@@ -1,5 +1,13 @@
 
 -- Hardware Instances (specific hardware configurations)
+CREATE TABLE IF NOT EXISTS commission (
+    id INTEGER PRIMARY KEY,
+    raptor_id CHAR(24) NOT NULL UNIQUE,
+    api_key VARCHAR(64) NOT NULL UNIQUE,
+    firmware_tag VARCHAR(50),
+    CONSTRAINT valid_mongo_id CHECK (LENGTH(mongo_id) = 24)
+)
+
 CREATE TABLE IF NOT EXISTS hardware (
     id INTEGER PRIMARY KEY,
     driver_path TEXT NOT NULL,
