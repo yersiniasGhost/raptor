@@ -3,7 +3,7 @@ import json
 import logging
 import sqlite3
 
-from .envvars import EnvVars
+from utils.envvars import EnvVars
 from database.database_manager import DatabaseManager
 
 

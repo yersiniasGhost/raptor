@@ -1,8 +1,9 @@
 from typing import Optional
 import json
 import requests
-from utils import EnvVars, get_mac_address, get_api_key
+from utils import EnvVars, get_mac_address
 from utils import LogManager
+from database.db_utils import get_api_key
 
 logger = LogManager().get_logger(__name__)
 
