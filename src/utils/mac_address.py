@@ -1,8 +1,6 @@
 import uuid
 from typing import Optional
 import psutil
-from utils import LogManager
-logger = LogManager().get_logger(__name__)
 
 
 def get_mac_address():
@@ -10,7 +8,8 @@ def get_mac_address():
                      for elements in range(0, 2 * 6, 2)][::-1])
 
 
-def get_system_mac_psutil() -> Optional[str]:
+# Possibly not ever used
+def get_system_mac_psutil(logger) -> Optional[str]:
     """
     Get the MAC address of the first non-loopback network interface.
     Returns:
