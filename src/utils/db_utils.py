@@ -1,3 +1,4 @@
+from typing import Optional
 import json
 import logging
 import sqlite3
@@ -21,7 +22,7 @@ def get_api_key(logger: logging.Logger = logging.getLogger(__name__)):
         return None
 
 
-def get_mqtt_config(logger: logging.Logger = logging.getLogger(__name__)) ->:
+def get_mqtt_config(logger: logging.Logger = logging.getLogger(__name__)) -> Optional[dict]:
     db = DatabaseManager(EnvVars().db_path)
     try:
         with db.connection as conn:
