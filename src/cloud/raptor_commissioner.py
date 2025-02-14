@@ -46,7 +46,7 @@ class RaptorCommissioner:
                 db = DatabaseManager(envvars.db_path)
                 with db.connection as conn:
                     conn.execute("""
-                    REPLACE INTO commission (cloud_id, api_key, firmware_tag)
+                    REPLACE INTO commission (raptor_id, api_key, firmware_tag)
                         VALUES (?, ?, ?)
                     """, (raptor_id, api_key, firmware_tag))
                     conn.commit()
