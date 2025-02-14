@@ -36,6 +36,10 @@ def main():
     args = parse_args()
     envvars = EnvVars()
 
+    if args.tag:
+        firmware = FirmwareUpdater(args.tag, args.force_git)
+        firmware.update()
+
     if args.rebuild:
         schema = Path('/root/raptor/src/database/schema.sql')
         db = DatabaseManager(envvars.db_path, schema)
@@ -57,10 +61,6 @@ def main():
             logger.error("Failed to get configuration")
             sys.exit(1)
         logger.info("Raptor successfully configured")
-
-    if args.tag:
-        firmware = FirmwareUpdater(args.tag, args.force_git)
-        firmware.update()
 
 if __name__ == "__main__":
     main()

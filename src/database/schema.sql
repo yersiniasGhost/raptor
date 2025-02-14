@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS commission (
     raptor_id CHAR(24) NOT NULL UNIQUE,
     api_key VARCHAR(64) NOT NULL UNIQUE,
     firmware_tag VARCHAR(50),
-    CONSTRAINT valid_mongo_id CHECK (LENGTH(mongo_id) = 24)
+    CONSTRAINT valid_raptor_id CHECK (LENGTH(raptor_id) = 24)
 );
 
 CREATE TABLE IF NOT EXISTS hardware (
