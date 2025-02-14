@@ -8,25 +8,28 @@ from utils.envvars import EnvVars
 class DatabaseManager(metaclass=Singleton):
 
     def __init__(self):
-        self.db_path = EnvVars().database_url
+        self.db_path = EnvVars().db_path
         self._connection: Optional[Connection] = None
         self._tsdb_connection: Optional[Connection] = None
 
     @property
-    def connection(self):
+    def connection(self, retries: int = 3):
         if self._connection is None:
-            self._connection = sqlite3.connect(self.db_path)
-            self._connection.row_factory = sqlite3.Row
-            # Set pragmas
-            self._connection.execute('PRAGMA journal_mode=WAL')
-            self._connection.execute('PRAGMA synchronous=NORMAL')
-        try:
-            # Test connection is still good
-            self._connection.execute('SELECT 1')
-        except (sqlite3.Error, sqlite3.OperationalError):
-            # If connection is bad, recreate it
-            self._connection = None
-            return self.connection
+            if retries <= 0:
+                raise sqlite3.OperationalError("Failed to connect after maximum retries")
+
+            try:
+                self._connection = sqlite3.connect(self.db_path)
+                self._connection.row_factory = sqlite3.Row
+                # Set pragmas
+                self._connection.execute('PRAGMA journal_mode=WAL')
+                self._connection.execute('PRAGMA synchronous=NORMAL')
+                # Test connection is still good
+                self._connection.execute('SELECT 1')
+            except (sqlite3.Error, sqlite3.OperationalError):
+                # If connection is bad, recreate it
+                self._connection = None
+                return self.connection(retries - 1)
         return self._connection
 
     def close(self):
