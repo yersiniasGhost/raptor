@@ -1,5 +1,6 @@
 from typing import Optional
 import logging
+import subprocess
 import sys
 import time
 from datetime import datetime
@@ -145,6 +146,7 @@ class FirmwareUpdater:
                 return False
 
             logging.info("Update completed successfully")
+            self.cleanup_repository()
             return True
 
         except Exception as e:
@@ -152,3 +154,35 @@ class FirmwareUpdater:
             if self.current_version:
                 self.rollback(self.current_version)
             return False
+
+    def cleanup_repository(self) -> bool:
+        """Clean up unnecessary objects from the repository to free up space."""
+        logging.info("Starting repository cleanup")
+
+        # Remove loose objects that are no longer referenced
+        _, prune_success = self.run_command(['git', 'prune', '--expire', 'now'])
+        if not prune_success:
+            logging.error("Failed to prune loose objects")
+            return False
+
+        # Run garbage collection aggressively
+        _, gc_success = self.run_command([
+            'git', 'gc',
+            '--aggressive',  # More thorough but slower GC
+            '--prune=now',  # Remove all unreachable objects immediately
+            '--quiet'  # Reduce output for embedded systems
+        ])
+        if not gc_success:
+            logging.error("Failed to run garbage collection")
+            return False
+
+        # Calculate space saved (if du command is available)
+        try:
+            before_size = subprocess.check_output(['du', '-sh', '.git'], cwd=self.repo_path).split()[0]
+            after_size = subprocess.check_output(['du', '-sh', '.git'], cwd=self.repo_path).split()[0]
+            logging.info(f"Repository size changed from {before_size} to {after_size}")
+        except subprocess.CalledProcessError:
+            logging.debug("Could not calculate repository size difference")
+
+        logging.info("Repository cleanup completed")
+        return True
