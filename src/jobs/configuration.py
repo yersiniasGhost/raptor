@@ -8,7 +8,7 @@ from cloud.firmware_update import FirmwareUpdater
 from database.database_manager import DatabaseManager
 from utils import LogManager, EnvVars
 
-logger = LogManager().get_logger(__name__)
+logger = LogManager().get_logger("Configurator")
 
 
 def parse_args():

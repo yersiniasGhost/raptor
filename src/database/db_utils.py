@@ -17,7 +17,7 @@ def get_api_key(logger: Logger):
             if not data:
                 logger.error("Unable to access commission database.")
                 raise ValueError(f"Unable to access commission data.")
-            return json.loads(data)
+            return data["api_key"]
     except sqlite3.Error as e:
         logger.error(f"Failed to get commission data: {e}")
         return None
