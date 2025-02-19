@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any, Iterable
 from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
@@ -7,6 +7,8 @@ import time
 import shutil
 
 from utils import LogManager
+import json
+
 logger = LogManager().get_logger(__name__)
 
 
@@ -54,16 +56,107 @@ class DatabaseManager(metaclass=Singleton):
         """Auto-close on context exit"""
         self.close()
 
+    def clear_existing_configuration(self):
+        """ Clear the existing configuration data.  Keep the telemetry data in case of roll back? """
+        try:
+            cursor = self.connection.cursor()
+            # Delete all rows from telemetry table
+            cursor.execute("DELETE FROM telemetry")
+
+            # Get all hardware IDs to handle foreign key constraints
+            cursor.execute("SELECT id FROM hardware")
+            hardware_ids = [row[0] for row in cursor.fetchall()]
+
+            # Delete associated devices first (due to foreign key constraint)
+            for hw_id in hardware_ids:
+                cursor.execute("DELETE FROM devices WHERE hardware_id = ?", (hw_id,))
+
+            # Delete hardware entries
+            cursor.execute("DELETE FROM hardware")
+
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            logger.error(f"Error clearing existing configuration: {e}")
+            raise
+
+
+    def update_telemetry(self, telemetry_config: str, mqtt_config: str):
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                            INSERT INTO telemetry (mqtt_config, telemetry_config)
+                            VALUES (?, ?)
+                        """, (mqtt_config, telemetry_config))
+        except Exception as e:
+            self.connection.rollback()
+            logger.error(f"Error inserting telemetry/mqtt configuration: {e}")
+            raise
+
+    def add_hardware(self, hardware_configuration: Dict[str, Any]):
+
+        try:
+            cursor = self.connection.cursor()
+            for hw_name, hw_config_list in hardware_configuration.items():
+                for the_hardware in hw_config_list:
+                    cursor.execute("""
+                            INSERT INTO hardware 
+                            (hardware_type, driver_path, parameters, scan_groups, devices, external_ref)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        """, (
+                        hw_name,
+                        the_hardware['driver_path'],
+                        json.dumps(the_hardware["parameters"]),
+                        json.dumps(the_hardware.get("scan_groups", [])),
+                        json.dumps(the_hardware.get("devices")),
+                        the_hardware.get("crem3_id")
+                    ))
+            self.connection.commit()
+            return True
+
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            logger.error(f"Database error: {e}")
+            raise
+
+        except Exception as e:
+            self.connection.rollback()
+            logger.error(f"Error processing configuration: {e}")
+            raise
+
+
+    def get_hardware_systems(self, system: str) -> Iterable[dict]:
+        """
+        Iterate through each instance of hardware for the given system type "BMS", "Converters", etc.
+        Return a dictionary of data for each column.
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+             SELECT id, hardware_type, driver_path, parameters, scan_groups, 
+                       devices, enabled, external_ref 
+                FROM hardware 
+                WHERE hardware_type LIKE ?
+            """, (f'%{system}%',))
+
+            columns = [description[0] for description in cursor.description]
+            for row in cursor.fetchall():
+                config = dict(zip(columns, row))
+                config['parameters'] = json.loads(config['parameters'])
+                config['scan_groups'] = json.loads(config['scan_groups'])
+                config['devices'] = json.loads(config['devices'])
+                yield config
+
+        except sqlite3.Error as e:
+            logger.error(f"Database error retrieving {system} hardware: {e}")
+            raise
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON parsing error: {e}")
+            raise
+
 
     def rebuild_db(self, backup: bool = True) -> bool:
         """
         Rebuilds the database from scratch using the schema file.
-
-        Args:
-            backup (bool): If True, creates a backup before rebuilding
-
-        Returns:
-            bool: True if rebuild was successful, False otherwise
         """
         logger.info("Starting database rebuild process")
 

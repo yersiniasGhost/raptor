@@ -1,13 +1,14 @@
 from typing import Optional
 import json
-import logging
+from logging import Logger
 import sqlite3
 
 from utils.envvars import EnvVars
 from database.database_manager import DatabaseManager
+from cloud.mqtt_config import MQTTConfig
 
 
-def get_api_key(logger: logging.Logger = logging.getLogger(__name__)):
+def get_api_key(logger: Logger):
     db = DatabaseManager(EnvVars().db_path)
     try:
         with db.connection as conn:
@@ -21,8 +22,13 @@ def get_api_key(logger: logging.Logger = logging.getLogger(__name__)):
         logger.error(f"Failed to get commission data: {e}")
         return None
 
+# def get_hardware_configuration(logger: Logger) -> dict:
+#     db = DatabaseManager(EnvVars().db_path)
+#     try:
+#         with db.connection as conn:
 
-def get_mqtt_config(logger: logging.Logger = logging.getLogger(__name__)) -> Optional[dict]:
+
+def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
     db = DatabaseManager(EnvVars().db_path)
     try:
         with db.connection as conn:
@@ -31,7 +37,8 @@ def get_mqtt_config(logger: logging.Logger = logging.getLogger(__name__)) -> Opt
             if not data:
                 logger.error("Unable to access MQTT data from commission database.")
                 raise ValueError("Unable to access MQTT data from commission database.")
-            return json.loads(data['mqtt_config'])
+            config = json.loads(data['mqtt_config'])
+            return MQTTConfig.from_dict(config)
     except sqlite3.Error as e:
         logger.error(f"Failed to get commission data: {e}")
         return None

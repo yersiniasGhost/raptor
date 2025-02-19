@@ -1,20 +1,22 @@
 import asyncio
 import aiohttp
 from typing import Dict, Any, Optional
-from contextlib import contextmanager
-import sqlite3
 import backoff  # For exponential backoff in retries
-from utils import LogManager
-logger = LogManager().get_logger(__name__)
+from database.db_utils import get_mqtt_config, get_hardware_configuration
+from database.database_manager import DatabaseManager
+from utils import LogManager, EnvVars
+from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
+from cloud.mqtt_config import MQTTConfig
 
 
 class IoTController:
 
-    def __init__(self, config_path: str):
+    def __init__(self):
         # Setup logging with rotation and remote logging if needed
-        self.config = self._load_config(config_path)
         self.running = True
         self._setup_error_handlers()
+        self.logger = LogManager().get_logger(__name__)
+        self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
 
 
     async def query_device(self, device_config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -76,15 +78,36 @@ class IoTController:
             # Continue with existing schedule
 
 
+    def _data_acquisition(self):
+        db = DatabaseManager(EnvVars().db_path)
+        telemetry_data = {}
+        for system in ["BMS", "Converters"]:
+            for hardware in db.get_hardware_systems(system):
+                self.logger.info(f"ACQ: {hardware['driver_path']}")
+                deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
+                instance_telemetry_data = deployment.data_acquisition(self.mqtt_config.format)
+                telemetry_data = telemetry_data | instance_telemetry_data
+        print(telemetry_data)
+
 
     async def main_loop(self):
-        """Main execution loop"""
+        """  Main execution loop
+             This IoT controller is responsible for executing on a schedule a set of actions:
+             a) Data Acquisition:  Read BMS, Converter data, (do we need actuator status?)
+             b) Upload to the cloud
+             c) Download any instructions from the cloud and act on them
+             d) Check new telemetry schedule and update timer.
+        """
         while self.running:
             try:
+                self._data_acquisition()
                 # Check for schedule updates
-                await self.check_schedule_updates()
+                # await self.check_schedule_updates()
 
-                # Query all devices
+                # Get all BMS hardware definitions from SQLite
+
+                #
+
                 device_data = {}
                 for device in self.config['devices']:
                     try:
@@ -119,19 +142,18 @@ class IoTController:
     def _setup_error_handlers(self):
         """Setup global error handlers"""
 
-
-
         def handle_exception(loop, context):
             exception = context.get('exception', context['message'])
             self.logger.critical(f"Unhandled error: {str(exception)}", exc_info=True)
             # Implement alert mechanism here
-
-
-
         loop = asyncio.get_event_loop()
         loop.set_exception_handler(handle_exception)
 
 
+
 if __name__ == "__main__":
-    controller = IoTController('/etc/iot/config.json')
+
+    hardware = get_hardware_configuration()
+
+    controller = IoTController(hardware, mqtt_config)
     asyncio.run(controller.main_loop())

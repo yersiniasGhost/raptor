@@ -5,9 +5,10 @@ from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import threading
+from hardware.hardware_base import HardwareBase
 
 
-class ElectrakMD:
+class ElectrakMD(HardwareBase):
     @dataclass
     class MotionFlags:
         """Motion status flags from object 0x2203"""

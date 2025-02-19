@@ -1,0 +1,51 @@
+from typing import List, Iterator, Dict, Any
+from dataclasses import dataclass
+from hardware.hardware_base import HardwareBase
+from utils import LogManager
+
+logger = LogManager().get_logger(__name__)
+
+
+@dataclass
+class HardwareDeployment:
+    hardware: HardwareBase
+    devices: List[Dict[str, Any]]
+    scan_groups: Dict[str, Any]
+
+    def iterate_devices(self) -> Iterator[dict]:
+        for device in self.devices:
+            yield device
+
+    def data_acquisition(self, format: str):
+        values = self.hardware.data_acquisition(self.devices, self.scan_groups)
+
+
+def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployment:
+    class_path = hardware.get("driver_path")
+    if not class_path:
+        raise ValueError(f"Invalid configuration data.  Missing hardware type")
+
+    # Split the class path into module path and class name
+    try:
+        module_path, class_name = class_path.rsplit('.', 1)
+    except ValueError:
+        raise ValueError(f"Invalid class path format: {class_path}. Expected format: 'module.path.ClassName'")
+
+    try:
+        # Import the module and get the class
+        # module = importlib.import_module(module_path)
+        # cls = getattr(module, class_name)
+        cls = globals()[class_name]
+        constructor_config = hardware.get("parameters", {})
+        hardware_instance = cls(**constructor_config)
+        deployment = HardwareDeployment(hardware=hardware_instance,
+                                        devices=hardware.get('devices'),
+                                        scan_groups=hardware.get('scan_groups', {})
+                                        )
+        return deployment
+
+    except ImportError:
+        raise ImportError(f"Could not import module: {module_path}")
+    except AttributeError:
+        raise ImportError(f"Could not find class {class_name} in module {module_path}")
+

@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from . import templates
 from bms_store import BMSDataStore
 from .hardware_deployment import HardwareDeployment, get_hardware
-from hardware.modbus.modbus import modbus_data_acquisition
+from hardware.modbus.modbus import modbus_data_acquisition_orig
 from utils import LogManager
 
 logger = LogManager().get_logger(__name__)
@@ -59,7 +59,7 @@ async def get_bms_data(deployment: Annotated[HardwareDeployment, Depends(get_har
         # Update each unit
         for unit_id in hardware.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
-            values = modbus_data_acquisition(hardware.hardware, register_map, slave_id=unit_id)
+            values = modbus_data_acquisition_orig(hardware.hardware, register_map, slave_id=unit_id)
             if isinstance(values, dict):  # Ensure values is a dictionary
                 await bms_store.update_unit_data(unit_id, values)
             else:

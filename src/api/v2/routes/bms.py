@@ -9,7 +9,7 @@ from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
 from . import templates
 
-from hardware.modbus.modbus import modbus_data_acquisition
+from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
 from bms_store import BMSDataStore
 from .hardware_deployment import HardwareDeployment, get_hardware
@@ -136,7 +136,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardw
         batteries, register_map = get_batteries(hardware)
         for unit_id in batteries.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]
-            values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=unit_id)
+            values = modbus_data_acquisition_orig(batteries.hardware, register_map, slave_id=unit_id)
             filename = f"battery_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
             trend = calculate_soc_trend(trending_data)
@@ -200,7 +200,7 @@ async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment
         }
     ]})
     batteries, _ = get_batteries(hardware)
-    values = modbus_data_acquisition(batteries.hardware, m_map, slave_id=unit_id)
+    values = modbus_data_acquisition_orig(batteries.hardware, m_map, slave_id=unit_id)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}
 

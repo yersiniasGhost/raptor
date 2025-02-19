@@ -1,0 +1,672 @@
+{
+  "Current": {
+	"name": "Current",
+	"data type": "int16",
+	"address": 0,
+	"units": "A",
+	"conversion factor": 0.01,
+	"description": "Charge/discharge current. Positive: charging, Negative: discharging"
+  },
+  "Pack Voltage": {
+	"name": "Pack Voltage",
+	"data type": "uint16",
+	"address": 1,
+	"units": "V",
+	"conversion factor": 0.01,
+	"description": "Voltage of battery pack"
+  },
+  "SOC": {
+	"name": "State of Charge",
+	"data type": "uint8",
+	"address": 2,
+	"units": "%",
+	"conversion factor": 1,
+	"description": "State of Charge (0-100%)"
+  },
+  "SOH": {
+	"name": "State of Health",
+	"data type": "uint8",
+	"address": 3,
+	"units": "%",
+	"conversion factor": 1,
+	"description": "State of Health (0-100%)"
+  },
+  "Remain Capacity": {
+	"name": "Remaining Capacity",
+	"data type": "uint16",
+	"address": 4,
+	"units": "Ah",
+	"conversion factor": 0.01,
+	"description": "Remaining battery capacity"
+  },
+  "Full Capacity": {
+	"name": "Full Capacity",
+	"data type": "uint16",
+	"address": 5,
+	"units": "Ah",
+	"conversion factor": 0.01,
+	"description": "Full battery capacity"
+  },
+  "Design Capacity": {
+	"name": "Design Capacity",
+	"data type": "uint16",
+	"address": 6,
+	"units": "Ah",
+	"conversion factor": 0.01,
+	"description": "Design battery capacity"
+  },
+  "Cycle Count": {
+	"name": "Cycle Count",
+	"data type": "uint16",
+	"address": 7,
+	"units": "cycles",
+	"conversion factor": 1,
+	"description": "Battery cycle counts"
+  },
+  "Warning Flags": {
+	"name": "Warning Flags",
+	"data type": "uint16",
+	"address": 9,
+	"units": "hex",
+	"conversion factor": 1,
+	"description": "Warning flag register"
+  },
+  "Protection Flags": {
+	"name": "Protection Flags",
+	"data type": "uint16",
+	"address": 10,
+	"units": "hex",
+	"conversion factor": 1,
+	"description": "Protection flag register"
+  },
+  "Status Flags": {
+	"name": "Status/Fault Flags",
+	"data type": "uint16",
+	"address": 11,
+	"units": "hex",
+	"conversion factor": 1,
+	"description": "Status and fault flag register"
+  },
+  "Balance Status": {
+	"name": "Balance Status",
+	"data type": "uint16",
+	"address": 12,
+	"units": "hex",
+	"conversion factor": 1,
+	"description": "Cell balancing status"
+  },
+  "Cell Voltages": {
+	"name": "Cell Voltages",
+	"data type": "uint16",
+	"address": 15,
+	"address range": [
+	  15,
+	  30
+	],
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Individual cell voltages (16 cells, 2 bytes each)"
+  },
+  "Cell Temperatures": {
+	"name": "Cell Temperatures",
+	"data type": "int16",
+	"address": 31,
+	"address range": [
+	  31,
+	  34
+	],
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Cell temperatures (4 sensors, 2 bytes each)"
+  },
+  "MOSFET Temperature": {
+	"name": "MOSFET Temperature",
+	"data type": "int16",
+	"address": 35,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "MOSFET temperature"
+  },
+  "Environment Temperature": {
+	"name": "Environment Temperature",
+	"data type": "int16",
+	"address": 36,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment temperature"
+  },
+  "Pack OV Alarm": {
+	"name": "Pack Overvoltage Alarm",
+	"data type": "uint16",
+	"address": 60,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack overvoltage alarm threshold",
+	"access": "RW"
+  },
+  "Pack OV Protection": {
+	"name": "Pack Overvoltage Protection",
+	"data type": "uint16",
+	"address": 61,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack overvoltage protection threshold",
+	"access": "RW"
+  },
+  "Pack OV Release": {
+	"name": "Pack Overvoltage Release",
+	"data type": "uint16",
+	"address": 62,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack overvoltage release threshold",
+	"access": "RW"
+  },
+  "Pack OV Delay": {
+	"name": "Pack Overvoltage Delay",
+	"data type": "uint8",
+	"address": 63,
+	"units": "s",
+	"conversion factor": 0.1,
+	"description": "Pack overvoltage protection delay time",
+	"access": "RW"
+  },
+  "Cell OV Alarm": {
+	"name": "Cell Overvoltage Alarm",
+	"data type": "uint16",
+	"address": 64,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell overvoltage alarm threshold",
+	"access": "RW"
+  },
+  "Cell OV Protection": {
+	"name": "Cell Overvoltage Protection",
+	"data type": "uint16",
+	"address": 65,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell overvoltage protection threshold",
+	"access": "RW"
+  },
+  "Cell OV Release": {
+	"name": "Cell Overvoltage Release",
+	"data type": "uint16",
+	"address": 66,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell overvoltage release threshold",
+	"access": "RW"
+  },
+  "Cell OV Delay": {
+	"name": "Cell Overvoltage Delay",
+	"data type": "uint8",
+	"address": 67,
+	"units": "s",
+	"conversion factor": 0.1,
+	"description": "Cell overvoltage protection delay time",
+	"access": "RW"
+  },
+  "Pack UV Alarm": {
+	"name": "Pack Undervoltage Alarm",
+	"data type": "uint16",
+	"address": 68,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack undervoltage alarm threshold",
+	"access": "RW"
+  },
+  "Pack UV Protection": {
+	"name": "Pack Undervoltage Protection",
+	"data type": "uint16",
+	"address": 69,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack undervoltage protection threshold",
+	"access": "RW"
+  },
+  "Pack UV Release": {
+	"name": "Pack Undervoltage Release",
+	"data type": "uint16",
+	"address": 70,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack undervoltage release threshold",
+	"access": "RW"
+  },
+  "Pack UV Delay": {
+	"name": "Pack Undervoltage Delay",
+	"data type": "uint8",
+	"address": 71,
+	"units": "s",
+	"conversion factor": 0.1,
+	"description": "Pack undervoltage protection delay time",
+	"access": "RW"
+  },
+  "Cell UV Alarm": {
+	"name": "Cell Undervoltage Alarm",
+	"data type": "uint16",
+	"address": 72,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell undervoltage alarm threshold",
+	"access": "RW"
+  },
+  "Cell UV Protection": {
+	"name": "Cell Undervoltage Protection",
+	"data type": "uint16",
+	"address": 73,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell undervoltage protection threshold",
+	"access": "RW"
+  },
+  "Cell UV Release": {
+	"name": "Cell Undervoltage Release",
+	"data type": "uint16",
+	"address": 74,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell undervoltage release threshold",
+	"access": "RW"
+  },
+  "Cell UV Delay": {
+	"name": "Cell Undervoltage Delay",
+	"data type": "uint8",
+	"address": 75,
+	"units": "s",
+	"conversion factor": 0.1,
+	"description": "Cell undervoltage protection delay time",
+	"access": "RW"
+  },
+  "Charging OC Alarm": {
+	"name": "Charging Overcurrent Alarm",
+	"data type": "uint16",
+	"address": 76,
+	"units": "A",
+	"conversion factor": 1,
+	"description": "Charging overcurrent alarm threshold",
+	"access": "RW"
+  },
+  "Charging OC Protection": {
+	"name": "Charging Overcurrent Protection",
+	"data type": "uint16",
+	"address": 77,
+	"units": "A",
+	"conversion factor": 1,
+	"description": "Charging overcurrent protection threshold",
+	"access": "RW"
+  },
+  "Charging OC Delay": {
+	"name": "Charging Overcurrent Delay",
+	"data type": "uint8",
+	"address": 78,
+	"units": "s",
+	"conversion factor": 0.1,
+	"description": "Charging overcurrent protection delay time",
+	"access": "RW"
+  },
+  "Discharging OC Alarm": {
+	"name": "Discharging Overcurrent Alarm",
+	"data type": "uint16",
+	"address": 79,
+	"units": "A",
+	"conversion factor": 1,
+	"description": "Discharging overcurrent alarm threshold",
+	"access": "RW"
+  },
+  "Discharging OC Protection": {
+	"name": "Discharging Overcurrent Protection",
+	"data type": "uint16",
+	"address": 80,
+	"units": "A",
+	"conversion factor": 1,
+	"description": "Discharging overcurrent protection threshold",
+	"access": "RW"
+  },
+  "Discharging OC Delay": {
+	"name": "Discharging Overcurrent Delay",
+	"data type": "uint8",
+	"address": 81,
+	"units": "s",
+	"conversion factor": 0.1,
+	"description": "Discharging overcurrent protection delay time",
+	"access": "RW"
+  },
+  "Discharging OC2 Protection": {
+	"name": "Discharging Overcurrent 2 Protection",
+	"data type": "uint16",
+	"address": 82,
+	"units": "A",
+	"conversion factor": 1,
+	"description": "Secondary discharging overcurrent protection threshold",
+	"access": "RW"
+  },
+  "Discharging OC2 Delay": {
+	"name": "Discharging Overcurrent 2 Delay",
+	"data type": "uint8",
+	"address": 83,
+	"units": "s",
+	"conversion factor": 0.025,
+	"description": "Secondary discharging overcurrent protection delay time",
+	"access": "RW"
+  },
+  "Charging OT Alarm": {
+	"name": "Charging Overtemperature Alarm",
+	"data type": "int16",
+	"address": 84,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Charging overtemperature alarm threshold",
+	"access": "RW"
+  },
+  "Charging OT Protection": {
+	"name": "Charging Overtemperature Protection",
+	"data type": "int16",
+	"address": 85,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Charging overtemperature protection threshold",
+	"access": "RW"
+  },
+  "Charging OT Release": {
+	"name": "Charging Overtemperature Release",
+	"data type": "int16",
+	"address": 86,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Charging overtemperature release threshold",
+	"access": "RW"
+  },
+  "Discharging OT Alarm": {
+	"name": "Discharging Overtemperature Alarm",
+	"data type": "int16",
+	"address": 87,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Discharging overtemperature alarm threshold",
+	"access": "RW"
+  },
+  "Discharging OT Protection": {
+	"name": "Discharging Overtemperature Protection",
+	"data type": "int16",
+	"address": 88,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Discharging overtemperature protection threshold",
+	"access": "RW"
+  },
+  "Discharging OT Release": {
+	"name": "Discharging Overtemperature Release",
+	"data type": "int16",
+	"address": 89,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Discharging overtemperature release threshold",
+	"access": "RW"
+  },
+  "Charging UT Alarm": {
+	"name": "Charging Undertemperature Alarm",
+	"data type": "int16",
+	"address": 90,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Charging undertemperature alarm threshold",
+	"access": "RW"
+  },
+  "Charging UT Protection": {
+	"name": "Charging Undertemperature Protection",
+	"data type": "int16",
+	"address": 91,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Charging undertemperature protection threshold",
+	"access": "RW"
+  },
+  "Charging UT Release": {
+	"name": "Charging Undertemperature Release",
+	"data type": "int16",
+	"address": 92,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Charging undertemperature release threshold",
+	"access": "RW"
+  },
+  "Discharging UT Alarm": {
+	"name": "Discharging Undertemperature Alarm",
+	"data type": "int16",
+	"address": 93,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Discharging undertemperature alarm threshold",
+	"access": "RW"
+  },
+  "Discharging UT Protection": {
+	"name": "Discharging Undertemperature Protection",
+	"data type": "int16",
+	"address": 94,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Discharging undertemperature protection threshold",
+	"access": "RW"
+  },
+  "Discharging UT Release": {
+	"name": "Discharging Undertemperature Release",
+	"data type": "int16",
+	"address": 95,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Discharging undertemperature release threshold",
+	"access": "RW"
+  },
+  "MOSFET OT Alarm": {
+	"name": "MOSFET Overtemperature Alarm",
+	"data type": "int16",
+	"address": 96,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "MOSFET overtemperature alarm threshold",
+	"access": "RW"
+  },
+  "MOSFET OT Protection": {
+	"name": "MOSFET Overtemperature Protection",
+	"data type": "int16",
+	"address": 97,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "MOSFET overtemperature protection threshold",
+	"access": "RW"
+  },
+  "MOSFET OT Release": {
+	"name": "MOSFET Overtemperature Release",
+	"data type": "int16",
+	"address": 98,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "MOSFET overtemperature release threshold",
+	"access": "RW"
+  },
+  "Environment OT Alarm": {
+	"name": "Environment Overtemperature Alarm",
+	"data type": "int16",
+	"address": 99,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment overtemperature alarm threshold",
+	"access": "RW"
+  },
+  "Environment OT Protection": {
+	"name": "Environment Overtemperature Protection",
+	"data type": "int16",
+	"address": 100,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment overtemperature protection threshold",
+	"access": "RW"
+  },
+  "Environment OT Release": {
+	"name": "Environment Overtemperature Release",
+	"data type": "int16",
+	"address": 101,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment overtemperature release threshold",
+	"access": "RW"
+  },
+  "Environment UT Alarm": {
+	"name": "Environment Undertemperature Alarm",
+	"data type": "int16",
+	"address": 102,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment undertemperature alarm threshold",
+	"access": "RW"
+  },
+  "Environment UT Protection": {
+	"name": "Environment Undertemperature Protection",
+	"data type": "int16",
+	"address": 103,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment undertemperature protection threshold",
+	"access": "RW"
+  },
+  "Environment UT Release": {
+	"name": "Environment Undertemperature Release",
+	"data type": "int16",
+	"address": 104,
+	"units": "°C",
+	"conversion factor": 0.1,
+	"description": "Environment undertemperature release threshold",
+	"access": "RW"
+  },
+  "Balance Start Voltage": {
+	"name": "Balance Start Cell Voltage",
+	"data type": "uint16",
+	"address": 105,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell voltage threshold to start balancing",
+	"access": "RW"
+  },
+  "Balance Start Delta": {
+	"name": "Balance Start Delta Voltage",
+	"data type": "uint16",
+	"address": 106,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Voltage difference threshold to start balancing",
+	"access": "RW"
+  },
+  "Pack Full Charge Voltage": {
+	"name": "Pack Full-Charge Voltage",
+	"data type": "uint16",
+	"address": 107,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Pack voltage threshold for full charge",
+	"access": "RW"
+  },
+  "Pack Full Charge Current": {
+	"name": "Pack Full-Charge Current",
+	"data type": "uint16",
+	"address": 108,
+	"units": "A",
+	"conversion factor": 0.001,
+	"description": "Pack current threshold for full charge",
+	"access": "RW"
+  },
+  "Cell Sleep Voltage": {
+	"name": "Cell Sleep Voltage",
+	"data type": "uint16",
+	"address": 109,
+	"units": "V",
+	"conversion factor": 0.001,
+	"description": "Cell voltage threshold for sleep mode",
+	"access": "RW"
+  },
+  "Cell Sleep Delay": {
+	"name": "Cell Sleep Delay",
+	"data type": "uint16",
+	"address": 110,
+	"units": "min",
+	"conversion factor": 1,
+	"description": "Delay time before entering sleep mode",
+	"access": "RW"
+  },
+  "Short Circuit Delay": {
+	"name": "Short Circuit Protection Delay",
+	"data type": "uint8",
+	"address": 111,
+	"units": "us",
+	"conversion factor": 25,
+	"description": "Short circuit protection delay time (max 500us)",
+	"access": "RW"
+  },
+  "SOC Alarm Threshold": {
+	"name": "SOC Alarm Threshold",
+	"data type": "uint8",
+	"address": 112,
+	"units": "%",
+	"conversion factor": 1,
+	"description": "State of Charge alarm threshold (0-100%)",
+	"access": "RW"
+  },
+  "Charging OC2 Protection": {
+	"name": "Charging Overcurrent 2 Protection",
+	"data type": "uint16",
+	"address": 113,
+	"units": "A",
+	"conversion factor": 1,
+	"description": "Secondary charging overcurrent protection threshold",
+	"access": "RW"
+  },
+  "Charging OC2 Delay": {
+	"name": "Charging Overcurrent 2 Delay",
+	"data type": "uint8",
+	"address": 114,
+	"units": "s",
+	"conversion factor": 0.025,
+	"description": "Secondary charging overcurrent protection delay time",
+	"access": "RW"
+  },
+  "Version Info": {
+	"name": "Version Information",
+	"data type": "uint16",
+	"address": 150,
+	"address range": [
+	  150,
+	  159
+	],
+	"units": "ASCII",
+	"conversion factor": 1,
+	"description": "Version information in ASCII format",
+	"access": "R"
+  },
+  "Model SN": {
+	"name": "Model Serial Number",
+	"data type": "uint16",
+	"address": 160,
+	"address range": [
+	  160,
+	  169
+	],
+	"units": "ASCII",
+	"conversion factor": 1,
+	"description": "BMS Manufacturer serial number in ASCII format",
+	"access": "RW"
+  },
+  "Pack SN": {
+	"name": "Pack Serial Number",
+	"data type": "uint16",
+	"address": 170,
+	"address range": [
+	  170,
+	  179
+	],
+	"units": "ASCII",
+	"conversion factor": 1,
+	"description": "PACK Manufacturer serial number in ASCII format",
+	"access": "RW"
+  }
+}

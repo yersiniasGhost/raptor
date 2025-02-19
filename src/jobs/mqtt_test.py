@@ -1,15 +1,13 @@
 # Notes:
 #  ip addr add 10.250.250.2/24 dev end0
-import csv
 from datetime import datetime
-import os
 import time
 import paho.mqtt.client as mqtt
 import json
 
 from database.hardware import load_hardware_from_json_file
-from database.battery_deployment import BatteryDeployment
-from hardware.modbus.modbus import modbus_data_acquisition
+from hardware.hardware_deployment import BatteryDeployment
+from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
 from utils.system_status import collect_system_stats
 
@@ -56,11 +54,11 @@ if __name__ == "__main__":
 
     while(cnt < 1000000000):
         # Get data from each slave
-        values = modbus_data_acquisition(inview, modbus_map, slave_id=1)
+        values = modbus_data_acquisition_orig(inview, modbus_map, slave_id=1)
         if values:
             send_to_crem3("inverter", values)
         for battery in batteries.each_unit():
-            values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=battery.slave_id)
+            values = modbus_data_acquisition_orig(batteries.hardware, register_map, slave_id=battery.slave_id)
             if values:
                 send_to_crem3(f"battery{battery.slave_id}", values)
 

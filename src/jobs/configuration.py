@@ -12,7 +12,9 @@ logger = LogManager().get_logger(__name__)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Commissioning and configuration manager tool.')
+    parser = argparse.ArgumentParser(description='Commissioning and configuration manager tool.  The order of '
+                                                 'operations is:  firmware update, database rebuild, commission,'
+                                                 ' configure.')
     parser.add_argument('-f', '--force_git', action="store_true",
                         help="Force git to update when current version is None")
     parser.add_argument('-t', '--tag', default="",

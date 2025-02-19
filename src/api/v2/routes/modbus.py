@@ -2,7 +2,7 @@ import json
 from typing import Annotated
 from fastapi import APIRouter, Depends
 import logging
-from hardware.modbus.modbus import modbus_data_acquisition, modbus_data_write
+from hardware.modbus.modbus import modbus_data_acquisition_orig, modbus_data_write
 from .hardware_deployment import HardwareDeployment, get_hardware
 from hardware.modbus.modbus_map import ModbusMap
 from utils import LogManager
@@ -62,7 +62,7 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
         hardware = hardware_def.batteries.hardware
     elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
-    values = modbus_data_acquisition(hardware, m_map, slave_id=unit_id)
+    values = modbus_data_acquisition_orig(hardware, m_map, slave_id=unit_id)
     print(values)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}

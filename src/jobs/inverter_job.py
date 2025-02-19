@@ -6,8 +6,8 @@ import os
 import time
 
 from database.hardware import load_hardware_from_json_file
-from database.battery_deployment import BatteryDeployment
-from hardware.modbus.modbus import modbus_data_acquisition
+from hardware.hardware_deployment import BatteryDeployment
+from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
 from utils.system_status import collect_system_stats
 from utils import LogManager, EnvVars
@@ -54,11 +54,11 @@ if __name__ == "__main__":
         start_time = time.time()
         try:
             # Get data from each slave
-            values = modbus_data_acquisition(inview, modbus_map, slave_id=1)
+            values = modbus_data_acquisition_orig(inview, modbus_map, slave_id=1)
             if values:
                 write_to_csv("inverter", 0, values)
             for battery in batteries.each_unit():
-                values = modbus_data_acquisition(batteries.hardware, register_map, slave_id=battery.slave_id)
+                values = modbus_data_acquisition_orig(batteries.hardware, register_map, slave_id=battery.slave_id)
                 if values:
                     write_to_csv("battery", battery.slave_id, values)
         except Exception as e:

@@ -1,19 +1,59 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 import json
+import jsonschema
 import requests
 from utils import EnvVars, get_mac_address
 from utils import LogManager
 from database.db_utils import get_api_key
+from database.database_manager import DatabaseManager
 
 logger = LogManager().get_logger(__name__)
 
 
 class RaptorConfiguration:
+    SCHEMA = {
+        "type": "object",
+        "required": ["mqtt", "telemetry", "hardware"],
+        "properties": {
+            "mqtt": {
+                "type": "object",
+                "required": ["broker", "port", "username", "password", "client_id"],
+                "properties": {
+                    "broker": {"type": "string"},
+                    "port": {"type": "integer"},
+                    "username": {"type": "string"},
+                    "password": {"type": "string"},
+                    "client_id": {"type": "string"}
+                }
+            },
+            "telemetry": {
+                "type": "object",
+                "required": ["interval", "topics"],
+                "properties": {
+                    "interval": {"type": "integer"},
+                    "topics": {"type": "object"}
+                }
+            },
+            "hardware": {"type": "object"}
+        }
+    }
 
     def __init__(self):
         self.api_base_url = EnvVars().api_url
         self.api_key: Optional[str] = get_api_key()
         self.mac_address = get_mac_address()
+
+
+    @staticmethod
+    def validate_json(data: Dict[str, Any]) -> bool:
+        try:
+            jsonschema.validate(instance=data, schema=RaptorConfiguration.SCHEMA)
+            return True
+        except jsonschema.exceptions.ValidationError as e:
+            logger.error(f"Configuration data validation error: {e}")
+            logger.error(f"EXPECTED: {RaptorConfiguration.SCHEMA}")
+            logger.error(f"GOT:      {data}")
+            return False
 
 
     def get_configuration(self):
@@ -44,14 +84,34 @@ class RaptorConfiguration:
             return None
 
 
-    @staticmethod
-    def save_configuration(config, filename='raptor_config.json'):
-        """Save configuration to a file"""
+    def save_configuration(self, config_data: Dict[str, Any], filename: Optional[str] = None):
+        """ Clear the existing configuration data.  Keep the telemetry data in case of roll back? """
+
+        """Save configuration to the SQLite database"""
+
+        # Validate
+        if not self.validate_json(config_data):
+            raise ValueError(f"Invalid Raptor Configuration")
         try:
-            with open(filename, 'w') as f:
-                json.dump(config, f, indent=2)
-            logger.info(f"Configuration saved to {filename}")
-            return True
+            # Extract MQTT and telemetry config
+            mqtt_config = json.dumps(config_data["mqtt"])
+            telemetry_config = json.dumps(config_data["telemetry"])
+            db = DatabaseManager(EnvVars().db_path)
+            db.clear_existing_configuration()
+            db.update_telemetry(telemetry_config, mqtt_config)
+            db.add_hardware(config_data['hardware'])
         except Exception as e:
-            logger.error(f"Failed to save configuration: {str(e)}")
-            return False
+            logger.error(f"Unable to save configuration: {config_data}")
+            logger.error(f"Error: {e}")
+
+        if filename:
+            """Save configuration to a file"""
+            try:
+                with open(filename, 'w') as f:
+                    json.dump(config_data, f, indent=2)
+                logger.info(f"Configuration saved to {filename}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to save configuration: {str(e)}")
+                return False
+        e

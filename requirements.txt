@@ -11,6 +11,7 @@ gpiod==2.2.2
 h11==0.14.0
 idna==3.10
 Jinja2==3.1.5
+jsonschema==4.23.0
 msgpack==1.1.0
 packaging==24.2
 paho-mqtt==2.1.0

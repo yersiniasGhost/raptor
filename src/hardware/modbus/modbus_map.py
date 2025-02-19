@@ -95,11 +95,7 @@ class ModbusMap:
                 return reg
         return None
 
-    def get_registers(self) -> Iterable[ModbusRegister]:
+    def get_registers(self, register_names: Optional[List[str]] = None) -> Iterable[ModbusRegister]:
         for reg in self.registers:
-            yield reg
-
-    def get_data_acquisition_registers(self) -> Iterable[ModbusRegister]:
-        for reg in self.registers:
-            if reg.acquisition_type == ModbusAcquisitionType.STORE:
+            if not register_names or reg.name in register_names:
                 yield reg

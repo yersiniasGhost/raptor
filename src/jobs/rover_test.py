@@ -6,10 +6,8 @@ import os
 import time
 
 from database.hardware import load_hardware_from_json_file
-from database.battery_deployment import BatteryDeployment
-from hardware.modbus.modbus import modbus_data_acquisition
+from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
-from utils.system_status import collect_system_stats
 
 DATA_PATH = "/root/raptor/data/"
 
@@ -46,7 +44,7 @@ if __name__ == "__main__":
 
     while(cnt < 1000000000):
         # Get data from each slave
-        values = modbus_data_acquisition(rover, modbus_map, slave_id=1)
+        values = modbus_data_acquisition_orig(rover, modbus_map, slave_id=1)
         if values:
             write_to_csv("rover", 0, values)
 

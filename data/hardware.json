@@ -1,0 +1,131 @@
+{
+  "BMS": {
+	"hardware": {
+	  "type": "hardware.modbus.EveBattery",
+	  "parameters": {
+		"port": "/dev/ttyS11",
+		"modbus_map": "raptor/data/Esslix/modbus_map.json"
+	  },
+	  "scan_groups": {
+		"DATA": {
+		  "registers": [
+			"Current (10mA)",
+			"Pack Voltage",
+			"SOC (%)",
+			"Capacity"
+		  ]
+		},
+		"ALARM": {
+		  "registers": [
+			"Warning Flags",
+			"Protection Flags",
+			"Status Flags"
+		  ]
+		},
+		"DIAGNOSTIC": {
+		  "registers": [
+			"SOH",
+			"Cycle_Count",
+			"Status Flags"
+		  ]
+		},
+		"CONTROL": {
+		  "registers": []
+		}
+	  },
+	  "devices": [
+		{
+		  "mac": "12345",
+		  "slave_id": 0
+		},
+		{
+		  "mac": "22345",
+		  "slave_id": 1
+		},
+		{
+		  "mac": "32345",
+		  "slave_id": 2
+		},
+		{
+		  "mac": "42345",
+		  "slave_id": 3
+		}
+	  ]
+	}
+  },
+  "Converters": {
+	"hardware": {
+	  "type": "hardware.modbus.inview_gateway.InviewGateway",
+	  "parameters": {
+		"host": "10.250.250.1",
+		"port": "502"
+	  }
+	},
+	"scan_groups": {
+	  "DATA": {
+		"registers": [
+		  "DC Voltage",
+		  "DC Current",
+		  "DC Power",
+		  "Phase1 Current",
+		  "Phase1 Voltage",
+		  "Phase1 True Power",
+		  "Phase1 Apparent Power"
+		]
+	  },
+	  "ALARM": {
+		"registers": [
+		  "System Status"
+		]
+	  },
+	  "DIAGNOSTIC": {
+		"registers": [
+		]
+	  },
+	  "CONTROL": {
+		"registers": []
+	  }
+	},
+	"devices": [
+	  {
+		"mac": "MACAddr1",
+		"slave_id": 0
+	  }
+	]
+  },
+  "Actuators": {
+	"hardware": {
+	  "type": "hardware.electrak.ActuatorManager",
+	  "parameters": {
+		"channel": "can0",
+		"eds": "/root/raptor/data/ElectrakActuators/Electrak_MD.eds"
+	  }
+	},
+	"warning alarms": [
+	  {
+		"hardware": {
+		  "type": "hardware.gpiocontroller.BannerAlarm",
+		  "parameters": {
+			"relays": {
+			  "blue": 1,
+			  "green": 2,
+			  "red": 4,
+			  "alarm": 3
+			},
+			"polarity": "high"
+		  }
+		}
+	  }
+	],
+	"devices": [
+	  {
+		"mac": "NA1",
+		"node_id": 27
+	  },
+	  {
+		"mac": "Act-damaged",
+		"node_id": 28
+	  }
+	]
+  }
+}
