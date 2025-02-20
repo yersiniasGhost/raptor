@@ -40,7 +40,7 @@ class RaptorConfiguration:
 
     def __init__(self):
         self.api_base_url = EnvVars().api_url
-        self.api_key: Optional[str] = get_api_key()
+        self.api_key: Optional[str] = get_api_key(logger)
         self.mac_address = get_mac_address()
 
 
