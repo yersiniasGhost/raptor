@@ -1,7 +1,5 @@
 import asyncio
-import aiohttp
 from typing import Dict, Any, Optional
-import backoff  # For exponential backoff in retries
 from database.db_utils import get_mqtt_config, get_hardware_configuration
 from database.database_manager import DatabaseManager
 from utils import LogManager, EnvVars
