@@ -32,13 +32,13 @@ def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
     db = DatabaseManager(EnvVars().db_path)
     try:
         with db.connection as conn:
-            cursor = conn.execute("SELECT mqtt_config FROM commission LIMIT 1")
+            cursor = conn.execute("SELECT mqtt_config FROM telemetry LIMIT 1")
             data = cursor.fetchone()
             if not data:
-                logger.error("Unable to access MQTT data from commission database.")
-                raise ValueError("Unable to access MQTT data from commission database.")
+                logger.error("Unable to access MQTT data from telemetry table database.")
+                raise ValueError("Unable to access MQTT data from telemetry table database.")
             config = json.loads(data['mqtt_config'])
             return MQTTConfig.from_dict(config)
     except sqlite3.Error as e:
-        logger.error(f"Failed to get commission data: {e}")
+        logger.error(f"Failed to get mqtt data: {e}")
         return None

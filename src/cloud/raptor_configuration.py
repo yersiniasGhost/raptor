@@ -80,7 +80,7 @@ class RaptorConfiguration:
                 return None
 
         except Exception as e:
-            logger.error(f"Configuration error: {str(e)}")
+            logger.error(f"Configuration error: {e}")
             return None
 
 
@@ -91,6 +91,7 @@ class RaptorConfiguration:
 
         # Validate
         if not self.validate_json(config_data):
+            logger.error("Did not validate the configuration data.")
             raise ValueError(f"Invalid Raptor Configuration")
         try:
             # Extract MQTT and telemetry config
@@ -114,4 +115,3 @@ class RaptorConfiguration:
             except Exception as e:
                 logger.error(f"Failed to save configuration: {str(e)}")
                 return False
-        e

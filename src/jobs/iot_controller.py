@@ -1,6 +1,6 @@
 import asyncio
 from typing import Dict, Any, Optional
-from database.db_utils import get_mqtt_config, get_hardware_configuration
+from database.db_utils import get_mqtt_config
 from database.database_manager import DatabaseManager
 from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
@@ -38,11 +38,11 @@ class IoTController:
 
 
 
-    @backoff.on_exception(
-        backoff.expo,
-        Exception,
-        max_tries=3
-    )
+    #@backoff.on_exception(
+        #backoff.expo,
+        #Exception,
+        #max_tries=3
+    #)
     async def upload_to_cloud(self, data: Dict[str, Any]) -> bool:
         """Upload data to cloud with retries"""
         try:

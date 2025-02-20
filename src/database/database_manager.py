@@ -62,16 +62,6 @@ class DatabaseManager(metaclass=Singleton):
             cursor = self.connection.cursor()
             # Delete all rows from telemetry table
             cursor.execute("DELETE FROM telemetry")
-
-            # Get all hardware IDs to handle foreign key constraints
-            cursor.execute("SELECT id FROM hardware")
-            hardware_ids = [row[0] for row in cursor.fetchall()]
-
-            # Delete associated devices first (due to foreign key constraint)
-            for hw_id in hardware_ids:
-                cursor.execute("DELETE FROM devices WHERE hardware_id = ?", (hw_id,))
-
-            # Delete hardware entries
             cursor.execute("DELETE FROM hardware")
 
         except sqlite3.Error as e:
@@ -97,6 +87,8 @@ class DatabaseManager(metaclass=Singleton):
         try:
             cursor = self.connection.cursor()
             for hw_name, hw_config_list in hardware_configuration.items():
+                print(hw_name)
+                print(hw_config_list)
                 for the_hardware in hw_config_list:
                     cursor.execute("""
                             INSERT INTO hardware 
