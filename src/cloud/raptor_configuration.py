@@ -60,7 +60,7 @@ class RaptorConfiguration:
         """Get configuration using the API key from commissioning"""
         if not self.api_key:
             logger.error("No API key available. Run commission() first.")
-            return None
+            raise ValueError("No APIO key available.  Run commission() first?")
 
         try:
             url = f"{self.api_base_url}/api/v2/raptor/configuration"
@@ -77,11 +77,11 @@ class RaptorConfiguration:
                 return config
             else:
                 logger.error(f"Configuration fetch failed: {response.text}")
-                return None
+                raise ValueError(f"Response code from CREM3 configuration API: {response.status_code}")
 
         except Exception as e:
             logger.error(f"Configuration error: {e}")
-            return None
+            raise
 
 
     def save_configuration(self, config_data: Dict[str, Any], filename: Optional[str] = None):
@@ -104,6 +104,7 @@ class RaptorConfiguration:
         except Exception as e:
             logger.error(f"Unable to save configuration: {config_data}")
             logger.error(f"Error: {e}")
+            raise
 
         if filename:
             """Save configuration to a file"""
@@ -114,4 +115,4 @@ class RaptorConfiguration:
                 return True
             except Exception as e:
                 logger.error(f"Failed to save configuration: {str(e)}")
-                return False
+                raise

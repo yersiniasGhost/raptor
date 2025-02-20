@@ -83,9 +83,10 @@ class IoTController:
             for hardware in db.get_hardware_systems(system):
                 self.logger.info(f"ACQ: {hardware['driver_path']}")
                 deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
-                instance_telemetry_data = deployment.data_acquisition(self.mqtt_config.format)
-                telemetry_data = telemetry_data | instance_telemetry_data
-        print(telemetry_data)
+                print(deployment)
+                # instance_telemetry_data = deployment.data_acquisition(self.mqtt_config.format)
+                # telemetry_data = telemetry_data | instance_telemetry_data
+        # print(telemetry_data)
 
 
     async def main_loop(self):

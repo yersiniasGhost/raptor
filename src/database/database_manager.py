@@ -87,8 +87,6 @@ class DatabaseManager(metaclass=Singleton):
         try:
             cursor = self.connection.cursor()
             for hw_name, hw_config_list in hardware_configuration.items():
-                print(hw_name)
-                print(hw_config_list)
                 for the_hardware in hw_config_list:
                     cursor.execute("""
                             INSERT INTO hardware 
