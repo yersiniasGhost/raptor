@@ -151,7 +151,6 @@ class IoTController:
 
 if __name__ == "__main__":
 
-    hardware = get_hardware_configuration()
-
-    controller = IoTController(hardware, mqtt_config)
-    asyncio.run(controller.main_loop())
+    controller = IoTController()
+    print(controller.mqtt_config)
+    # asyncio.run(controller.main_loop())
