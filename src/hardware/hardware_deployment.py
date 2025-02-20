@@ -2,6 +2,8 @@ from typing import List, Iterator, Dict, Any
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
 from utils import LogManager
+from hardware.modbus.eve_battery import EveBattery
+from hardware.modbus.inview_gateway import InviewGateway
 
 logger = LogManager().get_logger(__name__)
 
@@ -16,8 +18,10 @@ class HardwareDeployment:
         for device in self.devices:
             yield device
 
-    def data_acquisition(self, format: str):
-        values = self.hardware.data_acquisition(self.devices, self.scan_groups)
+    def data_acquisition(self, format: str) -> dict:
+        data_registers = self.scan_groups.get("DATA", {}).get('registers', [])
+        values = self.hardware.data_acquisition(self.devices, data_registers)
+        return values
 
 
 def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployment:

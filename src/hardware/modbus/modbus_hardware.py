@@ -30,19 +30,30 @@ class ModbusHardware(HardwareBase):
     host: str = ""
     port: Optional[Union[str, int]] = None
     modbus_map_path: str = ""
-    modbus_map: Optional[ModbusMap] = None
+    _modbus_map: Optional[ModbusMap] = None
 
     MODBUS_SLEEP_BETWEEN_READS: float = 0.05
 
     def __post_init__(self):
-        self.modbus_map = ModbusMap.from_json(self.modbus_map_path)
+        super().__post_init__()
+        print("\n\nIN POST\n\n")
+        self._modbus_map = ModbusMap.from_json(self.modbus_map_path)
+
+    @property
+    def modbus_map(self):
+        if not self._modbus_map:
+            self._modbus_map = ModbusMap.from_json(self.modbus_map_path)
+        return self._modbus_map
+
 
     # Was modbus_data_acq in modbus.py
     def data_acquisition(self, devices: list, scan_group_registers: List[str]):
         registers = [r for r in self.modbus_map.get_registers(scan_group_registers)]
+        output = {}
         for device in devices:
             slave_id = device['slave_id']
-            data = modbus_data_acquisition(self, registers, slave_id)
+            output[slave_id] = modbus_data_acquisition(self, registers, slave_id)
+        return output    
 
 
 
@@ -122,5 +133,6 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         return output
     except Exception as e:
         logger.exception(f"Error reading modbus: {e}")
+        raise
     finally:
         client.close()

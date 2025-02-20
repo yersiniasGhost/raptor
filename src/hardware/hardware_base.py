@@ -1,7 +1,9 @@
 from typing import List, Dict, Any
+from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
 
+@dataclass
 class HardwareBase(ABC):
 
     @abstractmethod

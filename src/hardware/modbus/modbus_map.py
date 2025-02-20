@@ -35,7 +35,7 @@ class ModbusRegister:
     acquisition_type: Union[ModbusAcquisitionType, str] = ModbusAcquisitionType.STORE
     enum_values: Dict[str, str] = field(default_factory=dict)
     length: int = 1
-    read_write: str = "RO"
+    access: str = "RO"
 
     def __post_init__(self):
         # Convert string to enum if string was provided
@@ -73,7 +73,7 @@ class ModbusRegister:
 
 @dataclass
 class ModbusMap:
-    registers: List[ModbusRegister]
+    registers: Dict[str, ModbusRegister]
 
 
     @classmethod
@@ -84,18 +84,15 @@ class ModbusMap:
 
     @classmethod
     def from_dict(cls, register_map: dict) -> 'ModbusMap':
-        registers = [ModbusRegister(**reg) for reg in register_map['registers']]
+        registers = {name:ModbusRegister(**reg) for name, reg in register_map.items()}
         return cls(registers=registers)
 
     # better to use a Dict?
     def get_register_by_name(self, name: str) -> Optional[ModbusRegister]:
-        """Find register by name"""
-        for reg in self.registers:
-            if reg.name == name:
-                return reg
-        return None
+        return self.registers.get(name, None)
 
     def get_registers(self, register_names: Optional[List[str]] = None) -> Iterable[ModbusRegister]:
-        for reg in self.registers:
-            if not register_names or reg.name in register_names:
+        for name in register_names:
+            reg = self.registers.get(name, None)
+            if reg:
                 yield reg
