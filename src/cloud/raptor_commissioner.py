@@ -46,7 +46,7 @@ class RaptorCommissioner:
                 with db.connection as conn:
                     conn.execute("""
                     REPLACE INTO commission (raptor_id, api_key, firmware_tag)
-                        VALUES (?, ?, ?, ?)
+                        VALUES (?, ?, ?)
                     """, (raptor_id, api_key, firmware_tag))
                     conn.commit()
                 logger.info("Successfully commissioned Raptor")
