@@ -30,12 +30,12 @@ class RaptorConfiguration:
                 "type": "object",
                 "required": ["interval", "telemetry_path", "mode"],
                 "properties": {
-                    "mode": {"type": "integer"},
+                    "mode": {"type": "string"},
                     "interval": {"type": "integer"},
                     "telemetry_path": {"type": "string"},
-                    "messages_path": {"type": "object"},
-                    "alarms_path": {"type": "object"},
-                    "status_path": {"type": "object"}
+                    "messages_path": {"type": "string"},
+                    "alarms_path": {"type": "string"},
+                    "status_path": {"type": "string"}
                 }
             },
             "hardware": {"type": "object"}
