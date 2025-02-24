@@ -28,8 +28,9 @@ class RaptorConfiguration:
             },
             "telemetry": {
                 "type": "object",
-                "required": ["interval", "topics"],
+                "required": ["interval", "telemetry_path", "mode"],
                 "properties": {
+                    "mode": {"type": "integer"},
                     "interval": {"type": "integer"},
                     "telemetry_path": {"type": "string"},
                     "messages_path": {"type": "object"},
