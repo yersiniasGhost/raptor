@@ -13,15 +13,23 @@ class HardwareDeployment:
     hardware: HardwareBase
     devices: List[Dict[str, Any]]
     scan_groups: Dict[str, Any]
+    hardware_id: str
 
     def iterate_devices(self) -> Iterator[dict]:
         for device in self.devices:
             yield device
 
     def data_acquisition(self, format: str) -> dict:
+        """
+        :return: A dictionary of { register_name: value }
+        """
         data_registers = self.scan_groups.get("DATA", {}).get('registers', [])
         values = self.hardware.data_acquisition(self.devices, data_registers)
         return values
+
+    def alarm_checks(self) -> dict:
+        """ Perform a check on the alarms associated with this hardware device """
+        pass
 
 
 def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployment:
@@ -44,7 +52,8 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployme
         hardware_instance = cls(**constructor_config)
         deployment = HardwareDeployment(hardware=hardware_instance,
                                         devices=hardware.get('devices'),
-                                        scan_groups=hardware.get('scan_groups', {})
+                                        scan_groups=hardware.get('scan_groups', {}),
+                                        hardware_id=hardware.get('external_ref')
                                         )
         return deployment
 

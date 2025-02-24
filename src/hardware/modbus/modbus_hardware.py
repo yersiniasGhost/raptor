@@ -46,7 +46,6 @@ class ModbusHardware(HardwareBase):
         return self._modbus_map
 
 
-    # Was modbus_data_acq in modbus.py
     def data_acquisition(self, devices: list, scan_group_registers: List[str]):
         registers = [r for r in self.modbus_map.get_registers(scan_group_registers)]
         output = {}
@@ -113,6 +112,10 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             registers: List[ModbusRegister], slave_id: int) -> Dict[str, Union[float, int]]:
+    """
+    This method queries the modbus hardware based upon the slave_id and the provided registers.
+    The output is in the format of a dictionary:   { register_name: register_value }
+    """
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():

@@ -61,7 +61,7 @@ class DatabaseManager(metaclass=Singleton):
         try:
             cursor = self.connection.cursor()
             # Delete all rows from telemetry table
-            cursor.execute("DELETE FROM telemetry")
+            cursor.execute("DELETE FROM telemetry_configuration")
             cursor.execute("DELETE FROM hardware")
 
         except sqlite3.Error as e:
@@ -74,7 +74,7 @@ class DatabaseManager(metaclass=Singleton):
         try:
             cursor = self.connection.cursor()
             cursor.execute("""
-                            INSERT INTO telemetry (mqtt_config, telemetry_config)
+                            INSERT INTO telemetry_configuration (mqtt_config, telemetry_config)
                             VALUES (?, ?)
                         """, (mqtt_config, telemetry_config))
         except Exception as e:
@@ -112,6 +112,38 @@ class DatabaseManager(metaclass=Singleton):
             self.connection.rollback()
             logger.error(f"Error processing configuration: {e}")
             raise
+
+
+    def clear_telemetry_data(self):
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM telemetry_data")
+            self.connection.commit()
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            logger.error(f"Error clearing telemetry data: {e}")
+            raise
+
+
+    def store_telemetry_data(self, telemetry_data: Dict[str, Any]):
+        try:
+            cursor = self.connection.cursor()
+            data_json = json.dumps(telemetry_data)
+            cursor.execute(
+                "INSERT INTO telemetry_data (data) VALUES (?)",
+                (data_json,)
+            )
+            self.connection.commit()
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            logger.error(f"Database error writing telemetry data: {e}")
+            raise
+        except Exception as e:
+            self.connection.rollback()
+            logger.error(f"Error writing telemetry data: {e}")
+            raise
+
+
 
 
     def get_hardware_systems(self, system: str) -> Iterable[dict]:

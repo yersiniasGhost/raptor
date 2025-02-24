@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS commission (
     CONSTRAINT valid_raptor_id CHECK (LENGTH(raptor_id) = 24)
 );
 
-CREATE TABLE IF NOT EXISTS telemetry (
+CREATE TABLE IF NOT EXISTS telemetry_configuration (
     id INTEGER PRIMARY KEY,
     mqtt_config TEXT,
     telemetry_config TEXT
@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS hardware (
     devices TEXT,
     enabled BOOLEAN DEFAULT true,
     external_ref TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS telemetry_data (
+    id  INTEGER PRIMARY KEY,
+    data TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Devices (specific devices on a hardware instance)

@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 
+FORMAT_FLAT = "flat-1"
+FORMAT_HIER = "hier-1"
+
 
 @dataclass(frozen=True)
 class MQTTConfig:
@@ -8,7 +11,7 @@ class MQTTConfig:
     username: str
     password: str
     client_id: str
-    format: str = "flat-v1"
+    format: str
 
     def __post_init__(self):
         if not isinstance(self.port, int):
@@ -26,6 +29,6 @@ class MQTTConfig:
             username=data['username'],
             password=data['password'],
             client_id=data['client_id'],
-            format=data.get('format', 'flat-v1')
+            format=data.get('format', FORMAT_FLAT)
         )
 

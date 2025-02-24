@@ -6,6 +6,7 @@ import sqlite3
 from utils.envvars import EnvVars
 from database.database_manager import DatabaseManager
 from cloud.mqtt_config import MQTTConfig
+from cloud.telemetry_config import TelemetryConfig
 
 
 def get_api_key(logger: Logger):
@@ -22,21 +23,32 @@ def get_api_key(logger: Logger):
         logger.error(f"Failed to get commission data: {e}")
         return None
 
-# def get_hardware_configuration(logger: Logger) -> dict:
-#     db = DatabaseManager(EnvVars().db_path)
-#     try:
-#         with db.connection as conn:
+
+def get_telemetry_config(logger: Logger) -> Optional[TelemetryConfig]:
+    db = DatabaseManager(EnvVars().db_path)
+    try:
+        with db.connection as conn:
+            cursor = conn.execute("SELECT telemetry_config FROM telemetry_configuration LIMIT 1")
+            data = cursor.fetchone()
+            if not data:
+                logger.error("Unable to access Telemetry data from telemetry_configuration table database.")
+                raise ValueError("Unable to access Telemetry data from telemetry_configuration table database.")
+            config = json.loads(data['telemetry_config'])
+            return TelemetryConfig.from_dict(config)
+    except sqlite3.Error as e:
+        logger.error(f"Failed to get telemetry config data: {e}")
+        return None
 
 
 def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
     db = DatabaseManager(EnvVars().db_path)
     try:
         with db.connection as conn:
-            cursor = conn.execute("SELECT mqtt_config FROM telemetry LIMIT 1")
+            cursor = conn.execute("SELECT mqtt_config FROM telemetry_configuration LIMIT 1")
             data = cursor.fetchone()
             if not data:
-                logger.error("Unable to access MQTT data from telemetry table database.")
-                raise ValueError("Unable to access MQTT data from telemetry table database.")
+                logger.error("Unable to access MQTT data from telemetry_configuration table database.")
+                raise ValueError("Unable to access MQTT data from telemetry_configuration table database.")
             config = json.loads(data['mqtt_config'])
             return MQTTConfig.from_dict(config)
     except sqlite3.Error as e:

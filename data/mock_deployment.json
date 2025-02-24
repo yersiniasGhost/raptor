@@ -1,0 +1,21 @@
+{
+  "BMS": {
+	"hardware": {
+	  "type": "hardware.mock.mock_hardware.MockHardware",
+	  "parameters": {}
+	},
+	"scan_groups": {
+	  "DATA": {
+		"registers": [
+		  "Data A", "Data B", "Data C"
+		]
+	  }
+	},
+	"devices": [
+	  {
+		"mac": "MACAddr1",
+		"slave_id": 0
+	  }
+	]
+  }
+}
