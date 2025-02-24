@@ -31,7 +31,10 @@ class RaptorConfiguration:
                 "required": ["interval", "topics"],
                 "properties": {
                     "interval": {"type": "integer"},
-                    "topics": {"type": "object"}
+                    "telemetry_path": {"type": "string"},
+                    "messages_path": {"type": "object"},
+                    "alarms_path": {"type": "object"},
+                    "status_path": {"type": "object"}
                 }
             },
             "hardware": {"type": "object"}
