@@ -1,5 +1,5 @@
 import json
-import asyncio_mqtt as aiomqtt
+import aiomqtt
 from typing import List, Any, Dict
 import asyncio
 from cloud.telemetry_config import TelemetryConfig
@@ -16,8 +16,7 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
                 hostname=mqtt_config.broker,
                 port=mqtt_config.port,
                 username=mqtt_config.username,
-                password=mqtt_config.password,
-                client_id=mqtt_config.client_id
+                password=mqtt_config.password
         ) as client:
             # Publish to telemetry topic
             await client.publish(topic=telemetry_config.telemetry_path, payload=payload.encode(), qos=1)
