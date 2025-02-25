@@ -22,42 +22,6 @@ class IoTController:
         self.telemetry_data: Optional[Dict[str, Any]] = None
 
 
-    async def query_device(self, device_config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """Query a single IoT device with retries and error handling"""
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                        device_config['url'],
-                        timeout=device_config.get('timeout', 10)
-                ) as response:
-                    response.raise_for_status()
-                    data = await response.json()
-                    self.logger.debug(f"Successfully queried device {device_config['id']}")
-                    return data
-        except Exception as e:
-            self.logger.error(
-                f"Error querying device {device_config['id']}: {str(e)}",
-                exc_info=True
-            )
-            raise
-
-
-
-    # async def check_schedule_updates(self) -> None:
-    #     """Check for schedule updates from cloud"""
-    #     try:
-    #         async with aiohttp.ClientSession() as session:
-    #             async with session.get(
-    #                     f"{self.config['cloud_endpoint']}/schedule"
-    #             ) as response:
-    #                 if response.status == 200:
-    #                     new_schedule = await response.json()
-    #                     self._update_schedule(new_schedule)
-    #     except Exception as e:
-    #         self.logger.error(f"Schedule update check failed: {str(e)}")
-    #         # Continue with existing schedule
-
-
     def _data_acquisition(self):
         db = DatabaseManager(EnvVars().db_path)
         telemetry_data = {}
