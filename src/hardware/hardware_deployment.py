@@ -1,4 +1,6 @@
-from typing import List, Iterator, Dict, Any
+import json
+from pathlib import Path
+from typing import List, Iterator, Dict, Any, Union, Optional
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
 from utils import LogManager
@@ -14,6 +16,7 @@ class HardwareDeployment:
     devices: List[Dict[str, Any]]
     scan_groups: Dict[str, Any]
     hardware_id: str
+    _definition: Optional[Union[str, dict]] = None
 
     def iterate_devices(self) -> Iterator[dict]:
         for device in self.devices:
@@ -31,8 +34,17 @@ class HardwareDeployment:
         """ Perform a check on the alarms associated with this hardware device """
         pass
 
+    @property
+    def definition(self):
+        return self._definition
 
-def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployment:
+    @definition.setter
+    def definition(self, value):
+        self._definition = value
+
+
+def instantiate_hardware_from_dict(hardware: Dict[str, Any],
+                                   keep_definition: bool = False) -> HardwareDeployment:
     class_path = hardware.get("driver_path")
     if not class_path:
         raise ValueError(f"Invalid configuration data.  Missing hardware type")
@@ -55,6 +67,8 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployme
                                         scan_groups=hardware.get('scan_groups', {}),
                                         hardware_id=hardware.get('external_ref')
                                         )
+        if keep_definition:
+            deployment.definition = hardware
         return deployment
 
     except ImportError:
@@ -62,3 +76,16 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any]) -> HardwareDeployme
     except AttributeError:
         raise ImportError(f"Could not find class {class_name} in module {module_path}")
 
+
+def load_hardware_from_json_file(json_file: Union[Path, str],
+                                 keep_definition: bool = False) -> HardwareDeployment:
+    json_path = Path(json_file)
+    if not json_path.exists():
+        raise FileNotFoundError(f"Configuration file not found: {json_file}")
+
+    with json_path.open('r') as f:
+        try:
+            data = json.load(f)
+            return instantiate_hardware_from_dict(data)
+        except json.JSONDecodeError:
+            raise ValueError(f"Invalid JSON in configuration file: {json_file}")

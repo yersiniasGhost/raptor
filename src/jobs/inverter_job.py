@@ -6,13 +6,13 @@ import os
 import time
 
 from database.hardware import load_hardware_from_json_file
-from hardware.hardware_deployment import BatteryDeployment
+from hardware.hardware_deployment import HardwareDeployment
 from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
 from utils.system_status import collect_system_stats
 from utils import LogManager, EnvVars
 
-logger = LogManager().get_logger(__name__)
+logger = LogManager("inverter_job.log").get_logger(__name__)
 
 DATA_PATH = "/root/raptor/data/"
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     modbus_map = ModbusMap.from_json("../../data/Sierra25/modbus_map_basic.json")
     inview = load_hardware_from_json_file("../../data/Sierra25/converter_deployment.json")
 
-    batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
+    batteries = HardwareDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
     register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
     cnt = 0
     interval_seconds = EnvVars().data_acquisition_interval

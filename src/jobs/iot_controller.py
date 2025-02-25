@@ -1,5 +1,8 @@
 import asyncio
 import time
+from datetime import datetime
+import os
+import csv
 from typing import Dict, Any, Optional, Union, List
 from database.db_utils import get_mqtt_config, get_telemetry_config
 from database.database_manager import DatabaseManager
@@ -12,14 +15,15 @@ from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_d
 
 class IoTController:
 
-    def __init__(self):
+    def __init__(self, store_local: bool):
         # Setup logging with rotation and remote logging if needed
+        self.logger = LogManager("iot_controller.log").get_logger(__name__)
         self.running = True
         self._setup_error_handlers()
-        self.logger = LogManager().get_logger(__name__)
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
         self.telemetry_data: Optional[Dict[str, Any]] = None
+        self.store_local = store_local
 
 
     def _data_acquisition(self):
@@ -72,6 +76,36 @@ class IoTController:
         return False
 
 
+
+    def write_to_csv(self, filename: str, slave_id: int, data_list: dict):
+        """
+        Write Modbus data to CSV with timestamp
+        data_list: List of tuples [(name, value)]
+        """
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        filename = f'{filename}_{slave_id}.csv'
+        file_exists = os.path.exists(filename)
+
+        with open(filename, 'a', newline='') as csvfile:
+            fieldnames = ['Timestamp'] + list(data_list.keys())
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            # Write header if file is new
+            if not file_exists:
+                writer.writeheader()
+
+            # Create row with timestamp and values
+            row_data = {'Timestamp': timestamp}
+            row_data.update({name: value for name, value in data_list.items()})
+            writer.writerow(row_data)
+
+
+
+    async def _store_local_telemetry_data(self):
+        pass
+
+
+
     async def main_loop(self):
         """  Main execution loop
              This IoT controller is responsible for executing on a schedule a set of actions:
@@ -91,6 +125,8 @@ class IoTController:
                     db.store_telemetry_data(self.telemetry_data)
                     # Upload to cloud if we have any data
                     upload_success = await self._upload_telemetry_data()
+                    if self.store_local:
+                        await self._store_local_telemetry_data()
                     if upload_success:
                         db.clear_telemetry_data()
                     else:
@@ -128,7 +164,17 @@ class IoTController:
         loop.set_exception_handler(handle_exception)
 
 
-if __name__ == "__main__":
+def parse_args():
+    parser = argparse.ArgumentParser(description='IoT controller is the long running process that does data'
+                                                 ' acquisition, data upload and command processing')
+    parser.add_argument('-l', '--local', action="store_true",
+                        help="Stores the data in local CSV files for debugging")
+    return parser.parse_args()
 
-    controller = IoTController()
+
+import argparse
+
+if __name__ == "__main__":
+    args = parse_args()
+    controller = IoTController(store_local=args.local)
     asyncio.run(controller.main_loop())

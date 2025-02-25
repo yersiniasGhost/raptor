@@ -4,7 +4,7 @@ from . import templates
 import json
 from typing import Annotated
 
-from .hardware_deployment import HardwareDeployment, get_hardware
+from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from utils import LogManager, run_command
 
 logger = LogManager().get_logger(__name__)
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/configuration", tags=["configuration"])
 
 
 @router.get("/", name="configuration_index")
-async def index(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     return templates.TemplateResponse(
         "configuration.html",
         {
@@ -25,7 +25,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeployment, Depend
 
 
 @router.post("/ping/{section}")
-async def ping_hardware(section: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def ping_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         if section == "Actuators":
             manager = hardware.actuator_manager

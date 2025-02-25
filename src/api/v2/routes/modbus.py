@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 import logging
 from hardware.modbus.modbus import modbus_data_acquisition_orig, modbus_data_write
-from .hardware_deployment import HardwareDeployment, get_hardware
+from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from hardware.modbus.modbus_map import ModbusMap
 from utils import LogManager
 
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/modbus", tags=["modbus"])
 
 
 @router.get("/modbus_write/{data}")
-async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
     print(parsed_data)
     unit_id = parsed_data['unit_id']
@@ -42,7 +42,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
 
 
 @router.get("/modbus_register/{data}")
-async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
     print(parsed_data)
     unit_id = parsed_data['unit_id']

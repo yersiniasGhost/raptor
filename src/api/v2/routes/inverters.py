@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
 from . import templates
 from bms_store import BMSDataStore
-from .hardware_deployment import HardwareDeployment, get_hardware
+from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from hardware.modbus.modbus import modbus_data_acquisition_orig
 from utils import LogManager
 
@@ -20,12 +20,12 @@ except Exception as e:
     logger.error(f"Failed to load Inverter configuration files: {e}")
 
 
-def get_inverter(deployment: HardwareDeployment):
+def get_inverter(deployment: HardwareDeploymentRoute):
     return deployment.inverter, deployment.inverter_register_map
 
 
 @router.get("/")
-async def inverters(request: Request, deployment: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         data = await bms_store.get_all_data()
         hardware, register_map = get_inverter(deployment)
@@ -53,7 +53,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeployment, 
 
 
 @router.get("/data")
-async def get_bms_data(deployment: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def get_bms_data(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         hardware, register_map = get_inverter(deployment)
         # Update each unit

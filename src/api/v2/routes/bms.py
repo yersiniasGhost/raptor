@@ -12,7 +12,7 @@ from . import templates
 from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
 from bms_store import BMSDataStore
-from .hardware_deployment import HardwareDeployment, get_hardware
+from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 
 from utils import LogManager
 logger = LogManager().get_logger(__name__)
@@ -125,12 +125,12 @@ def read_last_n_tail(filepath: str, n: int = 5) -> List[Dict]:
         raise Exception(f"Error reading file: {str(e)}")
 
 
-def get_batteries(deployment: HardwareDeployment):
+def get_batteries(deployment: HardwareDeploymentRoute):
     return deployment.batteries, deployment.battery_register_map
 
 
 @router.get("/data")
-async def get_bms_data(hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         # Update each unit
         batteries, register_map = get_batteries(hardware)
@@ -186,7 +186,7 @@ async def get_historical_data(unit_id: int, num_points: int = Query(default=4000
 
 
 @router.get("/modbus_register/{data}")
-async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def read_modbus_register(data: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
     unit_id = parsed_data['unit_id']
     m_map = ModbusMap.from_dict({"registers": [
@@ -206,7 +206,7 @@ async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment
 
 
 @router.get("/")
-async def bms(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     batteries, register_map = get_batteries(hardware)
     try:
         bms_data = await bms_store.get_all_data()

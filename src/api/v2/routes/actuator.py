@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from . import templates
-from .hardware_deployment import get_hardware, HardwareDeployment
+from .hardware_deployment_route import get_hardware, HardwareDeploymentRoute
 from hardware.electrak.actuator_manager import ActuatorManager
 from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 
@@ -37,12 +37,12 @@ async def deactivate_warning_alarm(banner_alarm: BannerAlarm) -> None:
         raise BannerAlarmException(f"Failed to deactivate warning alarm: {str(e)}")
 
 
-def get_actuators(deployment: HardwareDeployment) -> ActuatorManager:
+def get_actuators(deployment: HardwareDeploymentRoute) -> ActuatorManager:
     return deployment.actuator_manager
 
 
 @router.get("/{actuator_id}/status")
-async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]) -> dict:
+async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]) -> dict:
     actuator_manager = get_actuators(hardware)
     actuator = actuator_manager.get_actuator(actuator_id)
     if not actuator:
@@ -60,7 +60,7 @@ async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDepl
 @router.post("/{actuator_id}/move")
 async def move_actuator(actuator_id: str, target_position: float = Form(...),
                         target_speed: float = Form(...), activate_alarm: bool = Form(False),
-                        hardware: Annotated[HardwareDeployment, Depends(get_hardware)] = None):
+                        hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)] = None):
     """Move single actuator"""
     logger.info("Getting actuator.")
     manager = hardware.actuator_manager
@@ -93,7 +93,7 @@ async def move_actuator(actuator_id: str, target_position: float = Form(...),
 @router.post("/move-multiple")
 async def move_multiple_actuators(target_position: float = Form(...),
                                   target_speed: float = Form(...), activate_alarm: bool = Form(False),
-                                  hardware: Annotated[HardwareDeployment, Depends(get_hardware)] = None):
+                                  hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)] = None):
     """Move multiple actuators simultaneously"""
     try:
         # Convert input format to manager format
@@ -114,7 +114,7 @@ async def move_multiple_actuators(target_position: float = Form(...),
 
 
 @router.get("/", name="actuator_index")
-async def index(request: Request, hardware: Annotated[HardwareDeployment, Depends(get_hardware)]):
+async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     am = get_actuators(hardware)
     return templates.TemplateResponse(
         "actuators.html",

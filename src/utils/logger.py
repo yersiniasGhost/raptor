@@ -8,13 +8,13 @@ from .envvars import EnvVars
 
 class LogManager(metaclass=Singleton):
 
-    def __init__(self):
+    def __init__(self, log_filename: str = "raptor.log"):
         self._loggers: Dict[str, logging.Logger] = {}
         self._file_handler = None
-        self._setup_base_config()
+        self._setup_base_config(log_filename)
 
 
-    def _setup_base_config(self):
+    def _setup_base_config(self, log_filename: str):
         """Initialize base logging configuration."""
         log_dir = Path('/var/log/raptor')
         try:
@@ -26,7 +26,7 @@ class LogManager(metaclass=Singleton):
 
         if self._file_handler is None:
             self._file_handler = RotatingFileHandler(
-                log_dir / 'raptor.log',
+                log_dir / log_filename,
                 maxBytes=10485760,  # 10MB
                 backupCount=5
             )

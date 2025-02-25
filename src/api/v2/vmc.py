@@ -5,23 +5,23 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status
-from api.v2.routes.hardware_deployment import HardwareDeployment
+from api.v2.routes.hardware_deployment_route import HardwareDeploymentRoute
 from pathlib import Path
 from utils import LogManager
 
-logger = LogManager().get_logger(__name__)
+logger = LogManager("vmc.log").get_logger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(fastapp: FastAPI):
     # Startup
-    fastapp.state.hardware = HardwareDeployment()
+    fastapp.state.hardware = HardwareDeploymentRoute()
     yield
     # Shutdown
 
 
 # Initialize app with lifespan handler
-def get_hardware_deployment() -> HardwareDeployment:
+def get_hardware_deployment() -> HardwareDeploymentRoute:
     return app.state.hardware
 
 
