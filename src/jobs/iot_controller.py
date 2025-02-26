@@ -54,35 +54,33 @@ class IoTController:
         return output_telemetry
 
 
-    async def _handle_message(self, payload: str):
-        self.logger.info(f"Process this: {payload}")
+    async def _handle_incoming_messages(self):
+        messages = []
+        if self.telemetry_config.mode == MQTT_MODE:
+            messages = await download_incoming_messages_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
+        elif self.telemetry_config.mode == REST_MODE:
+            self.logger.warning("NOT IMPLEMENTED")
+            messages = []
 
-    # async def _handle_incoming_messages(self):
-    #     messages = []
-    #     if self.telemetry_config.mode == MQTT_MODE:
-    #         messages = await download_incoming_messages_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
-    #     elif self.telemetry_config.mode == REST_MODE:
-    #         self.logger.warning("NOT IMPLEMENTED")
-    #         messages = []
-    #
-    #     for message in messages:
-    #         self.logger.info(f"Received message: {message}")
+        for message in messages:
+            self.logger.info(f"Received message: {message}")
 
-    async def _process_incoming_messages(self):
-        try:
-            async for message in self.mqtt_client.messages:
-                try:
-                    payload = json.loads(message.payload.decode())
-                    self.logger.info(f"Received message: {payload}")
-                    # Process the message - perhaps add to a queue or handle directly
-                    await self._handle_message(payload)
-                except json.JSONDecodeError:
-                    self.logger.error(f"Received invalid JSON on topic {message.topic}")
-                except Exception as e:
-                    self.logger.error(f"Error processing message: {e}")
-        except Exception as e:
-            self.logger.error(f"Message processing task failed: {e}")
-            # Reconnect logic could go here
+
+    # async def _process_incoming_messages(self):
+    #     try:
+    #         async for message in self.mqtt_client.messages:
+    #             try:
+    #                 payload = json.loads(message.payload.decode())
+    #                 self.logger.info(f"Received message: {payload}")
+    #                 # Process the message - perhaps add to a queue or handle directly
+    #                 await self._handle_message(payload)
+    #             except json.JSONDecodeError:
+    #                 self.logger.error(f"Received invalid JSON on topic {message.topic}")
+    #             except Exception as e:
+    #                 self.logger.error(f"Error processing message: {e}")
+    #     except Exception as e:
+    #         self.logger.error(f"Message processing task failed: {e}")
+    #         # Reconnect logic could go here
 
     async def _upload_telemetry_data(self):
         if self.telemetry_config.mode == MQTT_MODE:
@@ -133,8 +131,8 @@ class IoTController:
              d) Check new telemetry schedule and update timer.
         """
         interval_seconds = self.telemetry_config.interval
-        self.mqtt_client, self.message_task = setup_mqtt_listener(self.mqtt_config, self.telemetry_config,
-                                                                  self._process_incoming_messages, self.logger)
+        # self.mqtt_client, self.message_task = setup_mqtt_listener(self.mqtt_config, self.telemetry_config,
+        #                                                           self._process_incoming_messages, self.logger)
 
         while self.running:
             start = time.time()
@@ -156,7 +154,7 @@ class IoTController:
                         pass
 
                 # Check for schedule updates / commands / etc. from cloud
-                # await self._handle_incoming_messages()
+                await self._handle_incoming_messages()
 
                 # Wait for next interval
                 elapsed = time.time() - start
