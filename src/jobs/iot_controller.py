@@ -57,7 +57,7 @@ class IoTController:
     async def _handle_incoming_messages(self):
         messages = []
         if self.telemetry_config.mode == MQTT_MODE:
-            messages = download_incoming_messages_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
+            messages = await download_incoming_messages_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
         elif self.telemetry_config.mode == REST_MODE:
             self.logger.warning("NOT IMPLEMENTED")
             messages = []

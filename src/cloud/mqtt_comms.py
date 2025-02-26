@@ -9,8 +9,6 @@ from utils.envvars import EnvVars
 from logging import Logger
 
 
-async def get_telemetry_data() -> dict:
-
 async def upload_telemetry_data(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
                                 logger: Logger):
     try:
@@ -26,9 +24,6 @@ async def upload_telemetry_data(mqtt_config: MQTTConfig, telemetry_config: Telem
             # Publish to telemetry topic
             await client.publish(topic=telemetry_config.telemetry_path, payload=payload.encode(), qos=1)
         return True
-
-
-
     except Exception as e:
         logger.error(f"Error uploading telemetry data: {e}")
         raise
