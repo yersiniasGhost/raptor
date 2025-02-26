@@ -12,6 +12,7 @@ class MQTTConfig:
     password: str
     client_id: str
     format: str
+    keepalive: int = 60
 
     def __post_init__(self):
         if not isinstance(self.port, int):

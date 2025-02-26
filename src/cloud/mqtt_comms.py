@@ -1,6 +1,6 @@
 import json
 import aiomqtt
-from typing import List, Any, Dict
+from typing import List, Any, Tuple
 import asyncio
 from cloud.telemetry_config import TelemetryConfig
 from cloud.mqtt_config import MQTTConfig
@@ -9,7 +9,7 @@ from utils.envvars import EnvVars
 from logging import Logger
 
 
-async def upload_telemetry_data(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
+async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
                                 logger: Logger):
     try:
         db = DatabaseManager(EnvVars().db_path)
@@ -29,24 +29,34 @@ async def upload_telemetry_data(mqtt_config: MQTTConfig, telemetry_config: Telem
         raise
 
 
-async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
-                                     telemetry_data: Dict[str, Any], logger: Logger):
+async def setup_mqtt_listener(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
+                              callback,
+                              logger: Logger) -> Tuple[aiomqtt.Client, Any]:
+    """ Set up a persistent MQTT connection with callbacks"""
     try:
-        payload = json.dumps(telemetry_data)
-        # Connect to the broker
-        async with aiomqtt.Client(
-                hostname=mqtt_config.broker,
-                port=mqtt_config.port,
-                username=mqtt_config.username,
-                password=mqtt_config.password
-        ) as client:
-            # Publish to telemetry topic
-            await client.publish(topic=telemetry_config.telemetry_path, payload=payload.encode(), qos=1)
-        return True
+        # Create a persistent client
+        mqtt_client = aiomqtt.Client(
+            hostname=mqtt_config.broker,
+            port=mqtt_config.port,
+            username=mqtt_config.username,
+            password=mqtt_config.password,
+            keepalive=mqtt_config.keepalive
+        )
+
+        # Connect and subscribe
+        await mqtt_client.connect()
+        await mqtt_client.subscribe(telemetry_config.messages_path)
+
+        # Start a background task to process messages
+        message_task = asyncio.create_task(callback)
+
+        logger.info("MQTT listener established")
+        return mqtt_client, message_task
 
     except Exception as e:
-        logger.error(f"Error uploading telemetry data: {e}")
-        raise
+        logger.error(f"Failed to setup MQTT listener: {e}")
+        return False
+
 
 
 async def download_incoming_messages_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
