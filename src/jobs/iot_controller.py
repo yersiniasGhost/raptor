@@ -10,7 +10,7 @@ from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from cloud.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER
 from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data_mqtt
+from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data
 
 
 class IoTController:
@@ -67,8 +67,7 @@ class IoTController:
 
     async def _upload_telemetry_data(self):
         if self.telemetry_config.mode == MQTT_MODE:
-            upload_success = await upload_telemetry_data_mqtt(self.mqtt_config, self.telemetry_config,
-                                                              self.telemetry_data, self.logger)
+            upload_success = await upload_telemetry_data(self.mqtt_config, self.telemetry_config, self.logger)
             return upload_success
         elif self.telemetry_config.mode == REST_MODE:
             self.logger.warning("NOT IMPLEMENTED")

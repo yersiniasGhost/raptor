@@ -1,4 +1,4 @@
-from typing import Optional, Union, Dict, Any, Iterable
+from typing import Optional, Union, Dict, Any, Iterable, List
 from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
@@ -124,6 +124,29 @@ class DatabaseManager(metaclass=Singleton):
             logger.error(f"Error clearing telemetry data: {e}")
             raise
 
+
+
+    def get_stored_telemetry_data(self) -> List[Dict[str, Any]]:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT data, timestamp FROM telemetry_data ORDER BY timestamp DESC")
+            rows = cursor.fetchall()
+
+            result = []
+            for row in rows:
+                data_json, timestamp = row
+                telemetry_data = json.loads(data_json)
+                # Add metadata from the database
+                telemetry_data['timestamp'] = timestamp
+                result.append(telemetry_data)
+
+            return result
+        except sqlite3.Error as e:
+            logger.error(f"Database error reading telemetry data: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Error reading telemetry data: {e}")
+            raise
 
     def store_telemetry_data(self, telemetry_data: Dict[str, Any]):
         try:

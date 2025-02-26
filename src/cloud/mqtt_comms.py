@@ -4,8 +4,34 @@ from typing import List, Any, Dict
 import asyncio
 from cloud.telemetry_config import TelemetryConfig
 from cloud.mqtt_config import MQTTConfig
-
+from database.database_manager import DatabaseManager
+from utils.envvars import EnvVars
 from logging import Logger
+
+
+async def get_telemetry_data() -> dict:
+
+async def upload_telemetry_data(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
+                                logger: Logger):
+    try:
+        db = DatabaseManager(EnvVars().db_path)
+        payload = db.get_stored_telemetry_data()
+        payload = json.dumps(payload)
+        async with aiomqtt.Client(
+                hostname=mqtt_config.broker,
+                port=mqtt_config.port,
+                username=mqtt_config.username,
+                password=mqtt_config.password
+        ) as client:
+            # Publish to telemetry topic
+            await client.publish(topic=telemetry_config.telemetry_path, payload=payload.encode(), qos=1)
+        return True
+
+
+
+    except Exception as e:
+        logger.error(f"Error uploading telemetry data: {e}")
+        raise
 
 
 async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
