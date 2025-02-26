@@ -65,6 +65,7 @@ async def download_incoming_messages_mqtt(mqtt_config: MQTTConfig, telemetry_con
     """
     try:
         # Connect to the broker using the context manager
+        logger.info(f"Connecting to MQTT messages topic.")
         async with aiomqtt.Client(
                 hostname=mqtt_config.broker,
                 port=mqtt_config.port,

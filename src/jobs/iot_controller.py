@@ -45,8 +45,10 @@ class IoTController:
         output_telemetry = telemetry
         if self.mqtt_config.format == FORMAT_FLAT:
             """ Creates flat dictionary like this:  "bms.BMS_12345.current": 10.5 """
-            inst_fmt = {f"{system}.{deployment.hardware_id}.{register}": value for register, value in inst_data.items()}
-            output_telemetry = output_telemetry | inst_fmt
+            for device_id, measurement in inst_data.items():
+                for point, value in measurement.items():
+                    inst_fmt = {f"{system}.{deployment.hardware_id}.{device_id}.{point}": value for register, value in inst_data.items()}
+                    output_telemetry = output_telemetry | inst_fmt
         elif self.mqtt_config.format == FORMAT_HIER:
             """ Creates hierarchical data format """
             inst_fmt = {deployment.hardware_id: {"measurements": inst_data}}
@@ -130,6 +132,7 @@ class IoTController:
              c) Download any instructions from the cloud and act on them
              d) Check new telemetry schedule and update timer.
         """
+        self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
         # self.mqtt_client, self.message_task = setup_mqtt_listener(self.mqtt_config, self.telemetry_config,
         #                                                           self._process_incoming_messages, self.logger)
