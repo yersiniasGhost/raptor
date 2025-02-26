@@ -48,15 +48,14 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig, telemetry_config: Telemet
         await mqtt_client.subscribe(telemetry_config.messages_path)
 
         # Start a background task to process messages
-        message_task = asyncio.create_task(callback)
+        message_task = asyncio.create_task(callback(mqtt_client))
 
         logger.info("MQTT listener established")
         return mqtt_client, message_task
 
     except Exception as e:
         logger.error(f"Failed to setup MQTT listener: {e}")
-        return False
-
+        raise
 
 
 async def download_incoming_messages_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
