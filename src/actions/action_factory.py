@@ -19,7 +19,7 @@ class ActionFactory:
         try:
 
             # Import the module
-            module_name = f"src.actions.{action_name}_action"
+            module_name = f"actions.{action_name}_action"
             try:
                 module = importlib.import_module(module_name)
             except ImportError:

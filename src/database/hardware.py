@@ -27,8 +27,6 @@ def load_hardware_from_dict(hardware_config: dict) -> ModbusHardware:
 
     try:
         # Import the module and get the class
-        #module = importlib.import_module(module_path)
-        #cls = getattr(module, class_name)
         cls = globals()[class_name]
 
         # Verify it's a subclass of ModbusHardware

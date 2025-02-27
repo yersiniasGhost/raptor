@@ -12,10 +12,9 @@ from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from cloud.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER
 from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener
+from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener, upload_command_response
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
-# from .mqtt_connect import setup_mqtt_listener
 
 
 class IoTController:
@@ -102,22 +101,25 @@ class IoTController:
     async def _handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
         self.logger.info("Initiating incoming message handler.")
-        async for payload in setup_mqtt_listener(
-                self.mqtt_config,
-                self.telemetry_config,
-                self.logger):
+        async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
             # Process each received message
             self.logger.info(f"Received message: {payload}")
             action_name = payload.get('action')
             params = payload.get('params', {})
             action_id = payload.get('action_id', "NA")
             if action_name:
-                status = await ActionFactory.execute_action(action_name, params,
-                                                            self.telemetry_config, self.mqtt_config,
-                                                            self.logger)
+                status, response = await ActionFactory.execute_action(action_name, params,
+                                                                      self.telemetry_config, self.mqtt_config,
+                                                                      self.logger)
                 if status == ActionStatus.NOT_IMPLEMENTED:
-                    await self._respond_to_message(status, action_id,
-                                                   payload={"message": f"Action not implemented: {action_name}"})
+                    response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
+                    await upload_command_response(self.mqtt_config, self.telemetry_config,
+                                                  status, response, self.logger)
+                else:
+                    response = response | {"action_id": action_id}
+                    await upload_command_response(self.mqtt_config, self.telemetry_config,
+                                                  status, response, self.logger)
+
             else:
                 self.logger.error(f"Received message with no action specified")
                 await self._respond_to_message(ActionStatus.INVALID_PARAMS, action_id, payload={"message": f"Invalid action: {payload}"})

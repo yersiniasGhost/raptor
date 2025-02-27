@@ -1,7 +1,7 @@
 from typing import Union, List, Dict
 
-Json = Union[List['Json'],
-             Dict[str, 'Json'],
+JSON = Union[List['JSON'],
+             Dict[str, 'JSON'],
              str,
              float,
              bool,
