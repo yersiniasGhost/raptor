@@ -99,7 +99,7 @@ class IoTController:
     async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
 
-    async def handle_mqtt_messages(self):
+    async def _handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
         self.logger.info("Initiating incoming message handler.")
         async for payload in setup_mqtt_listener(
@@ -112,7 +112,9 @@ class IoTController:
             params = payload.get('params', {})
             action_id = payload.get('action_id', "NA")
             if action_name:
-                status = await ActionFactory.execute_action(action_name, params, self.logger)
+                status = await ActionFactory.execute_action(action_name, params,
+                                                            self.telemetry_config, self.mqtt_config,
+                                                            self.logger)
                 if status == ActionStatus.NOT_IMPLEMENTED:
                     await self._respond_to_message(status, action_id,
                                                    payload={"message": f"Action not implemented: {action_name}"})
@@ -132,7 +134,7 @@ class IoTController:
         """
         self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
-        self.mqtt_task = asyncio.create_task(self.handle_mqtt_messages())
+        self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
 
         while self.running:
             start = time.time()
@@ -152,9 +154,6 @@ class IoTController:
                         self.logger.error(f"Wasn't able to upload telemetry data.")
                         # Do something we weren't able to upload the data
                         pass
-
-                # Check for schedule updates / commands / etc. from cloud
-                await self._handle_incoming_messages()
 
                 # Wait for next interval
                 elapsed = time.time() - start
