@@ -14,13 +14,12 @@ DATA_PATH = "/root/raptor/data"
 class HardwareDeploymentRoute:
 
     def __init__(self):
+
         db = DatabaseManager(EnvVars().db_path)
-        hardware = db.get_hardware_systems("BMS")
-        if hardware:
-            self.batteries = instantiate_hardware_from_dict(hardware[0])
-        hardware = db.get_hardware_systems("Converters")
-        if hardware:
-            self.inverter = instantiate_hardware_from_dict(hardware[0])
+        for hardware in db.get_hardware_systems("BMS"):
+            self.batteries = instantiate_hardware_from_dict(hardware)
+        for hardware in db.get_hardware_systems("Converters"):
+            self.inverter = instantiate_hardware_from_dict(hardware)
         self.actuator_manager = ActuatorManager.from_json(f"{DATA_PATH}/ElectrakActuators/electrak_deployment.json")
 
     def get_hardware_definition(self, hardware_type: str) -> Optional[dict]:

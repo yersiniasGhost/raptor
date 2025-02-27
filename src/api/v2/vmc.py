@@ -9,7 +9,7 @@ from api.v2.routes.hardware_deployment_route import HardwareDeploymentRoute
 from pathlib import Path
 from utils import LogManager
 
-logger = LogManager("vmc.log").get_logger(__name__)
+logger = LogManager("vmc.log").get_logger("VMC")
 
 
 @asynccontextmanager
