@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import canopen
 import time
 from dataclasses import dataclass
@@ -488,3 +488,5 @@ class ElectrakMD(HardwareBase):
         except Exception as e:
             print(f"Cleanup error: {e}")
 
+    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str]):
+        pass
