@@ -1,4 +1,4 @@
-import json
+import argparse
 import asyncio
 import time
 from datetime import datetime
@@ -18,7 +18,7 @@ class IoTController:
 
     def __init__(self, store_local: bool):
         # Setup logging with rotation and remote logging if needed
-        self.logger = LogManager("iot_controller.log").get_logger(__name__)
+        self.logger = LogManager("iot_controller.log").get_logger("IoTController")
         self.running = True
         self._setup_error_handlers()
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
@@ -30,14 +30,17 @@ class IoTController:
     def _data_acquisition(self):
         db = DatabaseManager(EnvVars().db_path)
         telemetry_data = {}
+        sz = 0
         for system in ["BMS", "Converters"]:
             for hardware in db.get_hardware_systems(system):
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
                 instance_data = deployment.data_acquisition(self.mqtt_config.format)
+                sz += len(instance_data)
                 telemetry_data = self._format_telemetry(instance_data, deployment, system, telemetry_data)
                 self.logger.debug(f"DATA acq:  {instance_data}")
         self.telemetry_data = telemetry_data
+        self.logger.info(f"Data acq: collected {sz} data points.")
 
 
     def _format_telemetry(self, inst_data: Dict[str, Union[float, int]],
@@ -47,7 +50,7 @@ class IoTController:
             """ Creates flat dictionary like this:  "bms.BMS_12345.current": 10.5 """
             for device_id, measurement in inst_data.items():
                 for point, value in measurement.items():
-                    inst_fmt = {f"{system}.{deployment.hardware_id}.{device_id}.{point}": value for register, value in inst_data.items()}
+                    inst_fmt = {f"{system}.{deployment.hardware_id}.{device_id}.{point}": value}
                     output_telemetry = output_telemetry | inst_fmt
         elif self.mqtt_config.format == FORMAT_HIER:
             """ Creates hierarchical data format """
@@ -84,15 +87,16 @@ class IoTController:
     #         self.logger.error(f"Message processing task failed: {e}")
     #         # Reconnect logic could go here
 
+
     async def _upload_telemetry_data(self):
         if self.telemetry_config.mode == MQTT_MODE:
-            upload_success = await upload_telemetry_data_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
-            return upload_success
+            upload_status = await upload_telemetry_data_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
+            self.logger.info(f"MQTT upload status: {upload_status}")
+            return upload_status
         elif self.telemetry_config.mode == REST_MODE:
             self.logger.warning("NOT IMPLEMENTED")
             return True
         return False
-
 
 
     def write_to_csv(self, filename: str, slave_id: int, data_list: dict):
@@ -193,8 +197,6 @@ def parse_args():
                         help="Stores the data in local CSV files for debugging")
     return parser.parse_args()
 
-
-import argparse
 
 if __name__ == "__main__":
     args = parse_args()

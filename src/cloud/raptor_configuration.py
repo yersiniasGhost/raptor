@@ -7,8 +7,6 @@ from utils import LogManager
 from database.db_utils import get_api_key
 from database.database_manager import DatabaseManager
 
-logger = LogManager().get_logger(__name__)
-
 
 class RaptorConfiguration:
     SCHEMA = {
@@ -43,27 +41,28 @@ class RaptorConfiguration:
     }
 
     def __init__(self):
+        self.logger = LogManager().get_logger("RaptorConfiguration")
+
         self.api_base_url = EnvVars().api_url
-        self.api_key: Optional[str] = get_api_key(logger)
+        self.api_key: Optional[str] = get_api_key(self.logger)
         self.mac_address = get_mac_address()
 
 
-    @staticmethod
-    def validate_json(data: Dict[str, Any]) -> bool:
+    def validate_json(self, data: Dict[str, Any]) -> bool:
         try:
             jsonschema.validate(instance=data, schema=RaptorConfiguration.SCHEMA)
             return True
         except jsonschema.exceptions.ValidationError as e:
-            logger.error(f"Configuration data validation error: {e}")
-            logger.error(f"EXPECTED: {RaptorConfiguration.SCHEMA}")
-            logger.error(f"GOT:      {data}")
+            self.logger.error(f"Configuration data validation error: {e}")
+            self.logger.error(f"EXPECTED: {RaptorConfiguration.SCHEMA}")
+            self.logger.error(f"GOT:      {data}")
             return False
 
 
     def get_configuration(self):
         """Get configuration using the API key from commissioning"""
         if not self.api_key:
-            logger.error("No API key available. Run commission() first.")
+            self.logger.error("No API key available. Run commission() first.")
             raise ValueError("No APIO key available.  Run commission() first?")
 
         try:
@@ -71,20 +70,20 @@ class RaptorConfiguration:
             headers = {'X-API-Key': self.api_key}
             params = {'mac_address': self.mac_address}
 
-            logger.info("Fetching configuration")
+            self.logger.info("Fetching configuration")
             response = requests.get(url, headers=headers, params=params)
 
             if response.status_code == 200:
                 config = response.json()
-                logger.info("Successfully retrieved configuration")
+                self.logger.info("Successfully retrieved configuration")
                 self.save_configuration(config)
                 return config
             else:
-                logger.error(f"Configuration fetch failed: {response.text}")
+                self.logger.error(f"Configuration fetch failed: {response.text}")
                 raise ValueError(f"Response code from CREM3 configuration API: {response.status_code}")
 
         except Exception as e:
-            logger.error(f"Configuration error: {e}")
+            self.logger.error(f"Configuration error: {e}")
             raise
 
 
@@ -95,7 +94,7 @@ class RaptorConfiguration:
 
         # Validate
         if not self.validate_json(config_data):
-            logger.error("Did not validate the configuration data.")
+            self.logger.error("Did not validate the configuration data.")
             raise ValueError(f"Invalid Raptor Configuration")
         try:
             # Extract MQTT and telemetry config
@@ -106,8 +105,8 @@ class RaptorConfiguration:
             db.update_telemetry(telemetry_config, mqtt_config)
             db.add_hardware(config_data['hardware'])
         except Exception as e:
-            logger.error(f"Unable to save configuration: {config_data}")
-            logger.error(f"Error: {e}")
+            self.logger.error(f"Unable to save configuration: {config_data}")
+            self.logger.error(f"Error: {e}")
             raise
 
         if filename:
@@ -115,8 +114,8 @@ class RaptorConfiguration:
             try:
                 with open(filename, 'w') as f:
                     json.dump(config_data, f, indent=2)
-                logger.info(f"Configuration saved to {filename}")
+                self.logger.info(f"Configuration saved to {filename}")
                 return True
             except Exception as e:
-                logger.error(f"Failed to save configuration: {str(e)}")
+                self.logger.error(f"Failed to save configuration: {str(e)}")
                 raise

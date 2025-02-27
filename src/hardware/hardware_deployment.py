@@ -3,11 +3,8 @@ from pathlib import Path
 from typing import List, Iterator, Dict, Any, Union, Optional
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
-from utils import LogManager
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
-
-logger = LogManager().get_logger(__name__)
 
 
 @dataclass
@@ -17,6 +14,7 @@ class HardwareDeployment:
     scan_groups: Dict[str, Any]
     hardware_id: str
     _definition: Optional[Union[str, dict]] = None
+
 
     def iterate_devices(self) -> Iterator[dict]:
         for device in self.devices:

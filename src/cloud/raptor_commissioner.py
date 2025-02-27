@@ -1,7 +1,6 @@
 from typing import Optional
 import requests
 import sqlite3
-import json
 
 from utils import EnvVars
 from utils.mac_address import get_mac_address
@@ -9,12 +8,12 @@ from database.database_manager import DatabaseManager
 
 # Configure logging
 from utils import LogManager
-logger = LogManager().get_logger(__name__)
 
 
 class RaptorCommissioner:
 
     def __init__(self):
+        self.logger = LogManager().get_logger("RaptorCommissioner")
         self.api_base_url = EnvVars().api_url
         self.api_key: Optional[str] = None
         self.mac_address = get_mac_address()
@@ -22,7 +21,7 @@ class RaptorCommissioner:
 
     def commission(self):
         if self.api_key:
-            logger.info("This VMC is already commissioned")
+            self.logger.info("This VMC is already commissioned")
             return
 
         """Commission this Raptor with the server"""
@@ -30,11 +29,11 @@ class RaptorCommissioner:
             url = f"{self.api_base_url}/api/v2/raptor/commission"
             payload = {"mac_address": self.mac_address}
 
-            logger.info(f"Attempting to commission Raptor with MAC: {self.mac_address}")
+            self.logger.info(f"Attempting to commission Raptor with MAC: {self.mac_address}")
             response = requests.post(url, json=payload)
 
             if response.status_code == 200:
-                logger.info("Successfully got response.")
+                self.logger.info("Successfully got response.")
                 data = response.json()
                 self.api_key = data.get('api_key')
                 envvars = EnvVars()
@@ -49,15 +48,15 @@ class RaptorCommissioner:
                         VALUES (?, ?, ?)
                     """, (raptor_id, api_key, firmware_tag))
                     conn.commit()
-                logger.info("Successfully commissioned Raptor")
+                self.logger.info("Successfully commissioned Raptor")
                 return True
             else:
-                logger.error(f"Commission failed: {response.text}")
+                self.logger.error(f"Commission failed: {response.text}")
                 return False
         except sqlite3.Error as e:
-            logger.error(f"Failed to update commission data: {e}")
+            self.logger.error(f"Failed to update commission data: {e}")
             raise
         except Exception as e:
-            logger.error(f"Commission error: {str(e)}")
+            self.logger.error(f"Commission error: {str(e)}")
             return False
 

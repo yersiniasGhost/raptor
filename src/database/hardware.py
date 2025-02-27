@@ -4,19 +4,15 @@ from typing import Union
 from pathlib import Path
 import json
 
-
 from hardware.modbus.modbus_hardware import ModbusHardware
 from hardware.modbus import InviewGateway
 from hardware.modbus import EveBattery
 from hardware.renogy_rover import RenogyRover
-from utils import LogManager
-logger = LogManager().get_logger(__name__)
 
 
 # TODO:  Add the load/save of hardware to the SQLite local database.
 
 def load_hardware_from_dict(hardware_config: dict) -> ModbusHardware:
-    logger.info(hardware_config)
     hardware = hardware_config.get('hardware')
     class_path = hardware.get("type")
 

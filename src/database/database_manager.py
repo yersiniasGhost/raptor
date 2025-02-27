@@ -9,12 +9,12 @@ import shutil
 from utils import LogManager
 import json
 
-logger = LogManager().get_logger(__name__)
 
 
 class DatabaseManager(metaclass=Singleton):
 
     def __init__(self, db_path: Union[Path, str], schema_path: Optional[Union[Path, str]] = None):
+        self.logger = LogManager().get_logger(__name__)
         self.db_path = Path(db_path)
         self.schema_path: Optional[Path] = None
         if schema_path:
@@ -29,7 +29,7 @@ class DatabaseManager(metaclass=Singleton):
                 raise sqlite3.OperationalError("Failed to connect after maximum retries")
 
             try:
-                logger.info(f"Connecting SQLite3 to :{self.db_path}")
+                self.logger.info(f"Connecting SQLite3 to :{self.db_path}")
                 self._connection = sqlite3.connect(self.db_path)
                 self._connection.row_factory = sqlite3.Row
                 # Set pragmas
@@ -38,7 +38,7 @@ class DatabaseManager(metaclass=Singleton):
                 # Test connection is still good
                 self._connection.execute('SELECT 1')
             except (sqlite3.Error, sqlite3.OperationalError) as e:
-                logger.error(f"Try #{retries}.  Couldn't connect to SQLite3 database: {e}")
+                self.logger.error(f"Try #{retries}.  Couldn't connect to SQLite3 database: {e}")
                 self._connection = None
                 return self.connection(retries - 1)
         return self._connection
@@ -66,7 +66,7 @@ class DatabaseManager(metaclass=Singleton):
 
         except sqlite3.Error as e:
             self.connection.rollback()
-            logger.error(f"Error clearing existing configuration: {e}")
+            self.logger.error(f"Error clearing existing configuration: {e}")
             raise
 
 
@@ -79,7 +79,7 @@ class DatabaseManager(metaclass=Singleton):
                         """, (mqtt_config, telemetry_config))
         except Exception as e:
             self.connection.rollback()
-            logger.error(f"Error inserting telemetry/mqtt configuration: {e}")
+            self.logger.error(f"Error inserting telemetry/mqtt configuration: {e}")
             raise
 
     def add_hardware(self, hardware_configuration: Dict[str, Any]):
@@ -105,12 +105,12 @@ class DatabaseManager(metaclass=Singleton):
 
         except sqlite3.Error as e:
             self.connection.rollback()
-            logger.error(f"Database error: {e}")
+            self.logger.error(f"Database error: {e}")
             raise
 
         except Exception as e:
             self.connection.rollback()
-            logger.error(f"Error processing configuration: {e}")
+            self.logger.error(f"Error processing configuration: {e}")
             raise
 
 
@@ -121,7 +121,7 @@ class DatabaseManager(metaclass=Singleton):
             self.connection.commit()
         except sqlite3.Error as e:
             self.connection.rollback()
-            logger.error(f"Error clearing telemetry data: {e}")
+            self.logger.error(f"Error clearing telemetry data: {e}")
             raise
 
 
@@ -142,10 +142,10 @@ class DatabaseManager(metaclass=Singleton):
 
             return result
         except sqlite3.Error as e:
-            logger.error(f"Database error reading telemetry data: {e}")
+            self.logger.error(f"Database error reading telemetry data: {e}")
             raise
         except Exception as e:
-            logger.error(f"Error reading telemetry data: {e}")
+            self.logger.error(f"Error reading telemetry data: {e}")
             raise
 
     def store_telemetry_data(self, telemetry_data: Dict[str, Any]):
@@ -159,13 +159,12 @@ class DatabaseManager(metaclass=Singleton):
             self.connection.commit()
         except sqlite3.Error as e:
             self.connection.rollback()
-            logger.error(f"Database error writing telemetry data: {e}")
+            self.logger.error(f"Database error writing telemetry data: {e}")
             raise
         except Exception as e:
             self.connection.rollback()
-            logger.error(f"Error writing telemetry data: {e}")
+            self.logger.error(f"Error writing telemetry data: {e}")
             raise
-
 
 
 
@@ -192,10 +191,10 @@ class DatabaseManager(metaclass=Singleton):
                 yield config
 
         except sqlite3.Error as e:
-            logger.error(f"Database error retrieving {system} hardware: {e}")
+            self.logger.error(f"Database error retrieving {system} hardware: {e}")
             raise
         except json.JSONDecodeError as e:
-            logger.error(f"JSON parsing error: {e}")
+            self.logger.error(f"JSON parsing error: {e}")
             raise
 
 
@@ -203,7 +202,7 @@ class DatabaseManager(metaclass=Singleton):
         """
         Rebuilds the database from scratch using the schema file.
         """
-        logger.info("Starting database rebuild process")
+        self.logger.info("Starting database rebuild process")
 
         # Close any existing connection
         self.close()
@@ -212,19 +211,19 @@ class DatabaseManager(metaclass=Singleton):
             # Create backup if requested
             if backup and self.db_path.exists():
                 backup_path = self.db_path.with_suffix(f'.bak.{int(time.time())}')
-                logger.info(f"Creating backup at {backup_path}")
+                self.logger.info(f"Creating backup at {backup_path}")
                 shutil.copy2(self.db_path, backup_path)
 
             # Remove existing database file
             if self.db_path.exists():
-                logger.info("Removing existing database file")
+                self.logger.info("Removing existing database file")
                 self.db_path.unlink()
 
             # Ensure parent directory exists
             self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
             # Create new database and initialize schema
-            logger.info("Creating new database with schema")
+            self.logger.info("Creating new database with schema")
             with sqlite3.connect(self.db_path) as temp_conn:
                 temp_conn.row_factory = sqlite3.Row
 
@@ -253,21 +252,21 @@ class DatabaseManager(metaclass=Singleton):
 
             # Reset the connection property
             self._connection = None
-            logger.info("Database rebuild completed successfully")
+            self.logger.info("Database rebuild completed successfully")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to rebuild database: {e}")
+            self.logger.error(f"Failed to rebuild database: {e}")
             # If backup exists and rebuild failed, try to restore
             if backup and 'backup_path' in locals():
                 try:
-                    logger.info("Attempting to restore from backup")
+                    self.logger.info("Attempting to restore from backup")
                     if self.db_path.exists():
                         self.db_path.unlink()
                     shutil.copy2(backup_path, self.db_path)
-                    logger.info("Restored from backup successfully")
+                    self.logger.info("Restored from backup successfully")
                 except Exception as restore_error:
-                    logger.error(f"Failed to restore from backup: {restore_error}")
+                    self.logger.error(f"Failed to restore from backup: {restore_error}")
 
             self._connection = None
             return False
