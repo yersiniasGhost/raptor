@@ -1,12 +1,12 @@
-# /etc/systemd/system/iot-controller.service
+# /etc/systemd/system/vmc-ui.service
 [Unit]
-Description=IoT Controller Service
+Description=Valexy Microcontroller UI
 After=network.target
 
 [Service]
 User=root
 WorkingDirectory=/root/raptor
-ExecStart=/root/devel/raptor/bin/python /root/raptor/src/jobs/iot_controller.py
+ExecStart=/root/devel/raptor/bin/python /root/raptor/src/api/v2/vmc.py
 Restart=always
 RestartSec=10
 RestartPreventExitStatus=99
