@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from . import templates
 from bms_store import BMSDataStore
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
-from hardware.modbus.modbus import modbus_data_acquisition_orig
 from utils import LogManager
 
 logger = LogManager().get_logger(__name__)
@@ -58,15 +57,13 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
 async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         hardware = get_inverter(deployment)
-        register_map = hardware.get_points("DATA")
+        values = hardware.data_acquisition()
 
         # Update each unit
         for device in hardware.devices:
             unit_id = device['slave_id']
-            # Assuming read_holding_registers returns a Dict[str, float]
-            values = modbus_data_acquisition_orig(hardware.hardware, register_map, slave_id=unit_id)
             if isinstance(values, dict):  # Ensure values is a dictionary
-                await bms_store.update_unit_data(unit_id, values)
+                await bms_store.update_unit_data(unit_id, values[unit_id])
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()
