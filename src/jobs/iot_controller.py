@@ -12,8 +12,10 @@ from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from cloud.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER
 from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data_mqtt
-from .mqtt_connect import setup_mqtt_listener
+from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data_mqtt, setup_mqtt_listener
+from actions.action_factory import ActionFactory
+from actions.action_status import ActionStatus
+# from .mqtt_connect import setup_mqtt_listener
 
 
 class IoTController:
@@ -122,6 +124,8 @@ class IoTController:
             row_data.update({name: value for name, value in data_list.items()})
             writer.writerow(row_data)
 
+    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
+        self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
 
     async def handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
@@ -131,7 +135,18 @@ class IoTController:
                 self.logger):
             # Process each received message
             self.logger.info(f"Received message: {payload}")
-            # Handle the message as needed
+            action_name = payload.get('action')
+            params = payload.get('params', {})
+            action_id = payload.get('action_id', "NA")
+            if action_name:
+                status = await ActionFactory.execute_action(action_name, params, self.logger)
+                if status == ActionStatus.NOT_IMPLEMENTED:
+                    await self._respond_to_message(status, action_id,
+                                                   payload={"message": f"Action not implemented: {action_name}"})
+            else:
+                self.logger.error(f"Received message with no action specified")
+                await self._respond_to_message(ActionStatus.INVALID_PARAMS, action_id, payload={"message": f"Invalid action: {payload}"})
+
 
 
     async def main_loop(self):

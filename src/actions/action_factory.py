@@ -3,12 +3,16 @@ import importlib
 from logging import Logger
 from typing import Dict, Any
 from .action_status import ActionStatus
+from cloud.telemetry_config import TelemetryConfig
+from cloud.mqtt_config import MQTTConfig
 
 
 class ActionFactory:
 
     @staticmethod
-    async def execute_action(action_name: str, params: Dict[str, Any], logger: Logger) -> ActionStatus:
+    async def execute_action(action_name: str, params: Dict[str, Any],
+                             telemetry_config: TelemetryConfig,
+                             mqtt_config: MQTTConfig, logger: Logger) -> ActionStatus:
         """Dynamically load and execute an action by name"""
         # Convert action_name to CamelCase and append 'Action'
         class_name = ''.join(word.capitalize() for word in action_name.split('_')) + 'Action'
@@ -27,7 +31,7 @@ class ActionFactory:
 
             # Create and execute the action
             action = action_class(params)
-            return await action.execute(logger)
+            return await action.execute(telemetry_config, mqtt_config, logger)
 
         except AttributeError:
             logger.error(f"Action class '{class_name}' not found in module")

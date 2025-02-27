@@ -34,7 +34,7 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
                             payload = json.loads(message.payload.decode())
                             yield payload
                         except json.JSONDecodeError:
-                            logger.error(f"Received invalid JSON on topic {message.topic}")
+                            logger.error(f"Received invalid JSON payload: {message.payload.decode()}")
                 except Exception as e:
                     logger.error(f"Error processing message: {e}")
 
