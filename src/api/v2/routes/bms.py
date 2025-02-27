@@ -148,7 +148,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
                 "soc-2hr": soc_2hr
             }
             if isinstance(values, dict):  # Ensure values is a dictionary
-                await bms_store.update_unit_data(unit_id, values)
+                await bms_store.update_unit_data(unit_id, values[unit_id])
                 await bms_store.add_unit_data(unit_id, trend_data)
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
@@ -208,6 +208,8 @@ async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment
 async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     batteries = get_batteries(hardware)
     register_map = batteries.get_points("DATA")
+    print("MAP")
+    print(register_map)
     try:
         bms_data = await bms_store.get_all_data()
         return templates.TemplateResponse(
