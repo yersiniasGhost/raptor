@@ -23,3 +23,5 @@ class TestAction(Action):
             return ActionStatus.IN_PROGRESS, {"response": "in_progress"}
         elif respond == "no_response":
             return ActionStatus.NO_RESPONSE, None
+        else:
+            return ActionStatus.INVALID_PARAMS, {"error": "Come on man!"}
