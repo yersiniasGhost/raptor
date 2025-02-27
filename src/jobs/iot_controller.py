@@ -39,7 +39,7 @@ class IoTController:
             for hardware in db.get_hardware_systems(system):
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
-                instance_data = deployment.data_acquisition(self.mqtt_config.format)
+                instance_data = deployment.data_acquisition()
                 sz += len(instance_data)
                 telemetry_data = self._format_telemetry(instance_data, deployment, system, telemetry_data)
                 self.logger.debug(f"DATA acq:  {instance_data}")

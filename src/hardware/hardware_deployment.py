@@ -20,7 +20,7 @@ class HardwareDeployment:
         for device in self.devices:
             yield device
 
-    def data_acquisition(self, format: str) -> dict:
+    def data_acquisition(self) -> dict:
         """
         :return: A dictionary of { register_name: value }
         """

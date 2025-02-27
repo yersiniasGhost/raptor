@@ -1,4 +1,3 @@
-# routes/bms.py
 import subprocess
 from datetime import datetime
 from typing import Tuple, Optional, List, Dict
@@ -11,6 +10,7 @@ from . import templates
 
 from hardware.modbus.modbus import modbus_data_acquisition_orig
 from hardware.modbus.modbus_map import ModbusMap
+from hardware.hardware_deployment import HardwareDeployment
 from bms_store import BMSDataStore
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 
@@ -39,7 +39,6 @@ def linear_regression(x: List[float], y: List[float]) -> float:
     y_mean = sum(y) / n
     numerator = sum((x[i] - x_mean) * (y[i] - y_mean) for i in range(n))
     denominator = sum((x[i] - x_mean) ** 2 for i in range(n))
-    print(denominator, "d")
     if abs(denominator) < 1e-10:
         return 0.0
     return numerator / denominator
@@ -125,18 +124,18 @@ def read_last_n_tail(filepath: str, n: int = 5) -> List[Dict]:
         raise Exception(f"Error reading file: {str(e)}")
 
 
-def get_batteries(deployment: HardwareDeploymentRoute):
-    return deployment.batteries, deployment.battery_register_map
+def get_batteries(deployment: HardwareDeploymentRoute) -> HardwareDeployment:
+    return deployment.batteries
 
 
 @router.get("/data")
 async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         # Update each unit
-        batteries, register_map = get_batteries(hardware)
-        for unit_id in batteries.iterate_slave_ids():
-            # Assuming read_holding_registers returns a Dict[str, float]
-            values = modbus_data_acquisition_orig(batteries.hardware, register_map, slave_id=unit_id)
+        batteries = get_batteries(hardware)
+        values = batteries.data_acquisition()
+        for device in batteries.devices:
+            unit_id = device["slave_id"]
             filename = f"battery_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
             trend = calculate_soc_trend(trending_data)

@@ -8,6 +8,8 @@ class BMSDataStore:
         self.units_data: Dict[int, Dict[str, float]] = {}  # Unit ID -> {register_name: value}
         self.lock = Lock()
 
+    async def add_unit_data(self, unit_id, data_values: Dict[str, float]):
+        self.units_data[unit_id] = self.units_data[unit_id] | data_values
 
     async def update_unit_data(self, unit_id: int, register_values: Dict[str, float]):
         if not isinstance(register_values, dict):
