@@ -37,8 +37,8 @@ def write_to_csv(filename: str, slave_id: int, data_list: dict):
 
 if __name__ == "__main__":
 
-    modbus_map = ModbusMap.from_json("../../data/RenogyRover/modbus_map_v1.json")
-    rover = load_hardware_from_json_file("../../data/RenogyRover/charge_controller_deployment.json")
+    modbus_map = ModbusMap.from_json("../data/RenogyRover/modbus_map_v1.json")
+    rover = load_hardware_from_json_file("../data/RenogyRover/charge_controller_deployment.json")
 
     cnt = 0
 

@@ -4,14 +4,16 @@ import time
 from datetime import datetime
 import os
 import csv
-from typing import Dict, Any, Optional, Union, List
+from typing import Dict, Union
+from typing import Optional, Any
 from database.db_utils import get_mqtt_config, get_telemetry_config
 from database.database_manager import DatabaseManager
 from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from cloud.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER
 from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data_mqtt, setup_mqtt_listener
+from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data_mqtt
+from .mqtt_connect import setup_mqtt_listener
 
 
 class IoTController:
@@ -98,8 +100,7 @@ class IoTController:
             return True
         return False
 
-
-    def write_to_csv(self, filename: str, slave_id: int, data_list: dict):
+    async def _store_local_telemetry_data(self, filename: str, slave_id: int, data_list: dict):
         """
         Write Modbus data to CSV with timestamp
         data_list: List of tuples [(name, value)]
@@ -122,10 +123,15 @@ class IoTController:
             writer.writerow(row_data)
 
 
-
-    async def _store_local_telemetry_data(self):
-        pass
-
+    async def handle_mqtt_messages(self):
+        """Task to handle MQTT messages"""
+        async for payload in setup_mqtt_listener(
+                self.mqtt_config,
+                self.telemetry_config,
+                self.logger):
+            # Process each received message
+            self.logger.info(f"Received message: {payload}")
+            # Handle the message as needed
 
 
     async def main_loop(self):
@@ -138,8 +144,7 @@ class IoTController:
         """
         self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
-        # self.mqtt_client, self.message_task = setup_mqtt_listener(self.mqtt_config, self.telemetry_config,
-        #                                                           self._process_incoming_messages, self.logger)
+        self.mqtt_task = asyncio.create_task(self.handle_mqtt_messages())
 
         while self.running:
             start = time.time()

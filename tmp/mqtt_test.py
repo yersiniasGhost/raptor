@@ -45,8 +45,8 @@ if __name__ == "__main__":
     client.connect("192.168.1.25", 1883, 60)
     client.loop_start()
 
-    modbus_map = ModbusMap.from_json("../../data/Sierra25/modbus_map_basic.json")
-    inview = load_hardware_from_json_file("../../data/Sierra25/converter_deployment.json")
+    modbus_map = ModbusMap.from_json("../data/Sierra25/modbus_map_basic.json")
+    inview = load_hardware_from_json_file("../data/Sierra25/converter_deployment.json")
 
     batteries = BatteryDeployment.from_json(f"{DATA_PATH}/Esslix/battery_deployment.json")
     register_map = ModbusMap.from_json(f"{DATA_PATH}/Esslix/modbus_map.json")
