@@ -74,3 +74,28 @@ class LogManager(metaclass=Singleton):
     def get_all_loggers(self) -> Dict[str, logging.Logger]:
         """Get dictionary of all managed loggers."""
         return self._loggers.copy()
+
+
+    def configure_library_loggers(self, level=None):
+        """Configure third-party libraries to use the same file handler"""
+        if level is None:
+            level = EnvVars().log_level
+
+        # Configure FastAPI and related libraries
+        for logger_name in [
+            "fastapi",
+            "uvicorn",
+            "uvicorn.access",
+            "uvicorn.error",
+            "aiomqtt",
+            # Add other libraries as needed
+        ]:
+            lib_logger = logging.getLogger(logger_name)
+            lib_logger.setLevel(level)
+
+            # Add our file handler if not already there
+            if not any(isinstance(h, RotatingFileHandler) for h in lib_logger.handlers):
+                lib_logger.addHandler(self._file_handler)
+
+            # Prevent propagation to root logger to avoid duplicate logs
+            lib_logger.propagate = False
