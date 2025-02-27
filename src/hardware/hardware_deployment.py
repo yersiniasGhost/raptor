@@ -20,13 +20,19 @@ class HardwareDeployment:
         for device in self.devices:
             yield device
 
-    def data_acquisition(self) -> dict:
+    def data_acquisition(self, data_type: str = "DATA") -> dict:
         """
         :return: A dictionary of { register_name: value }
         """
-        data_registers = self.scan_groups.get("DATA", {}).get('registers', [])
+        data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
         values = self.hardware.data_acquisition(self.devices, data_registers)
         return values
+
+    def get_points(self, data_type: str = "DATA") -> List[dict]:
+        data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
+        points = self.hardware.get_points(data_registers)
+        return points
+
 
     def alarm_checks(self) -> dict:
         """ Perform a check on the alarms associated with this hardware device """

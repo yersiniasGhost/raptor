@@ -17,3 +17,6 @@ class MockHardware(HardwareBase):
             output[slave_id] = {r: random.random() for r in scan_group}
 
         return output
+
+    def get_points(self, names: List[str]) -> List:
+        return []
