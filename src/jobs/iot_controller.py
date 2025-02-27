@@ -28,6 +28,7 @@ class IoTController:
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
         self.telemetry_data: Optional[Dict[str, Any]] = None
         self.store_local = store_local
+        self.mqtt_task = None
 
 
     def _data_acquisition(self):
@@ -124,6 +125,22 @@ class IoTController:
                 self.logger.error(f"Received message with no action specified")
                 await self._respond_to_message(ActionStatus.INVALID_PARAMS, action_id, payload={"message": f"Invalid action: {payload}"})
 
+    def _on_handle_mqtt_messages_exit(self, task):
+        try:
+            # This will raise the exception if the task failed
+            result = task.result()
+            self.logger.info("MQTT handling task completed normally")
+        except asyncio.CancelledError:
+            self.logger.info("MQTT handling task was cancelled")
+        except Exception as e:
+            self.logger.error(f"MQTT handling task failed with exception: {e}")
+            # Restart the task if needed
+            self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
+
+    async def shutdown(self):
+        self.running = False
+        DatabaseManager().close()
+        self.mqtt_task.cancel()
 
 
     async def main_loop(self):
@@ -137,6 +154,7 @@ class IoTController:
         self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
         self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
+        self.mqtt_task.add_done_callback(self._on_handle_mqtt_messages_exit)
 
         while self.running:
             start = time.time()

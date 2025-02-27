@@ -63,7 +63,7 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
             username=mqtt_config.username,
             password=mqtt_config.password,
             keepalive=mqtt_config.keepalive,
-            identifier="client",
+            identifier=mqtt_config.client_id,
             clean_session=False
         )
 
