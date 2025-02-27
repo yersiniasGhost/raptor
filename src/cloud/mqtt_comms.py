@@ -62,7 +62,9 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
             port=mqtt_config.port,
             username=mqtt_config.username,
             password=mqtt_config.password,
-            keepalive=mqtt_config.keepalive
+            keepalive=mqtt_config.keepalive,
+            identifier="client",
+            clean_session=False
         )
 
         # Connect using the context manager
