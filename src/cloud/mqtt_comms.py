@@ -9,6 +9,10 @@ from logging import Logger
 from utils import JSON
 
 
+def topic_path(telemetry_config: TelemetryConfig, topic: str) -> str:
+    return f"{telemetry_config.root_path}{topic}"
+
+
 async def publish_payload(mqtt_config: MQTTConfig, topic: str, payload: JSON, logger: Logger):
     try:
         async with aiomqtt.Client(
@@ -30,7 +34,7 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
         db = DatabaseManager(EnvVars().db_path)
         payload = db.get_stored_telemetry_data()
         payload = json.dumps(payload)
-        await publish_payload(mqtt_config, telemetry_config.telemetry_path, payload, logger)
+        return await publish_payload(mqtt_config, telemetry_config.telemetry_topic, payload, logger)
     except Exception as e:
         logger.error(f"Error uploading telemetry data: {e}")
         raise
@@ -40,11 +44,11 @@ async def upload_command_response(mqtt_config: MQTTConfig,  telemetry_config: Te
                                   status: str, payload: JSON, logger: Logger):
     try:
         payload = json.dumps(payload)
-        await publish_payload(mqtt_config, telemetry_config.response_path, payload, logger)
+        logger.info(f"Command response: {payload}")
+        await publish_payload(mqtt_config, telemetry_config.response_topic, payload, logger)
     except Exception as e:
         logger.error(f"Error uploading telemetry data: {e}")
         raise
-
 
 
 async def setup_mqtt_listener(mqtt_config: MQTTConfig,
@@ -64,18 +68,16 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
         # Connect using the context manager
         async with client as mqtt_client:
             # Subscribe to the topic
-            await mqtt_client.subscribe(telemetry_config.messages_path)
-            logger.info(f"MQTT listener established on topic: {telemetry_config.messages_path}")
+            await mqtt_client.subscribe(telemetry_config.messages_topic)
+            logger.info(f"MQTT listener established on topic: {telemetry_config.messages_topic}")
 
             # Yield messages directly
             async for message in mqtt_client.messages:
                 try:
-                    if message.topic.matches(telemetry_config.messages_path):
-                        try:
-                            payload = json.loads(message.payload.decode())
-                            yield payload
-                        except json.JSONDecodeError:
-                            logger.error(f"Received invalid JSON payload: {message.payload.decode()}")
+                    payload = json.loads(message.payload.decode())
+                    yield payload
+                except json.JSONDecodeError:
+                    logger.error(f"Received invalid JSON payload: {message.payload.decode()}")
                 except Exception as e:
                     logger.error(f"Error processing message: {e}")
 

@@ -108,17 +108,17 @@ class IoTController:
             params = payload.get('params', {})
             action_id = payload.get('action_id', "NA")
             if action_name:
-                status, response = await ActionFactory.execute_action(action_name, params,
+                status, cmd_response = await ActionFactory.execute_action(action_name, params,
                                                                       self.telemetry_config, self.mqtt_config,
                                                                       self.logger)
                 if status == ActionStatus.NOT_IMPLEMENTED:
-                    response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
+                    cmd_response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
                     await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                                  status, response, self.logger)
+                                                  status, cmd_response, self.logger)
                 else:
-                    response = response | {"action_id": action_id}
+                    cmd_response = cmd_response | {"action_id": action_id}
                     await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                                  status, response, self.logger)
+                                                  status, cmd_response, self.logger)
 
             else:
                 self.logger.error(f"Received message with no action specified")
