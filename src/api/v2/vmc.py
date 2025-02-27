@@ -1,15 +1,15 @@
+from pathlib import Path
 import subprocess
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
+from utils import LogManager
+logger = LogManager("vmc.log").get_logger("VMC")
+
 from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status
 from api.v2.routes.hardware_deployment_route import HardwareDeploymentRoute
-from pathlib import Path
-from utils import LogManager
-
-logger = LogManager("vmc.log").get_logger("VMC")
 
 
 @asynccontextmanager
