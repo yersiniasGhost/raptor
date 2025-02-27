@@ -138,9 +138,11 @@ class IoTController:
             self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
 
     async def shutdown(self):
+        print("SHUTDOWN")
         self.running = False
         DatabaseManager().close()
-        self.mqtt_task.cancel()
+        if self.mqtt_task:
+            self.mqtt_task.cancel()
 
 
     async def main_loop(self):

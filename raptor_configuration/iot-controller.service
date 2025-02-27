@@ -1,0 +1,15 @@
+# /etc/systemd/system/iot-controller.service
+[Unit]
+Description=IoT Controller Service
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/raptor
+ExecStart=/root/devel/raptor/bin/python /root/raptor/src/jobs/iot_controller.py
+Restart=always
+RestartSec=10
+RestartPreventExitStatus=99
+
+[Install]
+WantedBy=multi-user.target

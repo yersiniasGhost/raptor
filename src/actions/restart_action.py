@@ -12,9 +12,9 @@ class RestartAction(Action):
             logger.info("Received restart command, initiating controller restart")
             # Exit with a special code that indicates a requested restart
             # We use 42 as an example, but you can choose any non-zero value
-            sys.exit(42)
+            status = self.params.get('exit_status', 42)
+            sys.exit(status)
 
         except Exception as e:
             logger.error(f"Error during restart: {e}")
             return ActionStatus.FAILURE, {"error": str(e)}
-
