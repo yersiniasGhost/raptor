@@ -57,7 +57,9 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
 @router.get("/data")
 async def get_bms_data(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        hardware, register_map = get_inverter(deployment)
+        hardware = get_inverter(deployment)
+        register_map = hardware.get_points("DATA")
+
         # Update each unit
         for unit_id in hardware.iterate_slave_ids():
             # Assuming read_holding_registers returns a Dict[str, float]

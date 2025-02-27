@@ -208,8 +208,6 @@ async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment
 async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     batteries = get_batteries(hardware)
     register_map = batteries.get_points("DATA")
-    print("MAP")
-    print(register_map)
     try:
         bms_data = await bms_store.get_all_data()
         return templates.TemplateResponse(
