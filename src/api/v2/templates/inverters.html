@@ -25,8 +25,8 @@
     <button onclick="updateData()">Refresh</button>
 </div>
 {% if register_map %}
-{% for modbus_hardware in hardware.each_unit() %}
-{% set unit_id = modbus_hardware.slave_id %}
+{% for modbus_hardware in hardware.devices %}
+{% set unit_id = modbus_hardware['slave_id'] %}
 <div class="unit-container">
     <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ unit_id }}</h2>
     {% with page = "Inverter" %}

@@ -490,3 +490,6 @@ class ElectrakMD(HardwareBase):
 
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str]):
         pass
+
+    def get_points(self, names: List[str]) -> List:
+        pass

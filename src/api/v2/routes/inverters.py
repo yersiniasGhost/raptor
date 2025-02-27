@@ -21,14 +21,16 @@ except Exception as e:
 
 
 def get_inverter(deployment: HardwareDeploymentRoute):
-    return deployment.inverter, deployment.inverter_register_map
+    return deployment.inverter
 
 
 @router.get("/")
 async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         data = await bms_store.get_all_data()
-        hardware, register_map = get_inverter(deployment)
+        hardware = get_inverter(deployment)
+        register_map = hardware.get_points("DATA")
+
         return templates.TemplateResponse(
             "inverters.html",
             {

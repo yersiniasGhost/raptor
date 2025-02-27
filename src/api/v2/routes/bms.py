@@ -198,7 +198,7 @@ async def read_modbus_register(data: str, hardware: Annotated[HardwareDeployment
             "description": "On demand query"
         }
     ]})
-    batteries, _ = get_batteries(hardware)
+    batteries = get_batteries(hardware)
     values = modbus_data_acquisition_orig(batteries.hardware, m_map, slave_id=unit_id)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}
