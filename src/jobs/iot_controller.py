@@ -12,7 +12,7 @@ from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from cloud.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER
 from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import download_incoming_messages_mqtt, upload_telemetry_data_mqtt, setup_mqtt_listener
+from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
 # from .mqtt_connect import setup_mqtt_listener
@@ -63,35 +63,6 @@ class IoTController:
         return output_telemetry
 
 
-    async def _handle_incoming_messages(self):
-        messages = []
-        if self.telemetry_config.mode == MQTT_MODE:
-            messages = await download_incoming_messages_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
-        elif self.telemetry_config.mode == REST_MODE:
-            self.logger.warning("NOT IMPLEMENTED")
-            messages = []
-
-        for message in messages:
-            self.logger.info(f"Received message: {message}")
-
-
-    # async def _process_incoming_messages(self):
-    #     try:
-    #         async for message in self.mqtt_client.messages:
-    #             try:
-    #                 payload = json.loads(message.payload.decode())
-    #                 self.logger.info(f"Received message: {payload}")
-    #                 # Process the message - perhaps add to a queue or handle directly
-    #                 await self._handle_message(payload)
-    #             except json.JSONDecodeError:
-    #                 self.logger.error(f"Received invalid JSON on topic {message.topic}")
-    #             except Exception as e:
-    #                 self.logger.error(f"Error processing message: {e}")
-    #     except Exception as e:
-    #         self.logger.error(f"Message processing task failed: {e}")
-    #         # Reconnect logic could go here
-
-
     async def _upload_telemetry_data(self):
         if self.telemetry_config.mode == MQTT_MODE:
             upload_status = await upload_telemetry_data_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
@@ -101,6 +72,7 @@ class IoTController:
             self.logger.warning("NOT IMPLEMENTED")
             return True
         return False
+
 
     async def _store_local_telemetry_data(self, filename: str, slave_id: int, data_list: dict):
         """
@@ -129,6 +101,7 @@ class IoTController:
 
     async def handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
+        self.logger.info("Initiating incoming message handler.")
         async for payload in setup_mqtt_listener(
                 self.mqtt_config,
                 self.telemetry_config,

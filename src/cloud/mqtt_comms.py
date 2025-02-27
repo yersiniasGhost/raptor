@@ -65,33 +65,6 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
     except Exception as e:
         logger.error(f"Failed in MQTT listener: {e}")
 
-async def setup_mqtt_listener(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
-                              callback,
-                              logger: Logger) -> Tuple[aiomqtt.Client, Any]:
-    """ Set up a persistent MQTT connection with callbacks"""
-    try:
-        # Create a persistent client
-        mqtt_client = aiomqtt.Client(
-            hostname=mqtt_config.broker,
-            port=mqtt_config.port,
-            username=mqtt_config.username,
-            password=mqtt_config.password,
-            keepalive=mqtt_config.keepalive
-        )
-
-        # Connect and subscribe
-        await mqtt_client.connect()
-        await mqtt_client.subscribe(telemetry_config.messages_path)
-
-        # Start a background task to process messages
-        message_task = asyncio.create_task(callback(mqtt_client))
-
-        logger.info("MQTT listener established")
-        return mqtt_client, message_task
-
-    except Exception as e:
-        logger.error(f"Failed to setup MQTT listener: {e}")
-        raise
 
 
 async def download_incoming_messages_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig,
@@ -99,6 +72,7 @@ async def download_incoming_messages_mqtt(mqtt_config: MQTTConfig, telemetry_con
     """
     Download messages from MQTT broker for a single topic.
     """
+    raise ValueError("here")
     try:
         # Connect to the broker using the context manager
         logger.info(f"Connecting to MQTT messages topic.")
