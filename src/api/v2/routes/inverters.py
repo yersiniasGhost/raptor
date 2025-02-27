@@ -55,13 +55,14 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
 
 
 @router.get("/data")
-async def get_bms_data(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         hardware = get_inverter(deployment)
         register_map = hardware.get_points("DATA")
 
         # Update each unit
-        for unit_id in hardware.iterate_slave_ids():
+        for device in hardware.devices:
+            unit_id = device['slave_id']
             # Assuming read_holding_registers returns a Dict[str, float]
             values = modbus_data_acquisition_orig(hardware.hardware, register_map, slave_id=unit_id)
             if isinstance(values, dict):  # Ensure values is a dictionary
