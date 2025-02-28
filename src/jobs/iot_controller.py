@@ -29,17 +29,22 @@ class IoTController:
         self.telemetry_data: Optional[Dict[str, Any]] = None
         self.store_local = store_local
         self.mqtt_task = None
+        self.unformatted_data = {}
 
 
     def _data_acquisition(self):
         db = DatabaseManager(EnvVars().db_path)
         telemetry_data = {}
         sz = 0
+        self.unformatted_data = {}
         for system in ["BMS", "Converters"]:
             for hardware in db.get_hardware_systems(system):
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
                 instance_data = deployment.data_acquisition()
+                if self.store_local:
+                    self._store_local_telemetry_data(system, instance_data)
+                self.unformatted_data = self.unformatted_data | instance_data
                 sz += len(instance_data)
                 telemetry_data = self._format_telemetry(instance_data, deployment, system, telemetry_data)
                 self.logger.debug(f"DATA acq:  {instance_data}")
@@ -74,27 +79,31 @@ class IoTController:
         return False
 
 
-    async def _store_local_telemetry_data(self, filename: str, slave_id: int, data_list: dict):
+    async def _store_local_telemetry_data(self, system: str, data: dict):
         """
         Write Modbus data to CSV with timestamp
         data_list: List of tuples [(name, value)]
         """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        filename = f'{filename}_{slave_id}.csv'
-        file_exists = os.path.exists(filename)
 
-        with open(filename, 'a', newline='') as csvfile:
-            fieldnames = ['Timestamp'] + list(data_list.keys())
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        for slave_id, data_list in data.items():
+            if system == "BMS":
+                filename = f'battery2_{slave_id}.csv'
+            else:
+                filename = f"inverter2_{slave_id}.csv"
+            file_exists = os.path.exists(filename)
+            with open(filename, 'a', newline='') as csvfile:
+                fieldnames = ['Timestamp'] + list(data_list.keys())
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-            # Write header if file is new
-            if not file_exists:
-                writer.writeheader()
+                # Write header if file is new
+                if not file_exists:
+                    writer.writeheader()
 
-            # Create row with timestamp and values
-            row_data = {'Timestamp': timestamp}
-            row_data.update({name: value for name, value in data_list.items()})
-            writer.writerow(row_data)
+                # Create row with timestamp and values
+                row_data = {'Timestamp': timestamp}
+                row_data.update({name: value for name, value in data_list.items()})
+                writer.writerow(row_data)
 
     async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
@@ -168,7 +177,7 @@ class IoTController:
                     db.store_telemetry_data(self.telemetry_data)
                     # Upload to cloud if we have any data
                     upload_success = await self._upload_telemetry_data()
-                    if self.store_local:
+                    if self.store_local or True:
                         await self._store_local_telemetry_data()
                     if upload_success:
                         db.clear_telemetry_data()

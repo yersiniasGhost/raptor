@@ -13,6 +13,7 @@ class RestartAction(Action):
             # Exit with a special code that indicates a requested restart
             # We use 42 as an example, but you can choose any non-zero value
             status = self.params.get('exit_status', 42)
+            logger.info(f"If this is 99, the service will stop: {status}")
             sys.exit(status)
 
         except Exception as e:
