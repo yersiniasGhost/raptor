@@ -1,0 +1,8 @@
+# /etc/systemd/network/20-end0.network
+# systemctl enable systemd-networkd
+# systemctl start systemd-networkd
+[Match]
+Name=end0
+
+[Network]
+Address=10.250.250.2/24
