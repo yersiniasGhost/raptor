@@ -112,28 +112,60 @@ class IoTController:
     async def _handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
         self.logger.info("Initiating incoming message handler.")
-        async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
-            # Process each received message
-            self.logger.info(f"Received message: {payload}")
-            action_name = payload.get('action')
-            params = payload.get('params', {})
-            action_id = payload.get('action_id', "NA")
-            if action_name:
-                status, cmd_response = await ActionFactory.execute_action(action_name, params,
-                                                                          self.telemetry_config,
-                                                                          self.mqtt_config)
-                if status == ActionStatus.NOT_IMPLEMENTED:
-                    cmd_response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
-                    await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                                  status, cmd_response, self.logger)
-                else:
-                    cmd_response = cmd_response | {"action_id": action_id}
-                    await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                                  status, cmd_response, self.logger)
+        retry_count = 0
+        max_retries = 3
+        retry_delay = 3
+        while self.running:
+            try:
+                async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
+                    retry_count = 0
+                    self.logger.info(f"Received message: {payload}")
+                    action_name = payload.get('action')
+                    params = payload.get('params', {})
+                    action_id = payload.get('action_id', "NA")
+                    try:
+                        if action_name:
+                            status, cmd_response = await ActionFactory.execute_action(action_name, params,
+                                                                                      self.telemetry_config,
+                                                                                      self.mqtt_config)
+                            if status == ActionStatus.NOT_IMPLEMENTED:
+                                cmd_response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
+                                await upload_command_response(self.mqtt_config, self.telemetry_config,
+                                                              status, cmd_response, self.logger)
+                            else:
+                                cmd_response = cmd_response | {"action_id": action_id}
+                                await upload_command_response(self.mqtt_config, self.telemetry_config,
+                                                              status, cmd_response, self.logger)
 
-            else:
-                self.logger.error(f"Received message with no action specified")
-                await self._respond_to_message(ActionStatus.INVALID_PARAMS, action_id, payload={"message": f"Invalid action: {payload}"})
+                        else:
+                            self.logger.error(f"Received message with no action specified")
+                            await self._respond_to_message(ActionStatus.INVALID_PARAMS, action_id,
+                                                           payload={"message": f"Invalid action: {payload}"})
+                    except Exception as e:
+                        self.logger.error(f"Error processing MQTT message: {e}", exc_info=True)
+                        # Try to notify about the error
+                        try:
+                            await self._respond_to_message(ActionStatus.ERROR, action_id,
+                                                           payload={"message": f"Error processing action}: {str(e)}"})
+                        except Exception:
+                            pass
+                        # Continue processing next message
+                        continue
+
+            except asyncio.CancelledError:
+                self.logger.info("MQTT handling task was cancelled, exiting")
+                break
+            except Exception as e:
+                self.logger.error(f"MQTT connection failed with error: {e}", exc_info=True)
+
+                # Implement exponential backoff
+                retry_count += 1
+                if retry_count > max_retries:
+                    retry_delay = min(60, retry_delay * 2)  # Max delay of 60 seconds
+
+                self.logger.warning(f"Reconnecting to MQTT in {retry_delay} seconds (attempt {retry_count})")
+                await asyncio.sleep(retry_delay)
+
 
     def _on_handle_mqtt_messages_exit(self, task):
         try:
@@ -166,8 +198,8 @@ class IoTController:
         """
         self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
-        self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
-        self.mqtt_task.add_done_callback(self._on_handle_mqtt_messages_exit)
+        self._start_mqtt_task()
+        await asyncio.create_task(self._monitor_tasks())
 
         while self.running:
             start = time.time()
@@ -198,18 +230,72 @@ class IoTController:
                 self.logger.critical(f"Critical error in main loop: {str(e)}", exc_info=True)
                 # Implement alert mechanism here (email, SMS, etc.)
                 elapsed = time.time() - start
-                sleep_time = max(0, interval_seconds - elapsed)
+                sleep_time = max(min(interval_seconds, 30), interval_seconds - elapsed)  # Cap error retry to 30 seconds
                 await asyncio.sleep(sleep_time)  # Wait before retrying
 
+
+
+    def _start_mqtt_task(self):
+        """Start MQTT handling task with error recovery"""
+        if self.mqtt_task and not self.mqtt_task.done():
+            # Cancel existing task if running
+            self.mqtt_task.cancel()
+
+        self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
+        self.mqtt_task.add_done_callback(self._on_handle_mqtt_messages_exit)
+        self.logger.info("MQTT task started")
+
+
+
+    async def _monitor_tasks(self):
+        """Monitor critical tasks and restart them if they fail"""
+        while self.running:
+            # Check MQTT task
+            if self.mqtt_task and self.mqtt_task.done():
+                try:
+                    # This will raise any exception that occurred
+                    self.mqtt_task.result()
+                    self.logger.warning("MQTT task completed unexpectedly")
+                except asyncio.CancelledError:
+                    # Task was cancelled intentionally, no need to restart
+                    pass
+                except Exception as e:
+                    self.logger.error(f"MQTT task failed with error: {e}")
+
+                # Restart MQTT task if it's not running and should be
+                if self.running:
+                    self.logger.info("Restarting MQTT task")
+                    self._start_mqtt_task()
+
+            # Sleep before checking again
+            await asyncio.sleep(10)  # Check every 10 seconds
 
 
     def _setup_error_handlers(self):
         """Setup global error handlers"""
 
         def handle_exception(loop, context):
-            exception = context.get('exception', context['message'])
-            self.logger.critical(f"Unhandled error: {str(exception)}", exc_info=True)
-            # Implement alert mechanism here
+            exception = context.get('exception')
+            message = context.get('message')
+            task = context.get('task')
+
+            if exception is None:
+                self.logger.critical(f"Unhandled error: {message}")
+            else:
+                self.logger.critical(f"Unhandled exception in {task}: {str(exception)}", exc_info=exception)
+
+            # If this is a critical task, try to restart the application
+            is_critical = False
+            if task and hasattr(task, 'get_name'):
+                task_name = task.get_name()
+                is_critical = any(critical_name in task_name for critical_name in ['main_loop', 'mqtt'])
+
+            if is_critical and self.running:
+                self.logger.warning("Critical task failed, attempting recovery")
+                # Try to restart specific tasks based on context
+                if self.mqtt_task and self.mqtt_task.done():
+                    self._start_mqtt_task()
+
         loop = asyncio.get_event_loop()
         loop.set_exception_handler(handle_exception)
 

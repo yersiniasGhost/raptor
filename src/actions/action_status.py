@@ -9,3 +9,4 @@ class ActionStatus(Enum):
     NOT_IMPLEMENTED = "not_implemented"
     PERMISSION_DENIED = "permission_denied"
     NO_RESPONSE = "no_response"
+    ERROR = "error"
