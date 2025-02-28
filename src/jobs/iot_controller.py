@@ -177,8 +177,7 @@ class IoTController:
                     db.store_telemetry_data(self.telemetry_data)
                     # Upload to cloud if we have any data
                     upload_success = await self._upload_telemetry_data()
-                    if self.store_local or True:
-                        await self._store_local_telemetry_data()
+
                     if upload_success:
                         db.clear_telemetry_data()
                     else:
