@@ -127,6 +127,7 @@ class IoTController:
                     action_name = payload.get('action')
                     params = payload.get('params', {})
                     action_id = payload.get('action_id', "NA")
+
                     try:
                         if action_name:
                             status, cmd_response = await ActionFactory.execute_action(action_name, params,
@@ -169,19 +170,6 @@ class IoTController:
                 await asyncio.sleep(retry_delay)
 
 
-    def _on_handle_mqtt_messages_exit(self, task):
-        try:
-            # This will raise the exception if the task failed
-            result = task.result()
-            self.logger.info("MQTT handling task completed normally")
-        except asyncio.CancelledError:
-            self.logger.info("MQTT handling task was cancelled")
-        except Exception as e:
-            self.logger.error(f"MQTT handling task failed with exception: {e}")
-            # Restart the task if needed
-            self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
-            self.logger.warning("MQTT tasks restarted.")
-
     async def shutdown(self):
         print("SHUTDOWN")
         self.running = False
@@ -201,7 +189,7 @@ class IoTController:
         self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
         self._start_mqtt_task()
-        await asyncio.create_task(self._monitor_tasks())
+        monitor_task = asyncio.create_task(self._monitor_tasks())
 
         while self.running:
             start = time.time()
@@ -235,6 +223,10 @@ class IoTController:
                 sleep_time = max(min(interval_seconds, 30), interval_seconds - elapsed)  # Cap error retry to 30 seconds
                 await asyncio.sleep(sleep_time)  # Wait before retrying
 
+        monitor_task.cancel()
+        if self.mqtt_task:
+            self.mqtt_task.cancel()
+
 
 
     def _start_mqtt_task(self):
@@ -247,7 +239,28 @@ class IoTController:
         self.mqtt_task.add_done_callback(self._on_handle_mqtt_messages_exit)
         self.logger.info("MQTT task started")
 
+    def _on_handle_mqtt_messages_exit(self, task):
+        try:
+            # This will raise the exception if the task failed
+            result = task.result()
+            self.logger.info("MQTT handling task completed normally")
+        except asyncio.CancelledError:
+            self.logger.info("MQTT handling task was cancelled")
+        except Exception as e:
+            self.logger.error(f"MQTT handling task failed with exception: {e}")
+            # Restart the task if needed
+            if self.running:
+                asyncio.create_task(self._delayed_mqtt_restart())
+                # self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
+                self.logger.warning("MQTT tasks restarted.")
 
+
+    async def _delayed_mqtt_restart(self):
+        """Restart MQTT task with a small delay to prevent rapid cycling"""
+        await asyncio.sleep(2)  # 5 second delay
+        if self.running:  # Check again after the delay
+            self.logger.warning("Restarting MQTT task after failure")
+            self._start_mqtt_task()
 
     async def _monitor_tasks(self):
         """Monitor critical tasks and restart them if they fail"""

@@ -29,5 +29,8 @@ class TestAction(Action):
             return ActionStatus.SUCCESS, None
         elif respond == "exception":
             raise ValueError("Fake exception in TestAction")
+        elif respond == "infinite_loop":
+            while True:
+                pass
         else:
             return ActionStatus.INVALID_PARAMS, {"error": "Come on man!"}
