@@ -27,7 +27,7 @@ class IoTController:
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
         self.telemetry_data: Optional[Dict[str, Any]] = None
-        self.store_local = store_local
+        self.store_local = True
         self.mqtt_task = None
         self.unformatted_data = {}
 

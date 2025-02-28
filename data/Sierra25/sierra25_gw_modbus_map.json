@@ -38,7 +38,7 @@
     "description": "DC Power"
   },
   "Phase1 Voltage": {
-    "name": "Phase 1 Voltage",
+    "name": "Phase1Voltage",
     "data_type": "uint16",
     "address": 1561,
     "units": "V",
@@ -47,7 +47,7 @@
     "access": "RO"
   },
   "Phase1 Current": {
-    "name": "Phase 1 Current",
+    "name": "Phase1Current",
     "data_type": "int16",
     "address": 1562,
     "units": "A",
@@ -56,7 +56,7 @@
     "access": "RO"
   },
   "Phase1 Frequency": {
-    "name": "Phase 1 Frequency",
+    "name": "Phase1Frequency",
     "data_type": "uint16",
     "address": 1563,
     "units": "Hz",
@@ -65,7 +65,7 @@
     "access": "RO"
   },
   "Phase1 Power Factor": {
-    "name": "Phase 1 Power Factor",
+    "name": "Phase1PowerFactor",
     "data_type": "uint16",
     "address": 1564,
     "units": "",
@@ -74,7 +74,7 @@
     "access": "RO"
   },
   "Phase1 True Power": {
-    "name": "Phase 1 True Power",
+    "name": "Phase1TruePower",
     "data_type": "int16",
     "address": 1565,
     "units": "W",
@@ -83,7 +83,7 @@
     "access": "RO"
   },
   "Phase1 Apparent Power": {
-    "name": "Phase 1 Apparent Power",
+    "name": "Phase1ApparentPower",
     "data_type": "int16",
     "address": 1566,
     "units": "VA",
