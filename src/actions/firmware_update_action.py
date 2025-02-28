@@ -19,7 +19,7 @@ class FirmwareUpdateAction(Action):
             if not firmware.update():
                 logger.error("Unable to Update Firmware")
                 return ActionStatus.FAILED, {"error": "error"}
-            logger.info("Successfully recommissioned Raptor")
+            logger.info(f"Successfully updated firmware version to {tag}")
             return ActionStatus.SUCCESS, {"message": f"Updated code to {tag}"}
         except Exception as e:
             logger.error(f"Error during Firmware update: {e}")
