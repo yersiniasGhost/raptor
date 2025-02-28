@@ -24,6 +24,10 @@ class TestAction(Action):
         elif respond == "in_progress":
             return ActionStatus.IN_PROGRESS, {"response": "in_progress"}
         elif respond == "no_response":
-            return ActionStatus.NO_RESPONSE, None
+            return ActionStatus.NO_RESPONSE, {}
+        elif respond == "bad_response":
+            return ActionStatus.SUCCESS, None
+        elif respond == "exception":
+            raise ValueError("Fake exception in TestAction")
         else:
             return ActionStatus.INVALID_PARAMS, {"error": "Come on man!"}
