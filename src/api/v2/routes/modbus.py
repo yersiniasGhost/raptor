@@ -17,7 +17,6 @@ router = APIRouter(prefix="/modbus", tags=["modbus"])
 @router.get("/modbus_write/{data}")
 async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
-    print(parsed_data)
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
     m_map = ModbusMap.from_dict({"registers": [
@@ -44,7 +43,6 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
 @router.get("/modbus_register/{data}")
 async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
-    print(parsed_data)
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
 
@@ -63,6 +61,5 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
     elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
     values = modbus_data_acquisition_orig(hardware, m_map, slave_id=unit_id)
-    print(values)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}

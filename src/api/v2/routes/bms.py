@@ -138,7 +138,6 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
             unit_id = device["slave_id"]
             filename = f"battery2_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
-            print(trending_data)
             trend = calculate_soc_trend(trending_data)
             current_soc = float(trending_data[-1]["Remaining Capacity"])
             time_to_go, soc_1hr, soc_2hr = calculate_charge_projections(current_soc, trend)
@@ -154,8 +153,6 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()
-        print(data)
-        print('-----')
 
         # Now grab the trend data and calculate that fun!
         return JSONResponse(content={"data": data, "error": None})

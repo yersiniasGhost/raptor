@@ -90,7 +90,6 @@ class IoTController:
                 filename = f'battery2_{slave_id}.csv'
             else:
                 filename = f"inverter2_{slave_id}.csv"
-            print(filename)
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
                 fieldnames = ['Timestamp'] + list(data_list.keys())
