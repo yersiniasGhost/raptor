@@ -203,7 +203,7 @@ class DatabaseManager(metaclass=Singleton):
         try:
             cursor = self.connection.cursor()
             cursor.execute("""
-                SELECT version_tag, timestamp FROM versions ORDER BY timestamp DESC LIMIT 1
+                SELECT version_tag, timestamp FROM firmware_tag ORDER BY timestamp DESC LIMIT 1
             """)
             result = cursor.fetchone()
             return dict(result) if result else None
@@ -216,7 +216,7 @@ class DatabaseManager(metaclass=Singleton):
             cursor = self.connection.cursor()
             # Using CURRENT_TIMESTAMP for the timestamp value
             cursor.execute("""
-                   INSERT INTO versions (version_tag, timestamp)
+                   INSERT INTO firmware_status (version_tag, timestamp)
                    VALUES (?, CURRENT_TIMESTAMP)
                """, (version_tag,))
             self.connection.commit()
@@ -230,7 +230,7 @@ class DatabaseManager(metaclass=Singleton):
             cursor = self.connection.cursor()
             cursor.execute("""
                 SELECT id, version_tag, timestamp
-                FROM versions
+                FROM firmware_status
                 ORDER BY timestamp DESC
             """)
             results = cursor.fetchall()
