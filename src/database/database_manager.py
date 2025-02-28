@@ -203,7 +203,7 @@ class DatabaseManager(metaclass=Singleton):
         try:
             cursor = self.connection.cursor()
             cursor.execute("""
-                SELECT version_tag, timestamp FROM firmware_tag ORDER BY timestamp DESC LIMIT 1
+                SELECT version_tag, timestamp FROM firmware_status ORDER BY timestamp DESC LIMIT 1
             """)
             result = cursor.fetchone()
             return dict(result) if result else None
