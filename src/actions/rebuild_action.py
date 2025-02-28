@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Tuple
-from logging import Logger
 from cloud.raptor_commissioner import RaptorCommissioner
 from cloud.raptor_configuration import RaptorConfiguration
 from database.database_manager import DatabaseManager
@@ -8,12 +7,13 @@ from .base_action import Action
 from .action_status import ActionStatus
 from cloud.telemetry_config import TelemetryConfig
 from cloud.mqtt_config import MQTTConfig
-from utils import JSON, EnvVars
+from utils import JSON, EnvVars, LogManager
 
 
 class RebuildAction(Action):
     async def execute(self, telemetry_config: TelemetryConfig,
-                      mqtt_config: MQTTConfig, logger: Logger) -> Tuple[ActionStatus, JSON]:
+                      mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
+        logger = LogManager().get_logger("RebuildAction")
         try:
 
             logger.info("Starting rebuild action.")

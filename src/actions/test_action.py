@@ -1,15 +1,17 @@
-from logging import Logger
 from .base_action import Action
 from .action_status import ActionStatus
 from cloud.telemetry_config import TelemetryConfig
 from cloud.mqtt_config import MQTTConfig
-from utils import JSON
+from utils import JSON, LogManager
 from typing import Tuple
 
 
 class TestAction(Action):
+
     async def execute(self, telemetry_config: TelemetryConfig,
-                      mqtt_config: MQTTConfig, logger: Logger) -> Tuple[ActionStatus, JSON]:
+                      mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
+        logger = LogManager().get_logger("RebuildAction")
+
         respond = self.params.get("respond", "success")
         logger.info(f"Starting Test Action: {respond}")
 

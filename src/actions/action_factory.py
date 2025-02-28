@@ -1,6 +1,5 @@
 # src/actions/action_factory.py
 import importlib
-from logging import Logger
 from typing import Dict, Any, Tuple
 from .action_status import ActionStatus
 from cloud.telemetry_config import TelemetryConfig
@@ -13,7 +12,7 @@ class ActionFactory:
     @staticmethod
     async def execute_action(action_name: str, params: Dict[str, Any],
                              telemetry_config: TelemetryConfig,
-                             mqtt_config: MQTTConfig, logger: Logger) -> Tuple[ActionStatus, JSON]:
+                             mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
         """Dynamically load and execute an action by name"""
         # Convert action_name to CamelCase and append 'Action'
         class_name = ''.join(word.capitalize() for word in action_name.split('_')) + 'Action'

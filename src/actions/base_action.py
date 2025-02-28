@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from logging import Logger
 from .action_status import ActionStatus
 from typing import Dict, Any, Tuple
 from cloud.telemetry_config import TelemetryConfig
@@ -14,6 +13,6 @@ class Action(ABC):
 
     @abstractmethod
     async def execute(self, telemetry_config: TelemetryConfig,
-                      mqtt_config: MQTTConfig, logger: Logger) -> Tuple[ActionStatus, JSON]:
+                      mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
         """Execute the action and return its status"""
         pass

@@ -1,13 +1,15 @@
 import sys
-import os
-from logging import Logger
+from typing import Tuple
 from .base_action import Action
 from .action_status import ActionStatus
+from utils import LogManager, JSON
 
 
 class RestartAction(Action):
 
-    async def execute(self, m, t,  logger: Logger) -> ActionStatus:
+    async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:
+        logger = LogManager().get_logger("RebuildAction")
+
         try:
             logger.info("Received restart command, initiating controller restart")
             # Exit with a special code that indicates a requested restart
@@ -18,4 +20,4 @@ class RestartAction(Action):
 
         except Exception as e:
             logger.error(f"Error during restart: {e}")
-            return ActionStatus.FAILURE, {"error": str(e)}
+            return ActionStatus.FAILED, {"error": str(e)}

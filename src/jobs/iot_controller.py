@@ -146,6 +146,7 @@ class IoTController:
             self.logger.error(f"MQTT handling task failed with exception: {e}")
             # Restart the task if needed
             self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
+            self.logger.warning("MQTT tasks restarted.")
 
     async def shutdown(self):
         print("SHUTDOWN")
