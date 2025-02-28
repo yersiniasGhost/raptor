@@ -40,17 +40,6 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
         raise
 
 
-async def upload_command_response(mqtt_config: MQTTConfig,  telemetry_config: TelemetryConfig,
-                                  status: str, payload: JSON, logger: Logger):
-    try:
-        payload = json.dumps(payload)
-        logger.info(f"Command response: {payload}")
-        await publish_payload(mqtt_config, telemetry_config.response_topic, payload, logger)
-    except Exception as e:
-        logger.error(f"Error uploading telemetry data: {e}")
-        raise
-
-
 async def setup_mqtt_listener(mqtt_config: MQTTConfig,
                               telemetry_config: TelemetryConfig,
                               logger: Logger) -> AsyncGenerator:
@@ -87,4 +76,15 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
         logger.error(f"MQTT Error: {e}")
     except Exception as e:
         logger.error(f"Failed in MQTT listener: {e}")
+
+
+async def upload_command_response(mqtt_config: MQTTConfig,  telemetry_config: TelemetryConfig,
+                                  payload: JSON, logger: Logger):
+    try:
+        payload = json.dumps(payload)
+        logger.info(f"Command response: {payload}")
+        await publish_payload(mqtt_config, telemetry_config.response_topic, payload, logger)
+    except Exception as e:
+        logger.error(f"Error uploading telemetry data: {e}")
+        raise
 

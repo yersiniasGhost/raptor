@@ -106,12 +106,11 @@ class IoTController:
                 row_data.update({name: value for name, value in data_list.items()})
                 writer.writerow(row_data)
 
-    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
-        payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status}
+    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = {}):
+        payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
 
-        await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                      status.value, payload, self.logger)
+        await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
 
 
     async def _handle_mqtt_messages(self):
