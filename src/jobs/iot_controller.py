@@ -4,8 +4,7 @@ import time
 from datetime import datetime
 import os
 import csv
-from typing import Dict, Union
-from typing import Optional, Any
+from typing import Dict, Union, Optional, Any
 from database.db_utils import get_mqtt_config, get_telemetry_config
 from database.database_manager import DatabaseManager
 from utils import LogManager, EnvVars
@@ -15,6 +14,7 @@ from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
 from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener, upload_command_response
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
+from utils import get_mac_address
 
 
 class IoTController:
@@ -107,7 +107,12 @@ class IoTController:
                 writer.writerow(row_data)
 
     async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
+        payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status}
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
+
+        await upload_command_response(self.mqtt_config, self.telemetry_config,
+                                      status.value, payload, self.logger)
+
 
     async def _handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
@@ -129,13 +134,11 @@ class IoTController:
                                                                                       self.telemetry_config,
                                                                                       self.mqtt_config)
                             if status == ActionStatus.NOT_IMPLEMENTED:
-                                cmd_response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
-                                await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                                              status, cmd_response, self.logger)
+                                cmd_response = {"message": f"Action not implemented: {action_name}"}
+                                await self._respond_to_message(status, action_id, cmd_response)
+
                             else:
-                                cmd_response = cmd_response | {"action_id": action_id}
-                                await upload_command_response(self.mqtt_config, self.telemetry_config,
-                                                              status, cmd_response, self.logger)
+                                await self._respond_to_message(status, action_id, cmd_response)
 
                         else:
                             self.logger.error(f"Received message with no action specified")
