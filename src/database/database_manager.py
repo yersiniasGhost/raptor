@@ -141,7 +141,7 @@ class DatabaseManager(metaclass=Singleton):
                 result.append(telemetry_data)
             lr = len(result)
             if lr > 1:
-                self.logger.info("Collected backlog {len(result)} rows of telemetry data.")
+                self.logger.info(f"Collected backlog {lr} rows of telemetry data.")
             return result
         except sqlite3.Error as e:
             self.logger.error(f"Database error reading telemetry data: {e}")
