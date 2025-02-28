@@ -4,7 +4,7 @@ from typing import Dict, Any, Tuple
 from .action_status import ActionStatus
 from cloud.telemetry_config import TelemetryConfig
 from cloud.mqtt_config import MQTTConfig
-from utils import JSON
+from utils import JSON, LogManager
 
 
 class ActionFactory:
@@ -15,6 +15,7 @@ class ActionFactory:
                              mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
         """Dynamically load and execute an action by name"""
         # Convert action_name to CamelCase and append 'Action'
+        logger = LogManager().get_logger("ActionFactory")
         class_name = ''.join(word.capitalize() for word in action_name.split('_')) + 'Action'
         try:
 
@@ -31,7 +32,7 @@ class ActionFactory:
 
             # Create and execute the action
             action = action_class(params)
-            return await action.execute(telemetry_config, mqtt_config, logger)
+            return await action.execute(telemetry_config, mqtt_config)
 
         except AttributeError:
             logger.error(f"Action class '{class_name}' not found in module")
