@@ -146,7 +146,7 @@ class IoTController:
                         # Try to notify about the error
                         try:
                             await self._respond_to_message(ActionStatus.ERROR, action_id,
-                                                           payload={"message": f"Error processing action}: {str(e)}"})
+                                                           payload={"message": f"Error processing action: {str(e)}"})
                         except Exception:
                             pass
                         # Continue processing next message
