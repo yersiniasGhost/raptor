@@ -11,12 +11,12 @@ from database.database_manager import DatabaseManager
 class FirmwareUpdater:
 
     def __init__(self, target_tag: str, force_update: bool):
+        self.logger = LogManager().get_logger("FirmwareUpdater")
         self.repo_path = EnvVars().repository_path
         self.current_version: Optional[str] = None
         self.target_tag: str = target_tag
         self.force_update: bool = force_update
         self.get_current_version()
-        self.logger = LogManager().get_logger("FirmwareUpdater")
 
 
     def get_current_version(self):
