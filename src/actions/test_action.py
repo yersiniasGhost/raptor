@@ -10,7 +10,7 @@ class TestAction(Action):
 
     async def execute(self, telemetry_config: TelemetryConfig,
                       mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
-        logger = LogManager().get_logger("RebuildAction")
+        logger = LogManager().get_logger("TestAction")
 
         respond = self.params.get("respond", "success")
         logger.info(f"Starting Test Action: {respond}")
