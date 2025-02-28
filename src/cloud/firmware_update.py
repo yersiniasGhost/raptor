@@ -27,9 +27,12 @@ class FirmwareUpdater:
             self.logger.info(f"Current git version is {output}")
         db = DatabaseManager(EnvVars().db_path)
         db_version = db.get_current_firmware_version()
-        self.logger.info(f"Current registered version: {db_version['version_tag']} at {db_version['timestamp']}")
-        if db_version['version_tag'] != self.current_version:
-            self.logger.warning(f"GIT tag not same as registered version")
+        if db_version:
+            self.logger.info(f"Current registered version: {db_version['version_tag']} at {db_version['timestamp']}")
+            if db_version['version_tag'] != self.current_version:
+                self.logger.warning(f"GIT tag not same as registered version")
+        else:
+            self.logger.info("No previous Firmware version registered.")
 
 
     def backup_current_state(self):
