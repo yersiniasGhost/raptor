@@ -28,6 +28,7 @@ class EnvVars(metaclass=Singleton):
 
         # Repository settings
         self.repository_path = self._getenv("VMC_REPOSITORY_PATH", "/root/raptor")
+        self.schema_path = "/root/raptor/src/database/schema.sql"
 
         # Application settings
         self.debug = self._get_bool('DEBUG', "False")
