@@ -86,6 +86,8 @@ class IoTController:
         """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for slave_id, data_list in data.items():
+            if not len(data_list):
+                continue
             if system == "BMS":
                 filename = f'battery2_{slave_id}.csv'
             else:
