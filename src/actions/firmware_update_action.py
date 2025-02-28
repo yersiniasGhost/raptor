@@ -13,14 +13,14 @@ class FirmwareUpdateAction(Action):
                       mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
         logger = LogManager().get_logger("FirmwareUpdateAction")
         tag = self.params["tag"]
-        logger.info("Starting Firmware Update: {tag}")
+        logger.info(f"Starting Firmware Update: {tag}")
         try:
             firmware = FirmwareUpdater(tag, False)
             if not firmware.update():
                 logger.error("Unable to Update Firmware")
                 return ActionStatus.FAILED, {"error": "error"}
             logger.info("Successfully recommissioned Raptor")
-            return ActionStatus.SUCCESS, None
+            return ActionStatus.SUCCESS, {"message": f"Updated code to {tag}"}
         except Exception as e:
             logger.error(f"Error during Firmware update: {e}")
             return ActionStatus.FAILED, {"error": str(e)}
