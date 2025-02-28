@@ -50,7 +50,7 @@ def calculate_soc_trend(trend_data: List[Dict]) -> float:
     Returns the slope in capacity units per hour.
     """
     timestamps = [data_dict["Timestamp"] for data_dict in trend_data]
-    capacities = [float(data_dict["Capacity"]) for data_dict in trend_data]
+    capacities = [float(data_dict["Remaining Capacity"]) for data_dict in trend_data]
     if len(timestamps) < 2:
         return 0.0
 
@@ -136,10 +136,11 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
         values = batteries.data_acquisition()
         for device in batteries.devices:
             unit_id = device["slave_id"]
-            filename = f"battery_{unit_id}.csv"
+            filename = f"battery2_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
+            print(trending_data)
             trend = calculate_soc_trend(trending_data)
-            current_soc = float(trending_data[-1]["Capacity"])
+            current_soc = float(trending_data[-1]["Remaining Capacity"])
             time_to_go, soc_1hr, soc_2hr = calculate_charge_projections(current_soc, trend)
             trend_data = {
                 "trend": trend,
@@ -167,7 +168,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
 async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"battery_{unit_id}.csv"
+        filename = f"battery2_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()

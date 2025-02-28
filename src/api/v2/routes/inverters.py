@@ -78,7 +78,7 @@ async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depen
 async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"inverter_{unit_id}.csv"
+        filename = f"inverter2_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()
