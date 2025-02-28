@@ -79,18 +79,18 @@ class IoTController:
         return False
 
 
-    async def _store_local_telemetry_data(self, system: str, data: dict):
+    def _store_local_telemetry_data(self, system: str, data: dict):
         """
         Write Modbus data to CSV with timestamp
         data_list: List of tuples [(name, value)]
         """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
         for slave_id, data_list in data.items():
             if system == "BMS":
                 filename = f'battery2_{slave_id}.csv'
             else:
                 filename = f"inverter2_{slave_id}.csv"
+            print(filename)
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
                 fieldnames = ['Timestamp'] + list(data_list.keys())
