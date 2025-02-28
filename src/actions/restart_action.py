@@ -8,7 +8,7 @@ from utils import LogManager, JSON
 class RestartAction(Action):
 
     async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:
-        logger = LogManager().get_logger("RebuildAction")
+        logger = LogManager().get_logger("RestartAction")
 
         try:
             logger.info("Received restart command, initiating controller restart")

@@ -10,7 +10,7 @@ from utils import JSON, EnvVars, LogManager
 class RecommissionAction(Action):
     async def execute(self, telemetry_config: TelemetryConfig,
                       mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
-        logger = LogManager().get_logger("RebuildAction")
+        logger = LogManager().get_logger("RecommissionAction")
         logger.info("Starting recommission action")
         try:
             rc = RaptorCommissioner()
