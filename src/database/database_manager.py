@@ -10,11 +10,10 @@ from utils import LogManager
 import json
 
 
-
 class DatabaseManager(metaclass=Singleton):
 
     def __init__(self, db_path: Union[Path, str], schema_path: Optional[Union[Path, str]] = None):
-        self.logger = LogManager().get_logger(__name__)
+        self.logger = LogManager().get_logger("DatabaseManager")
         self.db_path = Path(db_path)
         self.schema_path: Optional[Path] = None
         if schema_path:

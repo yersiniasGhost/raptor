@@ -120,8 +120,8 @@ class IoTController:
             action_id = payload.get('action_id', "NA")
             if action_name:
                 status, cmd_response = await ActionFactory.execute_action(action_name, params,
-                                                                          self.telemetry_config, self.mqtt_config,
-                                                                          self.logger)
+                                                                          self.telemetry_config,
+                                                                          self.mqtt_config)
                 if status == ActionStatus.NOT_IMPLEMENTED:
                     cmd_response = {"action_id": action_id, "message": f"Action not implemented: {action_name}"}
                     await upload_command_response(self.mqtt_config, self.telemetry_config,
