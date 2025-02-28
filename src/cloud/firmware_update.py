@@ -4,8 +4,8 @@ import sys
 import time
 from datetime import datetime
 from utils import run_command, kill_screen_session, start_screen_session, EnvVars
-
-from utils import LogManager
+from utils import LogManager, EnvVars
+from database.database_manager import DatabaseManager
 
 
 class FirmwareUpdater:
@@ -16,8 +16,7 @@ class FirmwareUpdater:
         self.target_tag: str = target_tag
         self.force_update: bool = force_update
         self.get_current_version()
-        self.logger = LogManager().get_logger(__name__)
-
+        self.logger = LogManager().get_logger("FirmwareUpdater")
 
 
     def get_current_version(self):
@@ -25,6 +24,12 @@ class FirmwareUpdater:
         output, success = run_command(['git', 'rev-parse', 'HEAD'])
         if success:
             self.current_version = output
+            self.logger.info(f"Current git version is {output}")
+        db = DatabaseManager(EnvVars().db_path)
+        db_version = db.get_current_firmware_version()
+        self.logger.info(f"Current registered version: {db_version['version_tag']} at {db_version['timestamp']}")
+        if db_version['version_tag'] != self.current_version:
+            self.logger.warning(f"GIT tag not same as registered version")
 
 
     def backup_current_state(self):
@@ -87,7 +92,7 @@ class FirmwareUpdater:
             self.logger.error("Failed to rollback! Manual intervention required!")
             sys.exit(1)
 
-
+    # Not useful anymore as I use systemctl to manage applications
     def restart_screen_sessions(self) -> bool:
         """Restart all configured screen sessions."""
         from config.services import sessions
@@ -133,11 +138,15 @@ class FirmwareUpdater:
                 return False
 
             # Restart screen sessions
-            if not self.restart_screen_sessions():
-                self.logger.error("Screen session restart failed, rolling back...")
-                self.rollback(self.current_version)
-                return False
+            # Require the caller to Restart the applications but shutting them down
+            # and letting systemctl to manage restarts
+            # if not self.restart_screen_sessions():
+            #     self.logger.error("Screen session restart failed, rolling back...")
+            #     self.rollback(self.current_version)
+            #     return False
 
+            db = DatabaseManager(EnvVars().db_path)
+            db.add_firmware_version(self.target_tag)
             self.logger.info("Update completed successfully")
             self.cleanup_repository()
             return True

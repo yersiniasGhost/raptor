@@ -31,6 +31,11 @@ CREATE TABLE IF NOT EXISTS telemetry_data (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS firmware_status (
+    id  INTEGER PRIMARY KEY,
+    version_tag TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)
 -- Devices (specific devices on a hardware instance)
 --CREATE TABLE IF NOT EXISTS devices (
 --    id INTEGER PRIMARY KEY,

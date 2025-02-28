@@ -199,6 +199,45 @@ class DatabaseManager(metaclass=Singleton):
             self.logger.error(f"JSON parsing error: {e}")
             raise
 
+    def get_current_firmware_version(self) -> Optional[Dict[str, str]]:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                SELECT version_tag, timestamp FROM versions ORDER BY timestamp DESC LIMIT 1
+            """)
+            result = cursor.fetchone()
+            return dict(result) if result else None
+        except Exception as e:
+            self.logger.error(f"Error retrieving last version: {e}")
+            raise
+
+    def add_firmware_version(self, version_tag: str):
+        try:
+            cursor = self.connection.cursor()
+            # Using CURRENT_TIMESTAMP for the timestamp value
+            cursor.execute("""
+                   INSERT INTO versions (version_tag, timestamp)
+                   VALUES (?, CURRENT_TIMESTAMP)
+               """, (version_tag,))
+            self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            self.logger.error(f"Error inserting new version: {e}")
+            raise
+
+    def get_all_firmware_versions(self) -> List[Dict[str, str]]:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                SELECT id, version_tag, timestamp
+                FROM versions
+                ORDER BY timestamp DESC
+            """)
+            results = cursor.fetchall()
+            return [dict(row) for row in results]
+        except Exception as e:
+            self.logger.error(f"Error retrieving all versions: {e}")
+            raise
 
     def rebuild_db(self, backup: bool = True) -> bool:
         """
