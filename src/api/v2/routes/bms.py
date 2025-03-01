@@ -157,7 +157,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
         # Now grab the trend data and calculate that fun!
         return JSONResponse(content={"data": data, "error": None})
     except Exception as e:
-        logger.error(f"Error getting BMS data: {e}")
+        logger.error(f"Error getting BMS data: {e}", exc_info=True)
         return JSONResponse(content={"data": None, "error": str(e)})
 
 
