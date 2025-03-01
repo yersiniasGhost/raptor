@@ -73,13 +73,15 @@ def calculate_charge_projections(current_soc: float, trend_per_hour: float) -> T
     - SOC after 1 hour
     - SOC after 2 hours
     """
-    if trend_per_hour <= 0:
+    if trend_per_hour < 0:
         soc_remaining = current_soc - 20.0
         hours_to_go = -soc_remaining / trend_per_hour
-    else:
+    elif trend_per_hour > 0:
         # Calculate time to reach 100%
         soc_remaining = 100.0 - current_soc
         hours_to_go = soc_remaining / trend_per_hour
+    else:
+        hours_to_go = -1
 
     # Calculate future SOC values
     soc_1hr = min(100.0, current_soc + trend_per_hour)
