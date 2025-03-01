@@ -13,8 +13,15 @@ class SystemctlAction(Action):
         logger.info("Received systemctl status command")
 
         try:
-            # Default list of processes
-            targets = ["iot-controller", "vmc-ui"]
+            target = self.params.get('target', 'all')  # 'all' or specific process name
+            processes = ["iot-controller", "vmc-ui"]
+            if target == 'all':
+                targets = processes
+            elif target in processes:
+                targets = [target]
+            else:
+                logger.error(f"Invalid target process: {target}")
+                return ActionStatus.FAILED, {"error": f"Invalid target process: {target}"}
 
             results = {}
             for process in targets:
