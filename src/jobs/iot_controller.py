@@ -52,18 +52,18 @@ class IoTController:
 
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 instance_data = deployment.data_acquisition()
-
+                sz += len(instance_data)
                 if self.store_local:
                     self._store_local_telemetry_data(system, instance_data)
                 hardware_measurements[deployment.hardware_id] = instance_data
                 self.logger.debug(f"DATA acq:  {instance_data}")
             system_measurements[system] = hardware_measurements
-        self.telemetry_data = self._format_telemetry_data(deployment, system_measurements)
+        self.telemetry_data = self._format_telemetry_data(system_measurements)
         self.unformatted_data = system_measurements
-        self.logger.info(f"Data acq: collected {sz} data points.")
+        self.logger.info(f"Data acq: collected from {sz} devices.")
 
 
-    def _format_telemetry_data(self, deployment: HardwareDeployment, system_measurements: Dict[str, Any]) -> Dict[str, Any]:
+    def _format_telemetry_data(self, system_measurements: Dict[str, Any]) -> Dict[str, Any]:
         """ Example system measurements data:
         { "BMS": { "hardwareID":  { device_id: {'DC Voltage': 53.5, 'DC Current': 0.30000000000000004, 'DC Power': 10, 'Phase1Current': 0.0, 'Phase1Voltage': 121.7, 'Phase1TruePower': 0, 'Phase1ApparentPower': 0},
                         1: {'Current': 1.62, 'Pack Voltage': 53.11, 'State of Charge': 37, 'Remaining Capacity': 36.97}, 2: {'Current': 1.54, 'Pack Voltage': 53.1, 'State of Charge': 36, 'Remaining Capacity': 36.27},
@@ -84,6 +84,8 @@ class IoTController:
                         timestamp = int(time.time() * 1000000000)
                         line = f"{measurement},{tag_str} {field_str} {timestamp}"
                         lines.append(line)
+            self.logger.info(f"Line protocol:  {len(lines)} lines collected.")
+            self.logger.info(f"{lines[0]}")
             return {"mode": FORMAT_LINE_PROTOCOL, "data": lines}
         else:
             return {}
