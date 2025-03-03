@@ -11,8 +11,8 @@ class FirmwareUpdateAction(Action):
     async def execute(self, telemetry_config: TelemetryConfig,
                       mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
         logger = LogManager().get_logger("FirmwareUpdateAction")
+        logger.info(f"Starting Firmware Update: {self.params}")
         tag = self.params["tag"]
-        logger.info(f"Starting Firmware Update: {tag}")
         try:
             firmware = FirmwareUpdater(tag, False)
             if not firmware.update():

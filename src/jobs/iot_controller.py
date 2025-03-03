@@ -34,27 +34,60 @@ class IoTController:
 
 
     def _data_acquisition(self):
+        """
+        The format of the data after acquisition is this:
+        { "BMS":   --- system
+           { "hardware_id": { "device_id": { READINGS } }
+        :return:
+        """
+
         db = DatabaseManager(EnvVars().db_path)
         telemetry_data = {}
         sz = 0
-        self.unformatted_data = {}
+        system_measurements = {}
         for system in ["BMS", "Converters"]:
+            hardware_measurements = {}
             for hardware in db.get_hardware_systems(system):
-                self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
+
+                self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 instance_data = deployment.data_acquisition()
+
                 if self.store_local:
                     self._store_local_telemetry_data(system, instance_data)
-                self.unformatted_data = self.unformatted_data | instance_data
-                sz += len(instance_data)
-                telemetry_data = self._format_telemetry(instance_data, deployment, system, telemetry_data)
+                hardware_measurements[deployment.hardware_id] = instance_data
                 self.logger.debug(f"DATA acq:  {instance_data}")
-        self.telemetry_data = telemetry_data
+            system_measurements[system] = hardware_measurements
+        self.telemetry_data = self._format_telemetry_data(deployment, system_measurements)
+        self.unformatted_data = system_measurements
         self.logger.info(f"Data acq: collected {sz} data points.")
 
 
-    def _format_telemetry_data(self, deployment: HardwareDeployment) -> Dict[str, Any]:
-        print(self.unformatted_data)
+    def _format_telemetry_data(self, deployment: HardwareDeployment, system_measurements: Dict[str, Any]) -> Dict[str, Any]:
+        """ Example system measurements data:
+        { "BMS": { "hardwareID":  { device_id: {'DC Voltage': 53.5, 'DC Current': 0.30000000000000004, 'DC Power': 10, 'Phase1Current': 0.0, 'Phase1Voltage': 121.7, 'Phase1TruePower': 0, 'Phase1ApparentPower': 0},
+                        1: {'Current': 1.62, 'Pack Voltage': 53.11, 'State of Charge': 37, 'Remaining Capacity': 36.97}, 2: {'Current': 1.54, 'Pack Voltage': 53.1, 'State of Charge': 36, 'Remaining Capacity': 36.27},
+                        3: {'Current': 1.57, 'Pack Voltage': 53.1, 'State of Charge': 40, 'Remaining Capacity': 40.31}} }
+        """
+        if self.mqtt_config.format == FORMAT_LINE_PROTOCOL:
+            lines = []
+            for system, system_data in system_measurements.items():
+                measurement = f"{system}"
+                tags = [f"raptor={self.raptor_configuration.raptor_id}"]
+                for hardware, hardware_data in system_data.items():
+                    tags.append(f"hardware_id={hardware}")
+                    for device_id, m_data in hardware_data.items():
+                        tags.append(f"device_id={device_id}")
+                        fields = [f"{point}={value}" for point, value in m_data.items()]
+                        tag_str = ','.join(tags)
+                        field_str = ','.join(fields)
+                        timestamp = int(time.time() * 1000000000)
+                        line = f"{measurement},{tag_str} {field_str} {timestamp}"
+                        lines.append(line)
+            return {"mode": FORMAT_LINE_PROTOCOL, "data": lines}
+        else:
+            return {}
+
 
 
     def _format_telemetry(self, inst_data: Dict[str, Union[float, int]],
@@ -345,3 +378,7 @@ if __name__ == "__main__":
     args = parse_args()
     controller = IoTController(store_local=args.local)
     asyncio.run(controller.main_loop())
+
+
+# Example messages's:
+# mosquitto_pub -h localhost -t "raptors/67b672097fc4a4b18476b1ed/messages" -m '{"action":"firmware_update", "params": {"tag":"2025-03-03-lf-influxdb"}}'

@@ -38,5 +38,5 @@ class ActionFactory:
             logger.error(f"Action class '{class_name}' not found in module")
             return ActionStatus.NOT_IMPLEMENTED, {"error": f"Action not found: {class_name}"}
         except Exception as e:
-            logger.error(f"Error executing action '{action_name}': {e}")
+            logger.error(f"Error executing action '{action_name}': {e}", exc_info=True)
             return ActionStatus.FAILED, {"error": str(e)}
