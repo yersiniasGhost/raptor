@@ -1,8 +1,8 @@
 import json
 import aiomqtt
 from typing import AsyncGenerator
-from cloud.telemetry_config import TelemetryConfig
-from cloud.mqtt_config import MQTTConfig
+from config.telemetry_config import TelemetryConfig
+from config.mqtt_config import MQTTConfig
 from database.database_manager import DatabaseManager
 from utils.envvars import EnvVars
 from logging import Logger

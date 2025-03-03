@@ -5,12 +5,12 @@ from datetime import datetime
 import os
 import csv
 from typing import Dict, Union, Optional, Any
-from database.db_utils import get_mqtt_config, get_telemetry_config
+from database.db_utils import get_mqtt_config, get_telemetry_config, get_raptor_configuration
 from database.database_manager import DatabaseManager
 from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
-from cloud.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER
-from cloud.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
+from config.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER, FORMAT_LINE_PROTOCOL
+from config.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
 from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener, upload_command_response
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
@@ -27,6 +27,7 @@ class IoTController:
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
         self.telemetry_data: Optional[Dict[str, Any]] = None
+        self.raptor_configuration = get_raptor_configuration(self.logger)
         self.store_local = True
         self.mqtt_task = None
         self.unformatted_data = {}
@@ -52,15 +53,32 @@ class IoTController:
         self.logger.info(f"Data acq: collected {sz} data points.")
 
 
+    def _format_telemetry_data(self, deployment: HardwareDeployment) -> Dict[str, Any]:
+        print(self.unformatted_data)
+
+
     def _format_telemetry(self, inst_data: Dict[str, Union[float, int]],
                           deployment: HardwareDeployment, system: str, telemetry: Dict[str, Any]) -> Dict[str, Any]:
         output_telemetry = telemetry
         if self.mqtt_config.format == FORMAT_FLAT:
             """ Creates flat dictionary like this:  "bms.BMS_12345.current": 10.5 """
-            for device_id, measurement in inst_data.items():
-                for point, value in measurement.items():
+            for device_id, m_data in inst_data.items():
+                for point, value in m_data.items():
                     inst_fmt = {f"{system}.{deployment.hardware_id}.{device_id}.{point}": value}
                     output_telemetry = output_telemetry | inst_fmt
+        elif self.mqtt_config.format == FORMAT_LINE_PROTOCOL:
+
+            measurement = f"{system}"
+            tags = [f"raptor={self.raptor_configuration.raptor_id}"]
+            fields = []
+            for device_id, m_data in inst_data.items():
+                tags.append(f"device_id={device_id}")
+                fields = [f"{point}={value}" for point, value in m_data.items()]
+            tag_str = ','.join(tags)
+            field_str = ','.join(fields)
+            timestamp = int(time.time() * 1000000000)
+            line = f"{measurement},{tag_str} {field_str} {timestamp}"
+
         elif self.mqtt_config.format == FORMAT_HIER:
             """ Creates hierarchical data format """
             inst_fmt = {deployment.hardware_id: {"measurements": inst_data}}

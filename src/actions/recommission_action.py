@@ -2,9 +2,9 @@ from typing import Tuple
 from cloud.raptor_commissioner import RaptorCommissioner
 from .base_action import Action
 from .action_status import ActionStatus
-from cloud.telemetry_config import TelemetryConfig
-from cloud.mqtt_config import MQTTConfig
-from utils import JSON, EnvVars, LogManager
+from config.telemetry_config import TelemetryConfig
+from config.mqtt_config import MQTTConfig
+from utils import JSON, LogManager
 
 
 class RecommissionAction(Action):

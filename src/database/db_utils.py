@@ -5,8 +5,9 @@ import sqlite3
 
 from utils.envvars import EnvVars
 from database.database_manager import DatabaseManager
-from cloud.mqtt_config import MQTTConfig
-from cloud.telemetry_config import TelemetryConfig
+from config.mqtt_config import MQTTConfig
+from config.telemetry_config import TelemetryConfig
+from config.raptor_config import RaptorConfig
 
 
 def get_api_key(logger: Logger):
@@ -54,3 +55,19 @@ def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
     except sqlite3.Error as e:
         logger.error(f"Failed to get mqtt data: {e}")
         return None
+
+
+def get_raptor_configuration(logger: Logger) -> Optional[RaptorConfig]:
+    db = DatabaseManager(EnvVars().db_path)
+    try:
+        with db.connection as conn:
+            cursor = conn.execute("SELECT raptor_id, firmware_tag, api_key FROM commission LIMIT 1")
+            data = cursor.fetchone()
+            if not data:
+                logger.error("Unable to access MQTT data from telemetry_configuration table database.")
+                raise ValueError("Unable to access MQTT data from telemetry_configuration table database.")
+            return RaptorConfig.from_dict(data)
+    except sqlite3.Error as e:
+        logger.error(f"Failed to get Raptor configuration: {e}")
+        return None
+

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 FORMAT_FLAT = "flat-1"
 FORMAT_HIER = "hier-1"
+FORMAT_LINE_PROTOCOL = "line"
 
 
 @dataclass(frozen=True)

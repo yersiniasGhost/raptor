@@ -1,7 +1,7 @@
 from .base_action import Action
 from .action_status import ActionStatus
-from cloud.telemetry_config import TelemetryConfig
-from cloud.mqtt_config import MQTTConfig
+from config.telemetry_config import TelemetryConfig
+from config.mqtt_config import MQTTConfig
 from utils import JSON, LogManager
 from typing import Tuple
 
