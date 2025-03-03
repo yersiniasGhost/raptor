@@ -74,9 +74,9 @@ class IoTController:
             for system, system_data in system_measurements.items():
                 measurement = f"{system}"
                 for hardware, hardware_data in system_data.items():
-                    tags = [f"raptor={self.raptor_configuration.raptor_id}", f"hardware_id={hardware}"]
                     for device_id, m_data in hardware_data.items():
-                        tags.append(f"device_id={device_id}")
+                        tags = [f"raptor={self.raptor_configuration.raptor_id}", f"hardware_id={hardware}",
+                                f"device_id={device_id}"]
                         fields = [f"{point}={value}" for point, value in m_data.items()]
                         tag_str = ','.join(tags)
                         field_str = ','.join(fields)
