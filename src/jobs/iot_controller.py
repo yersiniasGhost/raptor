@@ -69,13 +69,12 @@ class IoTController:
                         1: {'Current': 1.62, 'Pack Voltage': 53.11, 'State of Charge': 37, 'Remaining Capacity': 36.97}, 2: {'Current': 1.54, 'Pack Voltage': 53.1, 'State of Charge': 36, 'Remaining Capacity': 36.27},
                         3: {'Current': 1.57, 'Pack Voltage': 53.1, 'State of Charge': 40, 'Remaining Capacity': 40.31}} }
         """
-        if self.mqtt_config.format == FORMAT_LINE_PROTOCOL:
+        if True or self.mqtt_config.format == FORMAT_LINE_PROTOCOL:
             lines = []
             for system, system_data in system_measurements.items():
                 measurement = f"{system}"
-                tags = [f"raptor={self.raptor_configuration.raptor_id}"]
                 for hardware, hardware_data in system_data.items():
-                    tags.append(f"hardware_id={hardware}")
+                    tags = [f"raptor={self.raptor_configuration.raptor_id}", f"hardware_id={hardware}"]
                     for device_id, m_data in hardware_data.items():
                         tags.append(f"device_id={device_id}")
                         fields = [f"{point}={value}" for point, value in m_data.items()]
