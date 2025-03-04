@@ -14,6 +14,8 @@ class HardwareDeploymentRoute:
 
     def __init__(self):
         self.logger = LogManager().get_logger("HardwareDepRoute")
+        self.inverter = None
+        self.batteries = None
 
         db = DatabaseManager(EnvVars().db_path)
         for hardware in db.get_hardware_systems("BMS"):
@@ -26,9 +28,13 @@ class HardwareDeploymentRoute:
 
     def get_hardware_definition(self, hardware_type: str) -> Optional[dict]:
         if hardware_type == "BMS":
-            return self.batteries.definition
+            if self.batteries:
+                return self.batteries.definition
+            return {"message": "NO Battery BMS assigned."}
         if hardware_type == "Inverter":
-            return self.inverter.definition
+            if self.inverter:
+                return self.inverter.definition
+            return {"message": "NO INVERTER/CONVERTER assigned."}
         if hardware_type == "Actuators":
             return self.actuator_manager.hardware_definition
         else:
