@@ -53,6 +53,10 @@
         <h3>Temperature</h3>
         <div class="status-value">{{ current_stats.temperature }}°C</div>
     </div>
+    <div class="status-card">
+        <h3>Data Xfer</h3>
+        <div class="status-value">S: {{ current_stats.bytes_sent }} / R:{{ current_stats.bytes_recv}}</div>
+    </div>
 </div>
 
 <div class="chart-container">
@@ -77,6 +81,11 @@
                 label: 'Memory Usage (%)',
                 data: {{ memory_history | tojson | safe }},
                 borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            }, {
+                label: 'Disk Usage (%)',
+                data: {{ disk_history | tojson | safe }},
+                borderColor: 'rgb(155, 19, 32)',
                 tension: 0.1
             }]
         },
