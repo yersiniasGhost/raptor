@@ -137,7 +137,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
         batteries = get_batteries(hardware)
         values = batteries.data_acquisition()
         for device in batteries.devices:
-            unit_id = device["slave_id"]
+            unit_id = device["mac"]
             filename = f"battery2_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
             trend = calculate_soc_trend(trending_data)

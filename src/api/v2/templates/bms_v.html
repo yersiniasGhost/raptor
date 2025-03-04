@@ -26,9 +26,9 @@
 
 {% if register_map %}
 {% for battery in batteries.devices %}
-{% set unit_id = battery["slave_id"] %}
+{% set unit_id = battery["mac"] %}
 <div class="unit-container">
-    <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ unit_id }}</h2>
+    <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ battery.slave_id }}</h2>
     {% with page = "BMS" %}
         {% include '_on_demand_modbus_form.html'%}
     {% endwith %}

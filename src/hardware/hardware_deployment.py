@@ -39,7 +39,7 @@ class HardwareDeployment:
         pass
 
     def get_slave_ids(self) -> list:
-        return [d['slave_id'] for d in self.devices]
+        return [d['mac'] for d in self.devices]
 
 
     @property
