@@ -19,7 +19,7 @@ class RestartAction(Action):
             exit_status = self.params.get('exit_status', 42)
 
             # Default list of processes
-            processes = ["iot-controller", "vmc-ui"]
+            processes = ["vmc-ui", "iot-controller"]
 
             # Determine which processes to restart
             if target == 'all':

@@ -84,7 +84,6 @@ class IoTController:
                         line = f"{measurement},{tag_str} {field_str} {timestamp}"
                         lines.append(line)
             self.logger.info(f"Line protocol:  {len(lines)} lines collected.")
-            self.logger.info(f"{lines[0]}")
             return {"mode": FORMAT_LINE_PROTOCOL, "data": lines}
         else:
             return {}
