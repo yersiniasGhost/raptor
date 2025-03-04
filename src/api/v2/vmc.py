@@ -32,13 +32,16 @@ def get_git_version():
     except:
         return "V0.1.0"
 
+
 BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+logger.info("Created FastAPI app")
 
 # Initialize templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 templates.env.globals["version"] = get_git_version()
+
 
 # Include routers
 app.include_router(actuator.router)
@@ -48,6 +51,7 @@ app.include_router(analysis.router)
 app.include_router(inverters.router)
 app.include_router(modbus.router)
 app.include_router(system_status.router)
+logger.info(f"Loaded templates and routes.   Git version: {templates.env.globals['version']}")
 
 
 @app.get("/", response_class=HTMLResponse)
