@@ -1,5 +1,5 @@
 {
-  "System Status": {
+  "System_Status": {
     "name": "System Status",
     "data_type": "uint16",
     "address": 0,
@@ -13,7 +13,7 @@
       "3": "at least one major alarm"
     }
   },
-  "DC Voltage": {
+  "DC_Voltage": {
     "name": "DC Voltage",
     "data_type": "uint16",
     "address": 1131,
@@ -21,7 +21,7 @@
     "conversion_factor": 0.1,
     "description": "DC Voltage"
   },
-  "DC Current": {
+  "DC_Current": {
     "name": "DC Current",
     "data_type": "int16",
     "address": 1132,
@@ -29,7 +29,7 @@
     "conversion_factor": 0.1,
     "description": "DC Current"
   },
-  "DC Power": {
+  "DC_Power": {
     "name": "DC Power",
     "data_type": "int16",
     "address": 1133,
