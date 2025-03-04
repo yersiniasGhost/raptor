@@ -61,7 +61,7 @@ async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depen
 
         # Update each unit
         for device in hardware.devices:
-            unit_id = device['slave_id']
+            unit_id = device['mac']
             if isinstance(values, dict):  # Ensure values is a dictionary
                 await bms_store.update_unit_data(unit_id, values[unit_id])
             else:

@@ -26,9 +26,9 @@
 </div>
 {% if register_map %}
 {% for modbus_hardware in hardware.devices %}
-{% set unit_id = modbus_hardware['slave_id'] %}
+{% set unit_id = modbus_hardware['mac'] %}
 <div class="unit-container">
-    <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ unit_id }}</h2>
+    <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ modbus_hardware.slave_id }}</h2>
     {% with page = "Inverter" %}
         {% include '_on_demand_modbus_form.html'%}
     {% endwith %}
