@@ -1,6 +1,6 @@
 {
   "System_Status": {
-    "name": "System Status",
+    "name": "System_Status",
     "data_type": "uint16",
     "address": 0,
     "units": "",
@@ -14,7 +14,7 @@
     }
   },
   "DC_Voltage": {
-    "name": "DC Voltage",
+    "name": "DC_Voltage",
     "data_type": "uint16",
     "address": 1131,
     "units": "V",
@@ -22,7 +22,7 @@
     "description": "DC Voltage"
   },
   "DC_Current": {
-    "name": "DC Current",
+    "name": "DC_Current",
     "data_type": "int16",
     "address": 1132,
     "units": "A",
@@ -30,7 +30,7 @@
     "description": "DC Current"
   },
   "DC_Power": {
-    "name": "DC Power",
+    "name": "DC_Power",
     "data_type": "int16",
     "address": 1133,
     "units": "W",
