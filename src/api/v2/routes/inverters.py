@@ -7,7 +7,7 @@ from bms_store import BMSDataStore
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from utils import LogManager
 
-logger = LogManager().get_logger(__name__)
+logger = LogManager().get_logger("InverterRoute")
 router = APIRouter(prefix="/inverters", tags=["inverters"])
 
 # Load register map
@@ -78,6 +78,7 @@ async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depen
 async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
+        logger.info(f"Loading inverter historical data: {unit_id}")
         filename = f"inverter2_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
