@@ -28,7 +28,8 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
     try:
         hardware = get_inverter(deployment)
         if not hardware:
-            return templates.TemplateResponse("no_hardware.html", {"system": "Inverters/Converters"})
+            return templates.TemplateResponse("no_hardware.html",
+                                              {"request": request, "system": "Inverters/Converters"})
         data = await bms_store.get_all_data()
         register_map = hardware.get_points("DATA")
 
