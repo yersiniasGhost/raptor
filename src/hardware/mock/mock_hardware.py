@@ -13,8 +13,8 @@ class MockHardware(HardwareBase):
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str]) -> Dict[str, Any]:
         output = {}
         for device in devices:
-            slave_id = device['id']
-            output[slave_id] = {r: random.random() for r in scan_group}
+            slave_id = device['mac']
+            output[slave_id] = {r.replace(' ', '_'): random.random() for r in scan_group}
 
         return output
 
