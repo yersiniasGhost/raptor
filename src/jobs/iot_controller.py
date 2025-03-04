@@ -15,6 +15,7 @@ from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener, up
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
 from utils import get_mac_address
+from utils.system_status import collect_system_stats
 
 
 class IoTController:
@@ -141,8 +142,13 @@ class IoTController:
                 continue
             if system == "BMS":
                 filename = f'battery2_{slave_id}.csv'
-            else:
+            elif system == "Converters":
                 filename = f"inverter2_{slave_id}.csv"
+            elif system == "RAPTOR":
+                filename = f"system_0.csv"
+            else:
+                self.logger.warning(f"No such system for writing local data: {system}")
+                return
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
                 fieldnames = ['Timestamp'] + list(data_list.keys())
@@ -259,6 +265,12 @@ class IoTController:
                         self.logger.error(f"Wasn't able to upload telemetry data.")
                         # Do something we weren't able to upload the data
                         pass
+
+                try:
+                    sbc_state = collect_system_stats()
+                    self._store_local_telemetry_data("RAPTOR", sbc_state)
+                except Exception as e:
+                    self.logger.error("Failed to perform system status acquisition", exc_info=True)
 
                 # Wait for next interval
                 elapsed = time.time() - start
