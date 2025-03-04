@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
+from hardware.mock.mock_hardware import MockHardware
 
 
 @dataclass

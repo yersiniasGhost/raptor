@@ -1,4 +1,5 @@
 # /etc/systemd/system/iot-controller.service
+# sudo systemctl enable iot-controller.service
 [Unit]
 Description=IoT Controller Service
 After=network.target

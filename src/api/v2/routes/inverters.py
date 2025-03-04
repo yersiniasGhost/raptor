@@ -75,7 +75,7 @@ async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depen
 
 
 @router.get("/historical/{unit_id}")
-async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
+async def get_historical_data(unit_id: str, num_points: int = Query(default=800, ge=10, le=20000)):
     try:
         # battery = batteries.get_definition(unit_id)
         logger.info(f"Loading inverter historical data: {unit_id}")
