@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Iterator, Dict, Any, Union, Optional
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
+from utils import LogManager
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
 from hardware.mock.mock_hardware import MockHardware
@@ -15,6 +16,7 @@ class HardwareDeployment:
     scan_groups: Dict[str, Any]
     hardware_id: str
     _definition: Optional[Union[str, dict]] = None
+    logger = LogManager().get_logger("HardwareDeployment")
 
 
     def iterate_devices(self) -> Iterator[dict]:
@@ -26,6 +28,7 @@ class HardwareDeployment:
         :return: A dictionary of { register_name: value }
         """
         data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
+        self.logger.info(f"Acq Data: {data_type}, {len(data_registers)} registers.")
         values = self.hardware.data_acquisition(self.devices, data_registers)
         return values
 

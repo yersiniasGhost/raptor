@@ -32,6 +32,8 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
                                               {"request": request, "system": "Inverters/Converters"})
         data = await bms_store.get_all_data()
         register_map = hardware.get_points("DATA")
+        logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")
+        logger.info(f"DATA registers: {len(register_map)}")
 
         return templates.TemplateResponse(
             "inverters.html",
@@ -88,7 +90,7 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=800,
             header = file.readline().strip()
             for line in file:
                 last_points.append(line)
-
+        logger.info(f"DEBUG: got {len(last_points)} points.  Header: {header}")
         csv_data = header + '\n' + '\n'.join(last_points)
         return JSONResponse(content={"data": csv_data, "error": None})
 
