@@ -16,7 +16,10 @@ class HardwareDeployment:
     scan_groups: Dict[str, Any]
     hardware_id: str
     _definition: Optional[Union[str, dict]] = None
-    logger = LogManager().get_logger("HardwareDeployment")
+    logger = None
+
+    def __post_init__(self):
+        self.logger = LogManager().get_logger("HardwareDeployment")
 
 
     def iterate_devices(self) -> Iterator[dict]:
