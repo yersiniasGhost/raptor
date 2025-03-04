@@ -267,7 +267,7 @@ class IoTController:
                         pass
 
                 try:
-                    sbc_state = collect_system_stats()
+                    sbc_state = {0: collect_system_stats()}
                     self._store_local_telemetry_data("RAPTOR", sbc_state)
                 except Exception as e:
                     self.logger.error("Failed to perform system status acquisition", exc_info=True)
