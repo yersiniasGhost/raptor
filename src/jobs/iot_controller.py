@@ -63,7 +63,8 @@ class IoTController:
         self.telemetry_data = self._format_telemetry_data(system_measurements)
 
         # Store data locally first, upload to cloud.  If successful, remove row from database
-        if self.telemetry_data:
+        data = self.telemetry_data.get("data", [])
+        if data:
             db = DatabaseManager(EnvVars().db_path)
             db.store_telemetry_data(self.telemetry_data)
             # Upload to cloud if we have any data
