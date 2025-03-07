@@ -4,7 +4,7 @@ from typing import Tuple
 from .base_action import Action
 from .action_status import ActionStatus
 from utils import LogManager, JSON
-
+from .processes import processes
 
 class RestartAction(Action):
 
@@ -17,9 +17,6 @@ class RestartAction(Action):
             restart_mode = self.params.get('restart_mode', 'service')  # 'service' or 'exit'
             target = self.params.get('target', 'all')  # 'all' or specific process name
             exit_status = self.params.get('exit_status', 42)
-
-            # Default list of processes
-            processes = ["vmc-ui", "iot-controller"]
 
             # Determine which processes to restart
             if target == 'all':
