@@ -20,7 +20,7 @@ from utils.system_status import collect_system_stats
 
 class CmdController:
 
-    def __init__(self, store_local: bool):
+    def __init__(self):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("cmd_controller.log").get_logger("CmdController")
         self.running = True
@@ -224,7 +224,7 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    controller = CmdController(store_local=args.local)
+    controller = CmdController()
     asyncio.run(controller.main_loop())
 
 
