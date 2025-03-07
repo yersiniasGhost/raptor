@@ -31,15 +31,12 @@ class IoTController:
         self.raptor_configuration = get_raptor_configuration(self.logger)
         self.store_local = True
         self.mqtt_task = None
-        self.unformatted_data = {}
+        self.system_measurements = {}
 
 
-    def _data_acquisition(self):
+    async def _data_acquisition(self) -> dict:
         """
-        The format of the data after acquisition is this:
-        { "BMS":   --- system
-           { "hardware_id": { "device_id": { READINGS } }
-        :return:
+        Read the data only.   Holds data in a dictionary (internal format)
         """
 
         db = DatabaseManager(EnvVars().db_path)
@@ -59,9 +56,36 @@ class IoTController:
                 hardware_measurements[deployment.hardware_id] = instance_data
                 self.logger.debug(f"DATA acq:  {instance_data}")
             system_measurements[system] = hardware_measurements
-        self.telemetry_data = self._format_telemetry_data(system_measurements)
-        self.unformatted_data = system_measurements
+        self.system_measurements = system_measurements
         self.logger.info(f"Data acq: collected from {sz} devices.")
+        return system_measurements
+
+
+    async def _data_acquisition_telemetry(self):
+        """ Read the data and format for telemetry (as opposed to averaging) """
+        system_measurements = await self._data_acquisition()
+        self.telemetry_data = self._format_telemetry_data(system_measurements)
+
+        # Store data locally first, upload to cloud.  If successful, remove row from database
+        if self.telemetry_data:
+            db = DatabaseManager(EnvVars().db_path)
+            db.store_telemetry_data(self.telemetry_data)
+            # Upload to cloud if we have any data
+            upload_success = await self._upload_telemetry_data()
+
+            if upload_success:
+                db.clear_telemetry_data()
+            else:
+                self.logger.error(f"Wasn't able to upload telemetry data.")
+                # Do something we weren't able to upload the data
+                pass
+
+        try:
+            sbc_state = {0: collect_system_stats()}
+            self._store_local_telemetry_data("RAPTOR", sbc_state)
+        except Exception as e:
+            self.logger.error("Failed to perform system status acquisition", exc_info=True)
+
 
 
     def _format_telemetry_data(self, system_measurements: Dict[str, Any]) -> Dict[str, Any]:
@@ -251,26 +275,7 @@ class IoTController:
         while self.running:
             start = time.time()
             try:
-                self._data_acquisition()
-                # Store data locally first, upload to cloud.  If successful, remove row from database
-                if self.telemetry_data:
-                    db = DatabaseManager(EnvVars().db_path)
-                    db.store_telemetry_data(self.telemetry_data)
-                    # Upload to cloud if we have any data
-                    upload_success = await self._upload_telemetry_data()
-
-                    if upload_success:
-                        db.clear_telemetry_data()
-                    else:
-                        self.logger.error(f"Wasn't able to upload telemetry data.")
-                        # Do something we weren't able to upload the data
-                        pass
-
-                try:
-                    sbc_state = {0: collect_system_stats()}
-                    self._store_local_telemetry_data("RAPTOR", sbc_state)
-                except Exception as e:
-                    self.logger.error("Failed to perform system status acquisition", exc_info=True)
+                await self._data_acquisition_telemetry()
 
                 # Wait for next interval
                 elapsed = time.time() - start
@@ -290,92 +295,6 @@ class IoTController:
         if self.mqtt_task:
             self.mqtt_task.cancel()
 
-
-
-    def _start_mqtt_task(self):
-        """Start MQTT handling task with error recovery"""
-        if self.mqtt_task and not self.mqtt_task.done():
-            # Cancel existing task if running
-            self.mqtt_task.cancel()
-
-        self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
-        self.mqtt_task.add_done_callback(self._on_handle_mqtt_messages_exit)
-        self.logger.info("MQTT task started")
-
-    def _on_handle_mqtt_messages_exit(self, task):
-        try:
-            # This will raise the exception if the task failed
-            result = task.result()
-            self.logger.info("MQTT handling task completed normally")
-        except asyncio.CancelledError:
-            self.logger.info("MQTT handling task was cancelled")
-        except Exception as e:
-            self.logger.error(f"MQTT handling task failed with exception: {e}")
-            # Restart the task if needed
-            if self.running:
-                asyncio.create_task(self._delayed_mqtt_restart())
-                # self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
-                self.logger.warning("MQTT tasks restarted.")
-
-
-    async def _delayed_mqtt_restart(self):
-        """Restart MQTT task with a small delay to prevent rapid cycling"""
-        await asyncio.sleep(2)  # 5 second delay
-        if self.running:  # Check again after the delay
-            self.logger.warning("Restarting MQTT task after failure")
-            self._start_mqtt_task()
-
-    async def _monitor_tasks(self):
-        """Monitor critical tasks and restart them if they fail"""
-        while self.running:
-            # Check MQTT task
-            if self.mqtt_task and self.mqtt_task.done():
-                try:
-                    # This will raise any exception that occurred
-                    self.mqtt_task.result()
-                    self.logger.warning("MQTT task completed unexpectedly")
-                except asyncio.CancelledError:
-                    # Task was cancelled intentionally, no need to restart
-                    pass
-                except Exception as e:
-                    self.logger.error(f"MQTT task failed with error: {e}")
-
-                # Restart MQTT task if it's not running and should be
-                if self.running:
-                    self.logger.info("Restarting MQTT task")
-                    self._start_mqtt_task()
-
-            # Sleep before checking again
-            await asyncio.sleep(10)  # Check every 10 seconds
-
-
-    def _setup_error_handlers(self):
-        """Setup global error handlers"""
-
-        def handle_exception(loop, context):
-            exception = context.get('exception')
-            message = context.get('message')
-            task = context.get('task')
-
-            if exception is None:
-                self.logger.critical(f"Unhandled error: {message}")
-            else:
-                self.logger.critical(f"Unhandled exception in {task}: {str(exception)}", exc_info=exception)
-
-            # If this is a critical task, try to restart the application
-            is_critical = False
-            if task and hasattr(task, 'get_name'):
-                task_name = task.get_name()
-                is_critical = any(critical_name in task_name for critical_name in ['main_loop', 'mqtt'])
-
-            if is_critical and self.running:
-                self.logger.warning("Critical task failed, attempting recovery")
-                # Try to restart specific tasks based on context
-                if self.mqtt_task and self.mqtt_task.done():
-                    self._start_mqtt_task()
-
-        loop = asyncio.get_event_loop()
-        loop.set_exception_handler(handle_exception)
 
 
 def parse_args():
