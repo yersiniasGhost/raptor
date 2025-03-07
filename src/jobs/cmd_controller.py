@@ -27,6 +27,7 @@ class CmdController:
         self._setup_error_handlers()
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.raptor_configuration = get_raptor_configuration(self.logger)
+        self.telemetry_config = get_telemetry_config(self.logger)
         self.mqtt_task = None
 
 
