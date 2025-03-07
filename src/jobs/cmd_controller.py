@@ -1,21 +1,14 @@
 import argparse
 import asyncio
-import time
-from datetime import datetime
-import os
-import csv
-from typing import Dict, Union, Optional, Any
+from typing import Optional
 from database.db_utils import get_mqtt_config, get_telemetry_config, get_raptor_configuration
 from database.database_manager import DatabaseManager
-from utils import LogManager, EnvVars
-from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
-from config.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER, FORMAT_LINE_PROTOCOL
-from config.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener, upload_command_response
+from utils import LogManager
+from config.mqtt_config import MQTTConfig
+from cloud.mqtt_comms import setup_mqtt_listener, upload_command_response
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
 from utils import get_mac_address
-from utils.system_status import collect_system_stats
 
 
 class CmdController:

@@ -11,10 +11,7 @@ from utils import LogManager, EnvVars
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from config.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER, FORMAT_LINE_PROTOCOL
 from config.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
-from cloud.mqtt_comms import upload_telemetry_data_mqtt, setup_mqtt_listener, upload_command_response
-from actions.action_factory import ActionFactory
-from actions.action_status import ActionStatus
-from utils import get_mac_address
+from cloud.mqtt_comms import upload_telemetry_data_mqtt
 from utils.system_status import collect_system_stats
 
 
@@ -24,7 +21,6 @@ class IoTController:
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("iot_controller.log").get_logger("IoTController")
         self.running = True
-        self._setup_error_handlers()
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
         self.telemetry_data: Optional[Dict[str, Any]] = None
@@ -187,76 +183,11 @@ class IoTController:
                 row_data.update({name: value for name, value in data_list.items()})
                 writer.writerow(row_data)
 
-    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = {}):
-        payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
-        self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
-
-        await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
-
-
-    async def _handle_mqtt_messages(self):
-        """Task to handle MQTT messages"""
-        self.logger.info("Initiating incoming message handler.")
-        retry_count = 0
-        max_retries = 3
-        retry_delay = 3
-        while self.running:
-            try:
-                async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
-                    retry_count = 0
-                    self.logger.info(f"Received message: {payload}")
-                    action_name = payload.get('action')
-                    params = payload.get('params', {})
-                    action_id = payload.get('action_id', "NA")
-
-                    try:
-                        if action_name:
-                            status, cmd_response = await ActionFactory.execute_action(action_name, params,
-                                                                                      self.telemetry_config,
-                                                                                      self.mqtt_config)
-                            if status == ActionStatus.NOT_IMPLEMENTED:
-                                cmd_response = {"message": f"Action not implemented: {action_name}"}
-                                await self._respond_to_message(status, action_id, cmd_response)
-
-                            else:
-                                await self._respond_to_message(status, action_id, cmd_response)
-
-                        else:
-                            self.logger.error(f"Received message with no action specified")
-                            await self._respond_to_message(ActionStatus.INVALID_PARAMS, action_id,
-                                                           payload={"message": f"Invalid action: {payload}"})
-                    except Exception as e:
-                        self.logger.error(f"Error processing MQTT message: {e}", exc_info=True)
-                        # Try to notify about the error
-                        try:
-                            await self._respond_to_message(ActionStatus.ERROR, action_id,
-                                                           payload={"message": f"Error processing action: {str(e)}"})
-                        except Exception:
-                            pass
-                        # Continue processing next message
-                        continue
-
-            except asyncio.CancelledError:
-                self.logger.info("MQTT handling task was cancelled, exiting")
-                break
-            except Exception as e:
-                self.logger.error(f"MQTT connection failed with error: {e}", exc_info=True)
-
-                # Implement exponential backoff
-                retry_count += 1
-                if retry_count > max_retries:
-                    retry_delay = min(60, retry_delay * 2)  # Max delay of 60 seconds
-
-                self.logger.warning(f"Reconnecting to MQTT in {retry_delay} seconds (attempt {retry_count})")
-                await asyncio.sleep(retry_delay)
-
 
     async def shutdown(self):
         print("SHUTDOWN")
         self.running = False
         DatabaseManager().close()
-        if self.mqtt_task:
-            self.mqtt_task.cancel()
 
 
     async def main_loop(self):
@@ -269,8 +200,6 @@ class IoTController:
         """
         self.logger.info(f"Starting up IoT Controller application.")
         interval_seconds = self.telemetry_config.interval
-        self._start_mqtt_task()
-        monitor_task = asyncio.create_task(self._monitor_tasks())
 
         while self.running:
             start = time.time()
@@ -290,11 +219,6 @@ class IoTController:
                 elapsed = time.time() - start
                 sleep_time = max(min(interval_seconds, 30), interval_seconds - elapsed)  # Cap error retry to 30 seconds
                 await asyncio.sleep(sleep_time)  # Wait before retrying
-
-        monitor_task.cancel()
-        if self.mqtt_task:
-            self.mqtt_task.cancel()
-
 
 
 def parse_args():
