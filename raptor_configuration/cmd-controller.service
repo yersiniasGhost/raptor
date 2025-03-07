@@ -1,0 +1,19 @@
+# /etc/systemd/system/cmd-controller.service
+[Unit]
+Description=Command and Message Controller Service
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/raptor
+ExecStart=/root/devel/raptor/bin/python /root/raptor/src/jobs/cmd_controller.py
+Restart=always
+RestartSec=10
+RestartPreventExitStatus=99
+
+[Install]
+WantedBy=multi-user.target
+
+#sudo systemctl daemon-reload
+#Enable the service to start on boot
+#sudo systemctl enable iot-controller.service
