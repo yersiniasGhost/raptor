@@ -36,7 +36,6 @@ class IoTController:
         """
 
         db = DatabaseManager(EnvVars().db_path)
-        telemetry_data = {}
         sz = 0
         system_measurements = {}
         for system in ["BMS", "Converters"]:
