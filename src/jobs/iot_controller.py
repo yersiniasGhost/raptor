@@ -17,7 +17,7 @@ from utils.system_status import collect_system_stats
 
 class IoTController:
 
-    def __init__(self, store_local: bool):
+    def __init__(self, store_local: bool, sample_count: int = 1, averaging_method: str = "mean"):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("iot_controller.log").get_logger("IoTController")
         self.running = True
@@ -28,6 +28,12 @@ class IoTController:
         self.store_local = True
         self.mqtt_task = None
         self.system_measurements = {}
+
+        # New parameters for multiple measurements
+        self.sample_count = sample_count
+        self.averaging_method = averaging_method
+        self.logger.info(f"Initialized with {sample_count} samples per recording using {averaging_method} averaging")
+
 
 
     async def _data_acquisition(self) -> dict:
