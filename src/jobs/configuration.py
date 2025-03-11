@@ -37,7 +37,7 @@ def main():
         firmware.update()
 
     if args.rebuild:
-        schema = Path('/root/raptor/src/database/schema.sql')
+        schema = Path(envvars.schema_path)
         db = DatabaseManager(envvars.db_path, schema)
         db.rebuild_db(True)
 

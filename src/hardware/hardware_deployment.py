@@ -7,6 +7,7 @@ from utils import LogManager
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
 from hardware.mock.mock_hardware import MockHardware
+from hardware.simulators.pv_panel_sim import PvPanelSimulator
 
 
 @dataclass

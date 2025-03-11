@@ -11,22 +11,22 @@ class LogManager(metaclass=Singleton):
     def __init__(self, log_filename: str = "raptor.log"):
         self._loggers: Dict[str, logging.Logger] = {}
         self._file_handler = None
+        self._log_dir = Path('/var/log/raptor')
         self._setup_base_config(log_filename)
 
 
     def _setup_base_config(self, log_filename: str):
         """Initialize base logging configuration."""
-        log_dir = Path('/var/log/raptor')
         try:
-            log_dir.mkdir(parents=True, exist_ok=True)
+            self._log_dir.mkdir(parents=True, exist_ok=True)
         except PermissionError:
             print("Warning: Cannot create /var/log/raptor. Ensure proper permissions.")
             # Fallback to current directory
-            log_dir = Path('.')
+            self._log_dir = Path('.')
 
         if self._file_handler is None:
             self._file_handler = RotatingFileHandler(
-                log_dir / log_filename,
+                self._log_dir / log_filename,
                 maxBytes=10485760,  # 10MB
                 backupCount=5
             )
