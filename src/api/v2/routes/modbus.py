@@ -1,8 +1,9 @@
 import json
 from typing import Annotated
 from fastapi import APIRouter, Depends
-import logging
-from hardware.modbus.modbus import modbus_data_acquisition_orig, modbus_data_write
+
+from hardware.modbus.modbus import modbus_data_write
+from hardware.modbus.modbus_hardware import modbus_data_acquisition
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from hardware.modbus.modbus_map import ModbusMap
 from utils import LogManager
@@ -19,7 +20,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     parsed_data = json.loads(data)
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
-    m_map = ModbusMap.from_dict({"registers": [
+    m_map = ModbusMap.from_dict({"registers": {"ODW":
         {
             "name": "ODW",
             "data_type": parsed_data['type'],
@@ -29,7 +30,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
             "description": "On demand write",
             "read_write": "RW"
         }
-    ]})
+    }})
     if page == "BMS":
         hardware = hardware_def.batteries.hardware
     elif page == "Inverter":
@@ -46,8 +47,7 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
 
-    m_map = ModbusMap.from_dict({"registers": [
-        {
+    m_map = ModbusMap.from_dict({"ODQ": {
             "name": "ODQ",
             "data_type": parsed_data['type'],
             "address": parsed_data['register'],
@@ -55,11 +55,11 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
             "conversion_factor": 1.0,
             "description": "On demand query"
         }
-    ]})
+    })
     if page == "BMS":
         hardware = hardware_def.batteries.hardware
     elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
-    values = modbus_data_acquisition_orig(hardware, m_map, slave_id=unit_id)
+    values = modbus_data_acquisition(hardware, m_map.get_registers(["ODQ"]), slave_id=unit_id)
     # Handle the modbus read operation here
     return {"success": True, "value": values['ODQ']}

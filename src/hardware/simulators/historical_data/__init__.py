@@ -1,3 +1,2 @@
 from .irradiance_data import IrradianceData
-from .environment_conditions import EnvironmentConditions
 from .location_metadata import LocationMetadata

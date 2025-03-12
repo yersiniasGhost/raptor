@@ -3,7 +3,7 @@ from dataclasses import dataclass, asdict
 import pandas as pd
 import pytz
 from datetime import datetime
-from environment.environment_conditions import EnvironmentConditions
+from hardware.simulators.environment.environment_conditions import EnvironmentConditions
 from . import ADRModel
 from .adr_module_efficiency import get_solar_position, get_location_from_meta_data
 from .adr_module_efficiency import get_total_poa_irradiance, calculate_pvefficiency_adr, get_pv_temperature

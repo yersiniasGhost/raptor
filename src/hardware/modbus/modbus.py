@@ -40,7 +40,7 @@ def modbus_data_acquisition_orig(modbus_hardware: ModbusHardware,
             return {}
 
         output: Dict[str, Union[float, int]] = {}
-        for register in modbus_map.get_registers():
+        for register in modbus_map.register_iterator():
             # Calculate CRC if necessary...
             # message, crc = modbus_hardware.create_read_message(register, slave_id)
 

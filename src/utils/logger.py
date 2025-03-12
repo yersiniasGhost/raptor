@@ -11,7 +11,7 @@ class LogManager(metaclass=Singleton):
     def __init__(self, log_filename: str = "raptor.log"):
         self._loggers: Dict[str, logging.Logger] = {}
         self._file_handler = None
-        self._log_dir = Path('/var/log/raptor')
+        self._log_dir = Path(EnvVars().log_path)
         self._setup_base_config(log_filename)
 
 

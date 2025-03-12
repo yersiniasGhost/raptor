@@ -46,11 +46,11 @@ class ModbusHardware(HardwareBase):
         return self._modbus_map
 
     def get_points(self, names: List[dict]) -> List:
-        return [p for p in self.modbus_map.get_registers(names)]
+        return [p for p in self.modbus_map.register_iterator(names)]
 
 
     def data_acquisition(self, devices: list, scan_group_registers: List[str]):
-        registers = [r for r in self.modbus_map.get_registers(scan_group_registers)]
+        registers = [r for r in self.modbus_map.register_iterator(scan_group_registers)]
         output = {}
         for device in devices:
             slave_id = device['slave_id']

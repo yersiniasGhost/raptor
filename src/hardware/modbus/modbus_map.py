@@ -86,15 +86,28 @@ class ModbusMap:
 
     @classmethod
     def from_dict(cls, register_map: dict) -> 'ModbusMap':
-        registers = {name:ModbusRegister(**reg) for name, reg in register_map.items()}
+        registers = {name: ModbusRegister(**reg) for name, reg in register_map.items()}
         return cls(registers=registers)
 
     # better to use a Dict?
     def get_register_by_name(self, name: str) -> Optional[ModbusRegister]:
         return self.registers.get(name, None)
 
-    def get_registers(self, register_names: Optional[List[str]] = None) -> Iterable[ModbusRegister]:
-        for name in register_names:
+
+    def get_registers(self, names: List[str]) -> List[ModbusRegister]:
+        regs = []
+        for name in names:
             reg = self.registers.get(name, None)
             if reg:
-                yield reg
+                regs.append(reg)
+        return regs
+
+    def register_iterator(self, register_names: Optional[List[str]] = None) -> Iterable[ModbusRegister]:
+        if not register_names:
+            for name, register in self.registers:
+                yield register
+        else:
+            for name in register_names:
+                reg = self.registers.get(name, None)
+                if reg:
+                    yield reg

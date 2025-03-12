@@ -21,6 +21,7 @@ class EnvVars(metaclass=Singleton):
         # Database settings
         self.db_path = self._get_required('DB_PATH')
         self.tsdb_path = self._get_required("TSDB_PATH")
+        self.log_path = self._getenv("LOG_PATH", "/var/log/raptor")
 
         # API settings
         # self.phone_home_url = self._get_required('VMC_HOME_URL')

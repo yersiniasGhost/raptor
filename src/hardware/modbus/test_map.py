@@ -115,7 +115,7 @@ def read_holding_registers(register_map: ModbusMap, port: str='/dev/ttyS11', sla
             return {}
 
         output = {}
-        for register in register_map.get_registers():
+        for register in register_map.register_iterator():
             #print(register)
             address = register.get_addresses()[0]
             # Create the message as per specification

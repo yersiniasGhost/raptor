@@ -1,7 +1,7 @@
 from typing import Tuple, Optional
 import pandas as pd
 from pathlib import Path
-from .environment_conditions import EnvironmentConditions
+from hardware.simulators.environment.environment_conditions import EnvironmentConditions
 
 
 def get_psm3_5min(lat: float,
