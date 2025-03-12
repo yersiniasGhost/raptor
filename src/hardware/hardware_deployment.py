@@ -36,9 +36,6 @@ class HardwareDeployment:
         values = self.hardware.data_acquisition(self.devices, data_registers)
         return values
 
-    def direct_data_acqusition(self, register_map: ModbusMap):
-        values = self.hardware.data_acquisition()
-
     def get_points(self, data_type: str = "DATA") -> List[dict]:
         data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
         points = self.hardware.get_points(data_registers)

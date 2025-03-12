@@ -27,6 +27,7 @@
 {% if register_map %}
 {% for battery in batteries.devices %}
 {% set unit_id = battery["mac"] %}
+{% set slave_id = battery["slave_id"] %}
 <div class="unit-container">
     <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ battery.slave_id }}</h2>
     {% with page = "BMS" %}

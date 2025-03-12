@@ -139,7 +139,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         output['slave_id'] = slave_id
         return output
     except Exception as e:
-        logger.exception(f"Error reading modbus: {e}")
+        logger.exception(f"Error reading modbus: {e}", exc_info=True)
         raise
     finally:
         client.close()
