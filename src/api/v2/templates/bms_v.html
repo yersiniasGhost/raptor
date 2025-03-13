@@ -69,34 +69,10 @@
 <div class="side-by-side-container">
     <!-- Left side: Unit Specification -->
     <div class="side-by-side-item">
-        <div class="unit-container">
-            <div class="unit-specification">
-                <h2>Unit Specification</h2>
-
-                <div class="specification-table">
-                    <div class="specification-row">
-                        <div class="specification-label">CREM3 MAC:</div>
-                        <div class="specification-value {% if battery.mac != battery.identifier %}error-text{% endif %}">
-                            {{battery.mac}}
-                        </div>
-                    </div>
-
-                    <div class="specification-row">
-                        <div class="specification-label">Local ID:</div>
-                        <div class="specification-value">
-                            {{battery.identifier}}
-                        </div>
-                    </div>
-
-                    <div class="specification-row">
-                        <div class="specification-label">Slave ID:</div>
-                        <div class="specification-value">
-                            {{battery.slave_id}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% with hardware = battery %}
+           {% include "_unit_specifications.html' %}
+        {% endwith %}
+    </div>
     <div class="side-by-side-item">
         {% with page = "BMS" %}
             {% include '_on_demand_modbus_form.html'%}
