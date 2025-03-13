@@ -90,9 +90,10 @@ class ModbusHardware(HardwareBase):
         pass
 
 
-def convert_register_value(raw_value: int, register: ModbusRegister) -> Union[float, str]:
+def convert_register_value(raw_values: List[int], register: ModbusRegister) -> Union[float, str]:
     """Convert raw register value based on data type and apply conversion factor"""
     data_type = register.data_type
+    raw_value = raw_values[0]
     if data_type == ModbusDatatype.UINT16:
         # UINT16: 0 to 65535, no conversion needed
         value = raw_value & 0xFFFF  # Ensure 16-bit unsigned
@@ -107,15 +108,17 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> Union[fl
         # Assuming it's in the low byte
         value = raw_value & 0xFF  # Mask to get only lower 8 bits
     elif data_type == ModbusDatatype.FLAG16:
-        value = 0
+        value = raw_value
     elif data_type == ModbusDatatype.ASCII16:
         # ASCII16: Two ASCII characters from a 16-bit register
         # Extract high byte and low byte as ASCII characters
-        high_byte = (raw_value >> 8) & 0xFF
-        low_byte = raw_value & 0xFF
-        # Convert to characters and return as string
-        value = chr(high_byte) + chr(low_byte)
-        return value  # Return the string directly, no conversion factor
+        output = ""
+        for raw_value in raw_values:
+            high_byte = (raw_value >> 8) & 0xFF
+            low_byte = raw_value & 0xFF
+            # Convert to characters and return as string
+            output += chr(high_byte) + chr(low_byte)
+        return output  # Return the string directly, no conversion factor
     elif data_type == ModbusDatatype.ASCII8:
         # ASCII8: Single ASCII character from the low byte
         # Extract only the low byte as an ASCII character
@@ -143,14 +146,14 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
 
         output: Dict[str, Union[float, int]] = {}
         for register in registers:
-            address = int(register.get_addresses()[0])
-            result = client.read_holding_registers(address=address, count=1, slave=slave_id)
+            address = int(register.address)
+            result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
             if result is None:
                 logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
                 logger.info(f"Error reading register: {result}")
             else:
-                output[register.name] = convert_register_value(result.registers[0], register)
+                output[register.name] = convert_register_value(result.registers, register)
         output['slave_id'] = slave_id
         return output
     except Exception as e:

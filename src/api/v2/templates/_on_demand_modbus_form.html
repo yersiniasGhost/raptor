@@ -14,6 +14,10 @@
         <option value="ascii8">ASCII 8</option>
     </select>
 </div>
+<div class="form-group">
+    <label for="register_range_{{slave_id}}">Register Count:</label>
+    <input type="number" id="register_range_{{slave_id}}" min="1" value="1" required>
+</div>
 
 <button onclick="fetchRegisterData({{slave_id}})">Read Register</button>
 
@@ -33,6 +37,7 @@
     function getRegisterData(unitId) {
         const registerAddress = document.getElementById(`register_address_${unitId}`).value;
         const registerType = document.getElementById(`register_type_${unitId}`).value;
+        const registerRange = document.getElementById(`register_range_${unitId}`).value;
 
         if (!registerAddress) {
             alert('Please enter a register address');
@@ -42,6 +47,7 @@
         return {
             unit_id: unitId,
             register: parseInt(registerAddress),
+            range: parseInt(registerRange),
             type: registerType,
             page: "{{ page }}"
         };
