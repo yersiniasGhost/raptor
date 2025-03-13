@@ -52,7 +52,7 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
             "name": "ODQ",
             "data_type": parsed_data['type'],
             "address": parsed_data['register'],
-            "range": range,
+            "range_size": range,
             "units": "",
             "conversion_factor": 1.0,
             "description": "On demand query"
