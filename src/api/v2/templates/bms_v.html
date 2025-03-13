@@ -2,7 +2,45 @@
 {% extends "base.html" %}
 
 {% block title %} BMS {% endblock %}
+{% block head %}
+<style>
+    .unit-specification {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
 
+    .specification-table {
+        width: 100%;
+    }
+
+    .specification-row {
+        display: flex;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .specification-row:last-child {
+        border-bottom: none;
+    }
+
+    .specification-label {
+        flex: 0 0 120px;
+        font-weight: bold;
+    }
+
+    .specification-value {
+        flex: 1;
+    }
+
+    .error-text {
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <h1>Battery Management System Data</h1>
 
@@ -29,6 +67,32 @@
 {% set unit_id = battery["mac"] %}
 {% set slave_id = battery["slave_id"] %}
 <div class="unit-container">
+    <div class="unit-specification">
+        <h2>Unit Specification</h2>
+
+        <div class="specification-table">
+            <div class="specification-row">
+                <div class="specification-label">CREM3 MAC:</div>
+                <div class="specification-value {% if battery.mac != battery.identifier %}error-text{% endif %}">
+                    {{battery.mac}}
+                </div>
+            </div>
+
+            <div class="specification-row">
+                <div class="specification-label">Local ID:</div>
+                <div class="specification-value">
+                    {{battery.identifier}}
+                </div>
+            </div>
+
+            <div class="specification-row">
+                <div class="specification-label">Slave ID:</div>
+                <div class="specification-value">
+                    {{battery.slave_id}}
+                </div>
+            </div>
+        </div>
+    </div>
     <h2>Unit Crem3 MAC: {{battery.mac}} / {{battery.identifier}}, SlaveID: {{ battery.slave_id }}</h2>
     {% with page = "BMS" %}
         {% include '_on_demand_modbus_form.html'%}
