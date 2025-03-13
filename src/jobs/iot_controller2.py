@@ -56,7 +56,6 @@ class IoTController:
         for system in SUPPORTED_SYSTEMS:
             hardware_measurements = {}
             for hardware in db.get_hardware_systems(system):
-                print(hardware)
                 deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware, self.logger)
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
 
@@ -202,8 +201,7 @@ class IoTController:
 
 
 
-    def _average_measurements(self, samples: List[Dict[int, Dict[str, Union[float, int]]]]) -> Dict[
-        int, Dict[str, Union[float, int]]]:
+    def _average_measurements(self, samples: List[Dict[int, Dict[str, Union[float, int]]]]) -> Dict[int, Dict[str, Union[float, int]]]:
         """
         Average multiple measurements based on the selected method
 
@@ -291,8 +289,7 @@ class IoTController:
                     # Collect all readings for this device across samples
                     device_samples = []
                     for sample in system_samples:
-                        if system in sample and hardware_id in sample[system] and device_id in sample[system][
-                            hardware_id]:
+                        if system in sample and hardware_id in sample[system] and device_id in sample[system][hardware_id]:
                             device_samples.append(sample[system][hardware_id][device_id])
 
                     # Average these device readings
@@ -382,9 +379,9 @@ class IoTController:
                                     f"device_id={device_id}"]
 
                             # Add number of samples as a tag if more than 1
-                            if self.sample_count > 1:
-                                tags.append(f"samples={self.sample_count}")
-                                tags.append(f"method={self.averaging_method}")
+                            # if self.sample_count > 1:
+                            #     tags.append(f"samples={self.sample_count}")
+                            #     tags.append(f"method={self.averaging_method}")
 
                             fields = [f"{point}={value}" for point, value in m_data.items()]
                             tag_str = ','.join(tags)
@@ -392,15 +389,13 @@ class IoTController:
                             line = f"{measurement},{tag_str} {field_str} {timestamp}"
                             lines.append(line)
             self.logger.info(f"Line protocol:  {len(lines)} lines collected.")
-            for l in lines:
-                print(l)
             return {"mode": FORMAT_LINE_PROTOCOL, "data": lines}
         else:
             return {}
 
 
 
-    def _format_telemetry(self, inst_data: Dict[str, Union[float, int]],
+    def _format_telemetry(self, inst_data: Dict[str, Dict[str, Union[float, int]]],
                           deployment: HardwareDeployment, system: str, telemetry: Dict[str, Any]) -> Dict[str, Any]:
         output_telemetry = telemetry
         if self.mqtt_config.format == FORMAT_FLAT:
@@ -414,9 +409,9 @@ class IoTController:
             measurement = f"{system}"
             tags = [f"raptor={self.raptor_configuration.raptor_id}"]
             # Add sampling info if more than 1 sample
-            if self.sample_count > 1:
-                tags.append(f"samples={self.sample_count}")
-                tags.append(f"method={self.averaging_method}")
+            # if self.sample_count > 1:
+            #     tags.append(f"samples={self.sample_count}")
+            #     tags.append(f"method={self.averaging_method}")
 
             fields = []
             for device_id, m_data in inst_data.items():
@@ -432,7 +427,6 @@ class IoTController:
             inst_fmt = {deployment.hardware_id: {"measurements": inst_data}}
             output_telemetry[system] = output_telemetry.get(system, {}) | inst_fmt
         return output_telemetry
-
 
 
     async def _upload_telemetry_data(self):
@@ -456,15 +450,6 @@ class IoTController:
             if not len(data_list):
                 continue
             filename = f"{system}_{slave_id}.csv"
-            # if system == "BMS":
-            #     filename = f'battery3_{slave_id}.csv'
-            # elif system == "Converters":
-            #     filename = f"inverter3_{slave_id}.csv"
-            # elif system == "RAPTOR":
-            #     filename = f"system_3.csv"
-            # else:
-            #     self.logger.warning(f"No such system for writing local data: {system}")
-            #     return
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
                 fieldnames = ['Timestamp'] + list(data_list.keys())
@@ -480,12 +465,10 @@ class IoTController:
                 writer.writerow(row_data)
 
 
-
     async def shutdown(self):
         print("SHUTDOWN")
         self.running = False
         DatabaseManager().close()
-
 
 
     async def main_loop(self):
