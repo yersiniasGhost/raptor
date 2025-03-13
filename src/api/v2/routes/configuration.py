@@ -40,12 +40,12 @@ async def update_firmware(
 ):
     try:
         # Switch to the selected branch
-        ActionFactory.execute_action("FirmwareUpdate", {"tag": branch}, None, None)
+        await ActionFactory.execute_action("FirmwareUpdate", {"tag": branch}, None, None)
 
         # If the action is update_restart, restart the application
         if action == "update_restart":
             # Start application restart (this will depend on your setup)
-            ActionFactory.execute_action("RestartApplication", params={}, None, None)
+            await ActionFactory.execute_action("RestartApplication", {}, None, None)
 
         # Return to the configuration page
         return RedirectResponse(url="/configuration", status_code=303)
