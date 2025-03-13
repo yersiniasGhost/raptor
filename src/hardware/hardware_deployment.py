@@ -1,14 +1,16 @@
+import os
 import json
 from pathlib import Path
 from typing import List, Iterator, Dict, Any, Union, Optional
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
-from utils import LogManager
+from utils import LogManager, EnvVars
 from logging import Logger
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
 from hardware.mock.mock_hardware import MockHardware
-from hardware.simulators.pv_panel_sim import PvPanelSimulator
+if EnvVars().enable_simulators:
+    from hardware.simulators.pv_panel_sim import PvPanelSimulator
 
 
 @dataclass

@@ -34,6 +34,7 @@ class EnvVars(metaclass=Singleton):
         # Application settings
         self.debug = self._get_bool('DEBUG', "False")
         self.log_level = self._getenv('LOG_LEVEL', 'INFO')
+        self.enable_simulators = self._get_bool("RAPTOR_SIMULATOR", "False")
 
 
     def _getenv(self, variable: str, default: Optional[str] = None) -> Optional[str]:
