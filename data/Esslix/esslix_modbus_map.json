@@ -635,10 +635,10 @@
 	"access": "R"
   },
   "Model SN": {
-	"name": "Model Serial Number",
-	"data_type": "uint16",
+	"name": "Model SN",
+	"data_type": "ascii16",
 	"address": 160,
-        "range_size": 9,
+	"range_size": 9,
 	"units": "ASCII",
 	"conversion_factor": 1,
 	"description": "BMS Manufacturer serial number in ASCII format",
@@ -646,7 +646,7 @@
   },
   "Pack SN": {
 	"name": "Pack Serial Number",
-	"data_type": "uint16",
+	"data_type": "ascii16",
 	"address": 170,
 	"range_size": 9,
 	"units": "ASCII",

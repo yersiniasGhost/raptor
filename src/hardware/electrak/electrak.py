@@ -66,6 +66,10 @@ class ElectrakMD(HardwareBase):
         self.is_setup: bool = False
 
 
+    def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
+        return {d['mac']: "Get_Identifier_NA" for d in devices}
+
+
     def setup(self):
         if not self.is_setup:
             """Initialize the actuator with error handling"""
