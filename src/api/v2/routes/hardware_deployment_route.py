@@ -20,10 +20,10 @@ class HardwareDeploymentRoute:
         db = DatabaseManager(EnvVars().db_path)
         for hardware in db.get_hardware_systems("BMS"):
             self.logger.info(f"Adding BMS system")
-            self.batteries = instantiate_hardware_from_dict(hardware)
+            self.batteries = instantiate_hardware_from_dict(hardware, self.logger)
         for hardware in db.get_hardware_systems("Converters"):
             self.logger.info(f"Adding Converter/Inverter system")
-            self.inverter = instantiate_hardware_from_dict(hardware)
+            self.inverter = instantiate_hardware_from_dict(hardware, self.logger)
         self.actuator_manager = ActuatorManager.from_json(f"{DATA_PATH}/ElectrakActuators/electrak_deployment.json")
 
     def get_hardware_definition(self, hardware_type: str) -> Optional[dict]:
