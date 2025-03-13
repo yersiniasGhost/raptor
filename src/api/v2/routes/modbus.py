@@ -44,6 +44,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
 @router.get("/modbus_register/{data}")
 async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
+    logger.info(f"Reading from MODBUS: {parsed_data}")
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
     range = parsed_data['range']

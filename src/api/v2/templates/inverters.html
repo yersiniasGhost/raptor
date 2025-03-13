@@ -29,10 +29,16 @@
 {% set unit_id = modbus_hardware['mac'] %}
 {% set slave_id = modbus_hardware['slave_id'] %}
 <div class="unit-container">
-    <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ modbus_hardware.slave_id }}</h2>
-    {% with page = "Inverter" %}
-        {% include '_on_demand_modbus_form.html'%}
-    {% endwith %}
+    <div class="side-by-side-container">
+    <!-- Left side: Unit Specification -->
+        <div class="side-by-side-item">
+            <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ modbus_hardware.slave_id }}</h2>
+        </div>
+        <div class="side-by-side-item">
+            {% with page = "Inverter" %}
+                {% include '_on_demand_modbus_form.html'%}
+            {% endwith %}
+        </div>
 
     <h3>Status Table</h3>
     <table>
