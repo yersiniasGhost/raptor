@@ -45,7 +45,7 @@ class ModbusHardware(HardwareBase):
             self._modbus_map = ModbusMap.from_json(self.modbus_map_path)
         return self._modbus_map
 
-    def get_points(self, names: List[dict]) -> List:
+    def get_points(self, names: List[str]) -> List:
         return [p for p in self.modbus_map.register_iterator(names)]
 
 
@@ -88,6 +88,9 @@ class ModbusHardware(HardwareBase):
     def create_read_message(self, register, slave_id) -> Tuple[bytes, int]:
         """ creates the message that the hardware is expecting """
         pass
+
+    def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
+        raise ValueError("Get identifier must be implemented by sub-class of ModbusHardware")
 
 
 def convert_register_value(raw_values: List[int], register: ModbusRegister) -> Union[float, str]:

@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Dict
+from typing import List, Dict
 from .modbus_hardware import ModbusHardware, ModbusClientType
 from .modbus_map import ModbusRegister, ModbusDatatype
 
@@ -8,17 +8,22 @@ class EveBattery(ModbusHardware):
         self.client_type = ModbusClientType.RTU
 
     # Return the message and the CRC value if required.
-    def create_read_message(self, register: ModbusRegister, slave_id: int) -> Tuple[bytes, Optional[int]]:
-        address = register.get_addresses()[0]
-        message = bytes([
-            slave_id,  # Slave Address (0x01-0x10)
-            0x03,  # Function Code (Read Registers)
-            address >> 8,  # Starting Address (Hi)
-            address & 0xFF,  # Starting Address (Lo)
-            0x00,  # Number of Registers (Hi)
-            0x01  # Number of Registers (Lo)
-        ])
-        return message, None
+    # def create_read_message(self, register: ModbusRegister, slave_id: int) -> Tuple[bytes, Optional[int]]:
+    #     address = register.get_addresses()[0]
+    #     message = bytes([
+    #         slave_id,  # Slave Address (0x01-0x10)
+    #         0x03,  # Function Code (Read Registers)
+    #         address >> 8,  # Starting Address (Hi)
+    #         address & 0xFF,  # Starting Address (Lo)
+    #         0x00,  # Number of Registers (Hi)
+    #         0x01  # Number of Registers (Lo)
+    #     ])
+    #     return message, None
+
+    def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
+        identifiers = self.data_acquisition(devices, ["Model SN"])
+        return identifiers
+
 
     @staticmethod
     def decode_flag_status(register: ModbusRegister, register_value: int) -> Dict[str, bool]:

@@ -29,7 +29,7 @@
 {% set unit_id = battery["mac"] %}
 {% set slave_id = battery["slave_id"] %}
 <div class="unit-container">
-    <h2>Unit MAC: {{battery.mac}}, SlaveID: {{ battery.slave_id }}</h2>
+    <h2>Unit Crem3 MAC: {{battery.mac}} / {{batter.identifier}}, SlaveID: {{ battery.slave_id }}</h2>
     {% with page = "BMS" %}
         {% include '_on_demand_modbus_form.html'%}
     {% endwith %}

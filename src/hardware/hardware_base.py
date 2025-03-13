@@ -21,3 +21,7 @@ class HardwareBase(ABC):
     @abstractmethod
     def get_points(self, names: List[str]) -> List:
         pass
+
+    @abstractmethod
+    def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
+        pass

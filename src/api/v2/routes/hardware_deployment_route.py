@@ -21,6 +21,7 @@ class HardwareDeploymentRoute:
         for hardware in db.get_hardware_systems("BMS"):
             self.logger.info(f"Adding BMS system")
             self.batteries = instantiate_hardware_from_dict(hardware, self.logger)
+            self.batteries.get_identifiers()
         for hardware in db.get_hardware_systems("Converters"):
             self.logger.info(f"Adding Converter/Inverter system")
             self.inverter = instantiate_hardware_from_dict(hardware, self.logger)
