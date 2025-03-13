@@ -104,7 +104,7 @@ class IoTController:
         for system in SUPPORTED_SYSTEMS:
             hardware_deployments = {}
             for hardware in db.get_hardware_systems(system):
-                deployment = instantiate_hardware_from_dict(hardware)
+                deployment = instantiate_hardware_from_dict(hardware, self.logger)
                 hardware_deployments[hardware["external_ref"]] = deployment
             system_deployments[system] = hardware_deployments
 

@@ -2,6 +2,7 @@ from typing import NamedTuple, List, Dict, Any
 import pandas as pd
 from hardware.hardware_base import HardwareBase
 from .historical_data.irradiance_data import IrradianceData
+from .historical_data.irradiance_singleton import IrradianceSingleton
 from .adr_model import PanelConfig, ADRSimulator, ADRModel, InstantData, get_location_from_meta_data
 from utils.logger import LogManager
 
@@ -27,11 +28,10 @@ class PvPanelSimulator(HardwareBase):
     def __init__(self, panel_config: dict):
         self.logger = LogManager().get_logger("PvPanelSimulator")
         self.panel_config: PanelDeployment = PanelDeployment(**panel_config)
-        self.irradiance: IrradianceData = IrradianceData(self.panel_config.latitude,
-                                                         self.panel_config.longitude,
-                                                         2020, 2025)
-        local_path = "/home/frich/devel/valexy/raptor/data/weather"
-        self.irradiance.load_irradiance_data(local_path)
+        irradiance = IrradianceSingleton(self.panel_config.latitude,
+                                         self.panel_config.longitude,
+                                         2020, 2025)
+        self.irradiance: IrradianceData = irradiance.irradiance
 
 
 
