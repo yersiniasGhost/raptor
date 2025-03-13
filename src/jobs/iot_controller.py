@@ -47,7 +47,7 @@ class IoTController:
         for system in ["BMS", "Converters"]:
             hardware_measurements = {}
             for hardware in db.get_hardware_systems(system):
-                deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
+                deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware, self.logger)
 
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
                 instance_data = deployment.data_acquisition()
