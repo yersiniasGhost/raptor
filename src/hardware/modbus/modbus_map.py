@@ -30,7 +30,7 @@ class ModbusRegister:
     name: str
     address: int
     data_type: Union[ModbusDatatype, str]
-    range_size: Optional[int] = None  # Number of consecutive registers
+    range_size: int = 1  # Number of consecutive registers
     units: str = ""
     conversion_factor: float = 1.0  # e.g., 1/1000 for mV to V
     description: str = ""
