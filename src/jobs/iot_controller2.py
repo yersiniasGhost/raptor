@@ -15,6 +15,8 @@ from config.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
 from cloud.mqtt_comms import upload_telemetry_data_mqtt
 from utils.system_status import collect_system_stats
 
+SUPPORTED_SYSTEMS = ["BMS", "Converters", "PV"]
+
 
 class IoTController:
 
@@ -51,10 +53,11 @@ class IoTController:
         sz = 0
         system_measurements = {}
 
-        for system in ["BMS", "Converters"]:
+        for system in SUPPORTED_SYSTEMS:
             hardware_measurements = {}
             for hardware in db.get_hardware_systems(system):
-                deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware)
+                print(hardware)
+                deployment: HardwareDeployment = instantiate_hardware_from_dict(hardware, self.logger)
                 self.logger.info(f"ACQ: System: {system} / {hardware['driver_path']} / {hardware['external_ref']}")
 
                 # For non-distributed sampling, take multiple measurements if sample_count > 1
@@ -99,7 +102,7 @@ class IoTController:
 
         # Setup all hardware objects first
         system_deployments = {}
-        for system in ["BMS", "Converters"]:
+        for system in SUPPORTED_SYSTEMS:
             hardware_deployments = {}
             for hardware in db.get_hardware_systems(system):
                 deployment = instantiate_hardware_from_dict(hardware)
@@ -389,6 +392,8 @@ class IoTController:
                             line = f"{measurement},{tag_str} {field_str} {timestamp}"
                             lines.append(line)
             self.logger.info(f"Line protocol:  {len(lines)} lines collected.")
+            for l in lines:
+                print(l)
             return {"mode": FORMAT_LINE_PROTOCOL, "data": lines}
         else:
             return {}
@@ -441,7 +446,6 @@ class IoTController:
         return False
 
 
-
     def _store_local_telemetry_data(self, system: str, data: dict):
         """
         Write Modbus data to CSV with timestamp
@@ -451,15 +455,16 @@ class IoTController:
         for slave_id, data_list in data.items():
             if not len(data_list):
                 continue
-            if system == "BMS":
-                filename = f'battery3_{slave_id}.csv'
-            elif system == "Converters":
-                filename = f"inverter3_{slave_id}.csv"
-            elif system == "RAPTOR":
-                filename = f"system_3.csv"
-            else:
-                self.logger.warning(f"No such system for writing local data: {system}")
-                return
+            filename = f"{system}_{slave_id}.csv"
+            # if system == "BMS":
+            #     filename = f'battery3_{slave_id}.csv'
+            # elif system == "Converters":
+            #     filename = f"inverter3_{slave_id}.csv"
+            # elif system == "RAPTOR":
+            #     filename = f"system_3.csv"
+            # else:
+            #     self.logger.warning(f"No such system for writing local data: {system}")
+            #     return
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
                 fieldnames = ['Timestamp'] + list(data_list.keys())

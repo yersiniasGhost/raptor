@@ -4,6 +4,7 @@ from typing import List, Iterator, Dict, Any, Union, Optional
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
 from utils import LogManager
+from logging import Logger
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
 from hardware.mock.mock_hardware import MockHardware
@@ -59,7 +60,7 @@ class HardwareDeployment:
         self._definition = value
 
 
-def instantiate_hardware_from_dict(hardware: Dict[str, Any],
+def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
                                    keep_definition: bool = False) -> HardwareDeployment:
     class_path = hardware.get("driver_path")
     if not class_path:
@@ -76,6 +77,7 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any],
         # module = importlib.import_module(module_path)
         # cls = getattr(module, class_name)
         cls = globals()[class_name]
+        logger.info(f"Instantiating {class_name}")
         constructor_config = hardware.get("parameters", {})
         hardware_instance = cls(**constructor_config)
         deployment = HardwareDeployment(hardware=hardware_instance,
@@ -88,8 +90,10 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any],
         return deployment
 
     except ImportError:
+        logger.error(f"Cannot instantiate class: {class_name}", exc_info=True)
         raise ImportError(f"Could not import module: {module_path}")
     except AttributeError:
+        logger.error(f"Cannot instantiate class: {class_name}", exc_info=True)
         raise ImportError(f"Could not find class {class_name} in module {module_path}")
 
 
