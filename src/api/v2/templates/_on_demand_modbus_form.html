@@ -75,6 +75,7 @@
     async function fetchRegisterData(unitId) {
             const registerAddress = document.getElementById(`register_address_${unitId}`).value;
             const registerType = document.getElementById(`register_type_${unitId}`).value;
+            const registerRange = document.getElementById(`register_range_${unitId}`).value;
 
             if (!registerAddress) {
                 alert('Please enter a register address');
