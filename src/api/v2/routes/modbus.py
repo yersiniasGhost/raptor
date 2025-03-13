@@ -38,7 +38,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     values = modbus_data_write(hardware, m_map, slave_id=unit_id,
                                register_name="ODW", value=parsed_data['value'])
     # Handle the modbus read operation here
-    return {"success": True, "value":values }
+    return {"success": True, "value": values}
 
 
 @router.get("/modbus_register/{data}")

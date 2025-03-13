@@ -12,6 +12,8 @@ class ModbusDatatype(Enum):
     BOOL = "bool"
     ENUM = "enum"
     FLAG16 = "flag16"   # 16 bit binary flags
+    ASCII16 = "ascii16"  # two byes of ASCII characters
+    ASCII8 = "ascii8"
 
 
 class ModbusAcquisitionType(Enum):

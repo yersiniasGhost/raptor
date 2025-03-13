@@ -90,7 +90,7 @@ class ModbusHardware(HardwareBase):
         pass
 
 
-def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
+def convert_register_value(raw_value: int, register: ModbusRegister) -> Union[float, str]:
     """Convert raw register value based on data type and apply conversion factor"""
     data_type = register.data_type
     if data_type == ModbusDatatype.UINT16:
@@ -108,6 +108,21 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
         value = raw_value & 0xFF  # Mask to get only lower 8 bits
     elif data_type == ModbusDatatype.FLAG16:
         value = 0
+    elif data_type == ModbusDatatype.ASCII16:
+        # ASCII16: Two ASCII characters from a 16-bit register
+        # Extract high byte and low byte as ASCII characters
+        high_byte = (raw_value >> 8) & 0xFF
+        low_byte = raw_value & 0xFF
+        # Convert to characters and return as string
+        value = chr(high_byte) + chr(low_byte)
+        return value  # Return the string directly, no conversion factor
+    elif data_type == ModbusDatatype.ASCII8:
+        # ASCII8: Single ASCII character from the low byte
+        # Extract only the low byte as an ASCII character
+        low_byte = raw_value & 0xFF
+        # Convert to character and return as string
+        value = chr(low_byte)
+        return value
     else:
         raise ValueError(f"Unsupported data type: {data_type}")
 
