@@ -193,10 +193,10 @@ class IoTController:
         data_list: List of tuples [(name, value)]
         """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        for slave_id, data_list in data.items():
+        for unit_id, data_list in data.items():
             if not len(data_list):
                 continue
-            filename = f"{system}_{slave_id}.csv"
+            filename = f"{system}_{unit_id}.csv"
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
                 fieldnames = ['Timestamp'] + list(data_list.keys())

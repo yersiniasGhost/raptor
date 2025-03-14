@@ -157,7 +157,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                 logger.info(f"Error reading register: {result}")
             else:
                 output[register.name] = convert_register_value(result.registers, register)
-        output['slave_id'] = slave_id
+        # output['slave_id'] = slave_id
         return output
     except Exception as e:
         logger.exception(f"Error reading modbus: {e}", exc_info=True)
