@@ -19,7 +19,7 @@
 </div>
 <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
     <div>
-        <label for="my_integer">Number of chart data points:</label>
+        <label for="lookback">Number of chart data points:</label>
         <input type="number" id="lookback" min="10" value="800" step="100">
     </div>
     <button onclick="updateData()">Refresh</button>
@@ -32,7 +32,7 @@
     <div class="side-by-side-container">
     <!-- Left side: Unit Specification -->
         <div class="side-by-side-item">
-            <h2>Unit MAC: {{modbus_hardware.mac}}, SlaveID: {{ modbus_hardware.slave_id }}</h2>
+           {% include "_unit_specification.html" %}
         </div>
         <div class="side-by-side-item">
             {% with page = "Inverter" %}
