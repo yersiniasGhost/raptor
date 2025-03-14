@@ -22,7 +22,7 @@ class IoTController:
 
     def __init__(self, store_local: bool):
         # Setup logging with rotation and remote logging if needed
-        self.logger = LogManager("iot_controller.log").get_logger("IoTController")
+        self.logger = LogManager("iot_controller_dist.log").get_logger("IoTController")
         self.running = True
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
