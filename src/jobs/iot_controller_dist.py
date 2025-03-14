@@ -20,7 +20,7 @@ SUPPORTED_SYSTEMS = ["BMS", "Converters", "PV"]
 
 class IoTController:
 
-    def __init__(self, store_local: bool, sample_count: int = 1, averaging_method: str = "mean"):
+    def __init__(self, store_local: bool):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("iot_controller.log").get_logger("IoTController")
         self.running = True
@@ -33,11 +33,11 @@ class IoTController:
         self.system_measurements = {}
 
         # Parameters for distributed sampling
-        self.sample_count = max(1, sample_count)  # Ensure at least 1 sample
-        self.averaging_method = averaging_method
+        self.sample_count = max(1, self.telemetry_config.sampling)  # Ensure at least 1 sample
+        self.averaging_method = self.telemetry_config.averaging_method
 
         self.logger.info(
-            f"Initialized with {sample_count} samples per recording using {averaging_method} averaging (distributed throughout interval)")
+            f"Initialized with {self.sample_count} samples per recording using {self.averaging_method} averaging (distributed throughout interval)")
 
 
 
@@ -186,8 +186,8 @@ class IoTController:
         return False
 
 
-
-    def _store_local_telemetry_data(self, system: str, data: dict):
+    @staticmethod
+    def _store_local_telemetry_data(system: str, data: dict):
         """
         Write data to CSV with timestamp
         data_list: List of tuples [(name, value)]
@@ -212,12 +212,10 @@ class IoTController:
                 writer.writerow(row_data)
 
 
-
     async def shutdown(self):
-        print("SHUTDOWN")
+        self.logger.warning("SHUTDOWN")
         self.running = False
         DatabaseManager().close()
-
 
 
     async def main_loop(self):
@@ -301,21 +299,12 @@ class IoTController:
 
 def parse_args():
     parser = argparse.ArgumentParser(description='IoT controller for data acquisition and upload')
-    parser.add_argument('-l', '--local', action="store_true",
+    parser.add_argument('-l', '--local', action="store_true", default=True,
                         help="Stores the data in local CSV files for debugging")
-    parser.add_argument('-n', '--samples', type=int, default=1,
-                        help="Number of samples to take for each measurement (default: 1)")
-    parser.add_argument('-m', '--method', type=str, default="mean", choices=["mean", "median", "mode"],
-                        help="Method to use for averaging multiple samples (default: mean)")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-
-    controller = IoTController(
-        store_local=args.local,
-        sample_count=args.samples,
-        averaging_method=args.method
-    )
+    controller = IoTController(store_local=args.local)
     asyncio.run(controller.main_loop())

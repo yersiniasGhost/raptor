@@ -14,6 +14,8 @@ class TelemetryConfig:
     alarms_path: str
     messages_path: str
     response_path: str
+    sampling: int
+    averaging_method: str
 
     @classmethod
     def from_dict(cls, data: dict) -> 'TelemetryConfig':
@@ -26,7 +28,9 @@ class TelemetryConfig:
             telemetry_path=data['telemetry_path'],
             alarms_path=data.get("alarms_path", ""),
             messages_path=data['messages_path'],
-            response_path=data.get("response_path", "cmd_response")
+            response_path=data.get("response_path", "cmd_response"),
+            sampling=data.get("sampling", 3),
+            averaging_method=data.get('averaging_method', "mean")
         )
 
     @property
