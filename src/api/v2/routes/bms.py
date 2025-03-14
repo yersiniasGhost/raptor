@@ -17,6 +17,7 @@ logger = LogManager().get_logger(__name__)
 router = APIRouter(prefix="/bms", tags=["bms"])
 
 bms_store = BMSDataStore()
+BMS_SYSTEM = "BMS"
 
 
 def parse_timestamp(timestamp_str: str) -> datetime:
@@ -135,7 +136,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
         values = batteries.data_acquisition()
         for device in batteries.devices:
             unit_id = device["mac"]
-            filename = f"battery2_{unit_id}.csv"
+            filename = f"{BMS_SYSTEM}_{unit_id}.csv"
             trending_data = read_last_n_tail(filename, 5)
             trend = calculate_soc_trend(trending_data)
             current_soc = float(trending_data[-1]["Remaining_Capacity"])
@@ -164,7 +165,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
 async def get_historical_data(unit_id: str, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
-        filename = f"battery2_{unit_id}.csv"
+        filename = f"{BMS_SYSTEM}_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()

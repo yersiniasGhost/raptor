@@ -9,6 +9,7 @@ from utils import LogManager
 
 logger = LogManager().get_logger("InverterRoute")
 router = APIRouter(prefix="/inverters", tags=["inverters"])
+INVERTER_SYSTEM = "Converters"
 
 # Load register map
 try:
@@ -87,7 +88,7 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=800,
     try:
         # battery = batteries.get_definition(unit_id)
         logger.info(f"Loading inverter historical data: {unit_id}")
-        filename = f"inverter2_{unit_id}.csv"
+        filename = f"{INVERTER_SYSTEM}_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()

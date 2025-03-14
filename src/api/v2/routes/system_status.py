@@ -7,13 +7,13 @@ from utils import LogManager
 logger = LogManager().get_logger(__name__)
 
 router = APIRouter(prefix="/system-status", tags=["system-status"])
+RAPTOR_SYSTEM = "RAPTOR"
 
 
 @router.get("/")
 async def system_status(request: Request):
-    # Read the last 60 minutes of data
-    data = []
-    with open('system_0.csv', 'r') as f:
+    # Read the last N minutes of data
+    with open(f'{RAPTOR_SYSTEM}.csv', 'r') as f:
         reader = csv.DictReader(f)
         data = list(reader)[-1500:]  # Last N entries
 
