@@ -185,6 +185,7 @@ async def get_historical_data(unit_id: int, num_points: int = Query(default=4000
 async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     batteries = get_batteries(hardware)
     batteries.get_identifiers()
+    logger.info("Got BMS identifiers")
     register_map = batteries.get_points("DATA")
     try:
         bms_data = await bms_store.get_all_data()

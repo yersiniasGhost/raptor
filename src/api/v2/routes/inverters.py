@@ -32,6 +32,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
             return templates.TemplateResponse("no_hardware.html",
                                               {"request": request, "system": "Inverters/Converters"})
         hardware.get_identifiers()
+        logger.info(f"Got Inverter identifiers")
         data = await bms_store.get_all_data()
         register_map = hardware.get_points("DATA")
         logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")

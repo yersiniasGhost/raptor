@@ -28,7 +28,6 @@
 {% for modbus_hardware in hardware.devices %}
 {% set unit_id = modbus_hardware['mac'] %}
 {% set slave_id = modbus_hardware['slave_id'] %}
-<div class="unit-container">
     <div class="side-by-side-container">
     <!-- Left side: Unit Specification -->
         <div class="side-by-side-item">
@@ -39,6 +38,7 @@
                 {% include '_on_demand_modbus_form.html'%}
             {% endwith %}
         </div>
+    </div>
 
     <h3>Status Table</h3>
     <table>
