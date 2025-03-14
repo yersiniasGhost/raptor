@@ -333,7 +333,7 @@ class IoTController:
 
 
 
-    async def _data_acquisition_telemetry(self):
+    async def _data_acquisition_non_distributed(self):
         """ Read the data and format for telemetry (as opposed to averaging) """
         system_measurements = await self._data_acquisition()
         self.telemetry_data = self._format_telemetry_data(system_measurements)
@@ -559,7 +559,7 @@ class IoTController:
             while self.running:
                 start = time.time()
                 try:
-                    await self._data_acquisition_telemetry()
+                    await self._data_acquisition_non_distributed()
 
                     # Wait for next interval
                     elapsed = time.time() - start

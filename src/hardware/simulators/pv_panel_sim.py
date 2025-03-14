@@ -34,6 +34,8 @@ class PvPanelSimulator(HardwareBase):
         self.irradiance: IrradianceData = irradiance.irradiance
 
 
+    def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
+        return {d['mac']: f"NA-{d['mac']}" for d in devices}
 
     def data_acquisition(self, panel_strings: List[Dict[str, Any]], scan_group: List[str]) -> Dict[str, Any]:
         """
