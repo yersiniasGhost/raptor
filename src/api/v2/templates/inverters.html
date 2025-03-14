@@ -31,7 +31,9 @@
     <div class="side-by-side-container">
     <!-- Left side: Unit Specification -->
         <div class="side-by-side-item">
+            {% with hardware = hardware %}
            {% include "_unit_specification.html" %}
+            {% endwith %}
         </div>
         <div class="side-by-side-item">
             {% with page = "Inverter" %}
