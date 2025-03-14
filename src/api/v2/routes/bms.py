@@ -161,7 +161,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
 
 
 @router.get("/historical/{unit_id}")
-async def get_historical_data(unit_id: int, num_points: int = Query(default=4000, ge=100, le=10000)):
+async def get_historical_data(unit_id: str, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
         # battery = batteries.get_definition(unit_id)
         filename = f"battery2_{unit_id}.csv"
