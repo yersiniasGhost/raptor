@@ -47,7 +47,7 @@ def calculate_soc_trend(trend_data: List[Dict]) -> float:
     Returns the slope in capacity units per hour.
     """
     timestamps = [data_dict["Timestamp"] for data_dict in trend_data]
-    capacities = [float(data_dict["Remaining Capacity"]) for data_dict in trend_data]
+    capacities = [float(data_dict["Remaining_Capacity"]) for data_dict in trend_data]
     if len(timestamps) < 2:
         return 0.0
 
