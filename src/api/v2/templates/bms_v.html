@@ -252,6 +252,9 @@
 
 
         async function updateBMSData() {
+            {% if batteries is none %}
+        return; // Exit function early if batteries is None
+    {% endif %}
 	    const units = {{ batteries.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
         units.forEach(unitId => {
             loadHistoricalData(unitId);
