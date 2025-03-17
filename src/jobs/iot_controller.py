@@ -14,7 +14,8 @@ from config.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER, FORMAT_LINE
 from config.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
 from cloud.mqtt_comms import upload_telemetry_data_mqtt
 from utils.system_status import collect_system_stats
-from hardware.simulators.simulation_state import SimulationState
+if EnvVars().enable_simulators:
+    from hardware.simulators.simulation_state import SimulationState
 
 
 SUPPORTED_SYSTEMS = ["PV", "Meter", "BMS", "Converters", "IoT"]
