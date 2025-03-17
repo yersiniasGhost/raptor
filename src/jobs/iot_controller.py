@@ -206,8 +206,9 @@ class IoTController:
                 continue
             filename = f"{system}_{unit_id}.csv"
             file_exists = os.path.exists(filename)
+            data_names = sorted(list(data_list.keys()))
             with open(filename, 'a', newline='') as csvfile:
-                fieldnames = ['Timestamp'] + sorted(list(data_list.keys()))
+                fieldnames = ['Timestamp'] + data_names
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
                 # Write header if file is new
@@ -216,7 +217,8 @@ class IoTController:
 
                 # Create row with timestamp and values
                 row_data = {'Timestamp': timestamp}
-                row_data.update({name: value for name, value in data_list.items()})
+                for name in data_names:
+                    row_data.update({name: data_list[name]})
                 writer.writerow(row_data)
 
 
