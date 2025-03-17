@@ -24,27 +24,23 @@ class CmdController:
         self.mqtt_task = None
 
 
-
     async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = {}):
         payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
 
-        # The new upload_command_response returns a boolean indicating success
-        success = await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
-        if not success:
-            self.logger.warning(f"Failed to send command response for action_id: {action_id}")
-
+        await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
 
 
     async def _handle_mqtt_messages(self):
         """Task to handle MQTT messages"""
         self.logger.info("Initiating incoming message handler.")
-
-        # The new setup_mqtt_listener handles reconnection internally
-        # so we no longer need retry logic here
+        retry_count = 0
+        max_retries = 3
+        retry_delay = 3
         while self.running:
             try:
                 async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
+                    retry_count = 0
                     self.logger.info(f"Received message: {payload}")
                     action_name = payload.get('action')
                     params = payload.get('params', {})
@@ -82,9 +78,14 @@ class CmdController:
                 break
             except Exception as e:
                 self.logger.error(f"MQTT connection failed with error: {e}", exc_info=True)
-                await asyncio.sleep(5)  # Brief pause before the next iteration
-                # The setup_mqtt_listener already implements backoff internally
 
+                # Implement exponential backoff
+                retry_count += 1
+                if retry_count > max_retries:
+                    retry_delay = min(60, retry_delay * 2)  # Max delay of 60 seconds
+
+                self.logger.warning(f"Reconnecting to MQTT in {retry_delay} seconds (attempt {retry_count})")
+                await asyncio.sleep(retry_delay)
 
 
     async def shutdown(self):
@@ -93,7 +94,6 @@ class CmdController:
         DatabaseManager().close()
         if self.mqtt_task:
             self.mqtt_task.cancel()
-
 
 
     async def main_loop(self):
@@ -134,8 +134,6 @@ class CmdController:
         self.mqtt_task.add_done_callback(self._on_handle_mqtt_messages_exit)
         self.logger.info("MQTT task started")
 
-
-
     def _on_handle_mqtt_messages_exit(self, task):
         try:
             # This will raise the exception if the task failed
@@ -148,18 +146,16 @@ class CmdController:
             # Restart the task if needed
             if self.running:
                 asyncio.create_task(self._delayed_mqtt_restart())
+                # self.mqtt_task = asyncio.create_task(self._handle_mqtt_messages())
                 self.logger.warning("MQTT tasks restarted.")
-
 
 
     async def _delayed_mqtt_restart(self):
         """Restart MQTT task with a small delay to prevent rapid cycling"""
-        await asyncio.sleep(2)  # 2 second delay
+        await asyncio.sleep(2)  # 5 second delay
         if self.running:  # Check again after the delay
             self.logger.warning("Restarting MQTT task after failure")
             self._start_mqtt_task()
-
-
 
     async def _monitor_tasks(self):
         """Monitor critical tasks and restart them if they fail"""
@@ -185,11 +181,8 @@ class CmdController:
             await asyncio.sleep(10)  # Check every 10 seconds
 
 
-
     def _setup_error_handlers(self):
         """Setup global error handlers"""
-
-
 
         def handle_exception(loop, context):
             exception = context.get('exception')
@@ -213,14 +206,12 @@ class CmdController:
                 if self.mqtt_task and self.mqtt_task.done():
                     self._start_mqtt_task()
 
-
-
         loop = asyncio.get_event_loop()
         loop.set_exception_handler(handle_exception)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Command controller is the listener to the MQTT messages topic. ' \
+    parser = argparse.ArgumentParser(description='Command controller is the listener to the MQTT messages topic. '\
                                                  'Commands are executed and results sent back to the cloud.')
     return parser.parse_args()
 
