@@ -107,125 +107,86 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
         return False
 
 
-class MQTTListener:
-    """Manages MQTT connection with proper backoff handling"""
-
-
-
-    def __init__(self, mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig, logger: Logger):
-        self.mqtt_config = mqtt_config
-        self.telemetry_config = telemetry_config
-        self.logger = logger
-        self.client: Optional[aiomqtt.Client] = None
-        self.connected = False
-        self.connection_failures = 0
-        self.last_connection_attempt = 0
-        self.max_backoff = 300  # 5 minutes
-
-
-
-    async def _get_backoff_time(self) -> float:
-        """Calculate exponential backoff time"""
-        if self.connection_failures == 0:
-            return 0
-        # Exponential backoff: 2^n seconds, capped at max_backoff
-        return min(2 ** self.connection_failures, self.max_backoff)
-
-
-
-    async def connect(self) -> bool:
-        """Connect to MQTT broker with backoff strategy"""
-        # Check if we should attempt connection based on backoff
-        current_time = time.time()
-        time_since_last_attempt = current_time - self.last_connection_attempt
-        backoff_time = await self._get_backoff_time()
-
-        if self.last_connection_attempt > 0 and time_since_last_attempt < backoff_time:
-            self.logger.debug(f"Skipping MQTT connection attempt due to backoff (waiting for {backoff_time}s)")
-            return False
-
-        # Update last connection attempt time
-        self.last_connection_attempt = current_time
-
-        try:
-            # Create client
-            self.client = aiomqtt.Client(
-                hostname=self.mqtt_config.broker,
-                port=self.mqtt_config.port,
-                username=self.mqtt_config.username,
-                password=self.mqtt_config.password,
-                keepalive=self.mqtt_config.keepalive,
-                identifier=self.mqtt_config.client_id,
-                clean_session=False
-            )
-
-            # Connect and subscribe using context manager
-            async with self.client as client:
-                # Subscribe
-                await client.subscribe(self.telemetry_config.messages_topic)
-
-                # Reset connection failures
-                if self.connection_failures > 0:
-                    self.logger.info(f"MQTT connection restored after {self.connection_failures} failed attempts")
-                    self.connection_failures = 0
-
-                self.connected = True
-                self.logger.info(f"MQTT listener established on topic: {self.telemetry_config.messages_topic}")
-                return True
-
-        except Exception as e:
-            # Increment connection failures
-            self.connection_failures += 1
-            backoff_time = await self._get_backoff_time()
-
-            # Log with different levels based on failure count
-            if self.connection_failures == 1:
-                self.logger.warning(f"Error connecting to MQTT broker: {e}. Will retry in {backoff_time}s")
-            elif self.connection_failures % 10 == 0:  # Log only every 10 failures
-                self.logger.error(
-                    f"Still unable to connect to MQTT broker after {self.connection_failures} attempts: {e}. Next retry in {backoff_time}s")
-
-            self.connected = False
-            return False
-
-
 async def setup_mqtt_listener(mqtt_config: MQTTConfig,
                               telemetry_config: TelemetryConfig,
                               logger: Logger) -> AsyncGenerator:
     """Set up a persistent MQTT connection with proper backoff and yield messages"""
-    listener = MQTTListener(mqtt_config, telemetry_config, logger)
-    connection_attempts = 0
+    # Track connection attempts for backoff
+    connection_failures = 0
+    last_connection_attempt = 0
+    max_backoff = 300  # 5 minutes max backoff
 
     while True:
-        if not listener.connected:
-            success = await listener.connect()
-            if not success:
-                # Wait for backoff period
-                backoff_time = await listener._get_backoff_time()
-                await asyncio.sleep(min(backoff_time, 10))  # Cap sleep at 10s to allow for interruption
-                continue
+        current_time = time.time()
+
+        # Calculate backoff time based on failures
+        backoff_time = 0
+        if connection_failures > 0:
+            backoff_time = min(2 ** connection_failures, max_backoff)
+
+        # Determine if we should attempt connection based on backoff
+        time_since_last_attempt = current_time - last_connection_attempt
+        if last_connection_attempt > 0 and time_since_last_attempt < backoff_time:
+            wait_time = min(backoff_time - time_since_last_attempt, 10)  # Cap at 10s for responsiveness
+            logger.debug(f"Waiting for backoff: {wait_time:.1f}s before next connection attempt")
+            await asyncio.sleep(wait_time)
+            continue
+
+        # Update last attempt time
+        last_connection_attempt = current_time
 
         try:
-            # Now that we're connected, yield messages
-            async for message in listener.client.messages:
-                try:
-                    payload = json.loads(message.payload.decode())
-                    yield payload
-                except json.JSONDecodeError:
-                    logger.error(f"Received invalid JSON payload: {message.payload.decode()}")
-                except Exception as e:
-                    logger.error(f"Error processing message: {e}")
+            # Use context manager for MQTT client connection
+            async with aiomqtt.Client(
+                    hostname=mqtt_config.broker,
+                    port=mqtt_config.port,
+                    username=mqtt_config.username,
+                    password=mqtt_config.password,
+                    keepalive=mqtt_config.keepalive,
+                    identifier=mqtt_config.client_id,
+                    clean_session=False
+            ) as client:
+                # Subscribe to the messages topic
+                await client.subscribe(telemetry_config.messages_topic)
+
+                # Log successful connection (with reconnection info if applicable)
+                if connection_failures > 0:
+                    logger.info(f"MQTT connection restored after {connection_failures} failed attempts")
+                    connection_failures = 0
+                else:
+                    logger.info(f"MQTT listener established on topic: {telemetry_config.messages_topic}")
+
+                # Process messages as they arrive
+                async for message in client.messages:
+                    try:
+                        payload = json.loads(message.payload.decode())
+                        yield payload
+                    except json.JSONDecodeError:
+                        logger.error(f"Received invalid JSON payload: {message.payload.decode()}")
+                    except Exception as e:
+                        logger.error(f"Error processing message: {e}")
 
         except aiomqtt.MqttError as e:
-            logger.warning(f"MQTT connection lost: {e}")
-            listener.connected = False
-            listener.connection_failures += 1
-            await asyncio.sleep(1)  # Brief pause before reconnection attempt
+            # Increment connection failures for backoff calculation
+            connection_failures += 1
+            backoff_time = min(2 ** connection_failures, max_backoff)
+
+            # Log with different verbosity levels based on failure count
+            if connection_failures == 1:
+                logger.warning(f"MQTT connection error: {e}. Will retry in {backoff_time}s")
+            elif connection_failures % 10 == 0:  # Log less frequently after multiple failures
+                logger.error(
+                    f"Still unable to connect to MQTT broker after {connection_failures} attempts: {e}. Next retry in {backoff_time}s")
+
+            # Brief pause before next iteration
+            await asyncio.sleep(1)
 
         except Exception as e:
+            # Handle any other exceptions with backoff
+            connection_failures += 1
+            backoff_time = min(2 ** connection_failures, max_backoff)
+
             logger.error(f"Unexpected error in MQTT listener: {e}")
-            listener.connected = False
-            listener.connection_failures += 1
             await asyncio.sleep(5)  # Longer pause for unexpected errors
 
 
