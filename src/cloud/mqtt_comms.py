@@ -159,20 +159,19 @@ class MQTTListener:
                 clean_session=False
             )
 
-            # Connect
-            await self.client.connect()
+            # Connect and subscribe using context manager
+            async with self.client as client:
+                # Subscribe
+                await client.subscribe(self.telemetry_config.messages_topic)
 
-            # Subscribe
-            await self.client.subscribe(self.telemetry_config.messages_topic)
+                # Reset connection failures
+                if self.connection_failures > 0:
+                    self.logger.info(f"MQTT connection restored after {self.connection_failures} failed attempts")
+                    self.connection_failures = 0
 
-            # Reset connection failures
-            if self.connection_failures > 0:
-                self.logger.info(f"MQTT connection restored after {self.connection_failures} failed attempts")
-                self.connection_failures = 0
-
-            self.connected = True
-            self.logger.info(f"MQTT listener established on topic: {self.telemetry_config.messages_topic}")
-            return True
+                self.connected = True
+                self.logger.info(f"MQTT listener established on topic: {self.telemetry_config.messages_topic}")
+                return True
 
         except Exception as e:
             # Increment connection failures
