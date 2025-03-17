@@ -14,13 +14,15 @@ from config.mqtt_config import MQTTConfig, FORMAT_FLAT, FORMAT_HIER, FORMAT_LINE
 from config.telemetry_config import TelemetryConfig, MQTT_MODE, REST_MODE
 from cloud.mqtt_comms import upload_telemetry_data_mqtt
 from utils.system_status import collect_system_stats
+from hardware.simulators.simulation_state import SimulationState
 
-SUPPORTED_SYSTEMS = ["BMS", "Converters", "PV"]
+
+SUPPORTED_SYSTEMS = ["PV", "Meter", "BMS", "Converters", "IoT"]
 
 
 class IoTController:
 
-    def __init__(self, store_local: bool):
+    def __init__(self, store_local: bool, simulator_mode: bool):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("iot_controller.log").get_logger("IoTController")
         self.running = True
@@ -31,6 +33,7 @@ class IoTController:
         self.store_local = store_local
         self.mqtt_task = None
         self.system_measurements = {}
+        self.simulator = simulator_mode
 
         # Parameters for distributed sampling
         self.sample_count = max(1, self.telemetry_config.sampling)  # Ensure at least 1 sample
@@ -60,11 +63,15 @@ class IoTController:
 
         # Now take measurements from all systems at once
         self.logger.info("Taking synchronized sample across all systems")
+        if self.simulator:
+            SimulationState().reset()
         for system, hardware_deployments in system_deployments.items():
             system_measurements[system] = {}
             for hardware_id, deployment in hardware_deployments.items():
                 instance_data = deployment.data_acquisition()
                 system_measurements[system][deployment.hardware_id] = instance_data
+                if self.simulator:
+                    SimulationState().add_state(system, deployment.hardware_id, instance_data)
 
         return system_measurements
 
@@ -218,7 +225,115 @@ class IoTController:
         DatabaseManager().close()
 
 
+
     async def main_loop(self):
+        """
+        Main execution loop with distributed sampling approach
+        """
+        self.logger.info(f"Starting up IoT Controller with distributed sampling.")
+        interval_seconds = self.telemetry_config.interval
+
+        self.logger.info(
+            f"Using distributed sampling with {self.sample_count} samples over {interval_seconds}s intervals")
+        sample_interval = interval_seconds / self.sample_count
+        samples_collected = []
+        next_sample_time = time.time()
+        last_upload_attempt = 0
+        upload_failure_count = 0
+        max_upload_backoff = 300  # 5 minutes max between upload attempts
+
+        while self.running:
+            current_time = time.time()
+
+            if current_time >= next_sample_time:
+                try:
+                    # Take a single synchronized sample of all systems
+                    sample_data = await self._take_synchronized_sample()
+                    samples_collected.append(sample_data)
+                    self.logger.info(f"Collected synchronized sample {len(samples_collected)}/{self.sample_count}")
+
+                    # Calculate next sample time
+                    next_sample_time = next_sample_time + sample_interval
+
+                    # If we've collected all samples, process them and reset
+                    if len(samples_collected) >= self.sample_count:
+                        # Average the samples
+                        averaged_data = self._average_synchronized_samples(samples_collected)
+
+                        # Store and upload the averaged data
+                        self.system_measurements = averaged_data
+                        self.telemetry_data = self._format_telemetry_data(averaged_data)
+
+                        data = self.telemetry_data.get("data", [])
+                        if data:
+                            db = DatabaseManager(EnvVars().db_path)
+                            db.store_telemetry_data(self.telemetry_data)
+
+                            # Store locally if needed
+                            if self.store_local:
+                                for system, system_data in averaged_data.items():
+                                    for hardware_id, hardware_data in system_data.items():
+                                        self._store_local_telemetry_data(system, hardware_data)
+
+                            # Determine if we should attempt an upload based on backoff strategy
+                            should_attempt_upload = True
+                            if upload_failure_count > 0:
+                                time_since_last_upload = current_time - last_upload_attempt
+                                backoff_time = min(2 ** upload_failure_count, max_upload_backoff)
+                                should_attempt_upload = time_since_last_upload >= backoff_time
+
+                                if not should_attempt_upload:
+                                    self.logger.info(
+                                        f"Skipping upload attempt due to previous failures. Next attempt in {backoff_time - time_since_last_upload:.1f}s")
+
+                            # Upload to cloud if appropriate
+                            if should_attempt_upload:
+                                last_upload_attempt = current_time
+                                upload_success = await self._upload_telemetry_data()
+
+                                if upload_success:
+                                    if upload_failure_count > 0:
+                                        self.logger.info(
+                                            f"Upload succeeded after {upload_failure_count} failed attempts")
+                                        upload_failure_count = 0
+                                    db.clear_telemetry_data()
+                                else:
+                                    upload_failure_count += 1
+                                    backoff_time = min(2 ** upload_failure_count, max_upload_backoff)
+                                    if upload_failure_count == 1:
+                                        self.logger.warning(
+                                            f"Failed to upload telemetry data. Will retry in {backoff_time}s")
+                                    elif upload_failure_count % 10 == 0:  # Log only periodically to reduce spam
+                                        self.logger.error(
+                                            f"Still unable to upload telemetry data after {upload_failure_count} attempts. Next retry in {backoff_time}s")
+
+                        # Try to collect system stats
+                        try:
+                            sbc_state = {0: collect_system_stats()}
+                            self._store_local_telemetry_data("RAPTOR", sbc_state)
+                        except Exception as e:
+                            self.logger.error("Failed to perform system status acquisition", exc_info=True)
+
+                        # Reset for next cycle
+                        samples_collected = []
+                        self.logger.info(
+                            f"Completed full sampling cycle, next cycle starts at {datetime.fromtimestamp(next_sample_time)}")
+
+                    # Small sleep to avoid tight loop
+                    await asyncio.sleep(0.1)
+
+                except Exception as e:
+                    self.logger.critical(f"Critical error in distributed sampling: {str(e)}", exc_info=True)
+                    # Skip this sample but continue with the next one
+                    next_sample_time = current_time + sample_interval
+                    await asyncio.sleep(1)  # Brief pause before continuing
+            else:
+                # Sleep until close to the next sample time
+                sleep_time = min(next_sample_time - current_time, 1.0)  # Check at least every second
+                await asyncio.sleep(sleep_time)
+
+
+    async def main_loop_orig(self):
         """
         Main execution loop with distributed sampling approach
         """
@@ -301,10 +416,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description='IoT controller for data acquisition and upload')
     parser.add_argument('-l', '--local', action="store_true", default=True,
                         help="Stores the data in local CSV files for debugging")
+    parser.add_argument('-s', '--simulator', action="store_true", default=False,
+                        help="Sets the simulator mode so that intermediate measurements form systems are accessible")
+
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    controller = IoTController(store_local=args.local)
+    controller = IoTController(store_local=args.local, simulator_mode=args.simulator)
     asyncio.run(controller.main_loop())
