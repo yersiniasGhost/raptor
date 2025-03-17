@@ -172,7 +172,7 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
             backoff_time = min(2 ** connection_failures, max_backoff)
 
             # Log with different verbosity levels based on failure count
-            if connection_failures == 1:
+            if connection_failures < 10:
                 logger.warning(f"MQTT connection error: {e}. Will retry in {backoff_time}s")
             elif connection_failures % 10 == 0:  # Log less frequently after multiple failures
                 logger.error(

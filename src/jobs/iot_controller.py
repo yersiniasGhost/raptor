@@ -207,7 +207,7 @@ class IoTController:
             filename = f"{system}_{unit_id}.csv"
             file_exists = os.path.exists(filename)
             with open(filename, 'a', newline='') as csvfile:
-                fieldnames = ['Timestamp'] + list(data_list.keys())
+                fieldnames = ['Timestamp'] + sorted(list(data_list.keys()))
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
                 # Write header if file is new
