@@ -10,10 +10,11 @@ class HardwareBase(ABC):
         pass
 
     @abstractmethod
-    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str]) -> Dict[str, Any]:
+    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[str, Any]:
         """
         :param devices: A list of devices which is defined by a Dict of ID to device parameters
         :param scan_group: A list of named points or registers to be read and recorded
+        :param hardware_id
         :return: Dict of device ID to dict of { point: value }
         """
         raise ValueError("Must be implemented in sub-class")

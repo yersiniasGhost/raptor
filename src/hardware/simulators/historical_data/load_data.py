@@ -7,6 +7,7 @@ from utils import LogManager
 class LoadData:
     def __init__(self, load_file: str, data_path: str, map_to_year: int = 2024):
         self.logger = LogManager().get_logger("LoadData")
+        self.conversion = 1000.0
         file_path = Path(f'{data_path}/{load_file}')
         if file_path.exists():
             self.df = pd.read_csv(file_path)
@@ -29,7 +30,8 @@ class LoadData:
 
     def get_latest_load_from_iloc(self, iloc_index: int) -> Tuple[pd.Timestamp, float]:
         data_row = self.df.iloc[iloc_index]
-        return data_row['datetime'], data_row['Consumption']
+        consumption = data_row['Consumption'] * self.conversion
+        return data_row['datetime'], consumption
 
     def get_latest_date(self, now: pd.Timestamp) -> pd.Series:
         return self.df.asof(now)

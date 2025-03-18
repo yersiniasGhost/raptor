@@ -19,7 +19,7 @@ class LoadSim(HardwareBase):
         return {d['mac']: f"NA-{d['mac']}" for d in devices}
 
 
-    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str]) -> Dict[str, Any]:
+    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], _) -> Dict[str, Any]:
         now = pd.Timestamp.now()
         data = self.load_data.get_latest_date(now)
         output = {}

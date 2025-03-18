@@ -49,7 +49,7 @@ class ModbusHardware(HardwareBase):
         return [p for p in self.modbus_map.register_iterator(names)]
 
 
-    def data_acquisition(self, devices: list, scan_group_registers: List[str]):
+    def data_acquisition(self, devices: list, scan_group_registers: List[str], _):
         registers = [r for r in self.modbus_map.register_iterator(scan_group_registers)]
         output = {}
         for device in devices:

@@ -37,7 +37,7 @@ class PvPanelSimulator(HardwareBase):
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         return {d['mac']: f"NA-{d['mac']}" for d in devices}
 
-    def data_acquisition(self, panel_strings: List[Dict[str, Any]], scan_group: List[str]) -> Dict[str, Any]:
+    def data_acquisition(self, panel_strings: List[Dict[str, Any]], scan_group: List[str], _) -> Dict[str, Any]:
         """
         The panels is a list of dicts:  ID to PanelModel data.
         """

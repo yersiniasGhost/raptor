@@ -36,7 +36,7 @@ class HardwareDeployment:
         """
         data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
         self.logger.info(f"Acq Data: {data_type}, {len(data_registers)} registers.")
-        values = self.hardware.data_acquisition(self.devices, data_registers)
+        values = self.hardware.data_acquisition(self.devices, data_registers, self.hardware_id)
         return values
 
     def get_points(self, data_type: str = "DATA") -> List[dict]:
