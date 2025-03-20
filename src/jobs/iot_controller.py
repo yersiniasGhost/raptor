@@ -114,7 +114,6 @@ class IoTController:
                     device_data_across_samples = []
 
                     for sample in samples:
-                        print(system, sample)
                         if (system in sample and
                                 hardware_id in sample[system] and
                                 device_id in sample[system][hardware_id]):
@@ -125,7 +124,6 @@ class IoTController:
                         # Get all measurement keys
                         all_keys = set()
                         for device_data in device_data_across_samples:
-                            print(device_data)
                             all_keys.update(device_data.keys())
 
                         # Initialize device result

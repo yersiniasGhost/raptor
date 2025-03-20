@@ -52,12 +52,16 @@ class HardwareDeployment:
     def get_slave_ids(self) -> list:
         return [d['mac'] for d in self.devices]
 
-    def get_identifiers(self) -> Dict[str, str]:
-        ids = self.hardware.get_identifier(self.devices)
-        for mac, local_id in ids.items():
-            for d in self.devices:
-                if d['mac'] == mac:
-                    d['identifier'] = local_id
+    def get_identifiers(self):
+        try:
+            ids = self.hardware.get_identifier(self.devices)
+            for mac, local_id in ids.items():
+                for d in self.devices:
+                    if d['mac'] == mac:
+                        d['identifier'] = local_id
+        except Exception as e:
+            self.logger.error(f"Could not get identifiers {self.hardware_id}")
+
 
     @property
     def definition(self):

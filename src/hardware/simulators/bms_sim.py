@@ -42,6 +42,7 @@ class BMSSim(HardwareBase):
         self.time_duration = 30 / 3600
         self.operating_state = 1
         self.hardware_id: str = ""
+        self.device_id: str = ""
 
 
 
@@ -169,7 +170,8 @@ class BMSSim(HardwareBase):
         return {d['mac']: f"NA-{d['mac']}" for d in devices}
 
     def _calculate_bess_interaction(self, bess_state: BessState, load_state: LoadState, power_to_from_batteries: float):
-        self.state_of_charge = SimulationState().get_previous("BMS", self.hardware_id)[REMAINING_CAPACITY] / 100.0
+        x = SimulationState().get_previous("BMS", self.hardware_id, self.device_id)
+        self.state_of_charge = x[self.device_id][REMAINING_CAPACITY] / 100.0
         if power_to_from_batteries > 0 or self.charge_from_grid:
             if self._can_charge:
                 bess_state.charge_power = self.charge_batteries(power_to_from_batteries, self.charge_from_grid)
@@ -178,6 +180,7 @@ class BMSSim(HardwareBase):
 
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[str, Any]:
         self.hardware_id = hardware_id
+        self.device_id = devices[0]['mac']
         voltage = 52.0
         gen_state = GenerationState()
         load_state = LoadState()

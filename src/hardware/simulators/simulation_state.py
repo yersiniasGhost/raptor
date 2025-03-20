@@ -24,9 +24,9 @@ class SimulationState(metaclass=Singleton):
     def get_state(self, system: str):
         return self.states.get(system, {})
 
-    def get_previous(self, system: str, hardware_id: str):
+    def get_previous(self, system: str, hardware_id: str, device_id: str):
         prev = self.previous_states.get(system)
         if not prev:
             if system == "BMS":
-                return {REMAINING_CAPACITY: 50.0}
+                return {device_id: {REMAINING_CAPACITY: 50.0}}
         return prev[hardware_id]
