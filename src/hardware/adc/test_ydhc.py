@@ -1,6 +1,6 @@
 import json
 import time
-from hardware.ct.adc_hardware import ADCHardware
+from hardware.adc.ct_hall import ADCHardware
 
 
 def load_config(config_path):
@@ -37,12 +37,22 @@ def main():
     try:
         while True:
             for device in devices:
+                test_result = ct_hardware.test_device(device)
+                print(f"  Device: {device.get('name', device.get('mac', 'unknown'))}")
+                print(f"    Status: {test_result['status']}")
+                print(f"    Raw ADC: {test_result['raw']}")
+                print(f"    Voltage: {test_result['voltage']:.3f} V")
+                print(f"    Current: {test_result['current']:.3f} A")
+                if test_result['error']:
+                    print(f"    Error: {test_result['error']}")
+                print()
+            for device in devices:
                 current = ct_hardware.read_device_current(device)
                 name = device.get('name', device.get('mac', 'unknown'))
                 if current is not None:
                     print(f"{name}: {current:.3f} A", end="  ")
             print()
-            time.sleep(1)
+            time.sleep(2)
     except KeyboardInterrupt:
         print("\nMonitoring stopped")
 
