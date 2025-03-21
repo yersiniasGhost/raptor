@@ -1,0 +1,27 @@
+{
+  "adc_max_raw": 4095,
+  "adc_max_voltage": 2.5,
+  "gpio_bank": 5,
+  "devices": [
+    {
+      "mac": "ct001",
+      "channel": 1,
+      "ct_ratio": 20.0,
+      "conversion_factor": 1.0,
+      "offset": 0.0,
+      "max_value": 50.0,
+      "min_value": 0.0,
+      "name": "main_feed"
+    },
+    {
+      "mac": "ct002",
+      "channel": 2,
+      "ct_ratio": 20.0,
+      "conversion_factor": 1.0,
+      "offset": 0.0,
+      "max_value": 50.0,
+      "min_value": 0.0,
+      "name": "secondary_feed"
+    }
+  ]
+}

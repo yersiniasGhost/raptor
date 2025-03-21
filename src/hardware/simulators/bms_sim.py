@@ -127,7 +127,8 @@ class BMSSim(HardwareBase):
         energy_flow = power * time_duration * (self.charge_eff(self.state_of_charge, battery_temp) +
                                                self.charge_eff(soc_mid, battery_temp)) / 2
         soc_final = self.state_of_charge + energy_flow / self.battery_system.capacity
-        return soc_final, energy_flow, time_duration, energy_flow/time_duration
+        power = energy_flow / time_duration if time_duration > 1e-3 else 0.0
+        return soc_final, energy_flow, time_duration, power
 
 
 
