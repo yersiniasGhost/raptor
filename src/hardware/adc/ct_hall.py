@@ -57,6 +57,16 @@ class ADCHardware(HardwareBase):
         )
 
 
+    def enable_5v_power(self):
+        """Enable the 5V power output for the CTs"""
+        try:
+            # Enable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
+            subprocess.run(["gpioset", "5", "29=1"])
+            logger.info("Enabled 5V power output for CTs")
+            return True
+        except Exception as e:
+            logger.exception(f"Error enabling 5V power: {e}")
+            return False
 
     def initialize_device(self, device: Dict[str, Any]) -> bool:
         """Initialize a device's ADC channel"""
@@ -231,6 +241,7 @@ class ADCHardware(HardwareBase):
         # Initialize devices if not already done
         if not self.initialized:
             logger.info("Initializing ADC channels for devices")
+            self.enable_5v_power()
             for device in devices:
                 self.initialize_device(device)
             self.initialized = True
