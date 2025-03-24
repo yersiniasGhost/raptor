@@ -190,4 +190,4 @@ class ActuatorManager(metaclass=Singleton):
             logger.error(f"Invalid JSON in {json_file}: {str(e)}")
             raise
         logger.debug(f"Loaded JSON file:{json_file} \nDATA\n{data}")
-        return cls.from_dict(data)
+        return cls.from_dict(data, logger)
