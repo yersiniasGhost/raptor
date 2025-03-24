@@ -7,10 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 import canopen
 from .electrak import ElectrakMD
 from hardware.gpio_controller.banner_alarm import BannerAlarm
-from utils import Singleton
-import logging
+from utils import Singleton, run_command, LogManager
 import traceback
-logger = logging.getLogger(__name__)
 
 
 class ActuatorManager(metaclass=Singleton):
@@ -18,6 +16,7 @@ class ActuatorManager(metaclass=Singleton):
 
     def __init__(self, channel: str, eds: str):
         """Initialize the manager's resources"""
+        self.logger = LogManager().get_logger("ActuatorManager")
         self.actuators: Dict[str, ElectrakMD] = {}
         self.network = None
         self.executor = ThreadPoolExecutor(max_workers=4)
@@ -30,41 +29,52 @@ class ActuatorManager(metaclass=Singleton):
 
     def setup_network(self):
         """Initialize CAN network connection"""
-        logger.info('Setting up network...')
+        self.logger.info("Running linux commands to set up network")
+        cmd = ["ip", "link", "set", "can0", "type", "can" "bitrate", "500000"]
+        output, status = run_command(cmd, self.logger)
+        self.logger.info(f"ip link set: {status}")
+        cmd = ['ip', 'link', 'set', 'can0', 'up']
+        output, status = run_command(cmd, self.logger)
+        self.logger.info(f"ip link can0 up: {status}")
+        cmd = ['ip', 'link', 'show', 'can0']
+        output, status = run_command(cmd, self.logger)
+        self.logger.info(f"ip link show: {status} / {output}")
+
+        self.logger.info('Setting up network...')
         try:
             if self.network is None:
-                logger.info('Creating CAN network...')
+                self.logger.info('Creating CAN network...')
                 self.network = canopen.Network()
-                logger.info('Connecting to CAN bus...')
+                self.logger.info('Connecting to CAN bus...')
                 self.network.connect(channel=self.channel, bustype='socketcan')
-                logger.info('CAN network setup complete')
+                self.logger.info('CAN network setup complete')
             return True
         except Exception as e:
-            logger.error(f'Network setup failed: {e}')
+            self.logger.error(f'Network setup failed: {e}')
             self.network = None
             return False
                 
     def add_actuator(self, actuator_id: str, node_id: int):
         """Add a new actuator to the management system"""
-        logger.info(f"Adding actuator {actuator_id}")
+        self.logger.info(f"Adding actuator {actuator_id}")
 
         # Check if actuator already exists without lock
         if actuator_id in self.actuators:
-            logger.warning(f"Actuator {actuator_id} already exists")
+            self.logger.warning(f"Actuator {actuator_id} already exists")
             return False
                 
         try:
             # Setup network first if needed
             if self.network is None:
                 if not self.setup_network():
-                    logger.error("Network setup failed")
+                    self.logger.error("Network setup failed")
                     return False
             
             # Create operation lock for this actuator
             self.operation_locks[actuator_id] = threading.Lock()
             
             # Create actuator instance
-            logger.info(f"Creating actuator instance {actuator_id}")
+            self.logger.info(f"Creating actuator instance {actuator_id}")
             actuator = ElectrakMD(
                 network=self.network,
                 node_id=node_id,
@@ -77,11 +87,11 @@ class ActuatorManager(metaclass=Singleton):
             with self.connection_lock:
                 self.actuators[actuator_id] = actuator
             
-            logger.info(f"Successfully added actuator {actuator_id}")
+            self.logger.info(f"Successfully added actuator {actuator_id}")
             return True
                 
         except Exception as e:
-            logger.error(f"Failed to add actuator {actuator_id}: {e}")
+            self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
             print(traceback.format_exc())
             # Cleanup if failure
             if actuator_id in self.operation_locks:
@@ -98,7 +108,7 @@ class ActuatorManager(metaclass=Singleton):
         
     async def move_multiple(self, target_position: float, target_speed: float):
         """Move multiple actuators simultaneously"""
-        logger.info("Starting multiple actuator movement")
+        self.logger.info("Starting multiple actuator movement")
         try:
            
             # Create movement tasks
@@ -114,38 +124,38 @@ class ActuatorManager(metaclass=Singleton):
             return success
             
         except Exception as e:
-            logger.error(f"Multi-actuator movement error: {e}")
+            self.logger.error(f"Multi-actuator movement error: {e}")
             return False
             
     def cleanup(self):
         """Cleanup all resources"""
-        logger.info("Starting cleanup")
+        self.logger.info("Starting cleanup")
         try:
             # Stop all actuators
             for actuator in list(self.actuators.values()):
                 try:
                     actuator.close()
                 except Exception as e:
-                    logger.error(f"Error cleaning up actuator: {e}")
+                    self.logger.error(f"Error cleaning up actuator: {e}")
             
             # Disconnect network
             if self.network:
                 try:
                     self.network.disconnect()
                 except Exception as e:
-                    logger.error(f"Error disconnecting network: {e}")
+                    self.logger.error(f"Error disconnecting network: {e}")
             
             # Shutdown thread pool
             try:
                 self.executor.shutdown(wait=False)
             except Exception as e:
-                logger.error(f"Error shutting down executor: {e}")
+                self.logger.error(f"Error shutting down executor: {e}")
             
         finally:
             self.network = None
             self.actuators.clear()
             self.operation_locks.clear()
-            logger.info("Cleanup complete")
+            self.logger.info("Cleanup complete")
 
 
     @classmethod
@@ -155,7 +165,7 @@ class ActuatorManager(metaclass=Singleton):
             parameters = hardware['parameters']
             devices = actuator_map['devices']
         except KeyError as e:
-            logger.error(f"Missing required configuration field: {e}")
+            self.logger.error(f"Missing required configuration field: {e}")
             raise
         try:
             manager = cls(**parameters)
@@ -163,7 +173,7 @@ class ActuatorManager(metaclass=Singleton):
             for device in devices:
                 manager.add_actuator(device['mac'], device['node_id'])
         except (ValueError, TypeError) as e:
-            logger.error(f"Invalid battery configuration: {e}")
+            self.logger.error(f"Invalid battery configuration: {e}")
             raise ValueError(f"Failed to create battery definition: {e}")
         return manager
 
@@ -174,10 +184,10 @@ class ActuatorManager(metaclass=Singleton):
             with open(json_file, 'r') as f:
                 data = json.load(f)
         except (FileNotFoundError, PermissionError, OSError) as e:
-            logger.error(f"Failed to read file {json_file}: {str(e)}")
+            self.logger.error(f"Failed to read file {json_file}: {str(e)}")
             raise
         except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in {json_file}: {str(e)}")
+            self.logger.error(f"Invalid JSON in {json_file}: {str(e)}")
             raise
-        logger.debug(f"Loaded JSON file:{json_file} \nDATA\n{data}")
+        self.logger.debug(f"Loaded JSON file:{json_file} \nDATA\n{data}")
         return cls.from_dict(data)

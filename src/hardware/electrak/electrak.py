@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import threading
 from hardware.hardware_base import HardwareBase
+from utils import LogManager
 
 
 class ElectrakMD(HardwareBase):
@@ -37,6 +38,7 @@ class ElectrakMD(HardwareBase):
     def __init__(self, network: canopen.Network, node_id: int, 
                  eds_file: str, operation_lock: threading.Lock,
                  executor: ThreadPoolExecutor):
+        self.logger = LogManager().get_logger("Electrak")
         self.network = network
         self.node_id = node_id
         self.operation_lock = operation_lock
@@ -86,9 +88,8 @@ class ElectrakMD(HardwareBase):
 
                     if self.node.nmt.state != 'OPERATIONAL':
                         raise RuntimeError("Failed to enter operational state")
-
                 except Exception as e:
-                    print(f"Actuator setup error: {e}")
+                    self.logger.error(f"Actuator setup error: {e}", exc_info=True)
                     raise
         self.is_setup = True
 
