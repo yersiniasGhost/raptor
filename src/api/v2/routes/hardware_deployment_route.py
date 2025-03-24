@@ -25,7 +25,8 @@ class HardwareDeploymentRoute:
         for hardware in db.get_hardware_systems("Converters"):
             self.logger.info(f"Adding Converter/Inverter system")
             self.inverter = instantiate_hardware_from_dict(hardware, self.logger)
-        self.actuator_manager = ActuatorManager.from_json(f"{DATA_PATH}/ElectrakActuators/electrak_deployment.json", self.logger)
+        self.actuator_manager = ActuatorManager.from_json(f"{DATA_PATH}/ElectrakActuators/electrak_deployment.json",
+                                                          self.logger)
 
     def get_hardware_definition(self, hardware_type: str) -> Optional[dict]:
         if hardware_type == "BMS":
