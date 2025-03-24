@@ -21,6 +21,7 @@ async def generation_data(request: Request, hardware: Annotated[HardwareDeployme
         # Update each unit
         cts = hardware.pv_cts
         values = cts.data_acquisition()
+        print(values)
         return templates.TemplateResponse(
             "generation.html",
             { "request": request }
