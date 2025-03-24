@@ -137,6 +137,27 @@ class ADCHardware(HardwareBase):
 
 
     def convert_voltage_to_current(self, voltage: float, device: Dict[str, Any]) -> float:
+        """Convert voltage to current for bidirectional CT with mid-supply bias"""
+        # Zero-current reference point (typically 2.5V)
+        zero_point = device.get('zero_point', 2.5)
+
+        # Maximum voltage deviation from zero point (typically 0.625V for ±50A)
+        max_deviation = device.get('max_deviation', 0.625)
+
+        # Maximum current rating (typically 50A)
+        max_current = device.get('max_value', 50.0)
+
+        # Calculate current: Current = (Voltage - ZeroPoint) * (MaxCurrent/MaxDeviation)
+        conversion_ratio = max_current / max_deviation
+        current = (voltage - zero_point) * conversion_ratio
+
+        # Apply any additional calibration factor and offset
+        conversion_factor = device.get('conversion_factor', 1.0)
+        offset = device.get('offset', 0.0)
+
+        return current * conversion_factor + offset
+
+    def convert_voltage_to_current_orig(self, voltage: float, device: Dict[str, Any]) -> float:
         """Convert voltage to current using device configuration"""
         # Get CT ratio (default to 20.0 for 50A/2.5V)
         ct_ratio = device.get('ct_ratio', 20.0)
