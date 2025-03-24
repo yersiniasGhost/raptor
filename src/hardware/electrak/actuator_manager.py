@@ -179,15 +179,15 @@ class ActuatorManager(metaclass=Singleton):
 
 
     @classmethod
-    def from_json(cls, json_file: Union[Path, str]) -> "ActuatorManager":
+    def from_json(cls, json_file: Union[Path, str], logger) -> "ActuatorManager":
         try:
             with open(json_file, 'r') as f:
                 data = json.load(f)
         except (FileNotFoundError, PermissionError, OSError) as e:
-            self.logger.error(f"Failed to read file {json_file}: {str(e)}")
+            logger.error(f"Failed to read file {json_file}: {str(e)}")
             raise
         except json.JSONDecodeError as e:
-            self.logger.error(f"Invalid JSON in {json_file}: {str(e)}")
+            logger.error(f"Invalid JSON in {json_file}: {str(e)}")
             raise
-        self.logger.debug(f"Loaded JSON file:{json_file} \nDATA\n{data}")
+        logger.debug(f"Loaded JSON file:{json_file} \nDATA\n{data}")
         return cls.from_dict(data)
