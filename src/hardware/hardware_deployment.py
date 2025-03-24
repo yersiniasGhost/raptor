@@ -9,6 +9,7 @@ from logging import Logger
 from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
 from hardware.mock.mock_hardware import MockHardware
+from hardware.adc.ct_hall import ADCHardware
 if EnvVars().enable_simulators:
     from hardware.simulators import BMSSim, PvPanelSimulator, LoadSim
 

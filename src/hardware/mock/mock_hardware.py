@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 class MockHardware(HardwareBase):
 
+    def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
+        pass
+
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str]) -> Dict[str, Any]:
         output = {}
         for device in devices:
@@ -20,3 +23,4 @@ class MockHardware(HardwareBase):
 
     def get_points(self, names: List[str]) -> List:
         return []
+
