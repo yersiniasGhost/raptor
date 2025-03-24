@@ -139,7 +139,7 @@ class ADCHardware(HardwareBase):
     def convert_voltage_to_current(self, voltage: float, device: Dict[str, Any]) -> float:
         """Convert voltage to current for bidirectional CT with mid-supply bias"""
         # Zero-current reference point (typically 2.5V)
-        zero_point = device.get('zero_point', 2.5)
+        zero_point = device.get('zero_point', 2.35)
 
         # Maximum voltage deviation from zero point (typically 0.625V for ±50A)
         max_deviation = device.get('max_deviation', 0.625)
