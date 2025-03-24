@@ -9,7 +9,7 @@ from utils import LogManager
 lm = LogManager("vmc.log")
 logger = lm.get_logger("VMC")
 lm.configure_library_loggers()
-from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status
+from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status, generation
 from api.v2.routes.hardware_deployment_route import HardwareDeploymentRoute
 
 
@@ -51,6 +51,7 @@ app.include_router(analysis.router)
 app.include_router(inverters.router)
 app.include_router(modbus.router)
 app.include_router(system_status.router)
+app.include_router(generation.router)
 logger.info(f"Loaded templates and routes.   Git version: {templates.env.globals['version']}")
 
 
