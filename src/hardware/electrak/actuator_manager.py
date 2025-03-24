@@ -159,13 +159,13 @@ class ActuatorManager(metaclass=Singleton):
 
 
     @classmethod
-    def from_dict(cls, actuator_map: dict) -> 'ActuatorManager':
+    def from_dict(cls, actuator_map: dict, logger) -> 'ActuatorManager':
         try:
             hardware = actuator_map['hardware']
             parameters = hardware['parameters']
             devices = actuator_map['devices']
         except KeyError as e:
-            self.logger.error(f"Missing required configuration field: {e}")
+            logger.error(f"Missing required configuration field: {e}")
             raise
         try:
             manager = cls(**parameters)
@@ -173,8 +173,8 @@ class ActuatorManager(metaclass=Singleton):
             for device in devices:
                 manager.add_actuator(device['mac'], device['node_id'])
         except (ValueError, TypeError) as e:
-            self.logger.error(f"Invalid battery configuration: {e}")
-            raise ValueError(f"Failed to create battery definition: {e}")
+            logger.error(f"Invalid actuators configuration: {e}")
+            raise ValueError(f"Failed to create ActuatorManager: {e}")
         return manager
 
 
