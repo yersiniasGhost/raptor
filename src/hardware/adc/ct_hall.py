@@ -61,8 +61,8 @@ class ADCHardware(HardwareBase):
         """Enable the 5V power output for the CTs"""
         try:
             # Enable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
-            subprocess.run(["gpioset", "5", "16=1"])
-            logger.info("Enabled 5V power output for CTs")
+            result, success = subprocess.run(["gpioset", "5", "16=1"])
+            logger.info(f"Enabled 5V power output for CTs {result}, {success}")
             return True
         except Exception as e:
             logger.exception(f"Error enabling 5V power: {e}")
