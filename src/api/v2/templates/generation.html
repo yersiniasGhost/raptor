@@ -6,10 +6,11 @@
 
 {% block content %}
     <h1>Photovoltaic Generation System</h1>
-<div id="results"></div>
+     <div id="results"></div>
 {% endblock %}
 
 {% block scripts %}
+<script>
 function fetchAndDisplayTestData(divId = 'results') {
   // Get the div element where results will be displayed
   const resultsDiv = document.getElementById(divId);
@@ -53,4 +54,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Or call it with a custom div ID
 // fetchAndDisplayTestData('customResultsDiv');
+</script>
 {% endblock %}
