@@ -61,7 +61,7 @@ class HardwareDeployment:
                     if d['mac'] == mac:
                         d['identifier'] = local_id
         except Exception as e:
-            self.logger.error(f"Could not get identifiers {self.hardware_id}")
+            self.logger.error(f"Could not get identifiers {self.hardware_id}", exc_info=True)
 
 
     @property

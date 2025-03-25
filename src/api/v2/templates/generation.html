@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Actuators {% endblock %}
+{% block title %}Generation{% endblock %}
 {% block head %}
 {% endblock %}
 
@@ -21,7 +21,7 @@ function fetchAndDisplayTestData(divId = 'results') {
   }
 
   // Fetch data from the API
-  fetch('/test')
+  fetch('/generation/test')
     .then(response => {
       // Check if the request was successful
       if (!response.ok) {

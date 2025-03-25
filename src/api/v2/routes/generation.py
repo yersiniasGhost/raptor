@@ -33,5 +33,5 @@ async def generation_data(request: Request, hardware: Annotated[HardwareDeployme
 @router.get("/test")
 async def get_test_data(hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     cts = hardware_def.pv_cts
-    values = cts.test_device(cts.devices[0])
+    values = cts.hardware.test_device(cts.devices[0])
     return { "success": True, "value": values}
