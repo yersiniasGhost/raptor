@@ -21,7 +21,7 @@ class EveBattery(ModbusHardware):
     #     return message, None
 
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
-        data = self.data_acquisition(devices, ["Model SN"])
+        data = self.data_acquisition(devices, ["Model SN"], None)
         identifiers = {mac: d.get("Model_SN", "NO Local ID").rstrip() for mac, d in data.items()}
         return identifiers
 
