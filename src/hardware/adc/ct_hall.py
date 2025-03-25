@@ -122,8 +122,8 @@ class ADCHardware(HardwareBase):
                 return None
             total = 0.0
             n = 10
-            with open(channel.raw_file, 'r') as f:
-                for _ in range(n):
+            for _ in range(n):
+                with open(channel.raw_file, 'r') as f:
                     raw_value = int(f.read().strip())
                     total += raw_value
             return int(total/float(n))  # raw_value
