@@ -6,4 +6,50 @@
 
 {% block content %}
     <h1>Photovoltaic Generation System</h1>
+<div id="results"></div>
 {% endblock %}
+
+{% block scripts %}
+function fetchAndDisplayTestData(divId = 'results') {
+  // Get the div element where results will be displayed
+  const resultsDiv = document.getElementById(divId);
+
+  // Show loading state
+  if (resultsDiv) {
+    resultsDiv.innerHTML = 'Loading...';
+  }
+
+  // Fetch data from the API
+  fetch('/test')
+    .then(response => {
+      // Check if the request was successful
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      // Parse the JSON response
+      return response.json();
+    })
+    .then(data => {
+      // Display the result in the div
+      if (resultsDiv) {
+        // Format the JSON for better readability
+        resultsDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      }
+    })
+    .catch(error => {
+      // Handle any errors
+      if (resultsDiv) {
+        resultsDiv.innerHTML = `Error: ${error.message}`;
+      }
+      console.error('Fetch error:', error);
+    });
+}
+
+// Example usage:
+// Call the function when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  fetchAndDisplayTestData();
+});
+
+// Or call it with a custom div ID
+// fetchAndDisplayTestData('customResultsDiv');

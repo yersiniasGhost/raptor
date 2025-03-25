@@ -61,7 +61,7 @@ class ADCHardware(HardwareBase):
         """Enable the 5V power output for the CTs"""
         try:
             # Enable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
-            subprocess.run(["gpioset", "5", "29=1"])
+            subprocess.run(["gpioset", "5", "16=1"])
             logger.info("Enabled 5V power output for CTs")
             return True
         except Exception as e:
@@ -250,8 +250,7 @@ class ADCHardware(HardwareBase):
 
 
 
-    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[
-        str, Any]:
+    def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[str, Any]:
         """
         Acquire data from devices
 
