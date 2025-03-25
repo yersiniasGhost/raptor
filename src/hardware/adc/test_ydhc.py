@@ -37,6 +37,11 @@ def main():
     try:
         while True:
             for device in devices:
+                current = ct_hardware.read_device_current(device)
+                name = device.get('name', device.get('mac', 'unknown'))
+                if current is not None:
+                    print(f"{name}: {current:.3f} A", end="  ")
+            for device in devices:
                 test_result = ct_hardware.test_device(device)
                 print(f"  Device: {device.get('name', device.get('mac', 'unknown'))}")
                 print(f"    Status: {test_result['status']}")
@@ -46,11 +51,7 @@ def main():
                 if test_result['error']:
                     print(f"    Error: {test_result['error']}")
                 print()
-            for device in devices:
-                current = ct_hardware.read_device_current(device)
-                name = device.get('name', device.get('mac', 'unknown'))
-                if current is not None:
-                    print(f"{name}: {current:.3f} A", end="  ")
+
             print()
             time.sleep(2)
     except KeyboardInterrupt:

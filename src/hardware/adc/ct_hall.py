@@ -120,10 +120,13 @@ class ADCHardware(HardwareBase):
             if not os.path.exists(channel.raw_file):
                 logger.error(f"ADC file does not exist: {channel.raw_file}")
                 return None
-
+            total = 0.0
+            n = 10
             with open(channel.raw_file, 'r') as f:
-                raw_value = int(f.read().strip())
-            return raw_value
+                for _ in range(n):
+                    raw_value = int(f.read().strip())
+                    total += raw_value
+            return int(total/float(n))  # raw_value
         except Exception as e:
             logger.exception(f"Error reading ADC channel {channel_num}: {e}")
             return None
