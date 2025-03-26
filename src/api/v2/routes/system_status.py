@@ -35,4 +35,12 @@ async def system_status(request: Request):
         })
     except Exception as e:
         logger.error(f"Error collecting system status: {e}")
-
+        return templates.TemplateResponse("system_status.html", {
+            "request": request,
+            "error": str(e),
+            "current_stats": [],
+            "timestamps": [],
+            "cpu_history": [],
+            "memory_history": [],
+            "disk_history": [],
+        })
