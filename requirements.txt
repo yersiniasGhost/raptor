@@ -20,6 +20,7 @@ paho-mqtt==2.1.0
 psutil==6.1.0
 pydantic==2.10.3
 pydantic-core==2.27.1
+pylibiio==0.25
 pymodbus==3.8.1
 pyserial==3.5
 pysqlite3==0.5.4

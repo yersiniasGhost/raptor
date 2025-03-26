@@ -1,9 +1,8 @@
-from typing import List, Dict, Any, Optional, Union
-from dataclasses import dataclass, field
-import subprocess
 import time
+from typing import List, Dict, Any, Optional, Tuple
+from dataclasses import dataclass
+import subprocess
 import os
-import json
 from enum import Enum
 from hardware.hardware_base import HardwareBase
 import logging
@@ -61,8 +60,8 @@ class ADCHardware(HardwareBase):
         """Enable the 5V power output for the CTs"""
         try:
             # Enable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
-            result, success = subprocess.run(["gpioset", "5", "16=1"])
-            logger.info(f"Enabled 5V power output for CTs {result}, {success}")
+            subprocess.run(["gpioset", "5", "16=1"])
+            logger.info(f"Enabled 5V power output for CTs")
             return True
         except Exception as e:
             logger.exception(f"Error enabling 5V power: {e}")
@@ -142,7 +141,7 @@ class ADCHardware(HardwareBase):
     def convert_voltage_to_current(self, voltage: float, device: Dict[str, Any]) -> float:
         """Convert voltage to current for bidirectional CT with mid-supply bias"""
         # Zero-current reference point (typically 2.5V)
-        zero_point = device.get('zero_point', 2.35)
+        zero_point = device.get('zero_point', 2.5)
 
         # Maximum voltage deviation from zero point (typically 0.625V for ±50A)
         max_deviation = device.get('max_deviation', 0.625)
@@ -175,7 +174,7 @@ class ADCHardware(HardwareBase):
 
 
 
-    def read_device_current(self, device: Dict[str, Any]) -> Optional[float]:
+    def read_device(self, device: Dict[str, Any]) -> Optional[Tuple[float, float]]:
         """Read current from the specified device"""
         if 'channel' not in device:
             logger.error(f"Missing channel in device: {device}")
@@ -190,7 +189,7 @@ class ADCHardware(HardwareBase):
         voltage = self.convert_raw_to_voltage(raw_value)
         current = self.convert_voltage_to_current(voltage, device)
 
-        return current
+        return current, voltage
 
 
 
