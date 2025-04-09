@@ -20,7 +20,6 @@ class EnvVars(metaclass=Singleton):
         self.env_variables = {}
         # Database settings
         self.db_path = self._get_required('DB_PATH')
-        self.tsdb_path = self._get_required("TSDB_PATH")
         self.log_path = self._getenv("LOG_PATH", "/var/log/raptor")
 
         # API settings
@@ -43,9 +42,6 @@ class EnvVars(metaclass=Singleton):
             os.getenv(variable, default)
         )
 
-    @property
-    def database_url(self) -> str:
-        return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
 
     def _get_required(self, key: str) -> str:
         value = self._getenv(key)
