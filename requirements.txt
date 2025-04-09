@@ -4,10 +4,10 @@ annotated-types==0.7.0
 anyio==4.7.0
 APScheduler==3.11.0
 argparse==1.4.0
-asyncio==0.16.2
+asyncio-mqtt==0.16.2
 backoff==2.2.1
 canopen==2.3.0
-click==8.1.
+click==8.1.0
 fastapi==0.115.6
 gpiod==2.2.2
 h11==0.14.0
