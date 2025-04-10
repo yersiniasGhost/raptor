@@ -99,6 +99,12 @@ if [ -f "requirements.txt" ]; then
     else
         echo "Python requirements installed successfully"
     fi
+    echo "Installing RAPTOR library"
+    pip install -e .
+    if [ $? -ne 0 ]; then
+	    echo "ERROR: Failed to install Raptor code"
+	    exit 1
+    fi
 else
     echo "No requirements.txt found. Skipping Python setup."
 fi
@@ -118,4 +124,6 @@ else
 fi
 
 echo "GitHub repository/python environment setup complete!"
+
+
 exit 0

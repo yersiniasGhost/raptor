@@ -110,7 +110,7 @@ fi
 
 # 2. Setup SSH
 log "Step 2: Configuring SSH"
-run_script "02-setup-ssh.sh"
+run_script "02-setup-ssh.sh" "$CONFIG_FILE"
 
 # 3. Install system dependencies
 log "Step 3: Installing system dependencies"
