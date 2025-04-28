@@ -181,7 +181,7 @@
     }
 
 
-    function resetConfig(config) {
+    async function resetConfig(config) {
         const responseBox = document.getElementById(`${section}Response`);
         try {
             const response = await fetch(`/configuration/test_alarms/${section}`, { method: 'POST' });
