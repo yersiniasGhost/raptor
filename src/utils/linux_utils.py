@@ -12,7 +12,7 @@ def local_logger(logger: Optional[Logger] = None):
     return logger
 
 
-def run_command_direct(command: List[str], logger: Optional[Logger] = None) -> CompletedProcess:
+def run_command_direct(command: List[str], logger: Optional[Logger] = None) -> Optional[CompletedProcess]:
     """Run a shell command and return output and status."""
     logger = local_logger(logger)
     logger.info(f"Running process: {command}")
@@ -27,20 +27,26 @@ def run_command_direct(command: List[str], logger: Optional[Logger] = None) -> C
     except subprocess.CalledProcessError as e:
         logger.error(f"Command failed: {' '.join(command)}")
         logger.error(f"Error output: {e.stderr}")
-        return result
+        return None
 
 
 # Dumb implementation here:
 def run_command(command: List[str], logger: Optional[Logger] = None) -> tuple:
     """Run a shell command and return output and status."""
     logger = local_logger(logger)
-    result = run_command_direct(command, logger)
-    if result.returncode == 0:
+    logger.info(f"Running process: {command}")
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=True
+        )
         return result.stdout.strip(), True
-    else:
-        return result.stderr.strip(), False
-
-
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Command failed: {' '.join(command)}")
+        logger.error(f"Error output: {e.stderr}")
+        return "Error running command", False
 
 
 def kill_screen_session(session_name: str, logger: Optional[Logger] = None) -> bool:
