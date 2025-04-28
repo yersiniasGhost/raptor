@@ -154,7 +154,7 @@
         }
     }
 
-    async function diagnoseConfig(section) {
+    async function diagnosticsConfig(section) {
         const responseBox = document.getElementById(`${section}Response`);
         try {
             const response = await fetch(`/configuration/diagnose/${section}`, { method: 'POST' });
