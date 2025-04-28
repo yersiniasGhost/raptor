@@ -132,13 +132,13 @@
         </div>
     </div>
     <div class="config-controls">
-        <button class="test-button" onclick="testConfig('{{ config }}')">Test {{ config }}</button>
-        <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
         <span>
+            <button class="test-button" onclick="testConfig('{{ config }}')">Test {{ config }}</button>
             <button class="test-button" onclick="resetConfig('{{ config }}')">Reset {{ config }}</button>
             <button class="test-button" onclick="diagnosticsConfig('{{ config }}')">Diagnostics {{ config }}</button>
             <button class="test-button" onclick="alarmsConfig('{{ config }}')">Query Alarms {{ config }}</button>
         </span>
+        <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
     </div>
 </div>
 {% endfor %}
@@ -181,7 +181,7 @@
     }
 
 
-    async function resetConfig(config) {
+    async function resetConfig(section) {
         const responseBox = document.getElementById(`${section}Response`);
         try {
             const response = await fetch(`/configuration/test_alarms/${section}`, { method: 'POST' });

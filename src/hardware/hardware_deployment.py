@@ -1,7 +1,6 @@
-import os
 import json
 from pathlib import Path
-from typing import List, Iterator, Dict, Any, Union, Optional
+from typing import List, Iterator, Dict, Any, Union, Optional, Tuple
 from dataclasses import dataclass
 from hardware.hardware_base import HardwareBase
 from utils import LogManager, EnvVars
@@ -45,10 +44,16 @@ class HardwareDeployment:
         points = self.hardware.get_points(data_registers)
         return points
 
+    def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
+        return "Ping TBD", True
+
+    def diagnostics(self) -> dict:
+        diag_data = self.data_acquisition("DIAGNOSTIC")
+        return diag_data
 
     def alarm_checks(self) -> dict:
-        """ Perform a check on the alarms associated with this hardware device """
-        pass
+        alarm_data = self.data_acquisition("ALARM")
+        return alarm_data
 
     def get_slave_ids(self) -> list:
         return [d['mac'] for d in self.devices]

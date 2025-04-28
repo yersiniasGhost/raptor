@@ -65,7 +65,7 @@ async def update_firmware(
 @router.post("/diagnose/{section}")
 async def diagnose_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        return {"output": "TBD", "status": "OK"}
+        return {"output": "Diagnose Hardware TBD", "status": "OK"}
     except Exception as e:
         return {"error": str(e)}
 
@@ -73,7 +73,7 @@ async def diagnose_hardware(section: str, hardware: Annotated[HardwareDeployment
 @router.post("/test_alarms/{section}")
 async def alarms_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        return {"output": "TBD2", "status": "OK"}
+        return {"output": "Test Alarms TBD", "status": "OK"}
     except Exception as e:
         return {"error": str(e)}
 
@@ -81,16 +81,19 @@ async def alarms_hardware(section: str, hardware: Annotated[HardwareDeploymentRo
 @router.post("/ping/{section}")
 async def ping_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        if section == "Actuators":
-            manager = hardware.actuator_manager
+        device = hardware.get_hardware_definition(section)
+        result, status = device.ping_hardware()
+        return {"output": result, "status": status}
 
-            result, returnstatus = run_command(["ip", "-details", "link", "show", manager.channel], logger)
-            result2, returnstatus2 = run_command(['ip', 'link', 'set', 'can0', 'type', 'can', 'bitrate', '500000'], logger)
-            return {"output": result2+"\n"+result, "status": returnstatus2}
-        else:
-            # Execute the ping command (limited to 2 pings for safety)
-            result = run_command(["ping", "-c", "2", section], logger)
-            return {"output": result.stdout if result.returncode == 0 else result.stderr}
+    #     if section == "Actuators":
+    #         device = hardware.actuator_manager
+    #
+    #         result, status = manager.ping_hardware()
+    #         return
+    #     elif section == "BMS":
+    #         bms = hardware.batteries
+    #         result, status = hardware.batteries.ping_hardware()
+    #         return {"output": result, "status": status}
     except Exception as e:
         return {"error": str(e)}
 
