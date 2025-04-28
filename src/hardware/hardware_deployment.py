@@ -74,7 +74,7 @@ class HardwareDeployment:
 
 
 def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
-                                   keep_definition: bool = False) -> HardwareDeployment:
+                                   keep_definition: bool = True) -> HardwareDeployment:
     class_path = hardware.get("driver_path")
     if not class_path:
         raise ValueError(f"Invalid configuration data.  Missing hardware type")
@@ -99,6 +99,7 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
                                         hardware_id=hardware.get('external_ref')
                                         )
         if keep_definition:
+            logger.info(f"Keeping definition: {hardware}")
             deployment.definition = hardware
         return deployment
 
