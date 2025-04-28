@@ -62,6 +62,22 @@ async def update_firmware(
         )
 
 
+@router.post("/diagnose/{section}")
+async def diagnose_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        return {"output": "TBD", "status": "OK"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/test_alarms/{section}")
+async def alarms_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        return {"output": "TBD2", "status": "OK"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/ping/{section}")
 async def ping_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:

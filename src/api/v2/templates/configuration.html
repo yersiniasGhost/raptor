@@ -135,6 +135,7 @@
         <button class="test-button" onclick="testConfig('{{ config }}')">Test {{ config }}</button>
         <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
         <button class="test-button" onclick="resetConfig('{{ config }}')">Reset {{ config }}</button>
+        <button class="test-button" onclick="diagnosticsConfig('{{ config }}')">Diagnostics {{ config }}</button>
     </div>
 </div>
 {% endfor %}
@@ -153,9 +154,35 @@
         }
     }
 
+    async function diagnoseConfig(section) {
+        const responseBox = document.getElementById(`${section}Response`);
+        try {
+            const response = await fetch(`/configuration/diagnose/${section}`, { method: 'POST' });
+            const data = await response.json();
+            responseBox.value = data.output || data.error;
+        } catch (error) {
+            responseBox.value = "Error executing hardware diagnosis.";
+        }
+    }
+
+
+    async function alarmsConfig(section) {
+        const responseBox = document.getElementById(`${section}Response`);
+        try {
+            const response = await fetch(`/configuration/test_alarms/${section}`, { method: 'POST' });
+            const data = await response.json();
+            responseBox.value = data.output || data.error;
+        } catch (error) {
+            responseBox.value = "Error executing hardware diagnosis.";
+        }
+    }
+
+
     function resetConfig(config) {
         document.getElementById(`${config}ConfigDisplay`).textContent = "No configuration loaded";
     }
+
+
     
     const configSections = ["Actuators", "BMS", "Inverter", "Generation"];
     configSections.forEach(section => {
