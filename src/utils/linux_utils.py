@@ -10,11 +10,9 @@ def local_logger(logger: Optional[Logger] = None):
         logger = logging.getLogger("linux_utils")
     return logger
 
-
-def run_command(command: List[str], logger: Optional[Logger] = None) -> tuple:
+def run_command_direct(command: List[str], logger: Optional[Logger] = None) -> CompletedProcess:
     """Run a shell command and return output and status."""
     logger = local_logger(logger)
-
     logger.info(f"Running process: {command}")
     try:
         result = subprocess.run(
@@ -23,11 +21,24 @@ def run_command(command: List[str], logger: Optional[Logger] = None) -> tuple:
             text=True,
             check=True
         )
-        return result.stdout.strip(), True
+        return result
     except subprocess.CalledProcessError as e:
         logger.error(f"Command failed: {' '.join(command)}")
         logger.error(f"Error output: {e.stderr}")
-        return e.stderr, False
+        return result
+
+
+# Dumb implementation here:
+def run_command(command: List[str], logger: Optional[Logger] = None) -> tuple:
+    """Run a shell command and return output and status."""
+    logger = local_logger(logger)
+    result = run_command_direct(command, logger)
+    if result.returncode == 0:
+        return result.stdout.strip(), True
+    else:
+        return result.stderr.strip(), False
+
+
 
 
 def kill_screen_session(session_name: str, logger: Optional[Logger] = None) -> bool:
