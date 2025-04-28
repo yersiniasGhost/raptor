@@ -1,6 +1,7 @@
 from logging import Logger
 from typing import List, Optional
 import subprocess
+from subprocess import CompletedProcess
 import time
 
 
@@ -9,6 +10,7 @@ def local_logger(logger: Optional[Logger] = None):
         import logging
         logger = logging.getLogger("linux_utils")
     return logger
+
 
 def run_command_direct(command: List[str], logger: Optional[Logger] = None) -> CompletedProcess:
     """Run a shell command and return output and status."""
