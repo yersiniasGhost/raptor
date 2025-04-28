@@ -52,8 +52,8 @@ source "$CONFIG_FILE"
 
 # Check if SSH keys are provided in the config file
 if [ -z "$SSH_PRIVATE_KEY" ] || [ -z "$SSH_PUBLIC_KEY" ]; then
-    echo "WARNING: SSH keys not found in configuration file. Skipping SSH key setup."
-    exit 0
+    echo "ERROR: SSH keys not found in configuration file. Skipping SSH key setup."
+    exit 1
 fi
 
 # Check if keys already exist
