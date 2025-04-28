@@ -167,6 +167,21 @@ class ADCHardware(HardwareBase):
 
         return current * conversion_factor + offset
 
+    def convert_voltage_to_current_orig(self, voltage: float, device: Dict[str, Any]) -> float:
+        """Convert voltage to current using device configuration"""
+        # Get CT ratio (default to 20.0 for 50A/2.5V)
+        ct_ratio = device.get('ct_ratio', 20.0)
+        # Get conversion factor (default to 1.0)
+        conversion_factor = device.get('conversion_factor', 1.0)
+        # Get offset (default to 0.0)
+        offset = device.get('offset', 0.0)
+
+        # Calculate current: I = V * CT_ratio * conversion_factor + offset
+        current = voltage * ct_ratio * conversion_factor + offset
+        return current
+
+
+
     def read_device(self, device: Dict[str, Any]) -> Optional[Tuple[float, float]]:
         """Read current from the specified device"""
         if 'channel' not in device:

@@ -68,8 +68,8 @@ async def ping_hardware(section: str, hardware: Annotated[HardwareDeploymentRout
         if section == "Actuators":
             manager = hardware.actuator_manager
 
-            result = run_command(["ip", "-details", "link", "show", manager.channel], logger)
-            return {"output": result.stdout if result.returncode == 0 else result.stderr}
+            result, returnstatus = run_command(["ip", "-details", "link", "show", manager.channel], logger)
+            return {"output": result, "status": returnstatus}
         else:
             # Execute the ping command (limited to 2 pings for safety)
             result = run_command(["ping", "-c", "2", section], logger)
