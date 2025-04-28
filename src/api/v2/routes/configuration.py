@@ -81,9 +81,12 @@ async def alarms_hardware(section: str, hardware: Annotated[HardwareDeploymentRo
 @router.post("/ping/{section}")
 async def ping_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        device = hardware.get_hardware_definition(section)
-        result, status = device.ping_hardware()
-        return {"output": result, "status": status}
+        device = hardware.get_hardware(section)
+        if device:
+            result, status = device.ping_hardware()
+            return {"output": result, "status": status}
+        else:
+            return {"output":  "No devices found", "status": False}
 
     #     if section == "Actuators":
     #         device = hardware.actuator_manager
