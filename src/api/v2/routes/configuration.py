@@ -33,6 +33,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
 
 @router.post("/recommission", name="recommission")
 async def recommission(request: Request):
+    logger.info("Requested to recommission VMC")
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("recommission", {}, None, None)
@@ -53,6 +54,7 @@ async def recommission(request: Request):
 
 @router.post("/reconfigure", name="reconfigure")
 async def reconfigure(request: Request):
+    logger.info("Requested to reconfigure VMC")
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("reconfigure", {}, None, None)
@@ -181,6 +183,8 @@ async def get_current_configuration(section: str):
 # Helper functions to interact with git
 def get_git_branches():
     """Get list of available git branches"""
+    # fetch first?
+    subprocess.run(["git", "remote", "update", "origin", "--prune"])
     result = subprocess.run(
         ["git", "branch", "--list", "--all"],
         capture_output=True,

@@ -157,7 +157,7 @@
 <script>
     async function recommission() {
         try {
-            const response = await fetch(`/recommission`, { method: 'POST' });
+            const response = await fetch(`/configuration/recommission`, { method: 'POST' });
             const data = await response.json();
         } catch (error) {
             console.log("BAD ERROR");
@@ -166,7 +166,7 @@
 
     async function reconfigure() {
         try {
-            const response = await fetch(`/reconfigure`, { method: 'POST' });
+            const response = await fetch(`/configuration/reconfigure`, { method: 'POST' });
             const data = await response.json();
         } catch (error) {
             console.log("BAD ERROR");
