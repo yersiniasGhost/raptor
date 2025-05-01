@@ -31,7 +31,47 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     )
 
 
-# New route to handle firmware updates
+@router.post("/recommission", name="recommission")
+async def recommission(request: Request):
+    try:
+        # Switch to the selected branch
+        await ActionFactory.execute_action("recommission", {}, None, None)
+        await ActionFactory.execute_action("restart", {}, None, None)
+
+    except Exception as e:
+        # Handle errors
+        return templates.TemplateResponse(
+            "configuration.html",
+            {
+                "request": request,
+                "error_message": f"Failed to recommission system: {str(e)}",
+                "git_branches": get_git_branches(),
+                "current_branch": get_current_branch()
+            }
+        )
+
+
+@router.post("/reconfigure", name="reconfigure")
+async def reconfigure(request: Request):
+    try:
+        # Switch to the selected branch
+        await ActionFactory.execute_action("reconfigure", {}, None, None)
+        await ActionFactory.execute_action("restart", {}, None, None)
+
+    except Exception as e:
+        # Handle errors
+        return templates.TemplateResponse(
+            "configuration.html",
+            {
+                "request": request,
+                "error_message": f"Failed to reconfigure system: {str(e)}",
+                "git_branches": get_git_branches(),
+                "current_branch": get_current_branch()
+            }
+        )
+
+
+# Route to handle firmware updates
 @router.post("/update_firmware", name="update_firmware")
 async def update_firmware(
         request: Request,
@@ -44,7 +84,6 @@ async def update_firmware(
 
         # If the action is update_restart, restart the application
         if action == "update_restart":
-            # Start application restart (this will depend on your setup)
             await ActionFactory.execute_action("restart", {}, None, None)
 
         # Return to the configuration page
