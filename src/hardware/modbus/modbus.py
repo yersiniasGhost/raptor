@@ -1,10 +1,9 @@
 from typing import Dict, Union, List
-import logging
 
 from .modbus_map import ModbusMap, ModbusDatatype, ModbusRegister
 from .modbus_hardware import ModbusHardware
+from utils import LogManager
 
-logger = logging.getLogger(__name__)
 
 
 def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
@@ -32,7 +31,8 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
 
 
 def modbus_data_acquisition_orig(modbus_hardware: ModbusHardware,
-                                 modbus_map: ModbusMap, slave_id: int) -> Dict[str, Union[float, int]]:
+                                 modbus_map: ModbusMap, slave_id: int,
+                                 logger) -> Dict[str, Union[float, int]]:
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():
@@ -65,7 +65,11 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
                       modbus_map: ModbusMap,
                       slave_id: int,
                       register_name: str,
-                      value: Union[float, int]) -> bool:
+                      value: Union[float, int],
+                      logger=None) -> bool:
+    if not logger:
+        logger = LogManager().get_logger("ModbusHardware")
+
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():

@@ -7,9 +7,7 @@ from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype
 
 
-import logging
-
-logger = logging.getLogger(__name__)
+from utils import LogManager
 
 
 class ModbusClientType(Enum):
@@ -136,11 +134,15 @@ def convert_register_value(raw_values: List[int], register: ModbusRegister) -> U
 
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
-                            registers: List[ModbusRegister], slave_id: int) -> Dict[str, Union[float, int]]:
+                            registers: List[ModbusRegister], slave_id: int,
+                            logger = None) -> Dict[str, Union[float, int]]:
     """
     This method queries the modbus hardware based upon the slave_id and the provided registers.
     The output is in the format of a dictionary:   { register_name: register_value }
     """
+    if not logger:
+        logger = LogManager().get_logger("ModbusHardware")
+
     client = modbus_hardware.get_modbus_client()
     try:
         if not client.connect():
