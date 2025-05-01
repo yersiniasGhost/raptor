@@ -73,7 +73,11 @@ async def diagnose_hardware(section: str, hardware: Annotated[HardwareDeployment
 @router.post("/test_alarms/{section}")
 async def alarms_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        return {"output": "Test Alarms TBD", "status": "OK"}
+        device = hardware.get_hardware(section)
+        if device:
+            result, status = device.alarm_checks()
+            return {"output": result, "status": status}
+        return {"output": "No device found for Alarm checks", "status": "OK"}
     except Exception as e:
         return {"error": str(e)}
 

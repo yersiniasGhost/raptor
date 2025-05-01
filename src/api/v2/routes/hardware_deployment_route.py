@@ -1,6 +1,6 @@
 from typing import Optional, Union
 from fastapi import Request
-from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareBase
+from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from hardware.electrak.actuator_manager import ActuatorManager
 from utils.envvars import EnvVars
 from database.database_manager import DatabaseManager
@@ -31,7 +31,7 @@ class HardwareDeploymentRoute:
             self.logger.info(f"Adding PV systems")
             self.pv_cts = instantiate_hardware_from_dict(hardware, self.logger, True)
 
-    def get_hardware(self, hardware_type: str) -> Union[ActuatorManager, HardwareBase]:
+    def get_hardware(self, hardware_type: str) -> Union[ActuatorManager, HardwareDeployment]:
         if hardware_type == "BMS":
             return self.batteries
         if hardware_type == "Inverter":
