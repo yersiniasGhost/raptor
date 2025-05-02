@@ -57,6 +57,31 @@ EOF
 fi
 
 
+## CMD Controller
+if [ -f "/etc/systemd/system/cmd-controller.service" ]; then
+    echo "cmd-controller service already exists. Skipping creation."
+else
+
+    # Setup cmd Controller service
+    echo "Setting up cmd-controller service..."
+    cat > "/etc/systemd/system/cmd-controller.service" << EOF
+[Unit]
+Description=CMD Controller Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=$APP_DIR
+ExecStart=$APP_DIR/venv/bin/python $APP_DIR/src/jobs/cmd_controller.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+fi
+
 
 # Reload systemd to recognize new services
 echo "Reloading systemd daemon..."
@@ -77,6 +102,22 @@ echo "Starting vmc-ui service..."
 systemctl start vmc-ui.service
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to start vmc-ui service"
+    exit 1
+fi
+
+
+# CMD UI Service
+echo "Enabling cmd-controller service..."
+systemctl enable cmd-ui.service
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to enable vmc-ui service"
+    exit 1
+fi
+
+echo "Starting cmd-controller service..."
+systemctl start cmd-controller.service
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to start cmd-controller service"
     exit 1
 fi
 
