@@ -18,17 +18,24 @@ class HardwareDeploymentRoute:
         self.batteries = None
 
         db = DatabaseManager(EnvVars().db_path)
+        for hardware in db.get_hardware_systems("Actuators"):
+            self.logger.info(f"Adding Actuators")
+            self.logger.info(f"TOD: {hardware}")
+            self.actuator_manager = ActuatorManager.from_dict(hardware, self.logger)
+
         for hardware in db.get_hardware_systems("BMS"):
             self.logger.info(f"Adding BMS system")
+            self.logger.info(f"TOD: {hardware}")
             self.batteries = instantiate_hardware_from_dict(hardware, self.logger, True)
             self.batteries.get_identifiers()
         for hardware in db.get_hardware_systems("Converters"):
             self.logger.info(f"Adding Converter/Inverter system")
+            self.logger.info(f"TOD: {hardware}")
             self.inverter = instantiate_hardware_from_dict(hardware, self.logger, True)
-        self.actuator_manager = ActuatorManager.from_json(f"{DATA_PATH}/ElectrakActuators/electrak_deployment.json",
-                                                          self.logger)
+
         for hardware in db.get_hardware_systems("PV"):
             self.logger.info(f"Adding PV systems")
+            self.logger.info(f"TOD: {hardware}")
             self.pv_cts = instantiate_hardware_from_dict(hardware, self.logger, True)
 
     def get_hardware(self, hardware_type: str) -> Union[ActuatorManager, HardwareDeployment]:
