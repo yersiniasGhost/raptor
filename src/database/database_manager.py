@@ -62,6 +62,7 @@ class DatabaseManager(metaclass=Singleton):
             # Delete all rows from telemetry table
             cursor.execute("DELETE FROM telemetry_configuration")
             cursor.execute("DELETE FROM hardware")
+            self.logger.info("TOD: Deleting rows from db")
 
         except sqlite3.Error as e:
             self.connection.rollback()
@@ -76,6 +77,7 @@ class DatabaseManager(metaclass=Singleton):
                             INSERT INTO telemetry_configuration (mqtt_config, telemetry_config)
                             VALUES (?, ?)
                         """, (mqtt_config, telemetry_config))
+            self.logger.info("TOD: Inserted telemetry and mqtt config.")
         except Exception as e:
             self.connection.rollback()
             self.logger.error(f"Error inserting telemetry/mqtt configuration: {e}")
@@ -100,6 +102,12 @@ class DatabaseManager(metaclass=Singleton):
                         the_hardware.get("crem3_id")
                     ))
             self.connection.commit()
+            self.logger.info("TOD:  Inserted into hardware table.")
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM hardware")
+            # Fetch the result (will be a tuple with one item)
+            count = cursor.fetchone()[0]
+            self.logger.info(f"Total row count: {count}")
             return True
 
         except sqlite3.Error as e:

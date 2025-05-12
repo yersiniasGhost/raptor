@@ -42,12 +42,29 @@ class RaptorCommissioner:
                 firmware_tag = data.get('firmware_tag')
                 db = DatabaseManager(envvars.db_path)
 
-                with db.connection as conn:
-                    conn.execute("""
-                    REPLACE INTO commission (raptor_id, api_key, firmware_tag)
-                        VALUES (?, ?, ?)
-                    """, (raptor_id, self.api_key, firmware_tag))
-                    conn.commit()
+                try:
+                    with db.connection as conn:
+                        conn.execute("""
+                        UPDATE commission 
+                        SET api_key = ?, firmware_tag = ?
+                        WHERE raptor_id = ?
+                        """, (self.api_key, firmware_tag, raptor_id))
+
+                        # If no rows were updated, insert a new row
+                        if conn.total_changes == 0:
+                            conn.execute("""
+                            INSERT INTO commission (raptor_id, api_key, firmware_tag)
+                            VALUES (?, ?, ?)
+                            """, (raptor_id, self.api_key, firmware_tag))
+                except sqlite3.Error as e:
+                    self.logger.error(f"Database error: {e}")
+
+                # with db.connection as conn:
+                #     conn.execute("""
+                #     REPLACE INTO commission (raptor_id, api_key, firmware_tag)
+                #         VALUES (?, ?, ?)
+                #     """, (raptor_id, self.api_key, firmware_tag))
+                #     conn.commit()
                 self.logger.info("Successfully commissioned Raptor", self.api_key, firmware_tag)
                 return True
             else:
