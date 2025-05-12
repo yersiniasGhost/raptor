@@ -168,6 +168,8 @@ class ActuatorManager(metaclass=Singleton):
     @classmethod
     def from_dict(cls, actuator_map: dict, logger) -> 'ActuatorManager':
         try:
+            logger.info(actuator_map)
+            logger.inof("------------------------")
             hardware = actuator_map['Actuators']
             parameters = hardware['parameters']
             devices = actuator_map['devices']
