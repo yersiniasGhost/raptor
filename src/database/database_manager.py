@@ -101,6 +101,7 @@ class DatabaseManager(metaclass=Singleton):
                         json.dumps(the_hardware.get("devices")),
                         the_hardware.get("crem3_id")
                     ))
+                    self.logger.info(f"Inserting: {hw_name}")
             self.connection.commit()
             self.logger.info("TOD:  Inserted into hardware table.")
             cursor = self.connection.cursor()
