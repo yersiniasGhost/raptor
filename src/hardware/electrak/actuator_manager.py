@@ -169,9 +169,9 @@ class ActuatorManager(metaclass=Singleton):
     def from_dict(cls, actuator_map: dict, logger) -> 'ActuatorManager':
         try:
             logger.info(actuator_map)
-            logger.inof("------------------------")
-            hardware = actuator_map['Actuators']
-            parameters = hardware['parameters']
+            logger.info("------------------------")
+            # hardware = actuator_map['Actuators']
+            parameters = actuator_map['parameters']
             devices = actuator_map['devices']
         except KeyError as e:
             logger.error(f"Missing required configuration field: {e}")
