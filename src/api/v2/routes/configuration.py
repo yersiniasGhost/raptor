@@ -37,7 +37,7 @@ async def recommission(request: Request):
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("recommission", {}, None, None)
-        await ActionFactory.execute_action("restart", {}, None, None)
+        # await ActionFactory.execute_action("restart", {}, None, None)
 
     except Exception as e:
         # Handle errors
