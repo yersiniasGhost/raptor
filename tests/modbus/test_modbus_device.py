@@ -9,7 +9,7 @@ import socket
 
 class TestModbusDevice:
 
-    def __init__(self, host="localhost", port=5020):
+    def __init__(self, host="localhost", port=502):
         self.store = ModbusSlaveContext(
             di=ModbusSequentialDataBlock(0, [False] * 100),
             co=ModbusSequentialDataBlock(0, [False] * 100),

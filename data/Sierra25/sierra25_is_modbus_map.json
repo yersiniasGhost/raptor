@@ -1,0 +1,94 @@
+{
+  "System_Status": {
+    "name": "System_Status",
+    "data_type": "uint16",
+    "address": 0,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Overall status of the system",
+    "enum_values": {
+      "0": "unknown",
+      "1": "system healthy",
+      "2": "at least one minor alarm (no major)",
+      "3": "at least one major alarm"
+    }
+  },
+  "DC_Voltage": {
+    "name": "DC_Voltage",
+    "data_type": "uint16",
+    "address": 1131,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "DC Voltage"
+  },
+  "DC_Current": {
+    "name": "DC_Current",
+    "data_type": "int16",
+    "address": 1132,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "DC Current"
+  },
+  "DC_Power": {
+    "name": "DC_Power",
+    "data_type": "int16",
+    "address": 1133,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "DC Power"
+  },
+  "Phase1Voltage": {
+    "name": "Phase1Voltage",
+    "data_type": "uint16",
+    "address": 1561,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Phase 1 voltage",
+    "access": "RO"
+  },
+  "Phase1Current": {
+    "name": "Phase1Current",
+    "data_type": "int16",
+    "address": 1562,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "Phase 1 current",
+    "access": "RO"
+  },
+  "Phase1Frequency": {
+    "name": "Phase1Frequency",
+    "data_type": "uint16",
+    "address": 1563,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "Phase 1 frequency",
+    "access": "RO"
+  },
+  "Phase1PowerFactor": {
+    "name": "Phase1PowerFactor",
+    "data_type": "uint16",
+    "address": 1564,
+    "units": "",
+    "conversion_factor": 0.01,
+    "description": "Phase 1 power factor",
+    "access": "RO"
+  },
+  "Phase1TruePower": {
+    "name": "Phase1TruePower",
+    "data_type": "int16",
+    "address": 1565,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "Phase 1 true output power",
+    "access": "RO"
+  },
+  "Phase1ApparentPower": {
+    "name": "Phase1ApparentPower",
+    "data_type": "int16",
+    "address": 1566,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "Phase 1 apparent output power",
+    "access": "RO"
+  }
+}

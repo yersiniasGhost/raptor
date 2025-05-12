@@ -135,7 +135,7 @@ def convert_register_value(raw_values: List[int], register: ModbusRegister) -> U
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             registers: List[ModbusRegister], slave_id: int,
-                            logger = None) -> Dict[str, Union[float, int]]:
+                            logger=None) -> Dict[str, Union[float, int]]:
     """
     This method queries the modbus hardware based upon the slave_id and the provided registers.
     The output is in the format of a dictionary:   { register_name: register_value }

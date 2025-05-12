@@ -30,6 +30,7 @@ class RaptorCommissioner:
             payload = {"mac_address": self.mac_address}
 
             self.logger.info(f"Attempting to commission Raptor with MAC: {self.mac_address}")
+            self.logger.info(f"Using: {url} and payload: {payload}")
             response = requests.post(url, json=payload)
 
             if response.status_code == 200:
