@@ -39,7 +39,6 @@ class RaptorCommissioner:
                 self.api_key = data.get('api_key')
                 envvars = EnvVars()
                 raptor_id = data.get('raptor_id')
-                api_key = data.get('api_key')
                 firmware_tag = data.get('firmware_tag')
                 db = DatabaseManager(envvars.db_path)
 
@@ -47,9 +46,9 @@ class RaptorCommissioner:
                     conn.execute("""
                     REPLACE INTO commission (raptor_id, api_key, firmware_tag)
                         VALUES (?, ?, ?)
-                    """, (raptor_id, api_key, firmware_tag))
+                    """, (raptor_id, self.api_key, firmware_tag))
                     conn.commit()
-                self.logger.info("Successfully commissioned Raptor", api_key, firmware_tag)
+                self.logger.info("Successfully commissioned Raptor", self.api_key, firmware_tag)
                 return True
             else:
                 self.logger.error(f"Commission failed: {response.text}")
