@@ -178,6 +178,7 @@ class ActuatorManager(metaclass=Singleton):
             raise
         try:
             manager = cls(**parameters)
+            manager = cls(parameters['channel'], parameters['eds'])
             manager.hardware_definition = actuator_map
             for device in devices:
                 manager.add_actuator(device['mac'], device['node_id'])
