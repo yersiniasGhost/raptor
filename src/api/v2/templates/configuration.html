@@ -135,7 +135,7 @@
         <button class="test-button" onclick="serviceAction('{{ service }}', 'stop')">Stop</button>
     </span>
 {% endfor %}
-    <textarea id="{{ service }}Response" class="json-display" readonly></textarea>
+    <textarea id="ServicesResponse" class="json-display" readonly></textarea>
 </div>
 
 <h1>System Configuration</h1>
@@ -189,7 +189,7 @@
     }
 
     async function serviceAction(service, action) {
-        const responseBox = document.getElementById(`${service}Response`);
+        const responseBox = document.getElementById(`ServicesResponse`);
         responseBox.value = `Executing ${action} on ${service}...`;
 
         try {
