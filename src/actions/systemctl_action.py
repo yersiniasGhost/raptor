@@ -36,9 +36,11 @@ class SystemctlAction(Action):
                         capture_output=True,
                         text=True
                     )
+                    output = result.output.replace('\\n', '\n')
+                    output = str(output)
                     results[process] = {
                         "status": "success",
-                        "output": result.stdout,
+                        "output": output,
                         "error": result.stderr if result.stderr else None
                     }
                 except subprocess.CalledProcessError as e:
