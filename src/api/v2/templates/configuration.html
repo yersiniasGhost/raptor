@@ -128,6 +128,7 @@
 <h1>Services Status</h1>
 <div class="config-section">
     <span>
+        <div>
 {% for service in ["vmc-ui", "cmd-controller", "iot-controller"] %}
         {{ service }}
 	<div>
@@ -138,8 +139,9 @@
 		</span>
     </div>
 {% endfor %}
+            </div>
     <textarea id="ServicesResponse" class="json-display" readonly></textarea>
-        </span>
+    </span>
 </div>
 
 <h1>System Configuration</h1>
@@ -173,7 +175,6 @@
 {% endblock %}
 
 {% block scripts %}
-{% endblock %}
 
 <script>
     async function recommission() {
@@ -298,3 +299,4 @@
         });
     });
 </script>
+{% endblock %}
