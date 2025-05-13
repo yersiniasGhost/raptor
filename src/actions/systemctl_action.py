@@ -42,8 +42,8 @@ class SystemctlAction(Action):
                         "error": result.stderr if result.stderr else None
                     }
                 except subprocess.CalledProcessError as e:
-                    logger.error(f"Failed to restart {process}: {e}")
-                    results[process] = {"status":f"failed: {str(e)}", "output": "", "error": str(e) }
+                    logger.error(f"Failed to run {process}: {e}")
+                    results[process] = {"status": f"failed: {str(e)}", "output": "", "error": str(e) }
 
             return ActionStatus.SUCCESS, {"results": results}
 

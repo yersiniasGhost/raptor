@@ -173,6 +173,8 @@
 {% endblock %}
 
 {% block scripts %}
+{% endblock %}
+
 <script>
     async function recommission() {
         try {
@@ -206,7 +208,13 @@
             });
 
             const data = await response.json();
-            responseBox.value = JSON.stringify(data, null, 2);
+            if (data.output) {
+               responseBox.value = data.output;
+            } else if (data.error) {
+               responseBox.value = data.error;
+            } else {
+               responseBox.value = JSON.stringify(data, null, 2);
+            }
         } catch (error) {
             responseBox.value = `Error executing ${action} on ${service}: ${error.message}`;
         }
@@ -290,4 +298,3 @@
         });
     });
 </script>
-{% endblock %}
