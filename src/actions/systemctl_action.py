@@ -32,7 +32,7 @@ class SystemctlAction(Action):
                 try:
                     result = subprocess.run(
                         ['systemctl', cmd, process],
-                        check=True,
+                        check=False,
                         capture_output=True,
                         text=True
                     )
@@ -43,7 +43,7 @@ class SystemctlAction(Action):
                     }
                 except subprocess.CalledProcessError as e:
                     logger.error(f"Failed to run {process}: {e}")
-                    results[process] = {"status": f"failed: {str(e)}", "output": "", "error": str(e) }
+                    results[process] = {"status": ActionStatus.FAILED, "output": "", "error": str(e) }
                     return ActionStatus.FAILED, {"results": results}
 
             return ActionStatus.SUCCESS, {"results": results}
