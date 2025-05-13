@@ -43,16 +43,11 @@ async def service_action(action: str, service_data: dict):
     # Validate service
     if service not in ["vmc-ui", "cmd-controller", "iot-controller"]:
         return {"error": f"Invalid service: {service}"}
-
-    try:
-        # Execute the appropriate action based on the parameters
-        status, cmd_response = await ActionFactory.execute_action("systemctl",
-                                                                  {"cmd": action, "target": service}, None, None)
-        result = {"status": status, "response": cmd_response['output']}
-        return {"output": result}
-    except Exception as e:
-        logger.error(f"Error performing {action} on {service}: {str(e)}")
-        return {"error": str(e)}
+    # Execute the appropriate action based on the parameters
+    status, cmd_response = await ActionFactory.execute_action("systemctl",
+                                                              {"cmd": action, "target": service}, None, None)
+    result = {"status": status, "response": cmd_response['output']}
+    return {"output": result}
 
 
 @router.post("/recommission", name="recommission")
