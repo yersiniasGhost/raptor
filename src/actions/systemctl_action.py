@@ -5,6 +5,8 @@ from .base_action import Action
 from .action_status import ActionStatus
 from utils import LogManager, JSON
 
+SERVICES = ["iot-controller", "vmc-ui", "cmd-controller"]
+
 
 class SystemctlAction(Action):
 
@@ -13,8 +15,9 @@ class SystemctlAction(Action):
         logger.info("Received systemctl status command")
 
         try:
+            cmd = self.params.get('cmd', "status")
             target = self.params.get('target', 'all')  # 'all' or specific process name
-            processes = ["iot-controller", "vmc-ui"]
+            processes = SERVICES
             if target == 'all':
                 targets = processes
             elif target in processes:
@@ -25,10 +28,10 @@ class SystemctlAction(Action):
 
             results = {}
             for process in targets:
-                logger.info(f"Restarting service: {process}")
+                logger.info(f"Sending systemctl {cmd} to service: {process}")
                 try:
                     result = subprocess.run(
-                        ['systemctl', 'status', process],
+                        ['systemctl', cmd, process],
                         check=True,
                         capture_output=True,
                         text=True

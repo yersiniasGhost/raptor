@@ -95,34 +95,6 @@ class FirmwareUpdater:
             self.logger.error("Failed to rollback! Manual intervention required!")
             sys.exit(1)
 
-    # Not useful anymore as I use systemctl to manage applications
-    def restart_screen_sessions(self) -> bool:
-        """Restart all configured screen sessions."""
-        from config.services import sessions
-        success = True
-        for session in sessions['sessions']:
-            name = session['name']
-            command = session['command']
-            cwd = session['cwd']
-
-            self.logger.info(f"Restarting screen session: {name}")
-
-            # Kill existing session if it exists
-            if not kill_screen_session(name, self.logger):
-                success = False
-                continue
-
-            # Start new session
-            if not start_screen_session(name, command, cwd, self.logger):
-                success = False
-                continue
-
-            # Give it some time to start up
-            time.sleep(2)
-
-        return success
-
-
 
     def update(self) -> bool:
         """Main update procedure."""
@@ -139,14 +111,6 @@ class FirmwareUpdater:
             # Update repository
             if not self.update_repository(self.target_tag):
                 return False
-
-            # Restart screen sessions
-            # Require the caller to Restart the applications but shutting them down
-            # and letting systemctl to manage restarts
-            # if not self.restart_screen_sessions():
-            #     self.logger.error("Screen session restart failed, rolling back...")
-            #     self.rollback(self.current_version)
-            #     return False
 
             db = DatabaseManager(EnvVars().db_path)
             db.add_firmware_version(self.target_tag)

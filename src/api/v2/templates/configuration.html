@@ -98,20 +98,23 @@
 <h1>Firmware version and control</h1>
 
 <div class="firmware-control-container">
+    Current version: {{ current_branch }}
     <form action="/configuration/update_firmware" method="post">
         <div class="form-group">
+            <span><span>
             <label for="git-branch">Select firmware version:</label>
             <select id="git-branch" name="branch" class="form-control">
                 {% for branch in git_branches %}
                     <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
                 {% endfor %}
             </select>
+                </span>
 
             <div class="form-actions">
                 <button type="submit" name="action" value="update" class="btn btn-primary">Update</button>
                 <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update & Restart</button>
-
             </div>
+                </span>
        </div>
     </form>
 </div>
@@ -122,6 +125,18 @@
       <button class="test-button" onclick="reconfigure()">Reconfigure system</button>
 </div>
 
+<h1>Services Status</h1>
+<div class="config-container">
+{% for service in ["vmc-ui", "cmd-controller", "iot-controller"] %}
+    <span>
+        {{ service }}
+        <button class="test-button" onclick="serviceAction('{{ service }}', 'status')">Status</button>
+        <button class="test-button" onclick="serviceAction('{{ service }}', 'restart')">Restart</button>
+        <button class="test-button" onclick="serviceAction('{{ service }}', 'stop')">Stop</button>
+    </span>
+{% endfor %}
+    <textarea id="{{ service }}Response" class="json-display" readonly></textarea>
+</div>
 
 <h1>System Configuration</h1>
 {% for config in ["Actuators", "BMS", "Inverter", "Generation"] %}
@@ -170,6 +185,26 @@
             const data = await response.json();
         } catch (error) {
             console.log("BAD ERROR");
+        }
+    }
+
+    async function serviceAction(service, action) {
+        const responseBox = document.getElementById(`${service}Response`);
+        responseBox.value = `Executing ${action} on ${service}...`;
+
+        try {
+            const response = await fetch(`/configuration/service/${action}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ service: service })
+            });
+
+            const data = await response.json();
+            responseBox.value = JSON.stringify(data, null, 2);
+        } catch (error) {
+            responseBox.value = `Error executing ${action} on ${service}: ${error.message}`;
         }
     }
 

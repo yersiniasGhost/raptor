@@ -31,6 +31,29 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     )
 
 
+@router.post("/service/{action}", name="service-action")
+async def service_action(action: str, service_data: dict):
+    service = service_data.get("service")
+    logger.info(f"Requested {action} of service {service}")
+
+    # Validate action
+    if action not in ["status", "restart", "stop"]:
+        return {"error": f"Invalid action: {action}"}
+
+    # Validate service
+    if service not in ["vmc-ui", "cmd-controller", "iot-controller"]:
+        return {"error": f"Invalid service: {service}"}
+
+    try:
+        # Execute the appropriate action based on the parameters
+        status, cmd_response = await ActionFactory.execute_action("systemctl", {"cmd": action}, None, None)
+        result = {"status": status, "response": cmd_response}
+        return {"output": result}
+    except Exception as e:
+        logger.error(f"Error performing {action} on {service}: {str(e)}")
+        return {"error": str(e)}
+
+
 @router.post("/recommission", name="recommission")
 async def recommission(request: Request):
     logger.info("Requested to recommission VMC")
@@ -191,6 +214,7 @@ def get_git_branches():
         text=True,
         check=True
     )
+    logger.info(f"git branch --list --all  returns: {result}")
 
     branches = []
     for line in result.stdout.splitlines():
