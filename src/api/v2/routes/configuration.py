@@ -46,7 +46,8 @@ async def service_action(action: str, service_data: dict):
 
     try:
         # Execute the appropriate action based on the parameters
-        status, cmd_response = await ActionFactory.execute_action("systemctl", {"cmd": action}, None, None)
+        status, cmd_response = await ActionFactory.execute_action("systemctl",
+                                                                  {"cmd": action, "target": service}, None, None)
         result = {"status": status, "response": cmd_response}
         return {"output": result}
     except Exception as e:

@@ -129,12 +129,13 @@
 <div class="config-section">
 {% for service in ["vmc-ui", "cmd-controller", "iot-controller"] %}
         {{ service }}
-	<div><span>
+	<div>
+        <span>
         <button class="test-button" onclick="serviceAction('{{ service }}', 'status')">Status</button>
         <button class="test-button" onclick="serviceAction('{{ service }}', 'restart')">Restart</button>
         <button class="test-button" onclick="serviceAction('{{ service }}', 'stop')">Stop</button>
-		</span></div>
-    t
+		</span>
+    </div>
 {% endfor %}
     <textarea id="ServicesResponse" class="json-display" readonly></textarea>
 </div>
