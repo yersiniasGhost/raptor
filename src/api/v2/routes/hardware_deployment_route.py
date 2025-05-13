@@ -21,7 +21,11 @@ class HardwareDeploymentRoute:
         for hardware in db.get_hardware_systems("Actuators"):
             self.logger.info(f"Adding Actuators")
             self.logger.info(f"TOD: {hardware}")
-            self.actuator_manager = ActuatorManager.from_dict(hardware, self.logger)
+            try:
+                self.actuator_manager = ActuatorManager.from_dict(hardware, self.logger)
+            except Exception as e:
+                self.logger.error(f"Failed to load ActuatorManager, {e}")
+                self.actuator_manager = None
 
         for hardware in db.get_hardware_systems("BMS"):
             self.logger.info(f"Adding BMS system")
