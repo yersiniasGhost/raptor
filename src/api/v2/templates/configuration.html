@@ -127,6 +127,7 @@
 
 <h1>Services Status</h1>
 <div class="config-section">
+    <span>
 {% for service in ["vmc-ui", "cmd-controller", "iot-controller"] %}
         {{ service }}
 	<div>
@@ -138,6 +139,7 @@
     </div>
 {% endfor %}
     <textarea id="ServicesResponse" class="json-display" readonly></textarea>
+        </span>
 </div>
 
 <h1>System Configuration</h1>
