@@ -36,7 +36,7 @@ class SystemctlAction(Action):
                         capture_output=True,
                         text=True
                     )
-                    output = result.output.replace('\\n', '\n')
+                    output = result.stdout.replace('\\n', '\n')
                     output = str(output)
                     results[process] = {
                         "status": "success",
