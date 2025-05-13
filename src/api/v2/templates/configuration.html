@@ -202,7 +202,7 @@
 
             const data = await response.json();
             if (data.output) {
-               responseBox.value = JSON.stringify(data, null, 2);
+               responseBox.value = JSON.stringify(data.output, null, 2);
             } else if (data.error) {
                responseBox.value = data.error;
             } else {
