@@ -204,7 +204,7 @@ async def get_current_configuration(section: str):
 
 
 # Helper functions to interact with git
-def get_git_branches():
+def get_git_branches_orig():
     """Get list of available git branches"""
     # fetch first?
     subprocess.run(["git", "remote", "update", "origin", "--prune"])
@@ -226,6 +226,32 @@ def get_git_branches():
 
         if branch and branch not in branches and not branch.startswith("HEAD"):
             branches.append(branch)
+
+    return branches
+
+
+def get_git_branches():
+    """Get list of available git branches without fetching content"""
+    result = subprocess.run(
+        ["git", "ls-remote", "--heads", "origin"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    logger.info(f"git ls-remote --heads origin returns: {result}")
+
+    branches = []
+    for line in result.stdout.splitlines():
+        # Each line has format: "commit_hash refs/heads/branch_name"
+        if not line.strip():
+            continue
+
+        parts = line.split()
+        if len(parts) >= 2:
+            # Extract branch name from refs/heads/branch_name
+            branch = parts[1].replace("refs/heads/", "")
+            if branch and branch not in branches and not branch == "HEAD":
+                branches.append(branch)
 
     return branches
 
