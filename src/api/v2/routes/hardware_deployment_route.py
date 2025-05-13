@@ -62,7 +62,9 @@ class HardwareDeploymentRoute:
                 return self.inverter.definition
             return {"message": "NO INVERTER/CONVERTER assigned."}
         if hardware_type == "Actuators":
-            return self.actuator_manager.hardware_definition
+            if self.actuator_manager:
+                return self.actuator_manager.hardware_definition
+            return {"message": "NO Actuators installed (check config)"}
         else:
             return None
 
