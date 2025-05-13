@@ -44,6 +44,7 @@ class SystemctlAction(Action):
                 except subprocess.CalledProcessError as e:
                     logger.error(f"Failed to run {process}: {e}")
                     results[process] = {"status": f"failed: {str(e)}", "output": "", "error": str(e) }
+                    return ActionStatus.FAILED, {"results": results}
 
             return ActionStatus.SUCCESS, {"results": results}
 
