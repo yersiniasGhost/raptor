@@ -25,6 +25,12 @@ class ModbusAcquisitionType(Enum):
     STATUS = "status"
 
 
+class ModbusRegisterType(Enum):
+    HOLDING = 'holding'
+    INPUT = 'input'
+    CONTROL = 'control'
+
+
 @dataclass
 class ModbusRegister:
     name: str
@@ -38,6 +44,8 @@ class ModbusRegister:
     enum_values: Dict[str, str] = field(default_factory=dict)
     length: int = 1
     access: str = "RO"
+    slave_id: Optional[int] = None
+    type: Union[ModbusRegisterType, str] = ModbusRegisterType.HOLDING
 
     def __post_init__(self):
         # Ensure the name has no spaces:

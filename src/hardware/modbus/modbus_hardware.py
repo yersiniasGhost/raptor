@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pymodbus.client import ModbusSerialClient, ModbusTcpClient
 from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
-from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype
+from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
 
 
 from utils import LogManager
@@ -152,7 +152,14 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         output: Dict[str, Union[float, int]] = {}
         for register in registers:
             address = int(register.address)
-            result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
+            # In some cases, like Inview S the slave ID is used to query different systems not devices
+            if register.slave_id:
+                slave_id = register.slave_id
+            result = None
+            if register.type == ModbusRegisterType.HOLDING:
+                result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
+            else:
+                result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
             if result is None:
                 logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
