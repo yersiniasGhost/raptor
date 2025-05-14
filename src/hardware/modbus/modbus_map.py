@@ -45,7 +45,7 @@ class ModbusRegister:
     length: int = 1
     access: str = "RO"
     slave_id: Optional[int] = None
-    type: Union[ModbusRegisterType, str] = ModbusRegisterType.HOLDING
+    type: Union[ModbusRegisterType, str] = ModbusRegisterType.INPUT
 
     def __post_init__(self):
         # Ensure the name has no spaces:

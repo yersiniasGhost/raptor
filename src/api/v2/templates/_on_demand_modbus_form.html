@@ -4,12 +4,19 @@
     <input type="number" id="register_address_{{slave_id}}" min="0" required>
 </div>
 <div class="form-group">
-    <label for="register_address_{{slave_id}}">Device (slave) ID:</label>
+    <label for="slave_id_{{slave_id}}">Device (slave) ID:</label>
     <input type="number" id="slave_id_{{slave_id}}" min="0" value="{{slave_id}}"required>
 </div>
 <div class="form-group">
-    <label for="register_type_{{slave_id}}">Register Type:</label>
-    <select id="register_type_{{slave_id}}">
+    <label for="register_kind_{{slave_id}}">Register Type:</label>
+    <select id="register_kind_{{slave_id}}">
+        <option value="holding">HOLDING</option>
+        <option value="input">INPUT</option>
+    </select>
+</div>
+<div class="form-group">
+    <label for="data_type_{{slave_id}}">Register Data Type:</label>
+    <select id="data_type_{{slave_id}}">
         <option value="uint16">UINT16</option>
         <option value="int8">INT8</option>
         <option value="int16">INT16</option>
@@ -39,9 +46,10 @@
 <script>
     function getRegisterData(unitId) {
         const registerAddress = document.getElementById(`register_address_${unitId}`).value;
-        const registerType = document.getElementById(`register_type_${unitId}`).value;
+        const dataType = document.getElementById(`data_type_${unitId}`).value;
         const registerRange = document.getElementById(`register_range_${unitId}`).value;
-        const slaveId = document.getElementBId('slave_id_${unitId}').value;
+        const slaveId = document.getElementBId(`slave_id_${unitId}`).value;
+        const registerKind = document.getElementById(`register_kind_${unitId}`).value;
 
         if (!registerAddress) {
             alert('Please enter a register address');
@@ -52,7 +60,8 @@
             unit_id: slaveId,
             register: parseInt(registerAddress),
             range: parseInt(registerRange),
-            type: registerType,
+            type: registerKind,
+            data_type: dataType,
             page: "{{ page }}"
         };
     }
@@ -78,8 +87,9 @@
 
     async function fetchRegisterData(unitId) {
             const registerAddress = document.getElementById(`register_address_${unitId}`).value;
-            const registerType = document.getElementById(`register_type_${unitId}`).value;
+            const dataType = document.getElementById(`data_type_${unitId}`).value;
             const registerRange = document.getElementById(`register_range_${unitId}`).value;
+            const registerType = document.getElementById(`register_kind_${unitId}`).value;
 
             if (!registerAddress) {
                 alert('Please enter a register address');
@@ -90,7 +100,8 @@
                 unit_id: unitId,
                 register: parseInt(registerAddress),
                 range: parseInt(registerRange),
-                type: registerType,
+                data_type: dataType,
+                register_type: registerType
                 page: "{{ page }}"
             };
 

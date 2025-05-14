@@ -51,9 +51,10 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
 
     m_map = ModbusMap.from_dict({"ODQ": {
             "name": "ODQ",
-            "data_type": parsed_data['type'],
+            "data_type": parsed_data['data_type'],
             "address": parsed_data['register'],
             "range_size": range,
+            "type": parsed_data['register_type'],
             "units": "",
             "conversion_factor": 1.0,
             "description": "On demand query"
