@@ -108,6 +108,11 @@ def convert_register_value(raw_values: List[int], register: ModbusRegister) -> U
         # UINT8: 0 to 255
         # Assuming it's in the low byte
         value = raw_value & 0xFF  # Mask to get only lower 8 bits
+    elif data_type == ModbusDatatype.INT8:
+        # INT8: -128 to 127
+        raw_value = raw_value & 0xFF  # Ensure 8-bit
+        # Convert to signed using 2's complement
+        value = (raw_value - 256) if (raw_value & 0x80) else raw_value
     elif data_type == ModbusDatatype.FLAG16:
         value = raw_value
     elif data_type == ModbusDatatype.ASCII16:
@@ -156,7 +161,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             if register.slave_id:
                 slave_id = register.slave_id
             result = None
-            if register.type == ModbusRegisterType.HOLDING:
+            if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
                 logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register}")
                 result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
             else:
