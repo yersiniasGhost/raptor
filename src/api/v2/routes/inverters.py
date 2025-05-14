@@ -56,7 +56,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
             {
                 "hardware": [],
                 "request": request,
-                "register_map": register_map,
+                "register_map": {},
                 "error": str(e)
             }
         )
