@@ -8,8 +8,7 @@
 	"conversion_factor": 1,
 	"description": "BMS Manufacturer serial number in ASCII format",
 	"access": "R"
-  }
-},
+  },
   "System_Status": {
     "name": "System_Status",
     "data_type": "uint16",
