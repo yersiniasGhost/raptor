@@ -90,6 +90,7 @@
             const dataType = document.getElementById(`data_type_${unitId}`).value;
             const registerRange = document.getElementById(`register_range_${unitId}`).value;
             const registerType = document.getElementById(`register_kind_${unitId}`).value;
+            const slave_id = document.getElementById(`slave_id+${unitId}`).value;
 
             if (!registerAddress) {
                 alert('Please enter a register address');
@@ -97,11 +98,11 @@
             }
 
             const data = {
-                unit_id: unitId,
+                unit_id: slave_id,
                 register: parseInt(registerAddress),
                 range: parseInt(registerRange),
                 data_type: dataType,
-                register_type: registerType
+                register_type: registerType,
                 page: "{{ page }}"
             };
 
