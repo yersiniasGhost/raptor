@@ -642,7 +642,7 @@
 	"units": "ASCII",
 	"conversion_factor": 1,
 	"description": "BMS Manufacturer serial number in ASCII format",
-	"access": "RW"
+	"access": "R"
   },
   "Pack SN": {
 	"name": "Pack Serial Number",

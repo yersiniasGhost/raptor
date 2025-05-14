@@ -6,9 +6,11 @@ from . import templates
 import json
 from typing import Annotated
 
+from database.db_utils import get_mqtt_config
+from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
-from utils import LogManager, run_command
+from utils import LogManager
 
 logger = LogManager().get_logger(__name__)
 
@@ -20,13 +22,17 @@ router = APIRouter(prefix="/configuration", tags=["configuration"])
 async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     git_branches = get_git_branches()
     current_branch = get_current_branch()
+    mqtt_broker: MQTTConfig = get_mqtt_config(logger)
     return templates.TemplateResponse(
         "configuration.html",
         {
             "hardware": hardware,
             "request": request,
             "git_branches": git_branches,
-            "current_branch": current_branch
+            "current_branch": current_branch,
+            "mqtt_broker_ip": mqtt_broker.broker,
+            "mqtt_broker_port": mqtt_broker.port,
+            "mqtt_path": mqtt_broker.client_id
         }
     )
 

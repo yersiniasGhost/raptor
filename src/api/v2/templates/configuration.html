@@ -87,37 +87,36 @@
 {% endblock %}
 
 {% block content %}
-<h1>Firmware version and control</h1>
+<h2>Firmware version and control</h2>
 
 <div class="firmware-control-container">
     Current version: {{ current_branch }}
     <form action="/configuration/update_firmware" method="post">
         <div class="form-group">
-            <span><span>
-            <label for="git-branch">Select firmware version:</label>
-            <select id="git-branch" name="branch" class="form-control">
-                {% for branch in git_branches %}
-                    <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
-                {% endfor %}
-            </select>
-                </span>
+            <span>
+                <label for="git-branch">Select firmware version:</label>
+                <select id="git-branch" name="branch" class="form-control">
+                    {% for branch in git_branches %}
+                        <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
+                    {% endfor %}
+                </select>
 
-            <div class="form-actions">
-                <button type="submit" name="action" value="update" class="btn btn-primary">Update</button>
-                <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update & Restart</button>
-            </div>
-                </span>
+                <div class="form-actions">
+                    <button type="submit" name="action" value="update" class="btn btn-primary">Update</button>
+                    <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update & Restart</button>
+                </div>
+            </span>
        </div>
     </form>
 </div>
 
-<h1>System commission and configuration</h1>
+<h2>System commission and configuration</h2>
 <div class="firmware-control-container">
       <button class="test-button" onclick="recommission()">Recommission system</button>
       <button class="test-button" onclick="reconfigure()">Reconfigure system</button>
 </div>
 
-<h1>Services Status</h1>
+<h2>Services Status</h2>
 <div class="config-section">
     <span>
         <div>
@@ -136,6 +135,21 @@
     <textarea id="ServicesResponse" class="json-display" readonly></textarea>
     </span>
 </div>
+
+<h2>Communications Configuration</h2>
+<div class="config-container">
+    <div class="config-section">
+        <h3 class="config-title">MQTT Configuration</h3>
+            <h4>MQTT Broker</h4>
+            <span>IP Address: {{ mqtt_broker_ip }}</span>
+            <span>Port number: {{ mqtt_broker_port }}</span>
+            <span>Broker path: {{ mqtt_path }}</span>
+
+        <h3 class="config-title">Commissioning Comms</h3>
+        <h3 class="config-title">System configuration comms</h3>
+    </div>
+</div>
+
 
 <h1>System Configuration</h1>
 {% for config in ["Actuators", "BMS", "Inverter", "Generation"] %}

@@ -1,4 +1,15 @@
 {
+  "Model SN": {
+    "name": "Model SN",
+	"data_type": "ascii16",
+	"address": 160,
+	"range_size": 9,
+	"units": "ASCII",
+	"conversion_factor": 1,
+	"description": "BMS Manufacturer serial number in ASCII format",
+	"access": "R"
+  }
+},
   "System_Status": {
     "name": "System_Status",
     "data_type": "uint16",
