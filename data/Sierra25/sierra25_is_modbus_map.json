@@ -19,7 +19,7 @@
     "data_type": "uint16",
     "address": 501,
     "units": "V",
-    "conversion_factor": 0.1,
+    "conversion_factor": 10,
     "description": "DC Voltage"
   },
   "DC_Current": {
@@ -28,7 +28,7 @@
     "data_type": "int16",
     "address": 502,
     "units": "A",
-    "conversion_factor": 0.1,
+    "conversion_factor": 10,
     "description": "DC Current"
   },
   "DC_Power": {
@@ -37,7 +37,7 @@
     "data_type": "int16",
     "address": 503,
     "units": "W",
-    "conversion_factor": 10,
+    "conversion_factor": 0.01,
     "description": "DC Power"
   },
   "Phase1Voltage": {
@@ -76,7 +76,7 @@
     "data_type": "uint16",
     "address": 135,
     "units": "",
-    "conversion_factor": 0.01,
+    "conversion_factor": 100.0,
     "description": "Phase 1 power factor",
     "access": "RO"
   },
@@ -86,7 +86,7 @@
     "data_type": "int16",
     "address": 123,
     "units": "W",
-    "conversion_factor": 100,
+    "conversion_factor": 0.01,
     "description": "Phase 1 true output power",
     "access": "RO"
   },
@@ -96,7 +96,7 @@
     "data_type": "int16",
     "address": 124,
     "units": "VA",
-    "conversion_factor": 100,
+    "conversion_factor": 0.01,
     "description": "Phase 1 apparent output power",
     "access": "RO"
   }
