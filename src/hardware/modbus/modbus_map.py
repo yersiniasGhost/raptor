@@ -45,7 +45,7 @@ class ModbusRegister:
     length: int = 1
     access: str = "RO"
     slave_id: Optional[int] = None
-    type: Union[ModbusRegisterType, str] = ModbusRegisterType.INPUT
+    type: Union[ModbusRegisterType, str] = ModbusRegisterType.HOLDING
 
     def __post_init__(self):
         # Ensure the name has no spaces:
@@ -61,6 +61,12 @@ class ModbusRegister:
                 self.acquisition_type = ModbusAcquisitionType(self.acquisition_type)
             except ValueError:
                 raise ValueError(f"Invalid acquisition type: {self.acquisition_type}")
+        if isinstance(self.type, str):
+            try:
+                self.type = ModbusRegisterType(self.type)
+            except ValueError:
+                raise ValueError(f"Invalid register type: {self.type}")
+
 
     def get_addresses(self) -> List[int]:
         """Returns list of all addresses if this is a range register"""
