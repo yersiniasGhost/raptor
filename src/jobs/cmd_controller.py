@@ -15,7 +15,7 @@ class CmdController:
 
     def __init__(self):
         # Setup logging with rotation and remote logging if needed
-        self.logger = LogManager("cmd_controller.log").get_logger("CmdController")
+        self.logger = LogManager("cmd-controller.log").get_logger("CmdController")
         self.running = True
         self._setup_error_handlers()
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)

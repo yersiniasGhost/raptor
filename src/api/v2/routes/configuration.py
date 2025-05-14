@@ -43,16 +43,20 @@ async def service_action(action: str, service_data: dict):
     logger.info(f"Requested {action} of service {service}")
 
     # Validate action
-    if action not in ["status", "restart", "stop"]:
+    if action not in ["status", "restart", "stop", "tail"]:
         return {"error": f"Invalid action: {action}"}
 
     # Validate service
     if service not in ["vmc-ui", "cmd-controller", "iot-controller"]:
         return {"error": f"Invalid service: {service}"}
-    # Execute the appropriate action based on the parameters
-    status, cmd_response = await ActionFactory.execute_action("systemctl",
+
+    if action == "tail":
+        status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 25, "process": service})
+    else:
+        # Execute the appropriate action based on the parameters
+        status, cmd_response = await ActionFactory.execute_action("systemctl",
                                                               {"cmd": action, "target": service}, None, None)
-    logger.info(cmd_response)
+    # logger.info(cmd_response)
     result = {"status": status, "response": cmd_response}
     return {"output": result}
 

@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from utils import LogManager
-lm = LogManager("vmc.log")
+lm = LogManager("vmc-ui.log")
 logger = lm.get_logger("VMC")
 lm.configure_library_loggers()
 from routes import actuator, bms, configuration, analysis, inverters, modbus, system_status, generation
