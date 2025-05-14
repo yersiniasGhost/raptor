@@ -20,7 +20,7 @@ class TailLogAction(Action):
                 logger.error("No log file specified")
                 return ActionStatus.FAILED, {"error": "No log file specified"}
 
-            log_path = EnvVars().log_path + "/" + log_file
+            log_path = EnvVars().log_path + "/" + log_file + ".log"
             if not os.path.exists(log_path):
                 logger.error(f"Log file not found: {log_path}")
                 return ActionStatus.FAILED, {"error": f"Log file not found: {log_file}"}
