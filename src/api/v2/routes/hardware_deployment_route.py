@@ -16,6 +16,7 @@ class HardwareDeploymentRoute:
         self.logger = LogManager().get_logger("HardwareDepRoute")
         self.inverter = None
         self.batteries = None
+        self.actuator_manager = None
 
         db = DatabaseManager(EnvVars().db_path)
         for hardware in db.get_hardware_systems("Actuators"):
