@@ -40,7 +40,7 @@
     "data_type": "int16",
     "address": 502,
     "units": "W",
-    "conversion_factor": 0.1,
+    "conversion_factor": 100.0,
     "description": "DC Power"
   },
   "Phase1Voltage": {
@@ -94,7 +94,7 @@
     "data_type": "int16",
     "address": 122,
     "units": "W",
-    "conversion_factor": 0.01,
+    "conversion_factor": 100.0,
     "description": "Phase 1 true output power",
     "access": "RO"
   },
@@ -105,7 +105,7 @@
     "data_type": "int16",
     "address": 123,
     "units": "VA",
-    "conversion_factor": 0.01,
+    "conversion_factor": 100.0,
     "description": "Phase 1 apparent output power",
     "access": "RO"
   }
