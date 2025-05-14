@@ -157,14 +157,17 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                 slave_id = register.slave_id
             result = None
             if register.type == ModbusRegisterType.HOLDING:
+                logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register}")
                 result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
             else:
+                logger.info(f"Reading input register: {address}, {slave_id}, {register}")
                 result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
             if result is None:
                 logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
                 logger.info(f"Error reading register: {result}")
             else:
+                logger.info(f"Result is: {result.registers}")
                 output[register.name] = convert_register_value(result.registers, register)
         # output['slave_id'] = slave_id
         return output
