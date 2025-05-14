@@ -25,7 +25,7 @@
   "DC_Current": {
     "slave_id": 31,
     "name": "DC_Current",
-    "data_type": "int16",
+    "data_type": "uint16",
     "address": 502,
     "units": "A",
     "conversion_factor": 0.1,
@@ -35,9 +35,9 @@
     "slave_id": 31,
     "name": "DC_Power",
     "data_type": "int16",
-    "address": 503,
+    "address": 502,
     "units": "W",
-    "conversion_factor": 0.01,
+    "conversion_factor": 0.1,
     "description": "DC Power"
   },
   "Phase1Voltage": {
@@ -54,7 +54,7 @@
     "slave_id": 31,
     "name": "Phase1Current",
     "data_type": "int16",
-    "address": 122,
+    "address": 102,
     "units": "A",
     "conversion_factor": 0.1,
     "description": "Phase 1 current",

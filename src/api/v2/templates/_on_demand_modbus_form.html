@@ -3,7 +3,10 @@
     <label for="register_address_{{slave_id}}">Register Address:</label>
     <input type="number" id="register_address_{{slave_id}}" min="0" required>
 </div>
-
+<div class="form-group">
+    <label for="register_address_{{slave_id}}">Device (slave) ID:</label>
+    <input type="number" id="slave_id_{{slave_id}}" min="0" value="{{slave_id}}"required>
+</div>
 <div class="form-group">
     <label for="register_type_{{slave_id}}">Register Type:</label>
     <select id="register_type_{{slave_id}}">
@@ -38,6 +41,7 @@
         const registerAddress = document.getElementById(`register_address_${unitId}`).value;
         const registerType = document.getElementById(`register_type_${unitId}`).value;
         const registerRange = document.getElementById(`register_range_${unitId}`).value;
+        const slaveId = document.getElementBId('slave_id_${unitId}').value;
 
         if (!registerAddress) {
             alert('Please enter a register address');
@@ -45,7 +49,7 @@
         }
 
         return {
-            unit_id: unitId,
+            unit_id: slaveId,
             register: parseInt(registerAddress),
             range: parseInt(registerRange),
             type: registerType,
