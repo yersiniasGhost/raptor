@@ -16,10 +16,10 @@
   "DC_Voltage": {
     "slave_id": 31,
     "name": "DC_Voltage",
-    "data_type": "uint16",
+    "data_type": "int16",
     "address": 501,
     "units": "V",
-    "conversion_factor": 10,
+    "conversion_factor": 0.1,
     "description": "DC Voltage"
   },
   "DC_Current": {
@@ -28,7 +28,7 @@
     "data_type": "int16",
     "address": 502,
     "units": "A",
-    "conversion_factor": 10,
+    "conversion_factor": 0.1,
     "description": "DC Current"
   },
   "DC_Power": {
