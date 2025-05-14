@@ -55,6 +55,7 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
             "address": parsed_data['register'],
             "range_size": range,
             "type": parsed_data['register_type'],
+            "slave_id": unit_id,
             "units": "",
             "conversion_factor": 1.0,
             "description": "On demand query"
