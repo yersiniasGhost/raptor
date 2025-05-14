@@ -47,8 +47,6 @@ class TailLogAction(Action):
                 logger.error(f"Failed to tail log file {log_file}: {e}")
                 return ActionStatus.FAILED, {
                     "results": {
-                        "file": log_file,
-                        "lines": lines,
                         "status": "failed",
                         "output": "",
                         "error": str(e)

@@ -51,7 +51,7 @@ async def service_action(action: str, service_data: dict):
         return {"error": f"Invalid service: {service}"}
 
     if action == "tail":
-        status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 25, "process": service})
+        status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 25, "process": service}, None, None)
     else:
         # Execute the appropriate action based on the parameters
         status, cmd_response = await ActionFactory.execute_action("systemctl",
