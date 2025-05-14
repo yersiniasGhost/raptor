@@ -14,7 +14,7 @@
     }
   },
   "DC_Voltage": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "DC_Voltage",
     "data_type": "uint16",
     "address": 501,
@@ -23,7 +23,7 @@
     "description": "DC Voltage"
   },
   "DC_Current": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "DC_Current",
     "data_type": "int16",
     "address": 502,
@@ -32,7 +32,7 @@
     "description": "DC Current"
   },
   "DC_Power": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "DC_Power",
     "data_type": "int16",
     "address": 503,
@@ -41,7 +41,7 @@
     "description": "DC Power"
   },
   "Phase1Voltage": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "Phase1Voltage",
     "data_type": "uint16",
     "address": 121,
@@ -51,7 +51,7 @@
     "access": "RO"
   },
   "Phase1Current": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "Phase1Current",
     "data_type": "int16",
     "address": 122,
@@ -61,7 +61,7 @@
     "access": "RO"
   },
   "Phase1Frequency": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "Phase1Frequency",
     "data_type": "uint16",
     "address": 125,
@@ -71,7 +71,7 @@
     "access": "RO"
   },
   "Phase1PowerFactor": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "Phase1PowerFactor",
     "data_type": "uint16",
     "address": 135,
@@ -81,7 +81,7 @@
     "access": "RO"
   },
   "Phase1TruePower": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "Phase1TruePower",
     "data_type": "int16",
     "address": 123,
@@ -91,7 +91,7 @@
     "access": "RO"
   },
   "Phase1ApparentPower": {
-    "device_id": 31,
+    "slave_id": 31,
     "name": "Phase1ApparentPower",
     "data_type": "int16",
     "address": 124,
