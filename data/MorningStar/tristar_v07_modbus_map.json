@@ -23,13 +23,13 @@
     "conversion_factor": 0.004247999,
     "description": "Array/Load voltage, filtered (τ ≈ 2.5s)"
   },
-  "adc_ipv_f": {
-    "name": "adc_ipv_f",
+  "Charging_Current": {
+    "name": "Charging_Current",
     "data_type": "uint16",
     "address": 11,
     "units": "A",
     "conversion_factor": 0.002035856,
-    "description": "Charging current, filtered (τ ≈ 2.5s)"
+    "description": "Charging current, filtered (τ ≈ 2.5s) (adc_ipv_f)"
   },
   "adc_iload_f": {
     "name": "adc_iload_f",
