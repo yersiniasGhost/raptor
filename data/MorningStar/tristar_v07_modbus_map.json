@@ -1,0 +1,700 @@
+{
+  "adc_vb_f": {
+    "name": "adc_vb_f",
+    "data_type": "uint16",
+    "address": 8,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Battery voltage, filtered (τ ≈ 2.5s)"
+  },
+  "adc_vs_f": {
+    "name": "adc_vs_f",
+    "data_type": "uint16",
+    "address": 9,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Battery sense voltage, filtered (τ ≈ 2.5s)"
+  },
+  "adc_vx_f": {
+    "name": "adc_vx_f",
+    "data_type": "uint16",
+    "address": 10,
+    "units": "V",
+    "conversion_factor": 0.004247999,
+    "description": "Array/Load voltage, filtered (τ ≈ 2.5s)"
+  },
+  "adc_ipv_f": {
+    "name": "adc_ipv_f",
+    "data_type": "uint16",
+    "address": 11,
+    "units": "A",
+    "conversion_factor": 0.002035856,
+    "description": "Charging current, filtered (τ ≈ 2.5s)"
+  },
+  "adc_iload_f": {
+    "name": "adc_iload_f",
+    "data_type": "uint16",
+    "address": 12,
+    "units": "A",
+    "conversion_factor": 0.009667969,
+    "description": "Load current, filtered (τ ≈ 2.5s)"
+  },
+  "Vb_f": {
+    "name": "Vb_f",
+    "data_type": "uint16",
+    "address": 13,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Battery voltage, slow filter (τ ≈ 25s)"
+  },
+  "T_hs": {
+    "name": "T_hs",
+    "data_type": "int8",
+    "address": 14,
+    "units": "°C",
+    "conversion_factor": 1,
+    "description": "Heatsink temperature",
+    "range": "-128 to +127"
+  },
+  "T_batt": {
+    "name": "T_batt",
+    "data_type": "int8",
+    "address": 15,
+    "units": "°C",
+    "conversion_factor": 1,
+    "description": "Battery temperature (RTS connected) (0x80 if not connected)",
+    "range": "-128 to +127"
+  },
+  "V_ref": {
+    "name": "V_ref",
+    "data_type": "uint16",
+    "address": 16,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Charge regulator reference voltage"
+  },
+  "Ah_r_HI": {
+    "name": "Ah_r_HI",
+    "data_type": "uint16",
+    "address": 17,
+    "units": "Ah",
+    "conversion_factor": 0.1,
+    "description": "Ah resetable, HI word"
+  },
+  "Ah_r_LO": {
+    "name": "Ah_r_LO",
+    "data_type": "uint16",
+    "address": 18,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Ah resetable, LO word"
+  },
+  "Ah_t_HI": {
+    "name": "Ah_t_HI",
+    "data_type": "uint16",
+    "address": 19,
+    "units": "Ah",
+    "conversion_factor": 0.1,
+    "description": "Ah total, HI word"
+  },
+  "Ah_t_LO": {
+    "name": "Ah_t_LO",
+    "data_type": "uint16",
+    "address": 20,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Ah total, LO word"
+  },
+  "hourmeter_HI": {
+    "name": "hourmeter_HI",
+    "data_type": "uint16",
+    "address": 21,
+    "units": "h",
+    "conversion_factor": 1,
+    "description": "hourmeter, HI word",
+    "range": "0 to (2^24-1)"
+  },
+  "hourmeter_LO": {
+    "name": "hourmeter_LO",
+    "data_type": "uint16",
+    "address": 22,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "hourmeter, LO word"
+  },
+  "Alarm_LO": {
+    "name": "Alarm_LO",
+    "data_type": "uint16",
+    "address": 23,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "alarm bitfield"
+  },
+  "fault": {
+    "name": "fault",
+    "data_type": "uint16",
+    "address": 24,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "fault bitfield"
+  },
+  "dip_switch": {
+    "name": "dip_switch",
+    "data_type": "uint16",
+    "address": 25,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "dip switch settings at power on, switch[1..8] in bits[0..7]"
+  },
+  "control_mode": {
+    "name": "control_mode",
+    "data_type": "uint16",
+    "address": 26,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Control mode (0=charge, 1=load, 2=diversion, 3=lighting)",
+    "enum_values": {
+      "0": "charge",
+      "1": "load",
+      "2": "diversion",
+      "3": "lighting"
+    }
+  },
+  "control_state": {
+    "name": "control_state",
+    "data_type": "uint16",
+    "address": 27,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Control state",
+    "enum_values": {
+      "0": "START",
+      "1": "NIGHT CHECK/NORMAL",
+      "2": "DISCONNECT/LVD WARN",
+      "3": "NIGHT/LVD",
+      "4": "FAULT",
+      "5": "BULK/DISCONNECT",
+      "6": "PWM/NORMAL OFF",
+      "7": "FLOAT/OVERRIDE LVD",
+      "8": "EQUALIZE"
+    }
+  },
+  "d_filt": {
+    "name": "d_filt",
+    "data_type": "uint8",
+    "address": 28,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "PWM Duty Cycle",
+    "range": "0-255"
+  },
+  "Alarm_HI": {
+    "name": "Alarm_HI",
+    "data_type": "uint16",
+    "address": 29,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Alarm bitfield (continued from 0x0017)"
+  },
+
+  "EV_reg": {
+    "name": "EV_reg",
+    "data_type": "uint16",
+    "address": 57345,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Regulation voltage @ 25°C"
+  },
+  "EV_float": {
+    "name": "EV_float",
+    "data_type": "uint16",
+    "address": 57346,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Float voltage @ 25°C. Set to zero to disable float"
+  },
+  "Et_float": {
+    "name": "Et_float",
+    "data_type": "uint16",
+    "address": 57347,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "time before entering float",
+    "range": "0-(2^16-1)"
+  },
+  "Et_floatlb": {
+    "name": "Et_floatlb",
+    "data_type": "uint16",
+    "address": 57348,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "time before entering float due to low battery",
+    "range": "0-(2^16-1)"
+  },
+  "EV_floatlb_trip": {
+    "name": "EV_floatlb_trip",
+    "data_type": "uint16",
+    "address": 57349,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Voltage that triggers low battery float time"
+  },
+  "EV_float_cancel": {
+    "name": "EV_float_cancel",
+    "data_type": "uint16",
+    "address": 57350,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Voltage that cancels float"
+  },
+  "EV_eq": {
+    "name": "EV_eq",
+    "data_type": "uint16",
+    "address": 57351,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Equalize voltage @ 25°C. Set to zero to disable equalize"
+  },
+  "Et_eqcalendar": {
+    "name": "Et_eqcalendar",
+    "data_type": "uint8",
+    "address": 57352,
+    "units": "days",
+    "conversion_factor": 1,
+    "description": "days between eq cycles",
+    "range": "0-255"
+  },
+  "Et_eq_above": {
+    "name": "Et_eq_above",
+    "data_type": "uint16",
+    "address": 57353,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "equalize time limit above Vreg",
+    "range": "0-(2^16-1)"
+  },
+  "Et_eq_reg": {
+    "name": "Et_eq_reg",
+    "data_type": "uint16",
+    "address": 57354,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "equalize time limit at Veq",
+    "range": "0-(2^16-1)"
+  },
+  "EV_tempcomp": {
+    "name": "EV_tempcomp",
+    "data_type": "uint16",
+    "address": 57355,
+    "units": "V",
+    "conversion_factor": 0.001475021,
+    "description": "LSB only (note 2^-16 scaling, negative sign is assumed)"
+  },
+  "EV_hvd": {
+    "name": "EV_hvd",
+    "data_type": "uint16",
+    "address": 57356,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "High Voltage Disconnect @ 25°C. Set to zero to disable HVD"
+  },
+  "EV_hvr": {
+    "name": "EV_hvr",
+    "data_type": "uint16",
+    "address": 57357,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "High Voltage Reconnect"
+  },
+  "Etmr_eqcalendar": {
+    "name": "Etmr_eqcalendar",
+    "data_type": "uint8",
+    "address": 57358,
+    "units": "days",
+    "conversion_factor": 1,
+    "description": "days since last equalize",
+    "range": "0-255"
+  },
+  "Et_float_exit_cum": {
+    "name": "Et_float_exit_cum",
+    "data_type": "uint16",
+    "address": 57359,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "Cum. time at 100% duty cycle, exit float",
+    "range": "0-(2^16-1)"
+  },
+  "Ed_float_enter": {
+    "name": "Ed_float_enter",
+    "data_type": "uint8",
+    "address": 57410,
+    "units": "%",
+    "conversion_factor": 1,
+    "description": "Duty Cycle to begin Float transition counter",
+    "range": "0-100"
+  },
+  "Eb_diversion_pwm": {
+    "name": "Eb_diversion_pwm",
+    "data_type": "uint8",
+    "address": 57411,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Diversion regulation type (PWM or On-Off)",
+    "enum_values": {
+      "0": "PWM",
+      "1": "On-Off"
+    }
+  },
+  "EV_lvd": {
+    "name": "EV_lvd",
+    "data_type": "uint16",
+    "address": 57360,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Low Voltage Disconnect"
+  },
+  "EV_lvr": {
+    "name": "EV_lvr",
+    "data_type": "uint16",
+    "address": 57361,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Low Voltage Reconnect"
+  },
+  "EV_lhvd": {
+    "name": "EV_lhvd",
+    "data_type": "uint16",
+    "address": 57362,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Load High Voltage Disconnect. Set to zero to disable HVD"
+  },
+  "EV_lhvr": {
+    "name": "EV_lhvr",
+    "data_type": "uint16",
+    "address": 57363,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Load High Voltage Reconnect"
+  },
+  "ER_icomp": {
+    "name": "ER_icomp",
+    "data_type": "uint16",
+    "address": 57364,
+    "units": "Ω",
+    "conversion_factor": 0.000009313,
+    "description": "LVD Load current compensation"
+  },
+  "Et_lvd_warn": {
+    "name": "Et_lvd_warn",
+    "data_type": "uint16",
+    "address": 57365,
+    "units": "s",
+    "conversion_factor": 0.1,
+    "description": "LVD warning timeout"
+  },
+  "Et_sun1": {
+    "name": "Et_sun1",
+    "data_type": "int16",
+    "address": 57366,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "Lighting Time after sunset"
+  },
+  "Et_sun2": {
+    "name": "Et_sun2",
+    "data_type": "int16",
+    "address": 57367,
+    "units": "s",
+    "conversion_factor": 1,
+    "description": "Lighting time before sunrise"
+  },
+  "Eb_light_config": {
+    "name": "Eb_light_config",
+    "data_type": "uint16",
+    "address": 57368,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Lighting Configuration Bits"
+  },
+  "EV_night_max": {
+    "name": "EV_night_max",
+    "data_type": "uint16",
+    "address": 57369,
+    "units": "V",
+    "conversion_factor": 0.004247999,
+    "description": "Night time threshold – Array Voc"
+  },
+  "EV_day_min": {
+    "name": "EV_day_min",
+    "data_type": "uint16",
+    "address": 57370,
+    "units": "V",
+    "conversion_factor": 0.004247999,
+    "description": "Morning threshold for timing – Array Voc"
+  },
+  "EV_relaxed_day": {
+    "name": "EV_relaxed_day",
+    "data_type": "uint16",
+    "address": 57371,
+    "units": "V",
+    "conversion_factor": 0.004247999,
+    "description": "Morning threshold for lighting – Array Voc"
+  },
+  "EV_soc_g_gy": {
+    "name": "EV_soc_g_gy",
+    "data_type": "uint16",
+    "address": 57372,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "common, LED green to green/yellow limit"
+  },
+  "EV_soc_gy_y": {
+    "name": "EV_soc_gy_y",
+    "data_type": "uint16",
+    "address": 57373,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "LED green/yellow to yellow limit"
+  },
+  "EV_soc_y_yr": {
+    "name": "EV_soc_y_yr",
+    "data_type": "uint16",
+    "address": 57374,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "LED yellow to yellow/red limit"
+  },
+  "EV_soc_yr_r": {
+    "name": "EV_soc_yr_r",
+    "data_type": "uint16",
+    "address": 57375,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "LED yellow/red to red limit"
+  },
+  "ETb_max": {
+    "name": "ETb_max",
+    "data_type": "int8",
+    "address": 57376,
+    "units": "°C",
+    "conversion_factor": 1,
+    "description": "Max battery temp compensation limit",
+    "range": "-128 to +127"
+  },
+  "ETb_min": {
+    "name": "ETb_min",
+    "data_type": "int8",
+    "address": 57377,
+    "units": "°C",
+    "conversion_factor": 1,
+    "description": "Min battery temp compensation limit",
+    "range": "-128 to +127"
+  },
+  "Emb_tristar_id": {
+    "name": "Emb_tristar_id",
+    "data_type": "uint8",
+    "address": 57378,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Modbus TriStar server ID",
+    "range": "1-247"
+  },
+  "Et_batt_service": {
+    "name": "Et_batt_service",
+    "data_type": "uint8",
+    "address": 57379,
+    "units": "days",
+    "conversion_factor": 1,
+    "description": "days between battery service intervals",
+    "range": "0-255"
+  },
+  "Etmr_batt_service": {
+    "name": "Etmr_batt_service",
+    "data_type": "uint8",
+    "address": 57380,
+    "units": "days",
+    "conversion_factor": 1,
+    "description": "days since last battery service",
+    "range": "0-255"
+  },
+  "Ehourmeter_LO": {
+    "name": "Ehourmeter_LO",
+    "data_type": "uint16",
+    "address": 57383,
+    "units": "h",
+    "conversion_factor": 1,
+    "description": "hourmeter",
+    "range": "0 to (2^24-1)"
+  },
+  "Ehourmeter_HI": {
+    "name": "Ehourmeter_HI",
+    "data_type": "uint16",
+    "address": 57384,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "hourmeter"
+  },
+  "EAh_r_LO": {
+    "name": "EAh_r_LO",
+    "data_type": "uint16",
+    "address": 57385,
+    "units": "Ah",
+    "conversion_factor": 0.1,
+    "description": "Resetable Ah low byte"
+  },
+  "EAh_r_HI": {
+    "name": "EAh_r_HI",
+    "data_type": "uint16",
+    "address": 57386,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Resetable Ah high byte"
+  },
+  "EAh_t_LO": {
+    "name": "EAh_t_LO",
+    "data_type": "uint16",
+    "address": 57387,
+    "units": "Ah",
+    "conversion_factor": 0.1,
+    "description": "Total Ah low byte"
+  },
+  "EAh_t_HI": {
+    "name": "EAh_t_HI",
+    "data_type": "uint16",
+    "address": 57388,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Total Ah high byte"
+  },
+  "EkWh": {
+    "name": "EkWh",
+    "data_type": "uint16",
+    "address": 57389,
+    "units": "kWh",
+    "conversion_factor": 1,
+    "description": "Kilowatt hours"
+  },
+  "EVb_min": {
+    "name": "EVb_min",
+    "data_type": "uint16",
+    "address": 57390,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Minimum battery voltage"
+  },
+  "EVb_max": {
+    "name": "EVb_max",
+    "data_type": "uint16",
+    "address": 57391,
+    "units": "V",
+    "conversion_factor": 0.002950043,
+    "description": "Maximum battery voltage"
+  },
+  "Emb_meterbus_id": {
+    "name": "Emb_meterbus_id",
+    "data_type": "uint8",
+    "address": 57409,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "TriStar MeterBus ID",
+    "range": "1-15"
+  },
+
+  "serial_1_0": {
+    "name": "serial_1_0",
+    "data_type": "uint16",
+    "address": 61441,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "serial number (8 byte ASCII string) - bytes 1,0"
+  },
+  "serial_3_2": {
+    "name": "serial_3_2",
+    "data_type": "uint16",
+    "address": 61442,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "serial number (8 byte ASCII string) - bytes 3,2"
+  },
+  "serial_5_4": {
+    "name": "serial_5_4",
+    "data_type": "uint16",
+    "address": 61443,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "serial number (8 byte ASCII string) - bytes 5,4"
+  },
+  "serial_7_6": {
+    "name": "serial_7_6",
+    "data_type": "uint16",
+    "address": 61444,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "serial number (8 byte ASCII string) - bytes 7,6"
+  },
+  "K_gain_adc_vb48": {
+    "name": "K_gain_adc_vb48",
+    "data_type": "uint16",
+    "address": 61445,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Battery voltage divider calibration, 48V mode"
+  },
+  "K_gain_adc_vb1224": {
+    "name": "K_gain_adc_vb1224",
+    "data_type": "uint16",
+    "address": 61446,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Battery voltage divider calibration, 12/24V mode"
+  },
+  "K_gain_adc_ic": {
+    "name": "K_gain_adc_ic",
+    "data_type": "uint16",
+    "address": 61447,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Charge current calibration"
+  },
+  "K_gain_adc_il": {
+    "name": "K_gain_adc_il",
+    "data_type": "uint16",
+    "address": 61448,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Load current calibration"
+  },
+  "K_gain_adc_vs": {
+    "name": "K_gain_adc_vs",
+    "data_type": "uint16",
+    "address": 61449,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Sense voltage calibration"
+  },
+  "K_gain_adc_vx": {
+    "name": "K_gain_adc_vx",
+    "data_type": "uint16",
+    "address": 61450,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Array/Load voltage divider calibration"
+  },
+  "K_hw_ver": {
+    "name": "K_hw_ver",
+    "data_type": "uint16",
+    "address": 61451,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "MSB: hardware version major, LSB: hardware version minor"
+  },
+  "calib_state_K_amp60": {
+    "name": "calib_state_K_amp60",
+    "data_type": "uint16",
+    "address": 61452,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "MSB: calib_state = 0x5A if calibrated, LSB: K_amp60 = 0x01 if TS60, 0x00 if TS45"
+  }
+}
