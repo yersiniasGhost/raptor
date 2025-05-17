@@ -9,6 +9,8 @@ from hardware.modbus.eve_battery import EveBattery
 from hardware.modbus.inview_gateway import InviewGateway
 from hardware.mock.mock_hardware import MockHardware
 from hardware.adc.ct_hall import ADCHardware
+from hardware.modbus.tristar import Tristar
+
 if EnvVars().enable_simulators:
     from hardware.simulators import BMSSim, PvPanelSimulator, LoadSim
 
