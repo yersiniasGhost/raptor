@@ -17,6 +17,7 @@ class HardwareDeploymentRoute:
         self.inverter = None
         self.batteries = None
         self.actuator_manager = None
+        self.charge_controller = None
 
         db = DatabaseManager(EnvVars().db_path)
         for hardware in db.get_hardware_systems("Actuators"):
@@ -43,6 +44,13 @@ class HardwareDeploymentRoute:
             self.logger.info(f"TOD: {hardware}")
             self.pv_cts = instantiate_hardware_from_dict(hardware, self.logger, True)
 
+        for hardware in db.get_hardware_systems("Charge Controller"):
+            self.logger.info(f"Adding Charge Controller systems")
+            self.logger.info(f"TOD: {hardware}")
+            self.charge_controller = instantiate_hardware_from_dict(hardware, self.logger, True)
+
+
+
     def get_hardware(self, hardware_type: str) -> Union[ActuatorManager, HardwareDeployment]:
         if hardware_type == "BMS":
             return self.batteries
@@ -66,8 +74,12 @@ class HardwareDeploymentRoute:
             if self.actuator_manager:
                 return self.actuator_manager.hardware_definition
             return {"message": "NO Actuators installed (check config)"}
+        if hardware_type == "Charge Controller":
+            if self.charge_controller:
+                return self.charge_controller
+            return {"message": "No Charge Controller assigned"}
         else:
-            return None
+            return {"message": f"{hardware_type} not yet supported."}
 
 
 def get_hardware(request: Request) -> HardwareDeploymentRoute:
