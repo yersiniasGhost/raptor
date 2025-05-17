@@ -76,7 +76,7 @@ class HardwareDeploymentRoute:
             return {"message": "NO Actuators installed (check config)"}
         if hardware_type == "Charge Controller":
             if self.charge_controller:
-                return self.charge_controller
+                return self.charge_controller.definition
             return {"message": "No Charge Controller assigned"}
         else:
             return {"message": f"{hardware_type} not yet supported."}
