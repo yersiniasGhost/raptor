@@ -69,8 +69,12 @@ class IoTController:
         for system, hardware_deployments in system_deployments.items():
             system_measurements[system] = {}
             for hardware_id, deployment in hardware_deployments.items():
-                instance_data = deployment.data_acquisition()
-                system_measurements[system][deployment.hardware_id] = instance_data
+                try:
+                    instance_data = deployment.data_acquisition()
+                    system_measurements[system][deployment.hardware_id] = instance_data
+                except Exception as e:
+                    self.logger.error(f"Unable to read from: {system}, continuing")
+
                 if self.simulator:
                     SimulationState().add_state(system, deployment.hardware_id, instance_data)
 
