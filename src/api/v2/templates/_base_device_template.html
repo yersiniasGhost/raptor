@@ -1,3 +1,54 @@
+{% block head %}
+<style>
+    /* Common styles for device views */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .chart {
+        height: 250px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px;
+        background-color: white;
+    }
+
+    .chart-title {
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .value-updated {
+        animation: highlight 1s ease-out;
+    }
+
+    @keyframes highlight {
+        0% { background-color: rgba(255, 255, 0, 0.5); }
+        100% { background-color: transparent; }
+    }
+
+    .metadata {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .error {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    /* Add more common styles as needed */
+</style>
+{% endblock %}
+
 {# templates/_base_device_view.html #}
 {% extends "base.html" %}
 

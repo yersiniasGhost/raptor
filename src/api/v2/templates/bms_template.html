@@ -1,3 +1,20 @@
+{% block head %}
+{{ super() }}
+<style>
+    .charging {
+        color: #2ecc71;
+        font-weight: bold;
+    }
+    .discharging {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    .idle {
+        color: #3498db;
+    }
+</style>
+{% endblock %}
+
 {# templates/bms_v.html #}
 {% extends "_base_device_template.html" %}
 
@@ -31,5 +48,107 @@
 {% endblock %}
 
 {% block device_specific_js %}
-// Additional BMS-specific JavaScript could be added here
+// BMS-specific calculations for trend and projections
+function deviceSpecificUpdate(unitData) {
+    // For each unit/battery
+    for (const unitId in unitData) {
+        const values = unitData[unitId];
+
+        // Calculate charging trend if SOC is available
+        if ('SOC' in values) {
+            calculateChargingMetrics(unitId, values.SOC);
+        }
+    }
+}
+
+// Store historical SOC values for trend calculation
+const socHistory = {};
+const TREND_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes for trend calculation
+
+function calculateChargingMetrics(unitId, currentSOC) {
+    if (!socHistory[unitId]) {
+        socHistory[unitId] = [];
+    }
+
+    const now = Date.now();
+
+    // Add current reading to history with timestamp
+    socHistory[unitId].push({
+        timestamp: now,
+        soc: currentSOC
+    });
+
+    // Keep only readings from the last hour for trend calculation
+    const oneHourAgo = now - (60 * 60 * 1000);
+    socHistory[unitId] = socHistory[unitId].filter(entry => entry.timestamp >= oneHourAgo);
+
+    // Need at least two points separated by TREND_INTERVAL_MS to calculate trend
+    if (socHistory[unitId].length >= 2) {
+        // Sort by timestamp (oldest first)
+        socHistory[unitId].sort((a, b) => a.timestamp - b.timestamp);
+
+        // Find the oldest reading that's at least TREND_INTERVAL_MS old
+        const oldestValidIndex = socHistory[unitId].findIndex(entry =>
+            (now - entry.timestamp) >= TREND_INTERVAL_MS
+        );
+
+        if (oldestValidIndex >= 0) {
+            const oldReading = socHistory[unitId][oldestValidIndex];
+            const newest = socHistory[unitId][socHistory[unitId].length - 1];
+
+            // Calculate SOC change per hour
+            const elapsedHours = (newest.timestamp - oldReading.timestamp) / (1000 * 60 * 60);
+            const socChange = newest.soc - oldReading.soc;
+            const trendPerHour = socChange / elapsedHours;
+
+            // Update trend display
+            const trendElement = document.getElementById(`value-${unitId}-trend`);
+            if (trendElement) {
+                const formattedTrend = trendPerHour.toFixed(2);
+                trendElement.textContent = formattedTrend;
+
+                // Add visual indication of charging/discharging
+                if (trendPerHour > 0.2) {
+                    trendElement.classList.add('charging');
+                    trendElement.classList.remove('discharging', 'idle');
+                } else if (trendPerHour < -0.2) {
+                    trendElement.classList.add('discharging');
+                    trendElement.classList.remove('charging', 'idle');
+                } else {
+                    trendElement.classList.add('idle');
+                    trendElement.classList.remove('charging', 'discharging');
+                }
+
+                // Calculate time to go
+                let timeToGo;
+                if (Math.abs(trendPerHour) < 0.1) {
+                    timeToGo = "∞"; // Essentially no change
+                } else if (trendPerHour > 0) {
+                    // Time to full (100%)
+                    timeToGo = ((100 - currentSOC) / trendPerHour).toFixed(1);
+                } else {
+                    // Time to low (20%)
+                    timeToGo = ((currentSOC - 20) / Math.abs(trendPerHour)).toFixed(1);
+                }
+
+                // Update time to go
+                const timeToGoElement = document.getElementById(`value-${unitId}-time-to-go`);
+                if (timeToGoElement) {
+                    timeToGoElement.textContent = timeToGo;
+                }
+
+                // Calculate projected SOC values
+                const soc1hr = Math.min(100, Math.max(0, currentSOC + trendPerHour * 1)).toFixed(1);
+                const soc2hr = Math.min(100, Math.max(0, currentSOC + trendPerHour * 2)).toFixed(1);
+
+                // Update projected SOC displays
+                const soc1hrElement = document.getElementById(`value-${unitId}-soc-1hr`);
+                const soc2hrElement = document.getElementById(`value-${unitId}-soc-2hr`);
+
+                if (soc1hrElement) soc1hrElement.textContent = soc1hr;
+                if (soc2hrElement) soc2hrElement.textContent = soc2hr;
+            }
+        }
+    }
+}
 {% endblock %}
