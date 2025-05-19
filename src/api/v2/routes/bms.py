@@ -194,7 +194,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
         return templates.TemplateResponse(
             BMS_TEMPLATE,
             {
-                "batteries": batteries,
+                "devices": batteries,
                 "request": request,
                 "bms_data": bms_data,
                 "register_map": register_map,
@@ -206,7 +206,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
         return templates.TemplateResponse(
             BMS_TEMPLATE,
             {
-                "batteries": None,
+                "devices": None,
                 "request": request,
                 "bms_data": {},
                 "register_map": None,
