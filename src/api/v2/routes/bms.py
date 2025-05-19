@@ -18,6 +18,7 @@ router = APIRouter(prefix="/bms", tags=["bms"])
 
 bms_store = BMSDataStore()
 BMS_SYSTEM = "BMS"
+BMS_TEMPLATE = "bms_template.html"
 
 
 def parse_timestamp(timestamp_str: str) -> datetime:
@@ -191,7 +192,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
     try:
         bms_data = await bms_store.get_all_data()
         return templates.TemplateResponse(
-            "bms_v.html",
+            BMS_TEMPLATE,
             {
                 "batteries": batteries,
                 "request": request,
@@ -203,7 +204,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
     except Exception as e:
         logger.error(f"Error in BMS route: {e}")
         return templates.TemplateResponse(
-            "bms_v.html",
+            BMS_TEMPLATE,
             {
                 "batteries": None,
                 "request": request,

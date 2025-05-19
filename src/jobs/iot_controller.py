@@ -18,7 +18,7 @@ if EnvVars().enable_simulators:
     from hardware.simulators.simulation_state import SimulationState
 
 
-SUPPORTED_SYSTEMS = ["PV", "Meter", "BMS", "Converters", "IoT"]
+SUPPORTED_SYSTEMS = ["PV", "Meter", "BMS", "Converters", "IoT", "Charge Controller"]
 
 
 class IoTController:
