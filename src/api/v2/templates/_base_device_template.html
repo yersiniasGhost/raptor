@@ -299,6 +299,7 @@
                     Object.keys(unitData).length;
                     
                 // Call any device-specific update handlers
+                console.log("HERE");
                 if (typeof deviceSpecificUpdate === 'function') {
                     deviceSpecificUpdate(unitData);
                 }

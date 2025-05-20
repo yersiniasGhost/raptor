@@ -49,7 +49,7 @@
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
+
 <script>
 // BMS-specific calculations for trend and projections
 function deviceSpecificUpdate(unitData) {
@@ -155,4 +155,5 @@ function calculateChargingMetrics(unitId, currentSOC) {
     }
 }
 </script>
+{{ super() }}
 {% endblock %}
