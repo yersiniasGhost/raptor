@@ -48,7 +48,9 @@
 </tr>
 {% endblock %}
 
-{% block device_specific_js %}
+{% block scripts %}
+{{ super() }}
+<script>
 // BMS-specific calculations for trend and projections
 function deviceSpecificUpdate(unitData) {
     // For each unit/battery
@@ -152,4 +154,5 @@ function calculateChargingMetrics(unitId, currentSOC) {
         }
     }
 }
+</script>
 {% endblock %}

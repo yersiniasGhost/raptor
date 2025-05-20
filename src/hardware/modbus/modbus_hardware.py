@@ -34,7 +34,6 @@ class ModbusHardware(HardwareBase):
 
     def __post_init__(self):
         super().__post_init__()
-        print("\n\nIN POST\n\n")
         self._modbus_map = ModbusMap.from_json(self.modbus_map_path)
 
     @property
@@ -165,7 +164,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                 logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register}")
                 result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
             else:
-                logger.info(f"Reading input register: {address}, {slave_id}, {register}")
+                logger.info(f"Reading INPUT register: {address}, {slave_id}, {register}")
                 result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
             if result is None:
                 logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
