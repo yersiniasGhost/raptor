@@ -15,13 +15,21 @@ else
     cat > "/etc/systemd/system/reverse-tunnel.service" << EOF
 [Unit]
 Description=Reverse Tunnel Service
-After=network.target
+After=network-online.target
+Wants=network-online.target
+# Add dependency on wlan0 specifically
+BindsTo=sys-subsystem-net-devices-wlan0.device
+After=sys-subsystem-net-devices-wlan0.device
+
 
 [Service]
 Environment="AUTOSSH_GATETIME=0"
 ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -o "ExitOnForwardFailure yes" -N -R 0.0.0.0:2002:localhost:8002 -R 0.0.0.0:2022:localhost:22 -i /root/.ssh/CREM3-API-03.pem ubuntu@54.226.49.65
 Restart=always
 RestartSec=60
+StartLimitInterval=200
+StartLimitBurst=5
+
 
 [Install]
 WantedBy=multi-user.target
