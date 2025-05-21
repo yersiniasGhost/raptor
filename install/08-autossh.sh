@@ -4,7 +4,7 @@
 APP_DIR="/root/raptor"
 
 echo "Setting up system services..."
-echo "vmc-ui service..."
+echo "autossh service..."
 
 if [ -f "/etc/systemd/system/reverse-tunnel.service" ]; then
     echo "reverse-tunnel service already exists. Skipping creation."

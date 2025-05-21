@@ -108,7 +108,7 @@ fi
 
 # CMD UI Service
 echo "Enabling cmd-controller service..."
-systemctl enable cmd-ui.service
+systemctl enable cmd-controller.service
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to enable vmc-ui service"
     exit 1
