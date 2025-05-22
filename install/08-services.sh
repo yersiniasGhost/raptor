@@ -4,6 +4,33 @@
 APP_DIR="/root/raptor"
 
 echo "Setting up system services..."
+
+echo "network-watchdog service..."
+
+if [ -f "/etc/systemd/system/network-watchdog.service" ]; then
+    echo "network-watchdog service already exists. Skipping creation."
+else
+
+echo "Setting up network-watchdog service..."
+cat > "/etc/systemd/system/network-watchdog.service" << EOF
+[Unit]
+Description=Network Watchdog Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=$APP_DIR
+ExecStart=$APP_DIR/venv/bin/python $APP_DIR/src/jobs/network_watchdog.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+fi
+
+
 echo "vmc-ui service..."
 
 if [ -f "/etc/systemd/system/vmc-ui.service" ]; then
@@ -32,6 +59,7 @@ fi
 
 
 
+echo "iot-controller setup"
 if [ -f "/etc/systemd/system/iot-controller.service" ]; then
     echo "iot-controller service already exists. Skipping creation."
 else
@@ -90,6 +118,22 @@ systemctl daemon-reload
 # Enable and start services
 echo "Enabling and starting services..."
 
+# Network Watchdog
+echo "Enabling network-watchdog service..."
+systemctl enable network-watchdog.service
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to enable network-watchdog service"
+    exit 1
+fi
+
+echo "Starting network-watchdog service..."
+systemctl start network-watchdog.service
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to start network-watchdog service"
+    exit 1
+fi
+
+
 # VMC UI Service
 echo "Enabling vmc-ui service..."
 systemctl enable vmc-ui.service
@@ -140,6 +184,7 @@ fi
 echo "Checking service status..."
 systemctl status vmc-ui.service --no-pager
 systemctl status iot-controller.service --no-pager
+systemctl status cmd-controller --no-pager
 
 echo "Service setup complete!"
 exit 0

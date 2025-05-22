@@ -129,8 +129,12 @@ log "Step 6: Configuring application"
 run_script "06-configure.sh" "$APP_DIR"
 
 # 7. Setup system services
-log "Step 7: Setting up system services"
-run_script "07-services.sh" "$APP_DIR"
+log "Step 7: Setting up reverse-tunnel services"
+run_script "07-autossh.sh" "$APP_DIR"
+
+# 8. Setup system services
+log "Step 8: Setting up system services"
+run_script "08-services.sh" "$APP_DIR"
 
 # Final status
 log "Installation complete! Your TS-7180 has been configured successfully."

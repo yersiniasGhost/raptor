@@ -47,8 +47,8 @@ async def service_action(action: str, service_data: dict):
         return {"error": f"Invalid action: {action}"}
 
     # Validate service
-    if service not in ["vmc-ui", "cmd-controller", "iot-controller"]:
-        return {"error": f"Invalid service: {service}"}
+    # if service not in ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel"]:
+    #     return {"error": f"Invalid service: {service}"}
 
     if action == "tail":
         status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 25, "process": service}, None, None)

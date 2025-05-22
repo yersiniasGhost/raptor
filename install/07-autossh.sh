@@ -4,7 +4,14 @@
 APP_DIR="/root/raptor"
 
 echo "Setting up system services..."
-echo "autossh service..."
+echo "reverse-tunnel service..."
+
+# Add host key if not already present
+if ! grep -q "54.226.49.65" /root/.ssh/known_hosts 2>/dev/null; then
+    echo "Adding host key for 54.226.49.65..."
+    ssh-keyscan -H 54.226.49.65 >> /root/.ssh/known_hosts
+    chmod 600 /root/.ssh/known_hosts
+fi
 
 if [ -f "/etc/systemd/system/reverse-tunnel.service" ]; then
     echo "reverse-tunnel service already exists. Skipping creation."
@@ -60,8 +67,7 @@ fi
 
 # Check service status
 echo "Checking service status..."
-systemctl status vmc-ui.service --no-pager
-systemctl status iot-controller.service --no-pager
+systemctl status reverse-tunnel.service --no-pager
 
 echo "Service setup complete!"
 exit 0
