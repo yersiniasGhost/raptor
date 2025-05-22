@@ -3,9 +3,8 @@ import subprocess
 from typing import Tuple
 from .base_action import Action
 from .action_status import ActionStatus
-from utils import LogManager, JSON
+from utils import LogManager, JSON, SERVICES
 
-SERVICES = ["iot-controller", "vmc-ui", "cmd-controller"]
 
 
 class SystemctlAction(Action):

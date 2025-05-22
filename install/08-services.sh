@@ -185,6 +185,7 @@ echo "Checking service status..."
 systemctl status vmc-ui.service --no-pager
 systemctl status iot-controller.service --no-pager
 systemctl status cmd-controller --no-pager
+systemctl status network-watchdog --no-pager
 
 echo "Service setup complete!"
 exit 0
