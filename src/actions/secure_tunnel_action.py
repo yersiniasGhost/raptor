@@ -6,6 +6,8 @@ from .action_status import ActionStatus
 from utils import LogManager, JSON
 
 
+# I moved this to reverse-tunnel service
+# Use restart action
 class SecureTunnelAction(Action):
 
     async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:

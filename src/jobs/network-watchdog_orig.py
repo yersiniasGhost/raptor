@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from typing import Tuple
 import subprocess
 import time
 import os
@@ -28,7 +29,7 @@ class NetworkWatchdog:
 
 
 
-    def run_command(self, command):
+    def run_command(self, command) -> Tuple[str, str, int]:
         """Run a shell command and return output and return code"""
         try:
             process = subprocess.Popen(
@@ -41,6 +42,21 @@ class NetworkWatchdog:
             return "", str(e), 1
 
 
+    def check_wifi(self) -> bool:
+        wifi_cmd = "ip link show wlan0 | grep 'state UP'"
+        wifi_output, wifi_error, wifi_return_code = self.run_command(wifi_cmd)
+
+        if wifi_return_code != 0:
+            self.logger.warning("WiFi ip link command failed.")
+            return False
+
+        success = "SUCCESS" in wifi_output.strip()
+        # TODO finish this code
+
+
+
+
+
 
     def check_internet(self):
         """Check if we have internet connectivity"""
@@ -51,12 +67,32 @@ class NetworkWatchdog:
 
 
 
-    def check_reverse_tunnel(self):
+    def check_reverse_tunnel(self) -> bool:
         """Check if reverse tunnel is working correctly"""
-        cmd = "ss -tpn | grep autossh | grep ESTAB"
-        output, _, return_code = self.run_command(cmd)
-        return return_code == 0
+        # First check if the systemd service is active
+        service_cmd = "systemctl is-active reverse-tunnel.service"
+        service_output, service_error, service_return_code = self.run_command(service_cmd)
 
+        if service_return_code != 0:
+            self.logger.warning(f"Reverse tunnel service is not active: {service_output}")
+            return False
+
+        # Check if SSH connection to remote host is established
+        # Look for the actual SSH connection (not autossh)
+        ssh_cmd = "ss -tpn | grep ':22' | grep ESTAB | grep ssh"
+        ssh_output, ssh_error, ssh_return_code = self.run_command(ssh_cmd)
+
+        # Also check if the reverse tunnel ports are being forwarded
+        # This checks if something is listening on the forwarded ports locally
+        port_cmd = "ss -tln | grep -E ':(2002|2022)'"
+        port_output, port_error, port_return_code = self.run_command(port_cmd)
+
+        self.logger.info(f"Reverse tunnel service status: {service_output}")
+        self.logger.info(f"SSH connection check: {ssh_output}, return_code: {ssh_return_code}")
+        self.logger.info(f"Port forwarding check: {port_output}, return_code: {port_return_code}")
+
+        # Service should be active AND either SSH connection or port forwarding should be working
+        return service_return_code == 0 and (ssh_return_code == 0 or port_return_code == 0)
 
 
     def has_ipv4_address(self, interface):
@@ -217,7 +253,7 @@ class NetworkWatchdog:
         while True:
             try:
                 # Log current timestamp
-                self.logger.info(f"Checking connectivity at {datetime.now()}")
+                self.logger.info(f"START:  Checking connectivity at {datetime.now()}")
 
                 # Get current status of interfaces
                 interfaces_status = self.get_active_interfaces()

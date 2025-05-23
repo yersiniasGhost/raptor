@@ -3,15 +3,15 @@ import subprocess
 from typing import Tuple
 from .base_action import Action
 from .action_status import ActionStatus
-from utils import LogManager, JSON
-from .processes import processes
+from utils import LogManager, JSON, SERVICES
+
 
 class RestartAction(Action):
 
     async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:
         logger = LogManager().get_logger("RestartAction")
         logger.info("Received restart command, initiating controller restart")
-
+        processes = SERVICES
         try:
             # Get parameters with defaults
             restart_mode = self.params.get('restart_mode', 'service')  # 'service' or 'exit'
