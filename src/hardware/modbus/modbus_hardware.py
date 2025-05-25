@@ -148,14 +148,14 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         logger = LogManager().get_logger("ModbusHardware")
 
     client = modbus_hardware.get_modbus_client()
-    try:
-        if not client.connect():
-            logger.error("Failed to connect")
-            return {}
+    if not client.connect():
+        logger.error("Failed to connect")
+        return {}
 
-        output: Dict[str, Union[float, int]] = {}
-        for register in registers:
-            address = int(register.address)
+    output: Dict[str, Union[float, int]] = {}
+    for register in registers:
+        address = int(register.address)
+        try:
             # In some cases, like Inview S the slave ID is used to query different systems not devices
             if register.slave_id:
                 slave_id = register.slave_id
@@ -173,10 +173,10 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             else:
                 logger.info(f"Result is: {result.registers}")
                 output[register.name] = convert_register_value(result.registers, register)
-        # output['slave_id'] = slave_id
-        return output
-    except Exception as e:
-        logger.exception(f"Error reading modbus: {e}", exc_info=True)
-        raise
-    finally:
-        client.close()
+        except Exception as e:
+            logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
+
+    # output['slave_id'] = slave_id
+    client.close()
+    return output
+
