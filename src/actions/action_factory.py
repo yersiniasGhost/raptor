@@ -25,7 +25,7 @@ class ActionFactory:
                 module = importlib.import_module(module_name)
             except ImportError:
                 logger.error(f"Action '{action_name}' not found")
-                return ActionStatus.NOT_IMPLEMENTED, None
+                return ActionStatus.NOT_IMPLEMENTED, {"response": f"{action_name} not found"}
 
             # Get the action class
             action_class = getattr(module, class_name)
