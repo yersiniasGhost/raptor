@@ -27,6 +27,10 @@ class RestartAction(Action):
                 logger.error(f"Invalid target process: {target}")
                 return ActionStatus.FAILED, {"error": f"Invalid target process: {target}"}
 
+            if self.params.get('skip_reverse_tunnel', False):
+                if "reverse-tunnel" in targets:
+                    targets.remove("reverse-tunnel")
+
             if restart_mode == 'service':
                 # Restart systemctl services
                 results = {}
