@@ -18,6 +18,7 @@ class HardwareDeploymentRoute:
         self.batteries = None
         self.actuator_manager = None
         self.charge_controller = None
+        self.pv_cts = None
 
         db = DatabaseManager(EnvVars().db_path)
         for hardware in db.get_hardware_systems("Actuators"):

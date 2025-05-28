@@ -110,9 +110,9 @@ class CmdController:
                 # We just need to wait for tasks to complete or for shutdown
                 await asyncio.sleep(sleep_time)
                 cnt += 1
-                if cnt > 600:
-                    cnt = 0
-                    self.logger.info("heart beat: boomp")
+                # if cnt > 3600:
+                #     cnt = 0
+                #     self.logger.info("Hourly heart beat: boomp")
 
         except Exception as e:
             self.logger.critical(f"Critical error in main loop: {str(e)}", exc_info=True)

@@ -15,6 +15,7 @@ logger = LogManager().get_logger("GenerationRoute")
 
 router = APIRouter(prefix="/generation", tags=["generation"])
 
+
 @router.get("/")
 async def generation_data(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:

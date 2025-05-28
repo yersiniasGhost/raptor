@@ -26,7 +26,7 @@ async def system_status(request: Request):
         logger.error(f"Error collecting historical system status: {e}")
 
     try:
-        current_stats = data[-1] if data else collect_system_stats()
+        current_stats = collect_system_stats()
 
         return templates.TemplateResponse("system_status.html", {
             "request": request,
