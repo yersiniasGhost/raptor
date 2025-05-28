@@ -316,15 +316,16 @@ class IoTController:
 
                         # Try to collect system stats
                         try:
+                            self.logger.info(f"Collecting system status")
                             sbc_state = {0: collect_system_stats()}
+                            self.logger.info(sbc_state)
                             self._store_local_telemetry_data("RAPTOR", sbc_state)
                         except Exception as e:
                             self.logger.error("Failed to perform system status acquisition", exc_info=True)
 
                         # Reset for next cycle
                         samples_collected = []
-                        self.logger.info(
-                            f"Completed full sampling cycle, next cycle starts at {datetime.fromtimestamp(next_sample_time)}")
+                        self.logger.info(f"Completed full sampling cycle, next cycle starts at {datetime.fromtimestamp(next_sample_time)}")
 
                     # Small sleep to avoid tight loop
                     await asyncio.sleep(0.1)
