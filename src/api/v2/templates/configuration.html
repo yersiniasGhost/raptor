@@ -218,7 +218,8 @@
 
             const data = await response.json();
             if (data.output) {
-               txt = JSON.stringify(data.txt, null, 2);
+               let txt = JSON.stringify(data.txt, null, 2);
+               txt = txt.replace(/\\n/g, '\n');
                full_response = JSON.stringify(data.output, null, 2);
                responseBox.value = txt + "\n" + full_response;
 
