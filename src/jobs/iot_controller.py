@@ -68,6 +68,7 @@ class IoTController:
             SimulationState().reset()
         for system, hardware_deployments in system_deployments.items():
             system_measurements[system] = {}
+            self.logger.info(f"Reading system:  {system}")
             for hardware_id, deployment in hardware_deployments.items():
                 try:
                     instance_data = deployment.data_acquisition()

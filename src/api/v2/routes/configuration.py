@@ -61,7 +61,7 @@ async def service_action(action: str, service_data: dict):
     #     return {"error": f"Invalid service: {service}"}
 
     if action == "tail":
-        status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 25, "process": service}, None, None)
+        status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 125, "process": service}, None, None)
         rs = cmd_response.get("results", {})
         txt = rs.get("output", "NA")
     else:

@@ -54,7 +54,7 @@
     "units": "°C",
     "conversion_factor": 1,
     "description": "Heatsink temperature",
-    "range": "-128 to +127"
+    "range_size": "-128 to +127"
   },
   "T_batt": {
     "name": "T_batt",
@@ -63,7 +63,7 @@
     "units": "°C",
     "conversion_factor": 1,
     "description": "Battery temperature (RTS connected) (0x80 if not connected)",
-    "range": "-128 to +127"
+    "range_size": "-128 to +127"
   },
   "V_ref": {
     "name": "V_ref",
@@ -112,7 +112,7 @@
     "units": "h",
     "conversion_factor": 1,
     "description": "hourmeter, HI word",
-    "range": "0 to (2^24-1)"
+    "range_size": "0 to (2^24-1)"
   },
   "hourmeter_LO": {
     "name": "hourmeter_LO",
@@ -186,7 +186,7 @@
     "units": "",
     "conversion_factor": 1,
     "description": "PWM Duty Cycle",
-    "range": "0-255"
+    "range_size": "0-255"
   },
   "Alarm_HI": {
     "name": "Alarm_HI",
@@ -220,7 +220,7 @@
     "units": "s",
     "conversion_factor": 1,
     "description": "time before entering float",
-    "range": "0-(2^16-1)"
+    "range_size": "0-(2^16-1)"
   },
   "Et_floatlb": {
     "name": "Et_floatlb",
@@ -229,7 +229,7 @@
     "units": "s",
     "conversion_factor": 1,
     "description": "time before entering float due to low battery",
-    "range": "0-(2^16-1)"
+    "range_size": "0-(2^16-1)"
   },
   "EV_floatlb_trip": {
     "name": "EV_floatlb_trip",
@@ -262,7 +262,7 @@
     "units": "days",
     "conversion_factor": 1,
     "description": "days between eq cycles",
-    "range": "0-255"
+    "range_size": "0-255"
   },
   "Et_eq_above": {
     "name": "Et_eq_above",
@@ -271,7 +271,7 @@
     "units": "s",
     "conversion_factor": 1,
     "description": "equalize time limit above Vreg",
-    "range": "0-(2^16-1)"
+    "range_size": "0-(2^16-1)"
   },
   "Et_eq_reg": {
     "name": "Et_eq_reg",
@@ -280,7 +280,7 @@
     "units": "s",
     "conversion_factor": 1,
     "description": "equalize time limit at Veq",
-    "range": "0-(2^16-1)"
+    "range_size": "0-(2^16-1)"
   },
   "EV_tempcomp": {
     "name": "EV_tempcomp",
@@ -313,7 +313,7 @@
     "units": "days",
     "conversion_factor": 1,
     "description": "days since last equalize",
-    "range": "0-255"
+    "range_size": "0-255"
   },
   "Et_float_exit_cum": {
     "name": "Et_float_exit_cum",
@@ -322,7 +322,7 @@
     "units": "s",
     "conversion_factor": 1,
     "description": "Cum. time at 100% duty cycle, exit float",
-    "range": "0-(2^16-1)"
+    "range_size": "0-(2^16-1)"
   },
   "Ed_float_enter": {
     "name": "Ed_float_enter",
@@ -331,7 +331,7 @@
     "units": "%",
     "conversion_factor": 1,
     "description": "Duty Cycle to begin Float transition counter",
-    "range": "0-100"
+    "range_size": "0-100"
   },
   "Eb_diversion_pwm": {
     "name": "Eb_diversion_pwm",
@@ -480,7 +480,7 @@
     "units": "°C",
     "conversion_factor": 1,
     "description": "Max battery temp compensation limit",
-    "range": "-128 to +127"
+    "range_size": "-128 to +127"
   },
   "ETb_min": {
     "name": "ETb_min",
@@ -489,7 +489,7 @@
     "units": "°C",
     "conversion_factor": 1,
     "description": "Min battery temp compensation limit",
-    "range": "-128 to +127"
+    "range_size": "-128 to +127"
   },
   "Emb_tristar_id": {
     "name": "Emb_tristar_id",
@@ -498,7 +498,7 @@
     "units": "",
     "conversion_factor": 1,
     "description": "Modbus TriStar server ID",
-    "range": "1-247"
+    "range_size": "1-247"
   },
   "Et_batt_service": {
     "name": "Et_batt_service",
@@ -507,7 +507,7 @@
     "units": "days",
     "conversion_factor": 1,
     "description": "days between battery service intervals",
-    "range": "0-255"
+    "range_size": "0-255"
   },
   "Etmr_batt_service": {
     "name": "Etmr_batt_service",
@@ -516,7 +516,7 @@
     "units": "days",
     "conversion_factor": 1,
     "description": "days since last battery service",
-    "range": "0-255"
+    "range_size": "0-255"
   },
   "Ehourmeter_LO": {
     "name": "Ehourmeter_LO",
@@ -525,7 +525,7 @@
     "units": "h",
     "conversion_factor": 1,
     "description": "hourmeter",
-    "range": "0 to (2^24-1)"
+    "range_size": "0 to (2^24-1)"
   },
   "Ehourmeter_HI": {
     "name": "Ehourmeter_HI",
@@ -598,7 +598,7 @@
     "units": "",
     "conversion_factor": 1,
     "description": "TriStar MeterBus ID",
-    "range": "1-15"
+    "range_size": "1-15"
   },
 
   "serial_1_0": {

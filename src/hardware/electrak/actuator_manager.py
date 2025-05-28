@@ -169,7 +169,6 @@ class ActuatorManager(metaclass=Singleton):
     def from_dict(cls, actuator_map: dict, logger) -> 'ActuatorManager':
         try:
             logger.info(actuator_map)
-            logger.info("------------------------")
             # hardware = actuator_map['Actuators']
             parameters = actuator_map['parameters']
             devices = actuator_map['devices']
@@ -177,7 +176,6 @@ class ActuatorManager(metaclass=Singleton):
             logger.error(f"Missing required configuration field: {e}")
             raise
         try:
-            manager = cls(**parameters)
             manager = cls(parameters['channel'], parameters['eds'])
             manager.hardware_definition = actuator_map
             for device in devices:
