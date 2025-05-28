@@ -22,7 +22,7 @@ router = APIRouter(prefix="/configuration", tags=["configuration"])
 @router.post("/mqtt-test", name="mqtt-test")
 async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
-    status = check_connection(mqtt_broker, logger)
+    status = await check_connection(mqtt_broker, logger)
     return status
 
 
