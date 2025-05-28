@@ -54,13 +54,16 @@ async def service_action(action: str, service_data: dict):
 
     if action == "tail":
         status, cmd_response = await ActionFactory.execute_action("tail_log", {"lines": 25, "process": service}, None, None)
+        rs = cmd_response.get("results", {})
+        txt = rs.get("output", "NA")
     else:
         # Execute the appropriate action based on the parameters
         status, cmd_response = await ActionFactory.execute_action("systemctl",
                                                               {"cmd": action, "target": service}, None, None)
-    # logger.info(cmd_response)
-    rs = cmd_response.get("results", {})
-    txt = rs.get("output", "NA")
+        rs = cmd_response.get("results", {})
+        txta = rs.get(service, {})
+        txt = txta.get("output", "NA")
+
     result = {"status": status, "response": cmd_response}
     return {"output": result, "txt": txt}
 
