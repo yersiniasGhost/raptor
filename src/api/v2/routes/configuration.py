@@ -59,7 +59,8 @@ async def service_action(action: str, service_data: dict):
         status, cmd_response = await ActionFactory.execute_action("systemctl",
                                                               {"cmd": action, "target": service}, None, None)
     # logger.info(cmd_response)
-    txt = cmd_response.get("output", "NA")
+    rs = cmd_response.get("results", {})
+    txt = rs.get("output", "NA")
     result = {"status": status, "response": cmd_response}
     return {"output": result, "txt": txt}
 
