@@ -218,7 +218,10 @@
 
             const data = await response.json();
             if (data.output) {
-               responseBox.value = JSON.stringify(data.output, null, 2);
+               txt = JSON.stringify(data.txt, null, 2);
+               response = JSON.stringify(data.output, null, 2);
+               responseBox.value = txt + "\n" response;
+
             } else if (data.error) {
                responseBox.value = data.error;
             } else {

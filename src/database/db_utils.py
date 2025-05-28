@@ -51,6 +51,7 @@ def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
                 logger.error("Unable to access MQTT data from telemetry_configuration table database.")
                 raise ValueError("Unable to access MQTT data from telemetry_configuration table database.")
             config = json.loads(data['mqtt_config'])
+            logger.info(f"Instantiate MQTT config: {config}")
             return MQTTConfig.from_dict(config)
     except sqlite3.Error as e:
         logger.error(f"Failed to get mqtt data: {e}")
