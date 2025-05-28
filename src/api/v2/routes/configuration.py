@@ -11,11 +11,19 @@ from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from utils import LogManager, get_mac_address
+from cloud.mqtt_comms import check_connection
 
 logger = LogManager().get_logger(__name__)
 
 
 router = APIRouter(prefix="/configuration", tags=["configuration"])
+
+
+@router.post("/mqtt-test", name="mqtt-test")
+async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    mqtt_broker: MQTTConfig = get_mqtt_config(logger)
+    status = check_connection(mqtt_broker, logger)
+    return status
 
 
 @router.get("/", name="configuration_index")

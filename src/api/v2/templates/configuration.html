@@ -83,6 +83,16 @@
         background-color: #ffc107;
         color: #212529;
     }
+    .mqtt-config {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
 </style>
 {% endblock %}
 
@@ -140,11 +150,21 @@
 <h2>Communications Configuration</h2>
 <div class="config-container">
     <div class="config-section">
-        <h3 class="config-title">MQTT Configuration</h3>
-            <h4>MQTT Broker</h4>
-            <span>IP Address: {{ mqtt_broker_ip }}</span>
-            <span>Port number: {{ mqtt_broker_port }}</span>
-            <span>Broker path: {{ mqtt_path }}</span>
+        <h3 class="config-title">MQTT Broker Configuration</h3>
+            <div class="mqtt-config">
+                <span class="config-label">IP Address:</span>
+                <span class="config-value">{{ mqtt_broker_ip }}</span>
+
+                <span class="config-label">Port number:</span>
+                <span class="config-value">{{ mqtt_broker_port }}</span>
+
+                <span class="config-label">Broker path:</span>
+                <span class="config-value">{{ mqtt_path }}</span>
+            </div>
+            <div class="test-section">
+                <button type="button" class="test-button" onclick="mqttTest()">Test Connection</button>
+                <div id="mqtt-status"></div>
+            </div>
 
         <h3 class="config-title">Commissioning Comms</h3>
         <h3 class="config-title">System configuration comms</h3>
@@ -185,6 +205,47 @@
 {% block scripts %}
 
 <script>
+    async function mqttTest() {
+            const button = document.querySelector('.test-button');
+            const statusDiv = document.getElementById('mqtt-status');
+
+            // Disable button and show loading state
+            button.disabled = true;
+            button.textContent = 'Testing...';
+            statusDiv.innerHTML = '<span class="loading">🔄 Testing connection...</span>';
+
+            try {
+                const response = await fetch('/configuration/mqtt-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // Add any required request body data here if needed
+                    // body: JSON.stringify({})
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Check if the response indicates success
+                if (result === true || result.success === true || result.status === 'success') {
+                    statusDiv.innerHTML = '<span class="status-success"><span class="status-icon">✅</span>Connection successful</span>';
+                } else {
+                    statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Connection failed</span>';
+                }
+
+            } catch (error) {
+                console.error('MQTT test error:', error);
+                statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Connection failed: ' + error.message + '</span>';
+            } finally {
+                // Re-enable button
+                button.disabled = false;
+                button.textContent = 'Test Connection';
+            }
+
     async function recommission() {
         try {
             const response = await fetch(`/configuration/recommission`, { method: 'POST' });

@@ -200,3 +200,24 @@ async def upload_command_response(mqtt_config: MQTTConfig, telemetry_config: Tel
     except Exception as e:
         logger.error(f"Error uploading command response: {e}")
         return False
+
+
+async def check_connection(mqtt_config: MQTTConfig, logger: Logger) -> bool:
+    """Check MQTT connection status by attempting a quick connection test"""
+    try:
+        # Quick connection test with short timeout
+        async with aiomqtt.Client(
+                hostname=mqtt_config.broker,
+                port=mqtt_config.port,
+                username=mqtt_config.username,
+                password=mqtt_config.password,
+                timeout=5.0  # 5 second timeout for quick check
+        ) as client:
+            # Simple ping test - subscribe to a test topic briefly
+            await client.subscribe("$SYS/broker/uptime")  # Standard MQTT broker topic
+            return True
+
+    except Exception as e:
+        error_msg = str(e)
+        logger.warning(f"MQTT connection check failed: {error_msg}")
+        return False
