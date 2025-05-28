@@ -211,12 +211,19 @@ async def check_connection(mqtt_config: MQTTConfig, logger: Logger) -> bool:
                 port=mqtt_config.port,
                 username=mqtt_config.username,
                 password=mqtt_config.password,
-                timeout=5.0  # 5 second timeout for quick check
+                timeout=5.0,  # 5 second timeout for quick check
+                keepalive=10
         ) as client:
             # Simple ping test - subscribe to a test topic briefly
             await client.subscribe("$SYS/broker/uptime")  # Standard MQTT broker topic
+            logger.info("Successfully connected and ping'd.")
             return True
-
+    except  asyncio.TimeoutError:
+        logger.warning(f"MQTT connection test timed out after 5 seconds")
+        return False
+    except ConnectionRefusedError:
+        logger.warning(f"MQTT connection refused - check broker address and port")
+        return False
     except Exception as e:
         error_msg = str(e)
         logger.warning(f"MQTT connection check failed: {error_msg}")
