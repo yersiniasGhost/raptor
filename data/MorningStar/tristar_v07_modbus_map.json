@@ -1,13 +1,13 @@
 {
-  "adc_vb_f": {
-    "name": "Battery_Voltage",
+  "Battery_Voltage": {
+    "name": "Battery Voltage",
     "data_type": "uint16",
     "address": 8,
     "units": "V",
     "conversion_factor": 0.002950043,
     "description": "Battery voltage, filtered (τ ≈ 2.5s)"
   },
-  "adc_vs_f": {
+  "Battery_Sense_voltage": {
     "name": "Battery_Sense_voltage",
     "data_type": "uint16",
     "address": 9,
@@ -15,8 +15,8 @@
     "conversion_factor": 0.002950043,
     "description": "Battery sense voltage, filtered (τ ≈ 2.5s)"
   },
-  "adc_vx_f": {
-    "name": "Load_Voltage",
+  "Load_Voltage": {
+    "name": "Load Voltage",
     "data_type": "uint16",
     "address": 10,
     "units": "V",
@@ -24,14 +24,14 @@
     "description": "Array/Load voltage, filtered (τ ≈ 2.5s)"
   },
   "Charging_Current": {
-    "name": "Charging_Current",
+    "name": "Charging Current",
     "data_type": "uint16",
     "address": 11,
     "units": "A",
     "conversion_factor": 0.002035856,
     "description": "Charging current, filtered (τ ≈ 2.5s) (adc_ipv_f)"
   },
-  "adc_iload_f": {
+  "Load_Current": {
     "name": "Load_Current",
     "data_type": "uint16",
     "address": 12,
@@ -39,7 +39,7 @@
     "conversion_factor": 0.009667969,
     "description": "Load current, filtered (τ ≈ 2.5s)"
   },
-  "Vb_f": {
+  "Battery_Voltage_Slow": {
     "name": "Battery_Voltage_Slow",
     "data_type": "uint16",
     "address": 13,
@@ -47,7 +47,7 @@
     "conversion_factor": 0.002950043,
     "description": "Battery voltage, slow filter (τ ≈ 25s)"
   },
-  "T_hs": {
+  "Heatsink_Temp": {
     "name": "Heatsink_Temp",
     "data_type": "int8",
     "address": 14,
@@ -56,7 +56,7 @@
     "description": "Heatsink temperature",
     "range_size": "-128 to +127"
   },
-  "T_batt": {
+  "Battery_Temp": {
     "name": "Battery_Temp",
     "data_type": "int8",
     "address": 15,
@@ -65,7 +65,7 @@
     "description": "Battery temperature (RTS connected) (0x80 if not connected)",
     "range_size": "-128 to +127"
   },
-  "V_ref": {
+  "Charge_Regulator_Voltage": {
     "name": "Charge_Regulator_Voltage",
     "data_type": "uint16",
     "address": 16,
@@ -146,7 +146,7 @@
     "conversion_factor": 1,
     "description": "dip switch settings at power on, switch[1..8] in bits[0..7]"
   },
-  "control_mode": {
+  "Control_Mode": {
     "name": "Control_Mode",
     "data_type": "uint16",
     "address": 26,
@@ -160,7 +160,7 @@
       "3": "lighting"
     }
   },
-  "control_state": {
+  "Control_State": {
     "name": "Control_State",
     "data_type": "uint16",
     "address": 27,

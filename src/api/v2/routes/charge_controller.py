@@ -36,7 +36,6 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()
-        # Now grab the trend data and calculate that fun!
         return JSONResponse(content={"data": data, "error": None})
     except Exception as e:
         logger.error(f"Error getting BMS data: {e}", exc_info=True)
