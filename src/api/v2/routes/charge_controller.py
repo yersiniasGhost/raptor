@@ -14,9 +14,9 @@ from bms_store import BMSDataStore
 from utils import LogManager
 logger = LogManager().get_logger(__name__)
 
-router = APIRouter(prefix="/bms", tags=["bms"])
+router = APIRouter(prefix="/charge_controller", tags=["charge_controller"])
 bms_store = BMSDataStore()
-CC_TEMPLATE = "charge_controller_template.html"
+CC_TEMPLATE = "charge_controllers_template.html"
 
 
 def get_charge_controller(deployment: HardwareDeploymentRoute) -> HardwareDeployment:
@@ -73,7 +73,7 @@ async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, 
         return templates.TemplateResponse(
             CC_TEMPLATE,
             {
-                "charge_controller": charge_controller,
+                "devices": charge_controller,
                 "request": request,
                 "charge_data": bms_data,
                 "register_map": register_map,
@@ -85,7 +85,7 @@ async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, 
         return templates.TemplateResponse(
             CC_TEMPLATE,
             {
-                "charge_controller": None,
+                "devices": None,
                 "request": request,
                 "bms_data": {},
                 "register_map": None,
