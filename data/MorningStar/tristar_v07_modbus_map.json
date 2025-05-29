@@ -1,6 +1,6 @@
 {
   "adc_vb_f": {
-    "name": "adc_vb_f",
+    "name": "Battery_Voltage",
     "data_type": "uint16",
     "address": 8,
     "units": "V",
@@ -8,7 +8,7 @@
     "description": "Battery voltage, filtered (τ ≈ 2.5s)"
   },
   "adc_vs_f": {
-    "name": "adc_vs_f",
+    "name": "Battery_Sense_voltage",
     "data_type": "uint16",
     "address": 9,
     "units": "V",
@@ -16,7 +16,7 @@
     "description": "Battery sense voltage, filtered (τ ≈ 2.5s)"
   },
   "adc_vx_f": {
-    "name": "adc_vx_f",
+    "name": "Load_Voltage",
     "data_type": "uint16",
     "address": 10,
     "units": "V",
@@ -32,7 +32,7 @@
     "description": "Charging current, filtered (τ ≈ 2.5s) (adc_ipv_f)"
   },
   "adc_iload_f": {
-    "name": "adc_iload_f",
+    "name": "Load_Current",
     "data_type": "uint16",
     "address": 12,
     "units": "A",
@@ -40,7 +40,7 @@
     "description": "Load current, filtered (τ ≈ 2.5s)"
   },
   "Vb_f": {
-    "name": "Vb_f",
+    "name": "Battery_Voltage_Slow",
     "data_type": "uint16",
     "address": 13,
     "units": "V",
@@ -48,7 +48,7 @@
     "description": "Battery voltage, slow filter (τ ≈ 25s)"
   },
   "T_hs": {
-    "name": "T_hs",
+    "name": "Heatsink_Temp",
     "data_type": "int8",
     "address": 14,
     "units": "°C",
@@ -57,7 +57,7 @@
     "range_size": "-128 to +127"
   },
   "T_batt": {
-    "name": "T_batt",
+    "name": "Battery_Temp",
     "data_type": "int8",
     "address": 15,
     "units": "°C",
@@ -66,7 +66,7 @@
     "range_size": "-128 to +127"
   },
   "V_ref": {
-    "name": "V_ref",
+    "name": "Charge_Regulator_Voltage",
     "data_type": "uint16",
     "address": 16,
     "units": "V",
@@ -131,7 +131,7 @@
     "description": "alarm bitfield"
   },
   "fault": {
-    "name": "fault",
+    "name": "Fault",
     "data_type": "uint16",
     "address": 24,
     "units": "",
@@ -147,7 +147,7 @@
     "description": "dip switch settings at power on, switch[1..8] in bits[0..7]"
   },
   "control_mode": {
-    "name": "control_mode",
+    "name": "Control_Mode",
     "data_type": "uint16",
     "address": 26,
     "units": "",
@@ -161,7 +161,7 @@
     }
   },
   "control_state": {
-    "name": "control_state",
+    "name": "Control_State",
     "data_type": "uint16",
     "address": 27,
     "units": "",
@@ -568,7 +568,7 @@
     "description": "Total Ah high byte"
   },
   "EkWh": {
-    "name": "EkWh",
+    "name": "Kilowatt_Hours",
     "data_type": "uint16",
     "address": 57389,
     "units": "kWh",
