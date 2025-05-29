@@ -3,33 +3,7 @@
 
 {% block title %}BMS{% endblock %}
 
-{% set page_title = "Battery Management System" %}
-{% set device_type = "BMS" %}
-{% set api_endpoint = "bms" %}
+{% set page_title = "Charge Controller System" %}
+{% set device_type = "Charge Controller" %}
+{% set api_endpoint = "charge_controller" %}
 
-{% block additional_metrics %}
-<tr>
-    <td>Charging Trend</td>
-    <td class="value-cell" id="value-{{ unit_id }}-trend">-</td>
-    <td>SOC change per hour (%/hr)</td>
-</tr>
-<tr>
-    <td>Time to go (hours)</td>
-    <td class="value-cell" id="value-{{ unit_id }}-time-to-go">-</td>
-    <td>Estimated time until 100% SOC (or 20% SOC if discharging)</td>
-</tr>
-<tr>
-    <td>Projected SOC (1hr)</td>
-    <td class="value-cell" id="value-{{ unit_id }}-soc-1hr">-</td>
-    <td>Estimated SOC after 1 hour (%)</td>
-</tr>
-<tr>
-    <td>Projected SOC (2hr)</td>
-    <td class="value-cell" id="value-{{ unit_id }}-soc-2hr">-</td>
-    <td>Estimated SOC after 2 hours (%)</td>
-</tr>
-{% endblock %}
-
-{% block device_specific_js %}
-// Additional BMS-specific JavaScript could be added here
-{% endblock %}

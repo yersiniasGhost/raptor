@@ -64,10 +64,9 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=4000
 
 
 @router.get("/")
-async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     charge_controller = get_charge_controller(hardware)
     charge_controller.get_identifiers()
-    logger.info("Got BMS identifiers")
     register_map = charge_controller.get_points("DATA")
     try:
         bms_data = await bms_store.get_all_data()
@@ -76,7 +75,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
             {
                 "charge_controller": charge_controller,
                 "request": request,
-                "bms_data": bms_data,
+                "charge_data": bms_data,
                 "register_map": register_map,
                 "error": None
             }
