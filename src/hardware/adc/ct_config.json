@@ -5,12 +5,14 @@
   "devices": [
     {
       "mac": "ct001",
+      "zero_point": 0.0,
       "channel": 1,
       "ct_ratio": 20.0,
       "conversion_factor": 1.0,
       "offset": 0.0,
-      "max_value": 50.0,
+      "max_value": 15.0,
       "min_value": 0.0,
+      "max_deviation": 0.625,
       "name": "main_feed"
     }
   ]

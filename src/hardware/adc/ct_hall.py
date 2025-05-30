@@ -145,7 +145,8 @@ class ADCHardware(HardwareBase):
         """Convert raw ADC value to voltage"""
         return (raw_value / self.adc_max_raw) * self.adc_max_voltage
 
-    def convert_voltage_to_current(self, voltage: float, device: Dict[str, Any]) -> float:
+    @staticmethod
+    def convert_voltage_to_current(voltage: float, device: Dict[str, Any]) -> float:
         """Convert voltage to current for bidirectional CT with mid-supply bias"""
         # Zero-current reference point (typically 2.5V)
         zero_point = device.get('zero_point', 2.5)
