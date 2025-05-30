@@ -155,7 +155,7 @@ class ADCHardware(HardwareBase):
         max_deviation = device.get('max_deviation', 0.625)
 
         # Maximum current rating (typically 50A)
-        max_current = device.get('max_value', 50.0)
+        max_current = device.get('max_current', 50.0)
 
         # Calculate current: Current = (Voltage - ZeroPoint) * (MaxCurrent/MaxDeviation)
         conversion_ratio = max_current / max_deviation
