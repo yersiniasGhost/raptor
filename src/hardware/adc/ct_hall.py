@@ -5,10 +5,9 @@ import subprocess
 import os
 from enum import Enum
 from hardware.hardware_base import HardwareBase
-import logging
+from utils import LogManager
 import iio
 
-logger = logging.getLogger(__name__)
 
 
 class ADCRange(Enum):
@@ -33,8 +32,10 @@ class ADCHardware(HardwareBase):
     initialized: bool = False
     iio_device_name: str = "2198000.adc"
 
+
     def __post_init__(self):
         super().__post_init__()
+        self.logger = LogManager().get_logger("CT HALL")
 
         # Map of channel numbers to ADC channels
         self.channel_map = {
@@ -43,14 +44,13 @@ class ADCHardware(HardwareBase):
             3: ADCChannel(3, "voltage8", 12, 8),
             4: ADCChannel(4, "voltage9", 13, 9)
         }
-        self.adc_max_voltage = 10.9 
         # Initialize IIO context
         try:
             self.ctx = iio.Context('local:')
             self.dev = self.ctx.find_device(self.iio_device_name)
-            logger.info(f"Successfully initialized IIO context and found device {self.iio_device_name}")
+            self.logger.info(f"Successfully initialized IIO context and found device {self.iio_device_name}")
         except Exception as e:
-            logger.exception(f"Error initializing IIO context: {e}")
+            self.logger.exception(f"Error initializing IIO context: {e}")
             self.ctx = None
             self.dev = None
 
@@ -69,21 +69,21 @@ class ADCHardware(HardwareBase):
         try:
             # Enable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
             subprocess.run(["gpioset", "5", "16=1"])
-            logger.info(f"Enabled 5V power output for CTs")
+            self.logger.info(f"Enabled 5V power output for CTs")
             return True
         except Exception as e:
-            logger.exception(f"Error enabling 5V power: {e}")
+            self.logger.exception(f"Error enabling 5V power: {e}")
             return False
 
     def initialize_device(self, device: Dict[str, Any]) -> bool:
         """Initialize a device's ADC channel"""
         if 'channel' not in device:
-            logger.error(f"Missing channel in device configuration: {device}")
+            self.logger.error(f"Missing channel in device configuration: {device}")
             return False
 
         channel_num = device['channel']
         if channel_num not in self.channel_map:
-            logger.error(f"Invalid channel number {channel_num} for device {device.get('mac', 'unknown')}")
+            self.logger.error(f"Invalid channel number {channel_num} for device {device.get('mac', 'unknown')}")
             return False
 
         # Configure channel for 2.5V range
@@ -101,26 +101,25 @@ class ADCHardware(HardwareBase):
             if adc_range == ADCRange.RANGE_2_5V:
                 # Default 2.5V range, already set
                 subprocess.run(["gpioset", str(self.gpio_bank), f"{channel.gpio_voltage_select}=1"])
-                pass
             elif adc_range == ADCRange.RANGE_10_9V:
                 subprocess.run(["gpioset", str(self.gpio_bank), f"{channel.gpio_voltage_select}=1"])
             elif adc_range == ADCRange.RANGE_20MA:
                 subprocess.run(["gpioset", str(self.gpio_bank), f"{channel.gpio_current_select}=1"])
 
-            logger.info(f"Configured ADC channel {channel.channel_number} for range {adc_range}")
+            self.logger.info(f"Configured ADC channel {channel.channel_number} for range {adc_range}")
             return True
         except Exception as e:
-            logger.exception(f"Error configuring ADC channel {channel.channel_number}: {e}")
+            self.logger.exception(f"Error configuring ADC channel {channel.channel_number}: {e}")
             return False
 
     def read_raw_adc(self, channel_num: int) -> Optional[int]:
         """Read raw ADC value from the specified channel number using IIO"""
         if channel_num not in self.channel_map:
-            logger.error(f"Invalid channel number: {channel_num}")
+            self.logger.error(f"Invalid channel number: {channel_num}")
             return None
 
         if self.dev is None:
-            logger.error("IIO device not initialized")
+            self.logger.error("IIO device not initialized")
             return None
 
         channel = self.channel_map[channel_num]
@@ -139,7 +138,7 @@ class ADCHardware(HardwareBase):
                 
             return int(total/float(n))
         except Exception as e:
-            logger.exception(f"Error reading ADC channel {channel_num} via IIO: {e}")
+            self.logger.exception(f"Error reading ADC channel {channel_num} via IIO: {e}")
             return None
 
     def convert_raw_to_voltage(self, raw_value: int) -> float:
@@ -185,7 +184,7 @@ class ADCHardware(HardwareBase):
     def read_device(self, device: Dict[str, Any]) -> Optional[Tuple[float, float]]:
         """Read current from the specified device"""
         if 'channel' not in device:
-            logger.error(f"Missing channel in device: {device}")
+            self.logger.error(f"Missing channel in device: {device}")
             return None
 
         channel_num = device['channel']
@@ -236,7 +235,7 @@ class ADCHardware(HardwareBase):
             return result
         except Exception as e:
             result["error"] = str(e)
-            logger.exception(f"Error testing device {device.get('mac', 'unknown')}: {e}")
+            self.logger.exception(f"Error testing device {device.get('mac', 'unknown')}: {e}")
             return result
 
     def get_points(self, names: List[str]) -> List:
@@ -262,7 +261,7 @@ class ADCHardware(HardwareBase):
 
         # Initialize devices if not already done
         if not self.initialized:
-            logger.info("Initializing ADC channels for devices")
+            self.logger.info("Initializing ADC channels for devices")
             self.enable_5v_power()
             for device in devices:
                 self.initialize_device(device)
@@ -271,7 +270,7 @@ class ADCHardware(HardwareBase):
         for device in devices:
             mac = device.get('mac')
             if not mac:
-                logger.warning(f"Device missing MAC address: {device}")
+                self.logger.warning(f"Device missing MAC address: {device}")
                 continue
 
             device_results = {}

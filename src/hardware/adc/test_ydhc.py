@@ -2,6 +2,8 @@ import json
 import time
 from hardware.adc.ct_hall import ADCHardware
 
+from utils import LogManager
+
 
 def load_config(config_path):
     """Load configuration from JSON file"""
@@ -10,6 +12,8 @@ def load_config(config_path):
 
 
 def main():
+    logger = LogManager("./test.log").get_logger("main")
+    logger.info("RUNNING")
     # Load configuration
     config = load_config("ct_config.json")
 
