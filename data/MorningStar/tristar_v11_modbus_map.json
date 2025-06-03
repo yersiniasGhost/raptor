@@ -1,0 +1,1460 @@
+{
+    "V_PU_hi": {
+      "name": "Voltage Scaling High",
+      "data_type": "uint16",
+      "address": 0,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "description": "Voltage scaling, whole term"
+    },
+    "V_PU_lo": {
+      "name": "Voltage Scaling Low",
+      "data_type": "uint16",
+      "address": 1,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Voltage scaling, fractional term"
+    },
+    "I_PU_hi": {
+      "name": "Current Scaling High",
+      "data_type": "uint16",
+      "address": 2,
+      "units": "A",
+      "conversion_factor": 1.0,
+      "description": "Current scaling, whole term"
+    },
+    "I_PU_lo": {
+      "name": "Current Scaling Low",
+      "data_type": "uint16",
+      "address": 3,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Current scaling, fractional term"
+    },
+
+    "ver_sw": {
+      "name": "Software Version",
+      "data_type": "uint16",
+      "address": 4,
+      "units": "-",
+      "conversion_factor": "BCD",
+      "description": "Software Version (Binary Coded Decimal)"
+  },
+
+  "Battery_Voltage": {
+    "adc_vb_f_med": {
+      "name": "Battery Voltage",
+      "data_type": "uint16",
+      "address": 24,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Battery voltage, filtered (τ ≈ 2.5s)"
+    },
+    "adc_vbterm_f": {
+      "name": "Battery Terminal Voltage",
+      "data_type": "uint16",
+      "address": 25,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Battery Terminal voltage, filtered (τ ≈ 2.5s)"
+    },
+    "adc_vbs_f": {
+      "name": "Battery Sense Voltage",
+      "data_type": "uint16",
+      "address": 26,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Battery Sense voltage, filtered (τ ≈ 2.5s)"
+    },
+    "adc_va_f": {
+      "name": "Array Voltage",
+      "data_type": "uint16",
+      "address": 27,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Array voltage, filtered (τ ≈ 2.5s)"
+    },
+    "Charging_Current": {
+      "name": "Battery Current",
+      "data_type": "uint16",
+      "address": 28,
+      "units": "A",
+      "conversion_factor": 1.0,
+      "conversion_function": "current_scaling",
+      "description": "Battery current, filtered (τ ≈ 2.5s)"
+    },
+    "adc_ia_f_shadow": {
+      "name": "Array Current",
+      "data_type": "uint16",
+      "address": 29,
+      "units": "A",
+      "conversion_factor": 1.0,
+      "conversion_function": "current_scaling",
+      "description": "Array current, filtered (τ ≈ 2.5s)"
+    },
+    "adc_p12_f": {
+      "name": "12V Supply",
+      "data_type": "uint16",
+      "address": 30,
+      "units": "V",
+      "conversion_factor": "n*18.612*2^-15",
+      "description": "12 volt supply, filtered (τ ≈ 2.5s)"
+    },
+    "adc_p3_f": {
+      "name": "3V Supply",
+      "data_type": "uint16",
+      "address": 31,
+      "units": "V",
+      "conversion_factor": "6.6*2^-15",
+      "description": "3 volt supply, filtered (τ ≈ 2.5s)"
+    },
+    "adc_pmeter_f": {
+      "name": "MeterBus Voltage",
+      "data_type": "uint16",
+      "address": 32,
+      "units": "V",
+      "conversion_factor": "n*18.612*2^-15",
+      "description": "MeterBus voltage, filtered (τ ≈ 2.5s)"
+    },
+    "adc_p18_f": {
+      "name": "1.8V Supply",
+      "data_type": "uint16",
+      "address": 33,
+      "units": "V",
+      "conversion_factor": "n*3*2^-15",
+      "description": "1.8 volt supply, filtered (τ ≈ 2.5s)"
+    },
+    "adc_v_ref": {
+      "name": "Reference Voltage",
+      "data_type": "uint16",
+      "address": 34,
+      "units": "V",
+      "conversion_factor": "n*3*2^-15",
+      "description": "reference voltage"
+    }
+  },
+
+  "temperatures": {
+    "T_hs": {
+      "name": "Heatsink Temperature",
+      "data_type": "int16",
+      "address": 35,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "Heatsink temperature"
+    },
+    "T_rts": {
+      "name": "RTS Temperature",
+      "data_type": "int16",
+      "address": 36,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "RTS temperature (0x80 = disconnect)"
+    },
+    "T_batt": {
+      "name": "Battery Temperature",
+      "data_type": "int16",
+      "address": 37,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "Battery regulation temperature"
+    }
+  },
+
+  "status": {
+    "adc_vb_f_1m": {
+      "name": "Battery Voltage 1min",
+      "data_type": "uint16",
+      "address": 38,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Battery voltage, filtered (τ ≈ 1min)"
+    },
+    "adc_ib_f_1m": {
+      "name": "Charging Current 1min",
+      "data_type": "uint16",
+      "address": 39,
+      "units": "A",
+      "conversion_factor": 1.0,
+      "conversion_function": "current_scaling",
+      "description": "Charging current, filtered (τ ≈ 1min)"
+    },
+    "vb_min": {
+      "name": "Minimum Battery Voltage",
+      "data_type": "uint16",
+      "address": 40,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Minimum battery voltage"
+    },
+    "vb_max": {
+      "name": "Maximum Battery Voltage",
+      "data_type": "uint16",
+      "address": 41,
+      "units": "V",
+      "conversion_factor": 1.0,
+      "conversion_function": "voltage_scaling",
+      "description": "Maximum battery voltage"
+    },
+    "hourmeter_HI": {
+      "name": "Hour Meter High",
+      "data_type": "uint16",
+      "address": 42,
+      "units": "h",
+      "conversion_factor": 1.0,
+      "description": "hourmeter, HI word"
+    },
+    "hourmeter_LO": {
+      "name": "Hour Meter Low",
+      "data_type": "uint16",
+      "address": 43,
+      "units": "h",
+      "conversion_factor": 1.0,
+      "description": "hourmeter, LO word"
+    },
+    "fault_all": {
+      "name": "Controller Faults",
+      "data_type": "uint16",
+      "address": 44,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Controller faults bitfield"
+    },
+    "alarm_HI": {
+      "name": "Alarms High",
+      "data_type": "uint16",
+      "address": 46,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "alarm bitfield – HI word"
+    },
+    "alarm_LO": {
+      "name": "Alarms Low",
+      "data_type": "uint16",
+      "address": 47,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "alarm bitfield – LO word"
+    },
+    "dip_all": {
+      "name": "DIP Switch Positions",
+      "data_type": "uint16",
+      "address": 48,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "DIP switch positions bitfield"
+    },
+    "led_state": {
+      "name": "LED State",
+      "data_type": "uint16",
+      "address": 49,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "State of LED indications"
+    }
+  },
+
+  "charger": {
+    "charge_state": {
+      "name": "Charge State",
+      "data_type": "uint16",
+      "address": 50,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Charging stage"
+    },
+    "vb_ref": {
+      "name": "Target Regulation Voltage",
+      "data_type": "uint16",
+      "address": 51,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Target regulation voltage"
+    },
+    "Ahc_r_HI": {
+      "name": "Ah Charge Resetable High",
+      "data_type": "uint16",
+      "address": 52,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge – resetable, HI word"
+    },
+    "Ahc_r_LO": {
+      "name": "Ah Charge Resetable Low",
+      "data_type": "uint16",
+      "address": 53,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge – resetable, LO word"
+    },
+    "Ahc_t_HI": {
+      "name": "Ah Charge Total High",
+      "data_type": "uint16",
+      "address": 54,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge – total, HI word"
+    },
+    "Ahc_t_LO": {
+      "name": "Ah Charge Total Low",
+      "data_type": "uint16",
+      "address": 55,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge – total, LO word"
+    },
+    "kwhc_r": {
+      "name": "kWh Charge Resetable",
+      "data_type": "uint16",
+      "address": 56,
+      "units": "kWh",
+      "conversion_factor": 1.0,
+      "description": "kWhr charge resetable"
+    },
+    "kwhc_t": {
+      "name": "kWh Charge Total",
+      "data_type": "uint16",
+      "address": 57,
+      "units": "kWh",
+      "conversion_factor": 1.0,
+      "description": "kWhr charge total"
+    }
+  },
+
+  "mppt": {
+    "power_out_shadow": {
+      "name": "Output Power",
+      "data_type": "uint16",
+      "address": 58,
+      "units": "W",
+      "conversion_factor": "n*V_PU*I_PU*2^-17",
+      "description": "Output Power"
+    },
+    "power_in_shadow": {
+      "name": "Input Power",
+      "data_type": "uint16",
+      "address": 59,
+      "units": "W",
+      "conversion_factor": "n*V_PU*I_PU*2^-17",
+      "description": "Input Power"
+    },
+    "sweep_Pin_max": {
+      "name": "Max Power Last Sweep",
+      "data_type": "uint16",
+      "address": 60,
+      "units": "W",
+      "conversion_factor": "n*V_PU*I_PU*2^-17",
+      "description": "Max. Power of last sweep"
+    },
+    "sweep_vmp": {
+      "name": "Vmp Last Sweep",
+      "data_type": "uint16",
+      "address": 61,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Vmp of last sweep"
+    },
+    "sweep_voc": {
+      "name": "Voc Last Sweep",
+      "data_type": "uint16",
+      "address": 62,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Voc of last sweep"
+    }
+  },
+
+  "daily_logger": {
+    "vb_min_daily": {
+      "name": "Min Daily Battery Voltage",
+      "data_type": "uint16",
+      "address": 64,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Min. daily battery voltage"
+    },
+    "vb_max_daily": {
+      "name": "Max Daily Battery Voltage",
+      "data_type": "uint16",
+      "address": 65,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Max. daily battery voltage"
+    },
+    "va_max_daily": {
+      "name": "Max Daily Array Voltage",
+      "data_type": "uint16",
+      "address": 66,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Max. daily input voltage"
+    },
+    "Ahc_daily": {
+      "name": "Daily Ah Charge",
+      "data_type": "uint16",
+      "address": 67,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Total Ah charge daily"
+    },
+    "whc_daily": {
+      "name": "Daily Wh Charge",
+      "data_type": "uint16",
+      "address": 68,
+      "units": "Wh",
+      "conversion_factor": 1.0,
+      "description": "Total Wh charge daily"
+    },
+    "flags_daily": {
+      "name": "Daily Flags",
+      "data_type": "uint16",
+      "address": 69,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Daily flags bitfield"
+    },
+    "Pout_max_daily": {
+      "name": "Max Daily Power Out",
+      "data_type": "uint16",
+      "address": 70,
+      "units": "W",
+      "conversion_factor": "n*V_PU*I_PU*2^-17",
+      "description": "Max. Power Out, daily"
+    },
+    "Tb_min_daily": {
+      "name": "Min Daily Battery Temp",
+      "data_type": "int16",
+      "address": 71,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "Min. battery temp. daily"
+    },
+    "Tb_max_daily": {
+      "name": "Max Daily Battery Temp",
+      "data_type": "int16",
+      "address": 72,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "Max. battery temp. daily"
+    },
+    "fault_daily": {
+      "name": "Daily Faults",
+      "data_type": "uint16",
+      "address": 73,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Faults, daily"
+    },
+    "alarm_daily_HI": {
+      "name": "Daily Alarms High",
+      "data_type": "uint16",
+      "address": 75,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Daily alarms bitfield – HI word"
+    },
+    "alarm_daily_LO": {
+      "name": "Daily Alarms Low",
+      "data_type": "uint16",
+      "address": 76,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Daily alarms bitfield – LO word"
+    },
+    "time_ab_daily": {
+      "name": "Daily Absorption Time",
+      "data_type": "uint16",
+      "address": 77,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "cumulative time in absorption, daily"
+    },
+    "time_eq_daily": {
+      "name": "Daily Equalization Time",
+      "data_type": "uint16",
+      "address": 78,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "cumulative time in equalize, daily"
+    },
+    "time_fl_daily": {
+      "name": "Daily Float Time",
+      "data_type": "uint16",
+      "address": 79,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "cumulative time in float, daily"
+    }
+  },
+
+  "manual_control": {
+    "Ib_ref_slave": {
+      "name": "Battery Current Override",
+      "data_type": "uint16",
+      "address": 88,
+      "units": "A",
+      "conversion_factor": "n*80*2^-15",
+      "description": "Battery current regulation override"
+    },
+    "vb_ref_slave": {
+      "name": "Battery Voltage Override",
+      "data_type": "uint16",
+      "address": 89,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "battery voltage regulation override"
+    },
+    "va_ref_fixed": {
+      "name": "Array V Fixed Target",
+      "data_type": "uint16",
+      "address": 90,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Array V fixed voltage target"
+    },
+    "va_ref_fixed_pct": {
+      "name": "Array V Percent Target",
+      "data_type": "uint16",
+      "address": 91,
+      "units": "%",
+      "conversion_factor": "n*100*2^-16",
+      "description": "Array V % of Voc voltage target"
+    }
+  },
+
+  "tcp_network_active": {
+    "ProcessorB_Version": {
+      "name": "Processor B Version",
+      "data_type": "uint16",
+      "address": 4096,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Processor B Firmware version"
+    },
+    "IPAddrByte_10": {
+      "name": "IP Address Bytes 1,0",
+      "data_type": "uint16",
+      "address": 4111,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "IP Address Bytes"
+    },
+    "IPAddrByte_32": {
+      "name": "IP Address Bytes 3,2",
+      "data_type": "uint16",
+      "address": 4112,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "IP Address Bytes"
+    },
+    "SubNetMask_10": {
+      "name": "Subnet Mask Bytes 1,0",
+      "data_type": "uint16",
+      "address": 4113,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Subnet Mask Bytes"
+    },
+    "SubNetMask_32": {
+      "name": "Subnet Mask Bytes 3,2",
+      "data_type": "uint16",
+      "address": 4114,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Subnet Mask Bytes"
+    },
+    "Gateway_10": {
+      "name": "Gateway Bytes 1,0",
+      "data_type": "uint16",
+      "address": 4115,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Gateway Bytes"
+    },
+    "Gateway_32": {
+      "name": "Gateway Bytes 3,2",
+      "data_type": "uint16",
+      "address": 4116,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Gateway Bytes"
+    },
+    "PrimaryDNS_10": {
+      "name": "Primary DNS Bytes 1,0",
+      "data_type": "uint16",
+      "address": 4117,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "PrimaryDNS Bytes"
+    },
+    "PrimaryDNS_32": {
+      "name": "Primary DNS Bytes 3,2",
+      "data_type": "uint16",
+      "address": 4118,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "PrimaryDNS Bytes"
+    },
+    "SecondaryDNS_10": {
+      "name": "Secondary DNS Bytes 1,0",
+      "data_type": "uint16",
+      "address": 4119,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "SecondaryDNS Bytes"
+    },
+    "SecondaryDNS_32": {
+      "name": "Secondary DNS Bytes 3,2",
+      "data_type": "uint16",
+      "address": 4120,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "SecondaryDNS Bytes"
+    },
+    "ControllerID_1": {
+      "name": "Controller ID String 1",
+      "data_type": "uint16",
+      "address": 4125,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_2": {
+      "name": "Controller ID String 2",
+      "data_type": "uint16",
+      "address": 4126,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_3": {
+      "name": "Controller ID String 3",
+      "data_type": "uint16",
+      "address": 4127,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_4": {
+      "name": "Controller ID String 4",
+      "data_type": "uint16",
+      "address": 4128,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_5": {
+      "name": "Controller ID String 5",
+      "data_type": "uint16",
+      "address": 4129,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_6": {
+      "name": "Controller ID String 6",
+      "data_type": "uint16",
+      "address": 4130,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_7": {
+      "name": "Controller ID String 7",
+      "data_type": "uint16",
+      "address": 4131,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "ControllerID_8": {
+      "name": "Controller ID String 8",
+      "data_type": "uint16",
+      "address": 4132,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetFlags": {
+      "name": "Network Flags",
+      "data_type": "uint16",
+      "address": 4133,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "0x4000=DHCP Enabled, 0x0=DHCP disabled"
+    },
+    "MACAddress_10": {
+      "name": "MAC Address Bytes 1,0",
+      "data_type": "uint16",
+      "address": 4134,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "MAC Address Bytes"
+    },
+    "MACAddress_32": {
+      "name": "MAC Address Bytes 3,2",
+      "data_type": "uint16",
+      "address": 4135,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "MAC Address Bytes"
+    },
+    "MACAddress_54": {
+      "name": "MAC Address Bytes 5,4",
+      "data_type": "uint16",
+      "address": 4136,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "MAC Address Bytes"
+    },
+    "NetBIOS_Name_1": {
+      "name": "NetBIOS Name 1",
+      "data_type": "uint16",
+      "address": 4137,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_2": {
+      "name": "NetBIOS Name 2",
+      "data_type": "uint16",
+      "address": 4138,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_3": {
+      "name": "NetBIOS Name 3",
+      "data_type": "uint16",
+      "address": 4139,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_4": {
+      "name": "NetBIOS Name 4",
+      "data_type": "uint16",
+      "address": 4140,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_5": {
+      "name": "NetBIOS Name 5",
+      "data_type": "uint16",
+      "address": 4141,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_6": {
+      "name": "NetBIOS Name 6",
+      "data_type": "uint16",
+      "address": 4142,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_7": {
+      "name": "NetBIOS Name 7",
+      "data_type": "uint16",
+      "address": 4143,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    },
+    "NetBIOS_Name_8": {
+      "name": "NetBIOS Name 8",
+      "data_type": "uint16",
+      "address": 4144,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "String of 16 bytes, 00 terminates string"
+    }
+  },
+
+  "eeprom_tcp_settings": {
+    "HTTPPort": {
+      "name": "HTTP Port Number",
+      "data_type": "uint16",
+      "address": 5403,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "HTTP Port Number"
+    },
+    "MBIPPort": {
+      "name": "MODBUS IP Port Number",
+      "data_type": "uint16",
+      "address": 5404,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "MODBUS IP Port Number"
+    },
+    "NetRules": {
+      "name": "Network Rules",
+      "data_type": "uint16",
+      "address": 5405,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "BIT0: IP Bridging Enabled"
+    },
+    "SNMPTrapRecPort": {
+      "name": "SNMP Trap Receive Port",
+      "data_type": "uint16",
+      "address": 5406,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "SNMP Trap Destination NMS Port"
+    },
+    "EthernetPowerSaveMode": {
+      "name": "Ethernet Power Save Mode",
+      "data_type": "uint16",
+      "address": 5407,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Bit0: Power Save On=1"
+    },
+    "VLAN_Enable": {
+      "name": "VLAN Enable",
+      "data_type": "uint16",
+      "address": 5408,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Bit0: Vlan Tagging regognition/sending = 1"
+    },
+    "VLAN_Parameters": {
+      "name": "VLAN Parameters",
+      "data_type": "uint16",
+      "address": 5409,
+      "units": "bitfield",
+      "conversion_factor": 1.0,
+      "description": "Bit 0-11 VID 0-4094, Bit 12 CFI, Bits 15-13 PCP Priority 0-7"
+    }
+  },
+
+  "eeprom_charge_settings": {
+    "EV_absorp": {
+      "name": "Absorption Voltage",
+      "data_type": "uint16",
+      "address": 57344,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Absorption voltage @ 25°C"
+    },
+    "EV_float": {
+      "name": "Float Voltage",
+      "data_type": "uint16",
+      "address": 57345,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Float voltage @ 25°C (Set to zero to disable float)"
+    },
+    "Et_absorp": {
+      "name": "Absorption Time",
+      "data_type": "uint16",
+      "address": 57346,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "absorption time"
+    },
+    "Et_absorp_ext": {
+      "name": "Absorption Extension Time",
+      "data_type": "uint16",
+      "address": 57347,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "absorption extension time"
+    },
+    "EV_absorp_ext": {
+      "name": "Absorption Extension Threshold",
+      "data_type": "uint16",
+      "address": 57348,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "absorp. Extension threshold voltage"
+    },
+    "EV_float_cancel": {
+      "name": "Float Cancel Voltage",
+      "data_type": "uint16",
+      "address": 57349,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Voltage that cancels float"
+    },
+    "Et_float_exit_cum": {
+      "name": "Float Exit Timer",
+      "data_type": "uint16",
+      "address": 57350,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "Exit float timer"
+    },
+    "EV_eq": {
+      "name": "Equalize Voltage",
+      "data_type": "uint16",
+      "address": 57351,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Equalize V @ 25°C (Set 0 to disable)"
+    },
+    "Et_eqcalendar": {
+      "name": "Equalize Calendar Days",
+      "data_type": "uint16",
+      "address": 57352,
+      "units": "days",
+      "conversion_factor": 1.0,
+      "description": "days between eq cycles"
+    },
+    "Et_eq_above": {
+      "name": "Equalize Time Above Vreg",
+      "data_type": "uint16",
+      "address": 57353,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "equalize time limit above Vreg"
+    },
+    "Et_eq_reg": {
+      "name": "Equalize Time At Veq",
+      "data_type": "uint16",
+      "address": 57354,
+      "units": "s",
+      "conversion_factor": 1.0,
+      "description": "equalize time limit at Veq"
+    },
+    "Et_batt_service": {
+      "name": "Battery Service Timer",
+      "data_type": "uint16",
+      "address": 57355,
+      "units": "days",
+      "conversion_factor": 1.0,
+      "description": "battery service timer"
+    },
+    "EV_tempcomp": {
+      "name": "Temperature Compensation",
+      "data_type": "uint16",
+      "address": 57357,
+      "units": "V/°C",
+      "conversion_factor": "n*V_PU*2^-16",
+      "description": "temp. compensation coefficient (negative assumed)"
+    },
+    "EV_hvd": {
+      "name": "High Voltage Disconnect",
+      "data_type": "uint16",
+      "address": 57358,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Battery High Voltage Disconnect"
+    },
+    "EV_hvr": {
+      "name": "High Voltage Reconnect",
+      "data_type": "uint16",
+      "address": 57359,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Battery High Voltage Reconnect"
+    },
+    "Evb_ref_lim": {
+      "name": "Battery Charge Reference Limit",
+      "data_type": "uint16",
+      "address": 57360,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "battery charge reference limit"
+    },
+    "ETb_max": {
+      "name": "Max Temperature Comp Limit",
+      "data_type": "int16",
+      "address": 57361,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "max. temp comp limit"
+    },
+    "ETb_min": {
+      "name": "Min Temperature Comp Limit",
+      "data_type": "int16",
+      "address": 57362,
+      "units": "°C",
+      "conversion_factor": 1.0,
+      "description": "min. temp comp limit"
+    },
+    "EV_soc_g_gy": {
+      "name": "LED Green to Green/Yellow",
+      "data_type": "uint16",
+      "address": 57365,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "LED threshold: green to green/yellow"
+    },
+    "EV_soc_gy_y": {
+      "name": "LED Green/Yellow to Yellow",
+      "data_type": "uint16",
+      "address": 57366,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "LED threshold: green/yellow to yellow"
+    },
+    "EV_soc_y_yr": {
+      "name": "LED Yellow to Yellow/Red",
+      "data_type": "uint16",
+      "address": 57367,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "LED threshold: yel to yel/red"
+    },
+    "EV_soc_yr_r": {
+      "name": "LED Yellow/Red to Red",
+      "data_type": "uint16",
+      "address": 57368,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "LED threshold: yellow/red to red"
+    },
+    "Emodbus_id": {
+      "name": "MODBUS Slave Address",
+      "data_type": "uint16",
+      "address": 57369,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "MODBUS slave address (1-247)"
+    },
+    "Emeterbus_id": {
+      "name": "MeterBus Address",
+      "data_type": "uint16",
+      "address": 57370,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "MeterBus address (1-15)"
+    },
+    "EIb_lim": {
+      "name": "Battery Current Limit",
+      "data_type": "uint16",
+      "address": 57373,
+      "units": "A",
+      "conversion_factor": 1.0, "conversion_function": "current_scaling",
+      "description": "Battery Current Limit"
+    },
+    "EVa_ref_fixed_init": {
+      "name": "Array V Fixed Target Init",
+      "data_type": "uint16",
+      "address": 57376,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Array V fixed target voltage"
+    },
+    "EVa_ref_fixed_pct_init": {
+      "name": "Array V Fixed Percent Init",
+      "data_type": "uint16",
+      "address": 57377,
+      "units": "%",
+      "conversion_factor": "n*100*2^-16",
+      "description": "Array V fixed target V (% of Voc)"
+    }
+  },
+
+  "eeprom_readonly": {
+    "Ehourmeter_LO": {
+      "name": "EEPROM Hour Meter Low",
+      "data_type": "uint16",
+      "address": 57472,
+      "units": "h",
+      "conversion_factor": 1.0,
+      "description": "hourmeter LO word"
+    },
+    "Ehourmeter_HI": {
+      "name": "EEPROM Hour Meter High",
+      "data_type": "uint16",
+      "address": 57473,
+      "units": "h",
+      "conversion_factor": 1.0,
+      "description": "hourmeter HI word"
+    },
+    "EAhc_r_LO": {
+      "name": "EEPROM Ah Charge Reset Low",
+      "data_type": "uint16",
+      "address": 57474,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge resetable LO word"
+    },
+    "EAhc_r_HI": {
+      "name": "EEPROM Ah Charge Reset High",
+      "data_type": "uint16",
+      "address": 57475,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge resetable HI word"
+    },
+    "EAhc_t_LO": {
+      "name": "EEPROM Ah Charge Total Low",
+      "data_type": "uint16",
+      "address": 57476,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge total LO word"
+    },
+    "EAhc_t_HI": {
+      "name": "EEPROM Ah Charge Total High",
+      "data_type": "uint16",
+      "address": 57477,
+      "units": "Ah",
+      "conversion_factor": "n*0.1",
+      "description": "Ah charge total HI word"
+    },
+    "EkWhc_r": {
+      "name": "EEPROM kWh Charge Reset",
+      "data_type": "uint16",
+      "address": 57478,
+      "units": "kWh",
+      "conversion_factor": 1.0,
+      "description": "kWh charge resetable"
+    },
+    "EkWhc_t": {
+      "name": "EEPROM kWh Charge Total",
+      "data_type": "uint16",
+      "address": 57479,
+      "units": "kWh",
+      "conversion_factor": 1.0,
+      "description": "kWh charge total"
+    },
+    "EVb_min": {
+      "name": "EEPROM Vb Minimum",
+      "data_type": "uint16",
+      "address": 57480,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Vb minimum"
+    },
+    "EVb_max": {
+      "name": "EEPROM Vb Maximum",
+      "data_type": "uint16",
+      "address": 57481,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Vb maximum"
+    },
+    "EVa_max": {
+      "name": "EEPROM Va Maximum",
+      "data_type": "uint16",
+      "address": 57482,
+      "units": "V",
+      "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
+      "description": "Va maximum"
+    },
+    "Etmr_eqcalendar": {
+      "name": "EEPROM Equalize Calendar Timer",
+      "data_type": "uint16",
+      "address": 57483,
+      "units": "days",
+      "conversion_factor": 1.0,
+      "description": "days since last equalize"
+    },
+    "Etmr_batt_service": {
+      "name": "EEPROM Battery Service Timer",
+      "data_type": "uint16",
+      "address": 57484,
+      "units": "days",
+      "conversion_factor": 1.0,
+      "description": "battery service timer"
+    },
+    "Eserial_1": {
+      "name": "Serial Number 1",
+      "data_type": "uint16",
+      "address": 57536,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "Serial Number bytes 1,0"
+    },
+    "Eserial_2": {
+      "name": "Serial Number 2",
+      "data_type": "uint16",
+      "address": 57537,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "Serial Number bytes 3,2"
+    },
+    "Eserial_3": {
+      "name": "Serial Number 3",
+      "data_type": "uint16",
+      "address": 57538,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "Serial Number bytes 5,4"
+    },
+    "Eserial_4": {
+      "name": "Serial Number 4",
+      "data_type": "uint16",
+      "address": 57539,
+      "units": "ASCII",
+      "conversion_factor": 1.0,
+      "description": "Serial Number bytes 7,6"
+    },
+    "Emodel": {
+      "name": "Model",
+      "data_type": "uint16",
+      "address": 57548,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Model: 0 = 45A, 1=60A version"
+    },
+    "Ehw_version": {
+      "name": "Hardware Version",
+      "data_type": "uint16",
+      "address": 57549,
+      "units": "-",
+      "conversion_factor": 1.0,
+      "description": "Hardware version, vMajor.Minor"
+    }
+  },
+
+  "coils_discrete_inputs": {
+    "equalize_triggered": {
+      "name": "Equalize Triggered",
+      "data_type": "bool",
+      "address": 0,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Equalize triggered"
+    },
+    "charge_disconnect": {
+      "name": "Charge Disconnect",
+      "data_type": "bool",
+      "address": 2,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Charge disconnect (1 will force charger into a disconnect state)"
+    },
+    "clear_ah_resetable": {
+      "name": "Clear Ah Resetable",
+      "data_type": "bool",
+      "address": 16,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear Ah Resetable (set only, will always read 0)"
+    },
+    "clear_ah_total": {
+      "name": "Clear Ah Total",
+      "data_type": "bool",
+      "address": 17,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear Ah total (set only, will always read 0)"
+    },
+    "clear_kwh_resetable": {
+      "name": "Clear kWh Resetable",
+      "data_type": "bool",
+      "address": 18,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear kWh Resetable (set only, will always read 0)"
+    },
+    "reset_battery_service_calendar": {
+      "name": "Reset Battery Service Calendar",
+      "data_type": "bool",
+      "address": 19,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Reset battery service calendar"
+    },
+    "clear_faults": {
+      "name": "Clear Faults",
+      "data_type": "bool",
+      "address": 20,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear faults"
+    },
+    "clear_alarms": {
+      "name": "Clear Alarms",
+      "data_type": "bool",
+      "address": 21,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear Alarms"
+    },
+    "force_eeprom_update": {
+      "name": "Force EEPROM Update",
+      "data_type": "bool",
+      "address": 22,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Force EEPROM update (set only, will always read 0)"
+    },
+    "clear_kwh_total": {
+      "name": "Clear kWh Total",
+      "data_type": "bool",
+      "address": 24,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear kWh total (set only, will always read 0)"
+    },
+    "clear_vb_min_max": {
+      "name": "Clear Vb Min and Max",
+      "data_type": "bool",
+      "address": 25,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Clear Vb_min and Vb_max (set only, will always read 0)"
+    },
+    "test_single_phase": {
+      "name": "Test Single Phase",
+      "data_type": "bool",
+      "address": 240,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "test a single phase (test mode only)"
+    },
+    "reset_control": {
+      "name": "Reset Control",
+      "data_type": "bool",
+      "address": 255,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Reset control (respond and then reset?)"
+    },
+    "send_test_notification_1": {
+      "name": "Send Test Notification 1",
+      "data_type": "bool",
+      "address": 4096,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Send Test Notification 1"
+    },
+    "send_test_notification_2": {
+      "name": "Send Test Notification 2",
+      "data_type": "bool",
+      "address": 4097,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Send Test Notification 2"
+    },
+    "send_test_notification_3": {
+      "name": "Send Test Notification 3",
+      "data_type": "bool",
+      "address": 4098,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Send Test Notification 3"
+    },
+    "send_test_notification_4": {
+      "name": "Send Test Notification 4",
+      "data_type": "bool",
+      "address": 4099,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Send Test Notification 4"
+    },
+    "reset_communications_server": {
+      "name": "Reset Communications Server",
+      "data_type": "bool",
+      "address": 4351,
+      "units": "bool",
+      "conversion_factor": 1.0,
+      "description": "Reset Communications Server"
+    }
+  },
+
+  "enumerated_values": {
+    "charge_states": {
+      "0": "START",
+      "1": "NIGHT_CHECK",
+      "2": "DISCONNECT",
+      "3": "NIGHT",
+      "4": "FAULT",
+      "5": "MPPT",
+      "6": "ABSORPTION",
+      "7": "FLOAT",
+      "8": "EQUALIZE",
+      "9": "SLAVE"
+    },
+    "led_states": {
+      "0": "LED_START",
+      "1": "LED_START2",
+      "2": "LED_BRANCH",
+      "3": "FAST GREEN BLINK",
+      "4": "SLOW GREEN BLINK",
+      "5": "GREEN BLINK, 1HZ",
+      "6": "GREEN_LED",
+      "7": "UNDEFINED",
+      "8": "YELLOW_LED",
+      "9": "UNDEFINED",
+      "10": "BLINK_RED_LED",
+      "11": "RED_LED",
+      "12": "R-Y-G ERROR",
+      "13": "R/Y-G ERROR",
+      "14": "R/G-Y ERROR",
+      "15": "R-Y ERROR (HTD)",
+      "16": "R-G ERROR (HVD)",
+      "17": "R/Y-G/Y ERROR",
+      "18": "G/Y/R ERROR",
+      "19": "G/Y/R x 2"
+    },
+    "fault_bits": {
+      "0": "overcurrent",
+      "1": "FETs shorted",
+      "2": "software bug",
+      "3": "battery HVD",
+      "4": "array HVD",
+      "5": "settings switch changed",
+      "6": "custom settings edit",
+      "7": "RTS shorted",
+      "8": "RTS disconnected",
+      "9": "EEPROM retry limit",
+      "10": "Reserved",
+      "11": "Slave Control Timeout",
+      "12": "Fault 13",
+      "13": "Fault 14",
+      "14": "Fault 15",
+      "15": "Fault 16"
+    },
+    "alarm_bits": {
+      "0": "RTS open",
+      "1": "RTS shorted",
+      "2": "RTS disconnected",
+      "3": "Heatsink temp sensor open",
+      "4": "Heatsink temp sensor shorted",
+      "5": "High temperature current limit",
+      "6": "Current limit",
+      "7": "Current offset",
+      "8": "Battery sense out of range",
+      "9": "Battery sense disconnected",
+      "10": "Uncalibrated",
+      "11": "RTS miswire",
+      "12": "High voltage disconnect",
+      "13": "Undefined",
+      "14": "system miswire",
+      "15": "MOSFET open",
+      "16": "P12 voltage off",
+      "17": "High input voltage current limit",
+      "18": "ADC input max",
+      "19": "Controller was reset",
+      "20": "Alarm 21",
+      "21": "Alarm 22",
+      "22": "Alarm 23",
+      "23": "Alarm 24"
+    },
+    "daily_flags_bits": {
+      "0": "Reset detected",
+      "1": "Equalize triggered",
+      "2": "Entered float",
+      "3": "an alarm occurred",
+      "4": "a fault occurred"
+    }
+  },
+
+  "scaling_notes": {
+    "voltage_scaling": "V_PU = V_PU_hi + (V_PU_lo / 2^16)",
+    "current_scaling": "I_PU = I_PU_hi + (I_PU_lo / 2^16)",
+    "voltage_conversion": "actual_voltage = raw_value * V_PU * 2^-15",
+    "current_conversion": "actual_current = raw_value * I_PU * 2^-15",
+    "power_conversion": "actual_power = raw_value * V_PU * I_PU * 2^-17",
+    "32bit_values": "For 32-bit values, combine HI and LO words: value = (HI << 16) + LO",
+    "signed_values": "Signed values use two's complement representation",
+    "bcd_format": "Software version uses Binary Coded Decimal format"
+  }
+}

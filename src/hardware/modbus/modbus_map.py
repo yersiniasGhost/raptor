@@ -29,6 +29,7 @@ class ModbusRegisterType(Enum):
     HOLDING = 'holding'
     INPUT = 'input'
     CONTROL = 'control'
+    SCALING = 'scaling'
 
 
 @dataclass
@@ -39,6 +40,7 @@ class ModbusRegister:
     range_size: int = 1  # Number of consecutive registers
     units: str = ""
     conversion_factor: float = 1.0  # e.g., 1/1000 for mV to V
+    conversion_function: str = ""   # Specialized conversion function by name
     description: str = ""
     acquisition_type: Union[ModbusAcquisitionType, str] = ModbusAcquisitionType.STORE
     enum_values: Dict[str, str] = field(default_factory=dict)

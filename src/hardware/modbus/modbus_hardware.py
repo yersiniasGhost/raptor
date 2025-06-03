@@ -6,7 +6,6 @@ from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
 
-
 from utils import LogManager
 
 
