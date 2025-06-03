@@ -135,10 +135,8 @@
       "units": "V",
       "conversion_factor": "n*3*2^-15",
       "description": "reference voltage"
-    }
   },
 
-  "temperatures": {
     "T_hs": {
       "name": "Heatsink Temperature",
       "data_type": "int16",
@@ -162,10 +160,8 @@
       "units": "°C",
       "conversion_factor": 1.0,
       "description": "Battery regulation temperature"
-    }
   },
 
-  "status": {
     "adc_vb_f_1m": {
       "name": "Battery Voltage 1min",
       "data_type": "uint16",
@@ -257,10 +253,8 @@
       "units": "-",
       "conversion_factor": 1.0,
       "description": "State of LED indications"
-    }
   },
 
-  "charger": {
     "charge_state": {
       "name": "Charge State",
       "data_type": "uint16",
@@ -324,10 +318,8 @@
       "units": "kWh",
       "conversion_factor": 1.0,
       "description": "kWhr charge total"
-    }
   },
 
-  "mppt": {
     "power_out_shadow": {
       "name": "Output Power",
       "data_type": "uint16",
@@ -367,10 +359,8 @@
       "units": "V",
       "conversion_factor": 1.0, "conversion_function": "voltage_scaling",
       "description": "Voc of last sweep"
-    }
   },
 
-  "daily_logger": {
     "vb_min_daily": {
       "name": "Min Daily Battery Voltage",
       "data_type": "uint16",
@@ -490,10 +480,8 @@
       "units": "s",
       "conversion_factor": 1.0,
       "description": "cumulative time in float, daily"
-    }
   },
 
-  "manual_control": {
     "Ib_ref_slave": {
       "name": "Battery Current Override",
       "data_type": "uint16",
@@ -525,10 +513,8 @@
       "units": "%",
       "conversion_factor": "n*100*2^-16",
       "description": "Array V % of Voc voltage target"
-    }
   },
 
-  "tcp_network_active": {
     "ProcessorB_Version": {
       "name": "Processor B Version",
       "data_type": "uint16",
@@ -776,10 +762,8 @@
       "units": "ASCII",
       "conversion_factor": 1.0,
       "description": "String of 16 bytes, 00 terminates string"
-    }
   },
 
-  "eeprom_tcp_settings": {
     "HTTPPort": {
       "name": "HTTP Port Number",
       "data_type": "uint16",
@@ -835,10 +819,9 @@
       "units": "bitfield",
       "conversion_factor": 1.0,
       "description": "Bit 0-11 VID 0-4094, Bit 12 CFI, Bits 15-13 PCP Priority 0-7"
-    }
-  },
+    },
 
-  "eeprom_charge_settings": {
+
     "EV_absorp": {
       "name": "Absorption Voltage",
       "data_type": "uint16",
@@ -1054,10 +1037,8 @@
       "units": "%",
       "conversion_factor": "n*100*2^-16",
       "description": "Array V fixed target V (% of Voc)"
-    }
-  },
+    },
 
-  "eeprom_readonly": {
     "Ehourmeter_LO": {
       "name": "EEPROM Hour Meter Low",
       "data_type": "uint16",
@@ -1209,10 +1190,9 @@
       "units": "-",
       "conversion_factor": 1.0,
       "description": "Hardware version, vMajor.Minor"
-    }
-  },
+    },
 
-  "coils_discrete_inputs": {
+
     "equalize_triggered": {
       "name": "Equalize Triggered",
       "data_type": "bool",
@@ -1357,104 +1337,5 @@
       "conversion_factor": 1.0,
       "description": "Reset Communications Server"
     }
-  },
 
-  "enumerated_values": {
-    "charge_states": {
-      "0": "START",
-      "1": "NIGHT_CHECK",
-      "2": "DISCONNECT",
-      "3": "NIGHT",
-      "4": "FAULT",
-      "5": "MPPT",
-      "6": "ABSORPTION",
-      "7": "FLOAT",
-      "8": "EQUALIZE",
-      "9": "SLAVE"
-    },
-    "led_states": {
-      "0": "LED_START",
-      "1": "LED_START2",
-      "2": "LED_BRANCH",
-      "3": "FAST GREEN BLINK",
-      "4": "SLOW GREEN BLINK",
-      "5": "GREEN BLINK, 1HZ",
-      "6": "GREEN_LED",
-      "7": "UNDEFINED",
-      "8": "YELLOW_LED",
-      "9": "UNDEFINED",
-      "10": "BLINK_RED_LED",
-      "11": "RED_LED",
-      "12": "R-Y-G ERROR",
-      "13": "R/Y-G ERROR",
-      "14": "R/G-Y ERROR",
-      "15": "R-Y ERROR (HTD)",
-      "16": "R-G ERROR (HVD)",
-      "17": "R/Y-G/Y ERROR",
-      "18": "G/Y/R ERROR",
-      "19": "G/Y/R x 2"
-    },
-    "fault_bits": {
-      "0": "overcurrent",
-      "1": "FETs shorted",
-      "2": "software bug",
-      "3": "battery HVD",
-      "4": "array HVD",
-      "5": "settings switch changed",
-      "6": "custom settings edit",
-      "7": "RTS shorted",
-      "8": "RTS disconnected",
-      "9": "EEPROM retry limit",
-      "10": "Reserved",
-      "11": "Slave Control Timeout",
-      "12": "Fault 13",
-      "13": "Fault 14",
-      "14": "Fault 15",
-      "15": "Fault 16"
-    },
-    "alarm_bits": {
-      "0": "RTS open",
-      "1": "RTS shorted",
-      "2": "RTS disconnected",
-      "3": "Heatsink temp sensor open",
-      "4": "Heatsink temp sensor shorted",
-      "5": "High temperature current limit",
-      "6": "Current limit",
-      "7": "Current offset",
-      "8": "Battery sense out of range",
-      "9": "Battery sense disconnected",
-      "10": "Uncalibrated",
-      "11": "RTS miswire",
-      "12": "High voltage disconnect",
-      "13": "Undefined",
-      "14": "system miswire",
-      "15": "MOSFET open",
-      "16": "P12 voltage off",
-      "17": "High input voltage current limit",
-      "18": "ADC input max",
-      "19": "Controller was reset",
-      "20": "Alarm 21",
-      "21": "Alarm 22",
-      "22": "Alarm 23",
-      "23": "Alarm 24"
-    },
-    "daily_flags_bits": {
-      "0": "Reset detected",
-      "1": "Equalize triggered",
-      "2": "Entered float",
-      "3": "an alarm occurred",
-      "4": "a fault occurred"
-    }
-  },
-
-  "scaling_notes": {
-    "voltage_scaling": "V_PU = V_PU_hi + (V_PU_lo / 2^16)",
-    "current_scaling": "I_PU = I_PU_hi + (I_PU_lo / 2^16)",
-    "voltage_conversion": "actual_voltage = raw_value * V_PU * 2^-15",
-    "current_conversion": "actual_current = raw_value * I_PU * 2^-15",
-    "power_conversion": "actual_power = raw_value * V_PU * I_PU * 2^-17",
-    "32bit_values": "For 32-bit values, combine HI and LO words: value = (HI << 16) + LO",
-    "signed_values": "Signed values use two's complement representation",
-    "bcd_format": "Software version uses Binary Coded Decimal format"
-  }
 }
