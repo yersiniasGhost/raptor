@@ -27,7 +27,7 @@ class ADCChannel:
 @dataclass
 class ADCHardware(HardwareBase):
     adc_max_raw: int = 4095  # 12-bit ADC
-    adc_max_voltage: float = 2.5  # Default voltage range
+    adc_max_voltage: float = 1.0  # Default voltage range
     gpio_bank: int = 5  # GPIO bank for ADC control
     initialized: bool = False
     iio_device_name: str = "2198000.adc"

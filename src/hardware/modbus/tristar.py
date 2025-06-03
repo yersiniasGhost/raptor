@@ -33,7 +33,7 @@ class Tristar(ModbusHardware):
             mac = device['mac']
             scaling_values = modbus_data_acquisition(self, scaling_registers, slave_id)
             output[mac] = modbus_data_acquisition(self, registers, slave_id)
-            for register_name, pre_scaled_value in output[mac]:
+            for register_name, pre_scaled_value in output[mac].items():
                 scale_function = self.modbus_map.get_register_by_name(register_name).conversion_function
                 if scale_function == "voltage_scaling":
                     v_pu = scaling_values["V_PU_hi"] + (scaling_values["V_PU_lo"] * self.TWO_NEG_16)
