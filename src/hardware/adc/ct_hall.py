@@ -132,7 +132,6 @@ class ADCHardware(HardwareBase):
             for _ in range(n):
                 raw_value = int(iio_channel.attrs['raw'].value)
                 total += raw_value
-                print(raw_value)
                 time.sleep(0.01)  # Small delay between readings
                 
             return int(total/float(n))
