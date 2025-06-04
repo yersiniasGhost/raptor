@@ -36,10 +36,11 @@ class Tristar(ModbusHardware):
             for register_name, pre_scaled_value in output[mac].items():
                 scale_function = self.modbus_map.get_register_by_name(register_name).conversion_function
                 if scale_function == "voltage_scaling":
-                    v_pu = scaling_values["V_PU_hi"] + (scaling_values["V_PU_lo"] * self.TWO_NEG_16)
+                    # TODO: Register name issue to be resolved
+                    v_pu = scaling_values["Voltage_Scaling_High"] + (scaling_values["Voltage_Scaling_Low"] * self.TWO_NEG_16)
                     output[mac][register_name] = pre_scaled_value * v_pu * self.TWO_NEG_15
                 elif scale_function == "current_scaling":
-                    i_pu = scaling_values["I_PU_hi"] + (scaling_values["I_PU_lo"] * self.TWO_NEG_16)
+                    i_pu = scaling_values["Current_Scaling_High"] + (scaling_values["Current_Scaling_Low"] * self.TWO_NEG_16)
                     output[mac][register_name] = pre_scaled_value * i_pu * self.TWO_NEG_15
 
         return output

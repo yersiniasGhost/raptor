@@ -15,7 +15,7 @@ def main():
     logger = LogManager("./test.log").get_logger("main")
     logger.info("RUNNING")
     # Load configuration
-    config = load_config("ct_config.json")
+    config = load_config("ct_config4.json")
 
     # Initialize CT hardware
     ct_hardware = ADCHardware.from_config(config)
@@ -32,6 +32,7 @@ def main():
         print(f"    Raw ADC: {test_result['raw']}")
         print(f"    Voltage: {test_result['voltage']:.3f} V")
         print(f"    Current: {test_result['current']:.3f} A")
+        print(f"    Power: {test_result['current'] * 91.0:.3f} W")
         if test_result['error']:
             print(f"    Error: {test_result['error']}")
         print()
@@ -39,7 +40,7 @@ def main():
     # Example of continuous monitoring
     print("Starting continuous monitoring (Ctrl+C to stop):")
     try:
-        while True:
+        while False:
             for device in devices:
                 current = ct_hardware.read_device_current(device)
                 name = device.get('name', device.get('mac', 'unknown'))
@@ -67,8 +68,8 @@ def main():
     scan_group = [device.get('name', device.get('mac', 'unknown')) for device in devices]
     hardware_id = "ct_hardware_1"
 
-    results = ct_hardware.data_acquisition(devices, scan_group, hardware_id)
-    print(json.dumps(results, indent=2))
+    # results = ct_hardware.data_acquisition(devices, [], hardware_id)
+    # print(json.dumps(results, indent=2))
 
 
 if __name__ == "__main__":

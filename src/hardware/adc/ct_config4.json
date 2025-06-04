@@ -1,46 +1,54 @@
 {
   "adc_max_raw": 4095,
-  "adc_max_voltage": 2.5,
+  "adc_max_voltage": 10.9,
   "gpio_bank": 5,
   "devices": [
     {
       "mac": "ct001",
+      "zero_point": 2.462,
+      "max_deviation": 0.625,
       "channel": 1,
       "ct_ratio": 20.0,
       "conversion_factor": 1.0,
       "offset": 0.0,
       "max_value": 50.0,
       "min_value": 0.0,
-      "name": "main_feed"
+      "name": "High Section"
     },
   {
       "mac": "ct002",
       "channel": 2,
+      "zero_point": 2.457,
+      "max_deviation": 0.625,
       "ct_ratio": 20.0,
       "conversion_factor": 1.0,
       "offset": 0.0,
       "max_value": 50.0,
       "min_value": 0.0,
-      "name": "main_feed"
+      "name": "Center Section"
     },
   {
       "mac": "ct003",
       "channel": 3,
+      "zero_point": 2.467,
+      "max_deviation": 0.625,
       "ct_ratio": 20.0,
       "conversion_factor": 1.0,
       "offset": 0.0,
       "max_value": 50.0,
       "min_value": 0.0,
-      "name": "main_feed"
+      "name": "Low Section"
     },
   {
       "mac": "ct004",
       "channel": 4,
+      "zero_point": 2.462,
+      "max_deviation": 0.625,
       "ct_ratio": 20.0,
       "conversion_factor": 1.0,
       "offset": 0.0,
       "max_value": 50.0,
       "min_value": 0.0,
-      "name": "main_feed"
+      "name": "Combined"
     }]
 }

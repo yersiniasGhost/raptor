@@ -2,12 +2,10 @@ import time
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import subprocess
-import os
 from enum import Enum
 from hardware.hardware_base import HardwareBase
 from utils import LogManager
 import iio
-
 
 
 class ADCRange(Enum):
@@ -27,7 +25,7 @@ class ADCChannel:
 @dataclass
 class ADCHardware(HardwareBase):
     adc_max_raw: int = 4095  # 12-bit ADC
-    adc_max_voltage: float = 1.0  # Default voltage range
+    adc_max_voltage: float = 10.9  # High Voltage range
     gpio_bank: int = 5  # GPIO bank for ADC control
     initialized: bool = False
     iio_device_name: str = "2198000.adc"
@@ -88,7 +86,8 @@ class ADCHardware(HardwareBase):
 
         # Configure channel for 2.5V range
         channel = self.channel_map[channel_num]
-        return self.configure_adc_channel(channel, ADCRange.RANGE_2_5V)
+        adc_range = ADCRange.RANGE_2_5V if self.adc_max_voltage == 2.5 else ADCRange.RANGE_10_9V
+        return self.configure_adc_channel(channel, adc_range)
 
     def configure_adc_channel(self, channel: ADCChannel, adc_range: ADCRange) -> bool:
         """Configure an ADC channel for the specified range"""
@@ -274,16 +273,8 @@ class ADCHardware(HardwareBase):
                 self.logger.warning(f"Device missing MAC address: {device}")
                 continue
 
-            device_results = {}
-
-            # Read each point in the scan group for this device
-            for point in scan_group:
-                # For CT hardware, points map directly to readings
-                reading = self.read_device(device)
-                if reading is not None:
-                    current, _ = reading
-                    device_results[point] = current
-
+            current, _ = self.read_device(device)
+            device_results = {mac: current}
             result[mac] = device_results
 
         return result

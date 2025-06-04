@@ -39,7 +39,7 @@
 	"conversion_factor": "BCD",
 	"description": "Software Version (Binary Coded Decimal)"
   },
-  "adc_vb_f_med": {
+  "Battery_Voltage": {
 	"name": "Battery Voltage",
 	"data_type": "uint16",
 	"address": 24,
