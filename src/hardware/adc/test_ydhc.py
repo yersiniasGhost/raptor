@@ -1,6 +1,6 @@
 import json
 import time
-from hardware.adc.ct_hall import ADCHardware
+from hardware.adc.ct_hall import CTHall
 
 from utils import LogManager
 
@@ -18,7 +18,7 @@ def main():
     config = load_config("ct_config4.json")
 
     # Initialize CT hardware
-    ct_hardware = ADCHardware.from_config(config)
+    ct_hardware = CTHall.from_config(config)
 
     # Get devices from config
     devices = config.get('devices', [])
