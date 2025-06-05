@@ -160,10 +160,10 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                 slave_id = register.slave_id
             result = None
             if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-                logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register}")
+                logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register.name}")
                 result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
             else:
-                logger.info(f"Reading INPUT register: {address}, {slave_id}, {register}")
+                logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
                 result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
             if result is None:
                 logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")

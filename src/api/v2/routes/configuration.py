@@ -103,7 +103,14 @@ async def reconfigure(request: Request):
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("reconfigure", {}, None, None)
-        await ActionFactory.execute_action("restart",{"skip_reverse_tunnel": True}, None, None)
+        await ActionFactory.execute_action("restart",
+                                           {"skip_vmc_ui": True,
+                                            "skip_reverse_tunnel": True},
+                                           None, None)
+        request.session["flash_message"] = "Reconfiguration completed"
+        request.session["flash_type"] = "success"
+
+        return RedirectResponse(url="/", status_code=303)
 
     except Exception as e:
         # Handle errors

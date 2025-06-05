@@ -31,6 +31,10 @@ class RestartAction(Action):
                 if "reverse-tunnel" in targets:
                     targets.remove("reverse-tunnel")
 
+            if self.params.get('skip_vmc_ui', False):
+                if 'vmc-ui' in targets:
+                    targets.remove("vmc-ui")
+
             if restart_mode == 'service':
                 # Restart systemctl services
                 results = {}
