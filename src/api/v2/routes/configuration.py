@@ -110,7 +110,7 @@ async def reconfigure(request: Request):
         request.session["flash_message"] = "Reconfiguration completed"
         request.session["flash_type"] = "success"
 
-        return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url="/configuration", status_code=303)
 
     except Exception as e:
         # Handle errors
@@ -139,6 +139,9 @@ async def update_firmware(
         # If the action is update_restart, restart the application
         if action == "update_restart":
             await ActionFactory.execute_action("restart", {"skip_reverse_tunnel": True}, None, None)
+
+        request.session["flash_message"] = "Firmware update completed"
+        request.session["flash_type"] = "success"
 
         # Return to the configuration page
         return RedirectResponse(url="/configuration", status_code=303)
