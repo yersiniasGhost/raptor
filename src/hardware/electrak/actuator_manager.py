@@ -30,6 +30,8 @@ class ActuatorManager(metaclass=Singleton):
     def setup_network(self):
         """Initialize CAN network connection"""
         self.logger.info("Running linux commands to set up network")
+        cmd = ['ip', 'link', 'set', 'can0', 'down']
+        output, status = run_command(cmd, self.logger)
         cmd = ["ip", "link", "set", "can0", "type", "can", "bitrate", "500000"]
         output, status = run_command(cmd, self.logger)
         self.logger.info(f"ip link set: {status}")

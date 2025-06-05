@@ -74,6 +74,7 @@ class ElectrakMD(HardwareBase):
 
     def setup(self):
         if not self.is_setup:
+            self.logger.info("Electrak Setup")
             """Initialize the actuator with error handling"""
             with self.operation_lock:
                 try:
@@ -96,7 +97,7 @@ class ElectrakMD(HardwareBase):
     def current_state(self) -> dict:
         self.setup()
         """Get current state with improved SDO handling and retries"""
-        max_retries = 3
+        max_retries = 1
         retry_delay = 0.1
         
         for attempt in range(max_retries):
