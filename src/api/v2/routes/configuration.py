@@ -27,7 +27,10 @@ async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRout
 
 
 @router.get("/", name="configuration_index")
-async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+async def index(request: Request,hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)],  success: str= None):
+    success_message = None
+    if success == "reconfigure":
+        success_message = "Reconfiguration completed successfully!"
     git_branches = get_git_branches()
     current_branch = get_current_branch()
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
@@ -35,6 +38,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     return templates.TemplateResponse(
         "configuration.html",
         {
+            "success_message": success_message,
             "hardware": hardware,
             "request": request,
             "git_branches": git_branches,
@@ -144,7 +148,7 @@ async def update_firmware(
         request.session["flash_type"] = "success"
 
         # Return to the configuration page
-        return RedirectResponse(url="/configuration", status_code=303)
+        return RedirectResponse(url="/configuration?success=reconfigure", status_code=303)
     except Exception as e:
         # Handle errors
         return templates.TemplateResponse(

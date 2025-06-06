@@ -189,11 +189,7 @@
         <a href="/analysis" class="nav-button">Analysis</a>
         <a href="/system-status" class="nav-button">System Status</a>
     </div>
-    {% if request.session.get("flash_message") %}
-        <div class="alert alert-{{ request.session.get('flash_type', 'info') }}">
-            {{ request.session.pop("flash_message") }}
-        </div>
-    {% endif %}
+
     <div>
         {% block content %}{% endblock %}
     </div>
