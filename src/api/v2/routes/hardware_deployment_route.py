@@ -40,7 +40,7 @@ class HardwareDeploymentRoute:
             self.logger.info(f"TOD: {hardware}")
             self.inverter = instantiate_hardware_from_dict(hardware, self.logger, True)
 
-        for hardware in db.get_hardware_systems("PV"):
+        for hardware in db.get_hardware_systems("Generation"):
             self.logger.info(f"Adding PV systems")
             self.logger.info(f"TOD: {hardware}")
             self.pv_cts = instantiate_hardware_from_dict(hardware, self.logger, True)
@@ -79,6 +79,10 @@ class HardwareDeploymentRoute:
             if self.charge_controller:
                 return self.charge_controller.definition
             return {"message": "No Charge Controller assigned"}
+        if hardware_type == "Generation":
+            if self.pv_cts:
+                return self.pv_cts.definition
+            return {"message": "No PV Generation CTs are configured"}
         else:
             return {"message": f"{hardware_type} not yet supported."}
 
