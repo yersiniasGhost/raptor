@@ -1,4 +1,4 @@
-
+from collections import deque
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
@@ -12,6 +12,7 @@ logger = LogManager().get_logger("GenerationRoute")
 
 router = APIRouter(prefix="/generation", tags=["generation"])
 data_store = BMSDataStore()
+GENERATION_SYSTEM = "PVCTs"
 
 
 @router.get("/")
@@ -52,6 +53,28 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "error": str(e)
             }
         )
+
+@router.get("/historical/{unit_id}")
+async def get_historical_data(unit_id: str, num_points: int = Query(default=800, ge=10, le=20000)):
+    try:
+        # battery = batteries.get_definition(unit_id)
+        logger.info(f"Loading Generation CTs historical data: {unit_id}")
+        filename = f"{GENERATION_SYSTEM}_{unit_id}.csv"
+        last_points = deque(maxlen=num_points)
+        with open(filename, 'r') as file:
+            header = file.readline().strip()
+            for line in file:
+                last_points.append(line)
+        logger.info(f"DEBUG: got {len(last_points)} points.  Header: {header}")
+        csv_data = header + '\n' + '\n'.join(last_points)
+        return JSONResponse(content={"data": csv_data, "error": None})
+
+    except FileNotFoundError:
+        logger.error(f"CSV file not found for unit {unit_id}")
+        return JSONResponse(content={"data": None, "error": f"No historical data found for unit {unit_id}"})
+    except Exception as e:
+        logger.error(f"Error reading historical data for unit {unit_id}: {e}")
+        return JSONResponse(content={"data": None, "error": str(e)})
 
 
 @router.get("/data")
