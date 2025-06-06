@@ -111,10 +111,8 @@ async def reconfigure(request: Request):
                                            {"skip_vmc_ui": True,
                                             "skip_reverse_tunnel": True},
                                            None, None)
-        request.session["flash_message"] = "Reconfiguration completed"
-        request.session["flash_type"] = "success"
 
-        return RedirectResponse(url="/configuration", status_code=303)
+        return RedirectResponse(url="/configuration?success=reconfigure", status_code=303)
 
     except Exception as e:
         # Handle errors
