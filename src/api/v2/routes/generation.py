@@ -12,7 +12,7 @@ logger = LogManager().get_logger("GenerationRoute")
 
 router = APIRouter(prefix="/generation", tags=["generation"])
 data_store = BMSDataStore()
-GENERATION_SYSTEM = "PVCTs"
+GENERATION_SYSTEM = "Generation"
 
 
 @router.get("/")
