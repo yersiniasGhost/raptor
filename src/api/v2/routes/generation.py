@@ -82,6 +82,17 @@ async def get_test_data(hardware_def: Annotated[HardwareDeploymentRoute, Depends
     cts = hardware_def.pv_cts
     if not cts:
         return JSONResponse(content={ "data": None, "error": "Not configured" })
+    try:
+        values = cts.hardware.test_device(cts.devices[0])
+        for device in cts.devices:
+            unit_id = device['mac']
+            if isinstance(values, dict):  # Ensure values is a dictionary
+                await data_store.update_unit_data(unit_id, values[unit_id])
+            else:
+                logger.error(f"Unexpected values type: {type(values)}")
+        data = await data_store.get_all_data()
+        return JSONResponse(content={"data": data, "error": None})
 
-    values = cts.hardware.test_device(cts.devices[0])
-    return { "success": True, "value": values}
+    except Exception as e:
+        logger.error(f"Error getting Inverter data: {e}")
+        return JSONResponse(content={"data": None, "error": str(e)})
