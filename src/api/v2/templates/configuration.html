@@ -181,7 +181,7 @@
 
 
 <h1>System Configuration</h1>
-{% for config in ["Actuators", "BMS", "Inverter", "Charge Controller", "Generation"] %}
+{% for config in ["Actuators", "BMS", "Inverter", "Charge Controller", "Current Transformers"] %}
 <div class="config-container">
     <div class="config-section">
         <h3 class="config-title">{{ config }} Configuration</h3>
@@ -197,7 +197,7 @@
         </div>
     </div>
     <div class="config-controls">
-        <h1>{{ config }} Test and Diagnostics</h1>
+        <h3>{{ config }} Test and Diagnostics</h3>
         <span>
             <button class="test-button" onclick="testConfig('{{ config }}')">Test system</button>
             <button class="test-button" onclick="resetConfig('{{ config }}')">Reset system</button>

@@ -21,18 +21,22 @@ async def generation_data(request: Request, hardware: Annotated[HardwareDeployme
     try:
         # Update each unit
         cts = hardware.pv_cts
-        values = cts.data_acquisition()
-        print(values)
         return templates.TemplateResponse(
             "generation.html",
-            { "request": request }
+            {
+                "request": request,
+                "cts": cts
+            }
         )
     except Exception as e:
         logger.error(f"{e}",exc_info=True)
 
 
-@router.get("/test")
+@router.get("/data")
 async def get_test_data(hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     cts = hardware_def.pv_cts
-    values = cts.hardware.test_device(cts.devices[0])
+    if not cts:
+        values = {}
+    else:
+        values = cts.hardware.test_device(cts.devices[0])
     return { "success": True, "value": values}
