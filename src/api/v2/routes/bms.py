@@ -186,6 +186,11 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=4000
 @router.get("/")
 async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     batteries = get_batteries(hardware)
+    if not batteries:
+        return templates.TemplateResponse('hardware_not_configured.html',
+                                          {"request": request,
+                                           "hardware": "Battery Management System"}
+                                          )
     batteries.get_identifiers()
     logger.info("Got BMS identifiers")
     register_map = batteries.get_points("DATA")

@@ -1,0 +1,20 @@
+{# templates/hardware_not_configured.html #}
+{% extends "base.html" %}
+
+{% block title %}Hardware Not Configured{% endblock %}
+
+{% block content %}
+<div class="unit-container" style="text-align: center; padding: 40px;">
+    <h2 style="color: #dc3545; margin-bottom: 20px;">⚠️ Hardware Not Configured</h2>
+
+    <p style="font-size: 1.2em; color: #666; margin-bottom: 30px;">
+        {{ hardware }} have not been configured yet.
+    </p>
+
+    <p style="color: #888; margin-bottom: 30px;">
+        Please configure the hardware through the System Configuration page to view data.
+    </p>
+
+    <a href="/configuration" class="nav-button">Go to System Configuration</a>
+</div>
+{% endblock %}

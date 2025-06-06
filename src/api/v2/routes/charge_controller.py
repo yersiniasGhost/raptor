@@ -28,6 +28,8 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
     try:
         # Update each unit
         cc = get_charge_controller(hardware)
+        if not cc:
+            return JSONResponse(content={"data": {}, "error": "No charge controller configured"})
         values = cc.data_acquisition()
         for device in cc.devices:
             unit_id = device["mac"]
@@ -65,6 +67,11 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=4000
 @router.get("/")
 async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     charge_controller = get_charge_controller(hardware)
+    if not charge_controller:
+        return templates.TemplateResponse('hardware_not_configured.html',
+                                          {"request": request,
+                                           "hardware": "Charge Controller"}
+                                          )
     charge_controller.get_identifiers()
     register_map = charge_controller.get_points("DATA")
     try:

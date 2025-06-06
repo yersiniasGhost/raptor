@@ -17,10 +17,14 @@ router = APIRouter(prefix="/generation", tags=["generation"])
 
 
 @router.get("/")
-async def generation_data(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         # Update each unit
         cts = hardware.pv_cts
+        if not cts:
+            return templates.TemplateResponse('hardware_not_configured.html',
+                                              {"request": request,
+                                               "hardware": "PV Generation CT's"})
         return templates.TemplateResponse(
             "generation.html",
             {

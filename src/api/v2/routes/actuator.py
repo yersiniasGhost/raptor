@@ -116,6 +116,11 @@ async def move_multiple_actuators(target_position: float = Form(...),
 @router.get("/", name="actuator_index")
 async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     am = get_actuators(hardware)
+    if not am:
+        return templates.TemplateResponse('hardware_not_configured.html',
+                                          {"request": request,
+                                           "hardware": "Actuator Controller"}
+                                          )
     return templates.TemplateResponse(
         "actuators.html",
         {
