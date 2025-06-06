@@ -37,7 +37,7 @@ class CTHall(ADCHardware):
             mac = device.get('mac')
             voltage = voltage_reading[mac]
             current = self.convert_voltage_to_current(voltage, device)
-            output[mac] = {"current": current, "voltage": voltage}
+            output[mac] = {"Current": current, "Voltage": voltage}
         return output
 
 

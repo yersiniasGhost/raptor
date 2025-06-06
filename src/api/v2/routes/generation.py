@@ -83,7 +83,7 @@ async def get_test_data(hardware_def: Annotated[HardwareDeploymentRoute, Depends
     if not cts:
         return JSONResponse(content={ "data": None, "error": "Not configured" })
     try:
-        values = cts.hardware.test_device(cts.devices[0])
+        values = cts.data_acquisition("DATA")
         for device in cts.devices:
             unit_id = device['mac']
             if isinstance(values, dict):  # Ensure values is a dictionary
