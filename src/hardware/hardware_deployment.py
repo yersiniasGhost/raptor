@@ -96,7 +96,10 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
         # Import the module and get the class
         # module = importlib.import_module(module_path)
         # cls = getattr(module, class_name)
-        cls = globals()[class_name]
+        cls = globals().get(class_name, None)
+        if not cls:
+            logger.error(f"Cannot find class name: {class_name}")
+            raise ValueError(f"Cannot find class name: {class_name}")
         logger.info(f"Instantiating {class_name}")
         constructor_config = hardware.get("parameters", {})
         hardware_instance = cls(**constructor_config)
