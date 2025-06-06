@@ -11,7 +11,6 @@ logger = LogManager().get_logger("InverterRoute")
 router = APIRouter(prefix="/inverters", tags=["inverters"])
 INVERTER_SYSTEM = "Converters"
 
-# Load register map
 try:
     # Initialize BMS data store
     bms_store = BMSDataStore()

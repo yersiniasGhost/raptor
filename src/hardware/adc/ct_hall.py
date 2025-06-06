@@ -27,12 +27,12 @@ class CTHall(ADCHardware):
         :return: Dictionary mapping device MACs to measurements
         """
         output = {}
-        result = self.adc_data_acquisition(devices, [], hardware_id)
+        voltage_reading = self.adc_data_acquisition(devices, [], hardware_id)
         for device in devices:
             mac = device.get('mac')
-            voltage = result[mac]
+            voltage = voltage_reading[mac]
             current = self.convert_voltage_to_current(voltage, device)
-            output[mac] = {mac: current}
+            output[mac] = {"current": current, "voltage": voltage}
         return output
 
 

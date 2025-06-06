@@ -5,8 +5,85 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Photovoltaic Generation System</h1>
-     <div id="results"></div>
+    <h1>Photovoltaic Generation System (CT devices)</h1>
+    <div id="error-message" class="error" style="display: none;"></div>
+
+    <div class="metadata">
+        <div>
+            Number of Units: <span id="unit-count">-</span>
+        </div>
+        <div class="status-indicator">
+            Last refresh: <span id="last-refresh">-</span>
+        </div>
+    </div>
+    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+        <div>
+            <label for="lookback">Number of chart data points:</label>
+            <input type="number" id="lookback" min="10" value="800" step="100">
+        </div>
+        <button onclick="updateData()">Refresh</button>
+    </div>
+
+    {% for ct in hardware.devices %}
+    {% set unit_id = ct['mac'] %}
+    <div class="side-by-side-container">
+        <!-- Left side: Unit Specification -->
+        <div class="side-by-side-item">
+            <div class="unit-container">
+                <div class="unit-specification">
+                    <h2>Unit Specification</h2>
+                    <div class="specification-table">
+                        <div class="specification-row">
+                            <div class="specification-label">CREM3 MAC:</div>
+                            <div class="specification-value {% if hardware.mac != hardware.identifier %}error-text{% endif %}">
+                                {{ct.mac}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        </div>
+        <div class="side-by-side-item">
+            {% with page = "Inverter" %}
+                {% include '_on_demand_modbus_form.html'%}
+            {% endwith %}
+        </div>
+    </div>
+    <h3>Status Table</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for reg in register_map %}
+        <tr>
+            <td>{{ reg.name }}</td>
+            <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
+                -
+            </td>
+            <td>{{ reg.description }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="chart-container">
+        <h3>Historical Data</h3>
+        <div id="charts-unit{{ unit_id }}">
+            <div class="text-gray-500">Loading charts...</div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 {% endblock %}
 
 {% block scripts %}

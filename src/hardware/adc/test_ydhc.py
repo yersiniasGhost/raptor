@@ -40,25 +40,30 @@ def main():
     # Example of continuous monitoring
     print("Starting continuous monitoring (Ctrl+C to stop):")
     try:
-        while False:
-            for device in devices:
-                current = ct_hardware.read_device_current(device)
-                name = device.get('name', device.get('mac', 'unknown'))
-                if current is not None:
-                    print(f"{name}: {current:.3f} A", end="  ")
-            for device in devices:
-                test_result = ct_hardware.test_device(device)
-                print(f"  Device: {device.get('name', device.get('mac', 'unknown'))}")
-                print(f"    Status: {test_result['status']}")
-                print(f"    Raw ADC: {test_result['raw']}")
-                print(f"    Voltage: {test_result['voltage']:.3f} V")
-                print(f"    Current: {test_result['current']:.3f} A")
-                if test_result['error']:
-                    print(f"    Error: {test_result['error']}")
-                print()
-
-            print()
+        while True:
+            data = ct_hardware.data_acquisition(devices, [], "CTS")
+            print(data)
             time.sleep(2)
+        #
+        # while False:
+        #     for device in devices:
+        #         current = ct_hardware.read_device_current(device)
+        #         name = device.get('name', device.get('mac', 'unknown'))
+        #         if current is not None:
+        #             print(f"{name}: {current:.3f} A", end="  ")
+        #     for device in devices:
+        #         test_result = ct_hardware.test_device(device)
+        #         print(f"  Device: {device.get('name', device.get('mac', 'unknown'))}")
+        #         print(f"    Status: {test_result['status']}")
+        #         print(f"    Raw ADC: {test_result['raw']}")
+        #         print(f"    Voltage: {test_result['voltage']:.3f} V")
+        #         print(f"    Current: {test_result['current']:.3f} A")
+        #         if test_result['error']:
+        #             print(f"    Error: {test_result['error']}")
+        #         print()
+        #
+        #     print()
+        #     time.sleep(2)
     except KeyboardInterrupt:
         print("\nMonitoring stopped")
 
