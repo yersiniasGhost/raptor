@@ -80,48 +80,220 @@
 
 {% block scripts %}
 <script>
-function fetchAndDisplayTestData(divId = 'results') {
-  // Get the div element where results will be displayed
-  const resultsDiv = document.getElementById(divId);
 
-  // Show loading state
-  if (resultsDiv) {
-    resultsDiv.innerHTML = 'Loading...';
-  }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
 
-  // Fetch data from the API
-  fetch('/generation/data')
-    .then(response => {
-      // Check if the request was successful
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      // Parse the JSON response
-      return response.json();
-    })
-    .then(data => {
-      // Display the result in the div
-      if (resultsDiv) {
-        // Format the JSON for better readability
-        resultsDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-      }
-    })
-    .catch(error => {
-      // Handle any errors
-      if (resultsDiv) {
-        resultsDiv.innerHTML = `Error: ${error.message}`;
-      }
-      console.error('Fetch error:', error);
-    });
-}
+        let updateInterval;
+        const UPDATE_FREQUENCY = 30000; // 30 seconds
+        let lastValues = {};
+        async function loadHistoricalData(unitId) {
+        try {
+            const num_points = document.getElementById('lookback').value;
+            const response = await fetch(`/generation/historical/${unitId}?num_points=${num_points}`);
+            const result = await response.json();
 
-// Example usage:
-// Call the function when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-  fetchAndDisplayTestData();
-});
+            if (result.error || !result.data) {
+                console.error(`Error loading historical data for unit ${unitId}:`, result.error);
+                return;
+            }
 
-// Or call it with a custom div ID
-// fetchAndDisplayTestData('customResultsDiv');
+            // Parse CSV data
+            Papa.parse(result.data, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                transformHeader: function(header) {
+                    return header.split('(')[0].trim();
+                },
+                complete: function(results) {
+                    if (results.errors.length > 0) {
+                        console.error("CSV parsing errors:", results.errors);
+                        return;
+                    }
+
+                    let data = results.data.filter(row =>
+                        row.Timestamp && // ensure timestamp exists
+                        Object.values(row).every(val => val !== null && val !== undefined)
+                    );
+                    if (!data.length) {
+                        console.error("No valid data after filtering");
+                        return;
+                    }
+
+                    // Get all columns except timestamp
+                    const columns = Object.keys(data[0])
+                        .filter(key => key.toLowerCase() !== 'timestamp');
+
+                    // Create chart container
+                    const chartContainer = document.getElementById(`charts-unit${unitId}`);
+                    chartContainer.innerHTML = ''; // Clear existing charts
+
+                 // Create grid container
+                    const gridContainer = document.createElement('div');
+                    gridContainer.className = 'charts-grid';
+                    chartContainer.appendChild(gridContainer);
+
+                    // Create a chart for each column
+                    columns.forEach(column => {
+                        const chartWrapper = document.createElement('div');
+                        chartWrapper.className = 'chart';
+
+                        const titleDiv = document.createElement('div');
+                        titleDiv.className = 'chart-title';
+                        titleDiv.textContent = column;
+                        chartWrapper.appendChild(titleDiv);
+
+                        const canvas = document.createElement('canvas');
+                        chartWrapper.appendChild(canvas);
+                        gridContainer.appendChild(chartWrapper);
+
+                        // Prepare data for Chart.js
+                        const chartData = {
+                            labels: data.map(row => row.Timestamp),
+                            datasets: [{
+                                label: column,
+                                data: data.map(row => row[column]),
+                                borderColor: '#8884d8',
+                                tension: 0.1,
+                                pointRadius: 0
+                            }]
+                        };
+
+                        // Create the chart using Chart.js
+                        new Chart(canvas, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: {
+                                        display: false,
+                                        text: column
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        ticks: {
+                                            maxRotation: 45,
+                                            minRotation: 45
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+
+        } catch (error) {
+            console.error(`Error loading historical data for unit ${unitId}:`, error);
+        }
+    }
+
+        async function updateData() {
+	    const units = {{ hardware.get_slave_ids() | tojson | safe  }}
+        units.forEach(unitId => {
+            loadHistoricalData(unitId);
+        });
+            try {
+                const response = await fetch('/generation/data');
+                const result = await response.json();
+                if (result.error) {
+                    showError(result.error);
+                    return;
+                }
+
+                const unitData = result.data;
+                if (!unitData) {
+                    return;
+                }
+
+                // Initialize lastValues for new units
+                for (const unitId in unitData) {
+                    if (!lastValues[unitId]) {
+                        lastValues[unitId] = {};
+                    }
+                }
+
+                // Update each unit's values
+                for (const [unitId, values] of Object.entries(unitData)) {
+                    for (const [name, value] of Object.entries(values)) {
+                        const cell = document.getElementById(`value-${unitId}-${name}`);
+                        if (cell) {
+                            const formattedValue = formatValue(value, name);
+                            if (lastValues[unitId][name] !== formattedValue) {
+                                cell.textContent = formattedValue;
+                                highlightUpdate(cell);
+                                lastValues[unitId][name] = formattedValue;
+                            }
+                        }
+                    }
+                }
+
+                // Update last refresh time
+                document.getElementById('last-refresh').textContent =
+                    new Date().toLocaleTimeString();
+
+                // Update number of units
+                document.getElementById('unit-count').textContent =
+                    Object.keys(unitData).length;
+
+            } catch (error) {
+                console.error('Error updating BMS data:', error);
+                showError('Failed to update BMS data');
+            }
+        }
+
+        function formatValue(value, name) {
+            if (typeof value === 'number') {
+                return value.toFixed(2);
+            }
+            return value;
+        }
+
+        function highlightUpdate(element) {
+            element.classList.add('value-updated');
+            setTimeout(() => {
+                element.classList.remove('value-updated');
+            }, 1000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+        }
+        function loadAllHistoricalData() {
+	    const units = {{ hardware.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
+        units.forEach(unitId => {
+            loadHistoricalData(unitId);
+        });
+	}
+        // Start updates when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateData();
+	    const units = {{ hardware.get_slave_ids() | tojson | safe  }}  // [1, 2, 3]; // Match your unit IDs
+        units.forEach(unitId => {
+            loadHistoricalData(unitId);
+        });
+            updateInterval = setInterval(updateData, UPDATE_FREQUENCY);
+
+        });
+
+        // Clean up when page is hidden/closed
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(updateInterval);
+            } else {
+                updateData();
+                updateInterval = setInterval(updateData, UPDATE_FREQUENCY);
+            }
+        });
+
 </script>
 {% endblock %}
