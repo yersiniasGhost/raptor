@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Any, Dict
 from fastapi import Request
 from hardware.hardware_deployment import instantiate_hardware_from_dict, HardwareDeployment
 from hardware.electrak.actuator_manager import ActuatorManager
@@ -33,23 +33,32 @@ class HardwareDeploymentRoute:
         for hardware in db.get_hardware_systems("BMS"):
             self.logger.info(f"Adding BMS system")
             self.logger.info(f"TOD: {hardware}")
-            self.batteries = instantiate_hardware_from_dict(hardware, self.logger, True)
+            self.batteries = self._instantiate_hardware_from_dict(hardware, True)
             self.batteries.get_identifiers()
         for hardware in db.get_hardware_systems("Converters"):
             self.logger.info(f"Adding Converter/Inverter system")
             self.logger.info(f"TOD: {hardware}")
-            self.inverter = instantiate_hardware_from_dict(hardware, self.logger, True)
+            self.inverter = self._instantiate_hardware_from_dict(hardware, True)
 
         for hardware in db.get_hardware_systems("Generation"):
             self.logger.info(f"Adding PV systems")
             self.logger.info(f"TOD: {hardware}")
-            self.pv_cts = instantiate_hardware_from_dict(hardware, self.logger, True)
+            self.pv_cts = self._instantiate_hardware_from_dict(hardware, True)
 
         for hardware in db.get_hardware_systems("Charge Controller"):
             self.logger.info(f"Adding Charge Controller systems")
             self.logger.info(f"TOD: {hardware}")
-            self.charge_controller = instantiate_hardware_from_dict(hardware, self.logger, True)
+            self.charge_controller = self._instantiate_hardware_from_dict(hardware, True)
 
+
+    def _instantiate_hardware_from_dict(self, hardware: Dict[str, Any],
+                                        keep_definition: bool = True) -> HardwareDeployment:
+        try:
+            hw = instantiate_hardware_from_dict(hardware, self.logger, keep_definition)
+            return hw
+        except Exception as e:
+            self.logger.error("Caught")
+            return None
 
 
     def get_hardware(self, hardware_type: str) -> Union[ActuatorManager, HardwareDeployment]:
