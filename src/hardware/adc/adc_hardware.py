@@ -188,10 +188,7 @@ class ADCHardware(HardwareBase):
         return voltage
 
 
-    def get_points(self, names: List[str]) -> List:
-        """Get points for the specified names"""
-        # For CT hardware, point names are directly passed through
-        return names
+
 
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         """Get identifiers for devices"""

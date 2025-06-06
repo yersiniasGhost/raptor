@@ -17,6 +17,11 @@ class CTHall(ADCHardware):
         )
 
 
+    def get_points(self, names: List[str]) -> List:
+        return [{"name":"Current", "description": "Calculated current (A)"},
+                {"name":"Voltage", "description": "Calculated voltage (V)"}]
+
+
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[str, Any]:
         """
         Acquire data from devices

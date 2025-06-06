@@ -28,8 +28,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         logger.info(f"Got Inverter identifiers")
         data = await data_store.get_all_data()
         register_map = hardware.get_points("DATA")
-        logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")
-        logger.info(f"DATA registers: {len(register_map)}")
+        logger.info(f"GET CT's: {hardware.hardware_id}, devices: {len(hardware.devices)}")
+        logger.info(f"CT DATA registers: {register_map}  ")
 
         return templates.TemplateResponse(
             "generation.html",
