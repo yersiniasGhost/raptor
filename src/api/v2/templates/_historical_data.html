@@ -1,0 +1,48 @@
+<div class="chart-container">
+    <h3>Historical Data</h3>
+    <div class="mb-3">
+        <button type="button" class="btn btn-danger me-2" onclick="handleDataAction('clear', {{ unit_id }})">
+            Clear Data
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="handleDataAction('archive', {{ unit_id }})">
+            Archive Data
+        </button>
+    </div>
+    <div id="charts-unit{{ unit_id }}">
+        <div class="text-gray-500">Loading charts...</div>
+    </div>
+    <div id="action-message-{{ unit_id }}" class="alert alert-success mt-2" style="display: none;">
+        Done
+    </div>
+</div>
+
+<script>
+function handleDataAction(action, unitId) {
+    fetch('/history_route', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            action: action,
+            unit_id: unitId,
+            system: '{{ system }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Show the "Done" message
+        const messageDiv = document.getElementById(`action-message-${unitId}`);
+        messageDiv.style.display = 'block';
+
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 3000);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while processing the request.');
+    });
+}
+</script>

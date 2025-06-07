@@ -67,12 +67,9 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="chart-container">
-        <h3>Historical Data</h3>
-        <div id="charts-unit{{ unit_id }}">
-            <div class="text-gray-500">Loading charts...</div>
-        </div>
-    </div>
+   {% set system = "Generation" %>
+    {% include '_historical_data.html' %}
+
 </div>
 {% endfor %}
 
