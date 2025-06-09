@@ -133,7 +133,6 @@ class ADCHardware(HardwareBase):
                 subprocess.run(["gpioset", str(self.gpio_bank), f"{channel.gpio_current_select}=1"])
 
             self.logger.info(f"Configured ADC channel {channel.channel_number} for range {adc_range}")
-            self.channels_configured = True
             return True
         except Exception as e:
             self.logger.exception(f"Error configuring ADC channel {channel.channel_number}: {e}")
@@ -213,6 +212,7 @@ class ADCHardware(HardwareBase):
             for device in devices:
                 self.initialize_device(device)
             self.initialized = True
+            self.channels_configured = True
 
         for device in devices:
             mac = device.get('mac')

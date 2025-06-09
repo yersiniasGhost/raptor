@@ -12,8 +12,8 @@ class CTHall(ADCHardware):
             adc_max_voltage=config_dict.get('adc_max_voltage', 2.5),
             gpio_bank=config_dict.get('gpio_bank', 5),
             iio_device_name=config_dict.get('iio_device_name', "2198000.adc"),
-            enable_5v_pwr=config_dict.get('enable_5v_pwr', False),
-            disable_pwr_between_reads=config_dict.get("disable_pwr_between_reads", True)
+            enable_5v_pwr=config_dict.get('enable_5v_pwr', True),
+            disable_pwr_between_reads=config_dict.get("disable_pwr_between_reads", False)
         )
 
 
