@@ -170,7 +170,7 @@ class IoTController:
         if True or self.mqtt_config.format == FORMAT_LINE_PROTOCOL:
             lines = []
             for system, system_data in system_measurements.items():
-                measurement = f"{system}"
+                measurement = f"{system.replace(' ', '_')}"
                 for hardware, hardware_data in system_data.items():
                     for device_id, m_data in hardware_data.items():
                         if m_data:
