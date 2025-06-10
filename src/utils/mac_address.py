@@ -3,9 +3,17 @@ from typing import Optional
 import psutil
 
 
-def get_mac_address():
+def get_mac_address_uuid():
     return ':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff)
                      for elements in range(0, 2 * 6, 2)][::-1])
+
+
+def get_mac_address():
+    try:
+        with open('/etc/machine-id', 'r') as f:
+            return f.read().strip()
+    except:
+        return None
 
 
 # Possibly not ever used
