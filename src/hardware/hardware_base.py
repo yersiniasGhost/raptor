@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple, Union
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from utils import LogManager
@@ -27,3 +27,7 @@ class HardwareBase(ABC):
     @abstractmethod
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         pass
+
+    @abstractmethod
+    def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
+        return "Ping TBD", True

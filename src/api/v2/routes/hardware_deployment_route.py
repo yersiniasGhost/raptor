@@ -68,6 +68,10 @@ class HardwareDeploymentRoute:
             return self.inverter
         if hardware_type == "Actuators":
             return self.actuator_manager
+        if hardware_type == "Generation":
+            return self.pv_cts
+        if hardware_type == "Charge Controller":
+            return self.charge_controller
         return None
 
 

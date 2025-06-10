@@ -47,7 +47,7 @@ class HardwareDeployment:
         return points
 
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
-        return "Ping TBD", True
+        return self.hardware.ping_hardware()
 
     def diagnostics(self) -> dict:
         diag_data = self.data_acquisition("DIAGNOSTIC")

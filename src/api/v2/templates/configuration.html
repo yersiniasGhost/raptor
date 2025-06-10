@@ -185,12 +185,12 @@
 <div class="config-container">
     <div class="config-section">
         <h3 class="config-title">{{ config }} Configuration</h3>
-        <form class="upload-form" id="{{ config | lower }}ConfigForm">
-            <input type="file" accept=".json" id="{{ config }}ConfigFile" style="display: none;">
-            <button type="button" class="upload-button" onclick="document.getElementById('{{ config }}ConfigFile').click()">
-                Load {{ config }} configuration
-            </button>
-        </form>
+<!--        <form class="upload-form" id="{{ config | lower }}ConfigForm">-->
+<!--            <input type="file" accept=".json" id="{{ config }}ConfigFile" style="display: none;">-->
+<!--            <button type="button" class="upload-button" onclick="document.getElementById('{{ config }}ConfigFile').click()">-->
+<!--                Load {{ config }} configuration-->
+<!--            </button>-->
+<!--        </form>-->
         <div id="{{ config | lower }}ConfigDisplay" class="json-display" contenteditable="true">
             {% set definition = hardware.get_hardware_definition(config) %}
             {{ definition | tojson(indent=4) if definition else "No configuration loaded" }}

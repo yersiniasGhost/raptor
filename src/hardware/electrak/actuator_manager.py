@@ -58,10 +58,10 @@ class ActuatorManager(metaclass=Singleton):
 
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
         result, returnstatus = run_command(["ip", "-details", "link", "show", self.channel], self.logger)
-        result2, returnstatus2 = run_command(['ip', 'link', 'set', 'can0', 'type', 'can', 'bitrate', '500000'], self.logger)
-        results = result + "\n" + result2
-        status = returnstatus2 and returnstatus
-        return results, status
+        # result2, returnstatus2 = run_command(['ip', 'link', 'set', 'can0', 'type', 'can', 'bitrate', '500000'], self.logger)
+        # results = result + "\n" + result2
+        # status = returnstatus2 and returnstatus
+        return result, returnstatus
 
     def add_actuator(self, actuator_id: str, node_id: int):
         """Add a new actuator to the management system"""
