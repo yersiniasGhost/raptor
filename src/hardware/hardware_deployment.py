@@ -109,7 +109,6 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
                                         hardware_id=hardware.get('external_ref')
                                         )
         if keep_definition:
-            logger.info(f"Keeping definition: {hardware}")
             deployment.definition = hardware
         return deployment
 
