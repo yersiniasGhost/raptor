@@ -76,7 +76,7 @@
 	"description": "Array voltage, filtered (τ ≈ 2.5s)"
   },
   "Charging_Current": {
-	"name": "Battery Current",
+	"name": "Charging_Current",
 	"data_type": "uint16",
 	"address": 28,
 	"units": "A",

@@ -47,7 +47,7 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
 @router.get("/historical/{unit_id}")
 async def get_historical_data(unit_id: str, num_points: int = Query(default=4000, ge=100, le=10000)):
     try:
-        filename = f"ChargeController_{unit_id}.csv"
+        filename = f"Charge Controller_{unit_id}.csv"
         last_points = deque(maxlen=num_points)
         with open(filename, 'r') as file:
             header = file.readline().strip()
