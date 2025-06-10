@@ -28,6 +28,5 @@ class HardwareBase(ABC):
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         pass
 
-    @abstractmethod
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
         return "Ping TBD", True
