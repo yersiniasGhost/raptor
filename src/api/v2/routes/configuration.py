@@ -27,7 +27,7 @@ async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRout
 
 
 @router.get("/", name="configuration_index")
-async def index(request: Request,hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)],  success: str= None):
+async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)],  success: str= None):
     success_message = None
     if success == "reconfigure":
         success_message = "Reconfiguration completed successfully!"
@@ -102,7 +102,7 @@ async def recommission(request: Request):
 
 
 @router.post("/reconfigure", name="reconfigure")
-async def reconfigure(request: Request):
+async def reconfigure(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     logger.info("Requested to reconfigure VMC")
     try:
         # Switch to the selected branch
@@ -111,6 +111,8 @@ async def reconfigure(request: Request):
                                            {"skip_vmc_ui": True,
                                             "skip_reverse_tunnel": True},
                                            None, None)
+        # Reinitialize the configurtion for the UI
+        hardware.initialize()
 
         return RedirectResponse(url="/configuration?success=reconfigure", status_code=303)
 
