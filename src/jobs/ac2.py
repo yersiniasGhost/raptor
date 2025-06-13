@@ -16,10 +16,8 @@ from dataclasses import dataclass, asdict
 import threading
 import signal
 import sys
-from utils.envvars import EnvVars
-from database.database_manager import DatabaseManager
 
-from hardware.electrak.actuator_manager import ActuatorManager
+from actuator_manager import ActuatorManager  # Import your ActuatorManager
 from utils import LogManager
 
 
@@ -63,7 +61,7 @@ class StressTestRunner:
 
     def __init__(self, config: TestConfiguration):
         self.config = config
-        self.logger = LogManager("actuator_stress_test.log").get_logger("StressTestRunner")
+        self.logger = LogManager().get_logger("StressTestRunner")
         self.actuator_manager: Optional[ActuatorManager] = None
         self.test_data: List[TestMetrics] = []
         self.running = False
@@ -92,15 +90,11 @@ class StressTestRunner:
     def initialize_actuators(self) -> bool:
         """Initialize the actuator manager"""
         try:
-            db = DatabaseManager(EnvVars().db_path)
-            for hardware in db.get_hardware_systems("Actuators"):
-                self.logger.info(f"Adding Actuators")
-                self.logger.info(f"TOD: {hardware}")
-                try:
-                    self.actuator_manager = ActuatorManager.from_dict(hardware, self.logger)
-                except Exception as e:
-                    self.logger.error(f"Failed to load ActuatorManager, {e}")
-                    self.actuator_manager = None
+            self.logger.info("Initializing actuator manager...")
+            self.actuator_manager = ActuatorManager.from_json(
+                self.config.config_file,
+                self.logger
+            )
 
             # Verify actuators are responding
             actuator_ids = self.actuator_manager.get_slave_ids()
@@ -110,7 +104,7 @@ class StressTestRunner:
 
             self.logger.info(f"Found {len(actuator_ids)} actuators: {actuator_ids}")
 
-            # Test initial communication
+            # Test initial communication and setup each actuator
             for actuator_id in actuator_ids:
                 actuator = self.actuator_manager.get_actuator(actuator_id)
                 if not actuator:
@@ -142,6 +136,7 @@ class StressTestRunner:
                 except Exception as e:
                     self.logger.error(f"Failed to setup actuator {actuator_id}: {e}")
                     return False
+
             return True
 
         except Exception as e:
@@ -159,8 +154,6 @@ class StressTestRunner:
 
         if not actuator:
             return metrics
-
-        sample_start = time.time()
 
         try:
             while self.running:
@@ -211,6 +204,7 @@ class StressTestRunner:
                 if current > 0 and current > self.config.current_limit:
                     self.logger.warning(f"Current limit exceeded for {actuator_id}: {current}A")
                     self.errors.append(f"Cycle {cycle}: Current overload {actuator_id} - {current}A")
+
                 # Check for errors using the error status
                 error_status = await loop.run_in_executor(None, actuator.get_error_status)
                 if error_status and any(vars(error_status).values()):
@@ -231,6 +225,8 @@ class StressTestRunner:
             self.errors.append(f"Cycle {cycle}: Metrics collection error {actuator_id} - {str(e)}")
 
         return metrics
+
+
 
     async def wait_for_movement_complete(self, actuator_id: str, target_position: float,
                                          timeout: float = 60.0) -> bool:
@@ -275,7 +271,6 @@ class StressTestRunner:
 
 
 
-
     async def perform_movement(self, target_position: float, target_speed: float,
                                operation_type: str, cycle: int) -> bool:
         """Perform a single movement operation"""
@@ -285,7 +280,7 @@ class StressTestRunner:
 
             self.logger.info(f"Cycle {cycle}: {operation_type} to {target_position} at {target_speed}")
 
-            # Start movement
+            # Start movement - this will initiate the PDO-based movement
             success = await self.actuator_manager.move_multiple(target_position, target_speed)
 
             if not success:
@@ -293,7 +288,7 @@ class StressTestRunner:
                 self.errors.append(f"Cycle {cycle}: Movement command failed")
                 return False
 
-            # Collect metrics during movement for all actuators
+            # Start collecting metrics during movement for all actuators
             metric_tasks = []
             for actuator_id in actuator_ids:
                 task = self.collect_metrics(
@@ -302,8 +297,8 @@ class StressTestRunner:
                 )
                 metric_tasks.append(task)
 
-                # Wait for movement to complete - the collect_metrics will stop when position is reached
-                # But we also need to ensure the move_to() method has completed
+            # Wait for movement to complete - the collect_metrics will stop when position is reached
+            # But we also need to ensure the move_to() method has completed
             completion_tasks = []
             for actuator_id in actuator_ids:
                 task = self.wait_for_movement_complete(actuator_id, target_position)
@@ -321,6 +316,7 @@ class StressTestRunner:
                 if not all(completion_results):
                     self.logger.warning(f"Some actuators did not complete movement in cycle {cycle}")
 
+            # Flatten and store metrics
             if isinstance(metrics_results, list):
                 for actuator_metrics in metrics_results:
                     if isinstance(actuator_metrics, list):
@@ -537,17 +533,17 @@ async def main():
     # Configure test parameters
     config = TestConfiguration(
         cycles=500,
-        extend_position=289.0,
-        retract_position=12.0,
-        extend_speed=100.0,
-        retract_speed=100.0,
+        extend_position=100.0,
+        retract_position=0.0,
+        extend_speed=50.0,
+        retract_speed=50.0,
         dwell_time=1.0,
         data_sample_rate=0.1,
         position_tolerance=2.0,
         current_limit=10.0,
         speed_tolerance=5.0,
-        output_dir="/root/raptor/tests/stress_test_results",
-        config_file="/root/raptor/data/ElectrakActuators/electrak_deployment.json"
+        output_dir="stress_test_results",
+        config_file="actuator_config.json"
     )
 
     # Create test runner
