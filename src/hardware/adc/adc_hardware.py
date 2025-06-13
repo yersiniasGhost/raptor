@@ -188,7 +188,6 @@ class ADCHardware(HardwareBase):
 
 
 
-
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         """Get identifiers for devices"""
         # Use the MAC address as the identifier
