@@ -16,6 +16,8 @@ from dataclasses import dataclass, asdict
 import threading
 import signal
 import sys
+from utils.envvars import EnvVars
+from database.database_manager import DatabaseManager
 
 from hardware.electrak.actuator_manager import ActuatorManager
 from utils import LogManager
@@ -90,11 +92,15 @@ class StressTestRunner:
     def initialize_actuators(self) -> bool:
         """Initialize the actuator manager"""
         try:
-            self.logger.info("Initializing actuator manager...")
-            self.actuator_manager = ActuatorManager.from_json(
-                self.config.config_file,
-                self.logger
-            )
+            db = DatabaseManager(EnvVars().db_path)
+            for hardware in db.get_hardware_systems("Actuators"):
+                self.logger.info(f"Adding Actuators")
+                self.logger.info(f"TOD: {hardware}")
+                try:
+                    self.actuator_manager = ActuatorManager.from_dict(hardware, self.logger)
+                except Exception as e:
+                    self.logger.error(f"Failed to load ActuatorManager, {e}")
+                    self.actuator_manager = None
 
             # Verify actuators are responding
             actuator_ids = self.actuator_manager.get_slave_ids()
