@@ -39,7 +39,6 @@ class TestMetrics:
     position_error: float
     error_flags: str
     motion_in_progress: bool
-    movement_time: float
     operation_type: str  # 'extend' or 'retract'
 
 
