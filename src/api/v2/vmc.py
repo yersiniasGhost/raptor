@@ -27,6 +27,10 @@ def get_hardware_deployment() -> HardwareDeploymentRoute:
     return app.state.hardware
 
 
+def reset_hardware_deployment() -> HardwareDeploymentRoute:
+    app.state.hardware = HardwareDeploymentRoute()
+
+
 def get_git_version():
     try:
         return subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]).decode().strip()

@@ -116,7 +116,7 @@ async def reconfigure(request: Request, hardware: Annotated[HardwareDeploymentRo
                                            {"skip_vmc_ui": True,
                                             "skip_reverse_tunnel": True},
                                            None, None)
-        # Reinitialize the configurtion for the UI
+        # Reinitialize the configuration for the UI
         hardware.initialize()
 
         return RedirectResponse(url="/configuration?success=reconfigure", status_code=303)

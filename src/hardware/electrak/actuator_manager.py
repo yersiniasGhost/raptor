@@ -173,6 +173,7 @@ class ActuatorManager(metaclass=Singleton):
 
     @classmethod
     def from_dict(cls, actuator_map: dict, logger) -> 'ActuatorManager':
+        ActuatorManager.delete_instance()
         try:
             logger.info(actuator_map)
             # hardware = actuator_map['Actuators']
