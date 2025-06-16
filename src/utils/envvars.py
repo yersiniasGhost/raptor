@@ -20,23 +20,24 @@ class EnvVars(metaclass=Singleton):
         self.env_variables = {}
         # Database settings
         self.db_path = self._get_required('DB_PATH')
-        self.log_path = self._getenv("LOG_PATH", "/var/log/raptor")
+        self.log_path = self.get_env("LOG_PATH", "/var/log/raptor")
 
         # API settings
         # self.phone_home_url = self._get_required('VMC_HOME_URL')
         self.api_url = self._get_required('API_URL')
 
         # Repository settings
-        self.repository_path = self._getenv("VMC_REPOSITORY_PATH", "/root/raptor")
-        self.schema_path = self._getenv("SCHEMA_PATH", "/root/raptor/src/database/schema.sql")
+        self.repository_path = self.get_env("VMC_REPOSITORY_PATH", "/root/raptor")
+        self.schema_path = self.get_env("SCHEMA_PATH", "/root/raptor/src/database/schema.sql")
 
         # Application settings
-        self.debug = self._get_bool('DEBUG', "False")
-        self.log_level = self._getenv('LOG_LEVEL', 'INFO')
-        self.enable_simulators = self._get_bool("RAPTOR_SIMULATOR", "False")
+        self.debug = self.get_bool('DEBUG', "False")
+        self.log_level = self.get_env('LOG_LEVEL', 'INFO')
+        self.enable_simulators = self.get_bool("RAPTOR_SIMULATOR", "False")
+        
 
 
-    def _getenv(self, variable: str, default: Optional[str] = None) -> Optional[str]:
+    def get_env(self, variable: str, default: Optional[str] = None) -> Optional[str]:
         return self.env_variables.get(variable) or self.env_variables.setdefault(
             variable,
             os.getenv(variable, default)
@@ -44,12 +45,12 @@ class EnvVars(metaclass=Singleton):
 
 
     def _get_required(self, key: str) -> str:
-        value = self._getenv(key)
+        value = self.get_env(key)
         if value is None:
             raise ValueError(f"Missing required environment variable: {key}")
         return value
 
-    def _get_bool(self, key: str, default: str) -> bool:
-        value = self._getenv(key, default)
+    def get_bool(self, key: str, default: str) -> bool:
+        value = self.get_env(key, default)
         return value.lower() in ('true', '1', 'yes', 'y')
 

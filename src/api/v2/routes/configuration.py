@@ -10,7 +10,7 @@ from database.db_utils import get_mqtt_config
 from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
-from utils import LogManager, get_mac_address
+from utils import LogManager, get_mac_address, EnvVars
 from cloud.mqtt_comms import check_connection
 
 logger = LogManager().get_logger(__name__)
@@ -35,6 +35,10 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     current_branch = get_current_branch()
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
     mac_address = get_mac_address()
+    services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
+    if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
+        services += "actuator-stress"
+
     return templates.TemplateResponse(
         "configuration.html",
         {
@@ -46,7 +50,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
             "mqtt_broker_ip": mqtt_broker.broker,
             "mqtt_broker_port": mqtt_broker.port,
             "mqtt_path": mqtt_broker.client_id,
-            "mac_address": mac_address
+            "mac_address": mac_address,
+            "services": services
         }
     )
 
