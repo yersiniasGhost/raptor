@@ -235,7 +235,7 @@ class StressTestRunner:
 
     def __init__(self, config: TestConfiguration):
         self.config = config
-        self.logger = LogManager("actuator_stress_test.log").get_logger("StressTestRunner")
+        self.logger = LogManager("actuator-stress.log").get_logger("StressTestRunner")
         self.actuator_manager: Optional[ActuatorManager] = None
         self.data_logger: Optional[ContinuousDataLogger] = None
         self.running = False
