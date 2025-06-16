@@ -37,7 +37,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     mac_address = get_mac_address()
     services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
     if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
-        services += "actuator-stress"
+        services += ["actuator-stress"]
 
     return templates.TemplateResponse(
         "configuration.html",
