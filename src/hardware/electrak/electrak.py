@@ -117,7 +117,7 @@ class ElectrakMD(HardwareBase):
                     continue
                 # On final attempt, return safe values
                 return {
-                    "position": self.get_position() or 0.0,
+                    "position": self.get_position() or -90.0,
                     "current": -90.0,
                     "speed": -90.0,
                     "voltage": -90.0
