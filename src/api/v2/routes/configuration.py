@@ -186,6 +186,18 @@ async def alarms_hardware(section: str, hardware: Annotated[HardwareDeploymentRo
     except Exception as e:
         return {"error": str(e)}
 
+@router.post("/reset-system/{section}")
+async def reset_system(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        device = hardware.get_hardware(section)
+        if device:
+            result, status = device.reset_hardware()
+            return {"output": result, "status": status}
+        else:
+            return {"output": "No devices found", "status": False}
+    except Exception as e:
+        return {"error": str(e)}
+
 
 @router.post("/ping/{section}")
 async def ping_hardware(section: str, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):

@@ -6,7 +6,6 @@ from .action_status import ActionStatus
 from utils import LogManager, JSON, SERVICES, EnvVars
 
 
-
 class SystemctlAction(Action):
 
     async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:

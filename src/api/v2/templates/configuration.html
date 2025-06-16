@@ -341,7 +341,7 @@
     async function resetConfig(section) {
         const responseBox = document.getElementById(`${section}Response`);
         try {
-            const response = await fetch(`/configuration/test_alarms/${section}`, { method: 'POST' });
+            const response = await fetch(`/configuration/reset_system/${section}`, { method: 'POST' });
             const data = await response.json();
             responseBox.value = data.output || data.error;
         } catch (error) {

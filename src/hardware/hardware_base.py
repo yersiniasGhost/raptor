@@ -30,3 +30,6 @@ class HardwareBase(ABC):
 
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
         return "Ping TBD", True
+
+    def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
+        return "Reset Hardware TBD", True

@@ -49,6 +49,10 @@ class HardwareDeployment:
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
         return self.hardware.ping_hardware()
 
+    def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
+        return self.hardware.reset_hardware()
+
+
     def diagnostics(self) -> dict:
         diag_data = self.data_acquisition("DIAGNOSTIC")
         return diag_data

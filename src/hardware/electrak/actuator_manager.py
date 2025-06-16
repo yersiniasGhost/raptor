@@ -56,6 +56,10 @@ class ActuatorManager(metaclass=Singleton):
             self.network = None
             return False
 
+    def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
+        self.setup_network()
+        return self.ping_hardware()
+
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
         result, returnstatus = run_command(["ip", "-details", "link", "show", self.channel], self.logger)
         # result2, returnstatus2 = run_command(['ip', 'link', 'set', 'can0', 'type', 'can', 'bitrate', '500000'], self.logger)
