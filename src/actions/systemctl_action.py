@@ -3,7 +3,7 @@ import subprocess
 from typing import Tuple
 from .base_action import Action
 from .action_status import ActionStatus
-from utils import LogManager, JSON, SERVICES
+from utils import LogManager, JSON, SERVICES, EnvVars
 
 
 
@@ -17,6 +17,8 @@ class SystemctlAction(Action):
             cmd = self.params.get('cmd', "status")
             target = self.params.get('target', 'all')  # 'all' or specific process name
             processes = SERVICES
+            if EnvVars().get_bool("ACTUATOR_STRESS_TEST", "False"):
+                processes += ['actuator-stress']
             if target == 'all':
                 targets = processes
             elif target in processes:
