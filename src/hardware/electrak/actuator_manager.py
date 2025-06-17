@@ -60,6 +60,7 @@ class ActuatorManager(metaclass=Singleton):
             return False
 
     def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
+        self.logger.info("Restarting actuators")
         self.setup_network()
         return self.ping_hardware()
 

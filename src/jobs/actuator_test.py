@@ -270,6 +270,7 @@ class StressTestRunner:
                     self.actuator_manager = None
 
             # Verify actuators are responding
+            self.actuator_manager.init_actuators()
             actuator_ids = self.actuator_manager.get_slave_ids()
             if not actuator_ids:
                 self.logger.error("No actuators found!")

@@ -149,9 +149,7 @@ async def update_firmware(
         if action == "update_restart":
             await ActionFactory.execute_action("restart", {"skip_reverse_tunnel": True}, None, None)
 
-        request.session["flash_message"] = "Firmware update completed"
-        request.session["flash_type"] = "success"
-
+        logger.info("Redirecting to configuration page")
         # Return to the configuration page
         return RedirectResponse(url="/configuration?success=reconfigure", status_code=303)
     except Exception as e:
