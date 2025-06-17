@@ -63,7 +63,7 @@
 
 {% block content %}
     <h1>Actuator Control System</h1>
-    {% for a_id, node_id in manager.actuator_defs %}
+    {% for a_id, node_id in manager.actuator_defs.items() %}
     <!-- Actuator Panels -->
     <div class="actuator-panel">
         <h2>Actuator {{a_id}}</h2>
