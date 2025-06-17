@@ -61,6 +61,8 @@ class ActuatorManager(metaclass=Singleton):
             return False
 
     def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
+        import traceback
+        traceback.print_stack()
         self.logger.info(f"Restarting actuators: {self.network}")
         self.setup_network()
         return self.ping_hardware()
