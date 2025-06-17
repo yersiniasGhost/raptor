@@ -19,7 +19,7 @@ class ActuatorManager(metaclass=Singleton):
         self.logger = LogManager().get_logger("ActuatorManager")
         self.actuators: Dict[str, ElectrakMD] = {}
         self.network = None
-        self.executor = ThreadPoolExecutor(max_workers=4)
+        self.executor: Optional[ThreadPoolExecutor] = None
         self.connection_lock = threading.RLock()  # Using RLock instead of Lock
         self.operation_locks: Dict[str, threading.Lock] = {}
         self.alarm: Optional[BannerAlarm] = None
@@ -84,6 +84,8 @@ class ActuatorManager(metaclass=Singleton):
         except Exception as e:
             self.logger.error(f"Failed to set up canbus network: {e}")
             raise
+
+        self.executor = ThreadPoolExecutor(max_workers=4)
 
         for actuator_id, node_id in self.actuator_defs.items():
             # Check if actuator already exists without lock
