@@ -151,7 +151,7 @@
 {% block scripts %}
     <script>
         const MOVING_POLL_RATE = 500;  // 1000ms when moving
-        const IDLE_POLL_RATE = 2500;    // 1500ms when idle
+        const IDLE_POLL_RATE = 5000;    // 1500ms when idle
 
         // Track movement state
         const movementState = {
@@ -301,7 +301,7 @@
 
         // Initialize status updates with dynamic polling rate
         function startStatusUpdates() {
-            const updateInterval = 2000; // 2000ms base interval
+            const updateInterval = 5000; // 2000ms base interval
             const num_actuators = {{ manager.actuators|length }};
             if (statusUpdateInterval) {
                clearInterval(statusUpdateInterval);
@@ -316,5 +316,20 @@
 
         // Start the status updates
         startStatusUpdates();
+
+        window.addEventListener('beforeunload', function(event) {
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon('/actuators/disconnect', '{}');
+            } else {
+                // Fallback for older browsers
+                fetch('/actuator/disconnect', {
+                    method: 'POST',
+                    keepalive: true,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
+        });
     </script>
 {% endblock %}

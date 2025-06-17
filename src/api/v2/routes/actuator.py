@@ -106,6 +106,19 @@ async def move_multiple_actuators(target_position: float = Form(...),
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/disconnect", name="disconnect")
+async def disconnect(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        logger.info("Disconnecting Actuators")
+        am = hardware.actuator_manager
+        await am.cleanup()  # If cleanup is async
+        return {"status": "disconnected"}
+    except Exception as e:
+        logger.error(f"Error during disconnect: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+
 @router.get("/", name="actuator_index")
 async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     logger.info("actuator index")

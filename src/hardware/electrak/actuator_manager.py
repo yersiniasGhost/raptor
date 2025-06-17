@@ -30,7 +30,7 @@ class ActuatorManager(metaclass=Singleton):
 
 
     def setup_network(self):
-        if self.network:
+        if self.network is not None:
             self.logger.info("Network is set up already")
             return True
         """Initialize CAN network connection"""
@@ -49,12 +49,11 @@ class ActuatorManager(metaclass=Singleton):
 
         self.logger.info('Setting up network...')
         try:
-            if self.network is None:
-                self.logger.info('Creating CAN network...')
-                self.network = canopen.Network()
-                self.logger.info('Connecting to CAN bus...')
-                self.network.connect(channel=self.channel, bustype='socketcan')
-                self.logger.info('CAN network setup complete')
+            self.logger.info('Creating CAN network...')
+            self.network = canopen.Network()
+            self.logger.info('Connecting to CAN bus...')
+            self.network.connect(channel=self.channel, bustype='socketcan')
+            self.logger.info('CAN network setup complete')
             return True
         except Exception as e:
             self.logger.error(f'Network setup failed: {e}')
@@ -86,14 +85,11 @@ class ActuatorManager(metaclass=Singleton):
             self.logger.error(f"Failed to set up canbus network: {e}")
             raise
 
-        print("BETTER BE HERE")
         for actuator_id, node_id in self.actuator_defs.items():
-            print("HERE", actuator_id)
             # Check if actuator already exists without lock
             if actuator_id in self.actuators:
                 self.logger.warning(f"Actuator {actuator_id} already exists")
                 return False
-
             try:
 
                 # Create operation lock for this actuator
@@ -114,7 +110,6 @@ class ActuatorManager(metaclass=Singleton):
                     self.actuators[actuator_id] = actuator
 
                 self.logger.info(f"Successfully added actuator {actuator_id}")
-                return True
 
             except Exception as e:
                 self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
@@ -124,7 +119,7 @@ class ActuatorManager(metaclass=Singleton):
                     del self.operation_locks[actuator_id]
                 self.network = None
                 return False
-
+            return True
 
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
