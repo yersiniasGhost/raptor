@@ -65,7 +65,6 @@ class HardwareDeploymentRoute:
 
 
     def get_hardware(self, hardware_type: str) -> Union[ActuatorManager, HardwareDeployment]:
-        self.actuator_manager.set
         if hardware_type == "BMS":
             return self.batteries
         if hardware_type == "Inverter":
