@@ -319,7 +319,7 @@
 
         window.addEventListener('beforeunload', function(event) {
             if (navigator.sendBeacon) {
-                navigator.sendBeacon('/actuators/disconnect', '{}');
+                navigator.sendBeacon('/actuator/disconnect', '{}');
             } else {
                 // Fallback for older browsers
                 fetch('/actuator/disconnect', {
