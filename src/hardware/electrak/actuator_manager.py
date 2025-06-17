@@ -3,12 +3,13 @@ import json
 from typing import Dict, Optional, Union, List, Tuple
 import threading
 import asyncio
+import traceback
 from concurrent.futures import ThreadPoolExecutor
 import canopen
 from .electrak import ElectrakMD
-from hardware.gpio_controller.banner_alarm import BannerAlarm
+from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
 from utils import Singleton, run_command, LogManager
-import traceback
+
 
 
 class ActuatorManager(metaclass=Singleton):
@@ -26,6 +27,8 @@ class ActuatorManager(metaclass=Singleton):
         self.channel = channel
         self.eds_file = eds
         self.hardware_definition: dict = {}
+        self.actuator_defs = []
+
 
     def setup_network(self):
         """Initialize CAN network connection"""
@@ -69,59 +72,121 @@ class ActuatorManager(metaclass=Singleton):
 
     def add_actuator(self, actuator_id: str, node_id: int):
         """Add a new actuator to the management system"""
-        self.logger.info(f"Adding actuator {actuator_id}")
+        self.logger.info(f"Adding actuator {actuator_id}, but not initializing it")
+        self.actuator_defs.append((actuator_id, node_id))
 
-        # Check if actuator already exists without lock
-        if actuator_id in self.actuators:
-            self.logger.warning(f"Actuator {actuator_id} already exists")
-            return False
-                
-        try:
-            # Setup network first if needed
-            if self.network is None:
-                if not self.setup_network():
-                    self.logger.error("Network setup failed")
-                    return False
-            
-            # Create operation lock for this actuator
-            self.operation_locks[actuator_id] = threading.Lock()
-            
-            # Create actuator instance
-            self.logger.info(f"Creating actuator instance {actuator_id}")
-            actuator = ElectrakMD(
-                network=self.network,
-                node_id=node_id,
-                eds_file=self.eds_file,
-                operation_lock=self.operation_locks[actuator_id],
-                executor=self.executor
-            )
-            
-            # Add to actuators dict with lock
-            with self.connection_lock:
-                self.actuators[actuator_id] = actuator
-            
-            self.logger.info(f"Successfully added actuator {actuator_id}")
-            return True
-                
-        except Exception as e:
-            self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
-            print(traceback.format_exc())
-            # Cleanup if failure
-            if actuator_id in self.operation_locks:
-                del self.operation_locks[actuator_id]
-            return False
-                
+    def init_actuators(self):
+
+        for actuator_id, node_id in self.actuator_defs:
+            # Check if actuator already exists without lock
+            if actuator_id in self.actuators:
+                self.logger.warning(f"Actuator {actuator_id} already exists")
+                return False
+
+            try:
+                # Setup network first if needed
+                if self.network is None:
+                    if not self.setup_network():
+                        self.logger.error("Network setup failed")
+                        return False
+
+                # Create operation lock for this actuator
+                self.operation_locks[actuator_id] = threading.Lock()
+
+                # Create actuator instance
+                self.logger.info(f"Creating actuator instance {actuator_id}")
+                actuator = ElectrakMD(
+                    network=self.network,
+                    node_id=node_id,
+                    eds_file=self.eds_file,
+                    operation_lock=self.operation_locks[actuator_id],
+                    executor=self.executor
+                )
+
+                # Add to actuators dict with lock
+                with self.connection_lock:
+                    self.actuators[actuator_id] = actuator
+
+                self.logger.info(f"Successfully added actuator {actuator_id}")
+                return True
+
+            except Exception as e:
+                self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
+                print(traceback.format_exc())
+                # Cleanup if failure
+                if actuator_id in self.operation_locks:
+                    del self.operation_locks[actuator_id]
+                return False
+
+
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
+        if not self.actuators:
+            self.init_actuators()
         return self.actuators.get(actuator_id)
 
     def get_slave_ids(self) -> List[str]:
         return list(self.actuators.keys())
 
-        
+
+    async def deactivate_warning_alarm(self, banner_alarm: BannerAlarm) -> None:
+        """Deactivate warning alarm"""
+        try:
+            result = banner_alarm.deactivate_alarm()
+            if result["status"] != "success":
+                raise BannerAlarmException("Failed to deactivate alarm")
+        except Exception as e:
+            self.logger.error(f"Error deactivating warning alarm: {e}")
+            raise BannerAlarmException(f"Failed to deactivate warning alarm: {str(e)}")
+
+
+
+    async def activate_warning_alarm(self, banner_alarm: BannerAlarm) -> None:
+        """Activate warning alarm and wait for delay"""
+        try:
+            result = banner_alarm.activate_alarm("default")
+            if result["status"] != "success":
+                raise BannerAlarmException("Failed to activate alarm")
+
+            # Wait for the warning period
+            await asyncio.sleep(banner_alarm.DELAY_BETWEEN_LIGHTS_AND_ALARM)
+
+        except Exception as e:
+            self.logger.error(f"Error activating warning alarm: {e}")
+            banner_alarm.deactivate_alarm()  # Cleanup on error
+            raise BannerAlarmException(f"Failed to activate warning alarm: {str(e)}")
+
+
+
+    async def move_one(self, actuator_id, target_position: float, target_speed: float, activate_alarm: bool):
+        self.logger.info("Starting single actuator movement")
+        if not self.actuators:
+            self.init_actuators()
+        actuator = self.actuators[actuator_id]
+        try:
+            if activate_alarm:
+                try:
+                    await self.activate_warning_alarm()
+                except BannerAlarmException as e:
+                    self.logger.error(f"Failed to activate alarm {e}")
+            success = await actuator.move_to(target_position, target_speed)
+            return True
+        except Exception as e:
+            raise e
+        finally:
+            self.cleanup()
+            if activate_alarm:
+                try:
+                    await self.deactivate_warning_alarm()
+                except BannerAlarmException as e:
+                    self.logger.error(f"Failed to Deactivate alarm {e}")
+
+
     async def move_multiple(self, target_position: float, target_speed: float):
         """Move multiple actuators simultaneously"""
         self.logger.info("Starting multiple actuator movement")
+        if not self.actuators:
+            self.init_actuators()
         try:
            
             # Create movement tasks
@@ -139,7 +204,10 @@ class ActuatorManager(metaclass=Singleton):
         except Exception as e:
             self.logger.error(f"Multi-actuator movement error: {e}")
             return False
-            
+        finally:
+            self.cleanup()
+
+
     def cleanup(self):
         """Cleanup all resources"""
         self.logger.info("Starting cleanup")

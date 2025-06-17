@@ -38,6 +38,7 @@ async def deactivate_warning_alarm(banner_alarm: BannerAlarm) -> None:
 
 
 def get_actuators(deployment: HardwareDeploymentRoute) -> ActuatorManager:
+    deployment.actuator_manager.reset_hardware()
     return deployment.actuator_manager
 
 
@@ -51,6 +52,7 @@ async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDepl
     try:
         status = actuator.current_state()
         if status['position'] == -90.0:
+            logger.error(f"Could not get actuator current state: {status}")
             actuator_manager.reset_hardware()
             status = actuator.current_state()
     except Exception as e:
@@ -70,22 +72,11 @@ async def move_actuator(actuator_id: str, target_position: float = Form(...),
     actuator = manager.get_actuator(actuator_id)
     if not actuator:
         raise HTTPException(status_code=404, detail="Actuator not found")
-
     try:
-        if activate_alarm:
-            try:
-                await activate_warning_alarm()
-            except BannerAlarmException as e:
-                logger.error(f"Failed to activate alarm {e}")
-        success = await actuator.move_to(target_position, target_speed)
+        success = manager.move_one(actuator_id, target_position, target_speed, activate_alarm)
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if activate_alarm:
-            try:
-                await deactivate_warning_alarm()
-            except BannerAlarmException as e:
-                logger.error(f"Failed to Deactivate alarm {e}")
+        raise HTTPException(status_code=500, detail=f"Cannot move actuator: {str(e)}")
 
     if success:
         return {"message": f"Moving actuator {actuator_id}", "status": "success"}
