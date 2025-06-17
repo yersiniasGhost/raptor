@@ -72,7 +72,7 @@ async def move_actuator(actuator_id: str, target_position: float = Form(...),
     if not actuator:
         raise HTTPException(status_code=404, detail="Actuator not found")
     try:
-        success = manager.move_one(actuator_id, target_position, target_speed, activate_alarm)
+        success = await manager.move_one(actuator_id, target_position, target_speed, activate_alarm)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Cannot move actuator: {str(e)}")
