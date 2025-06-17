@@ -53,7 +53,6 @@ async def get_actuator_status(actuator_id: str, hardware: Annotated[HardwareDepl
         status = actuator.current_state()
         if status['position'] == -90.0:
             logger.error(f"Could not get actuator current state: {status}")
-            actuator_manager.reset_hardware()
             status = actuator.current_state()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

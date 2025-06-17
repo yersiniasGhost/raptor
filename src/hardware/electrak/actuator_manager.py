@@ -11,7 +11,6 @@ from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmExcept
 from utils import Singleton, run_command, LogManager
 
 
-
 class ActuatorManager(metaclass=Singleton):
     """Singleton manager for handling multiple actuators"""
 
@@ -31,6 +30,8 @@ class ActuatorManager(metaclass=Singleton):
 
 
     def setup_network(self):
+        if self.network:
+            return True
         """Initialize CAN network connection"""
         self.logger.info("Running linux commands to set up network")
         cmd = ['ip', 'link', 'set', 'can0', 'down']
@@ -66,20 +67,17 @@ class ActuatorManager(metaclass=Singleton):
 
     def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
         result, returnstatus = run_command(["ip", "-details", "link", "show", self.channel], self.logger)
-        # result2, returnstatus2 = run_command(['ip', 'link', 'set', 'can0', 'type', 'can', 'bitrate', '500000'], self.logger)
-        # results = result + "\n" + result2
-        # status = returnstatus2 and returnstatus
         return result, returnstatus
 
     def add_actuator(self, actuator_id: str, node_id: int):
         """Add a new actuator to the management system"""
         self.logger.info(f"Adding actuator {actuator_id}, but not initializing it")
-        self.actuator_defs[actuator_id] =  node_id
+        self.actuator_defs[actuator_id] = node_id
 
     def init_actuators(self):
         try:
             # Setup network first if needed
-            if self.network is None or True:
+            if self.network is None:
                 if not self.setup_network():
                     self.logger.error("Network setup failed")
                     return False
