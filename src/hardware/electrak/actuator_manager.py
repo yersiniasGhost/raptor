@@ -89,7 +89,7 @@ class ActuatorManager(metaclass=Singleton):
             # Check if actuator already exists without lock
             if actuator_id in self.actuators:
                 self.logger.warning(f"Actuator {actuator_id} already exists")
-                return False
+                continue
             try:
 
                 # Create operation lock for this actuator
@@ -119,7 +119,7 @@ class ActuatorManager(metaclass=Singleton):
                     del self.operation_locks[actuator_id]
                 self.network = None
                 return False
-            return True
+        return True
 
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
