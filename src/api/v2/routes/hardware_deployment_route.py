@@ -26,7 +26,6 @@ class HardwareDeploymentRoute:
         self.actuator_manager, self.batteries, self.inverter, self.pv_cts, self.charge_controller = None, None, None, None, None
         for hardware in db.get_hardware_systems("Actuators"):
             self.logger.info(f"Adding Actuators")
-            self.logger.info(f"TOD: {hardware}")
             try:
                 self.actuator_manager = ActuatorManager.from_dict(hardware, self.logger)
             except Exception as e:

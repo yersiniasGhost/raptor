@@ -27,7 +27,7 @@ class ActuatorManager(metaclass=Singleton):
         self.channel = channel
         self.eds_file = eds
         self.hardware_definition: dict = {}
-        self.actuator_defs = []
+        self.actuator_defs = {}
 
 
     def setup_network(self):
@@ -74,7 +74,7 @@ class ActuatorManager(metaclass=Singleton):
     def add_actuator(self, actuator_id: str, node_id: int):
         """Add a new actuator to the management system"""
         self.logger.info(f"Adding actuator {actuator_id}, but not initializing it")
-        self.actuator_defs.append((actuator_id, node_id))
+        self.actuator_defs[actuator_id] =  node_id
 
     def init_actuators(self):
         try:
@@ -87,7 +87,7 @@ class ActuatorManager(metaclass=Singleton):
             self.logger.error(f"Failed to set up canbus network: {e}")
             raise
 
-        for actuator_id, node_id in self.actuator_defs:
+        for actuator_id, node_id in self.actuator_defs.items():
             # Check if actuator already exists without lock
             if actuator_id in self.actuators:
                 self.logger.warning(f"Actuator {actuator_id} already exists")
@@ -131,7 +131,7 @@ class ActuatorManager(metaclass=Singleton):
         return self.actuators.get(actuator_id)
 
     def get_slave_ids(self) -> List[str]:
-        return list(self.actuators.keys())
+        return list(self.actuator_defs.keys())
 
 
     async def deactivate_warning_alarm(self, banner_alarm: BannerAlarm) -> None:
