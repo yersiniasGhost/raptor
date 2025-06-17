@@ -77,6 +77,15 @@ class ActuatorManager(metaclass=Singleton):
         self.actuator_defs.append((actuator_id, node_id))
 
     def init_actuators(self):
+        try:
+            # Setup network first if needed
+            if self.network is None:
+                if not self.setup_network():
+                    self.logger.error("Network setup failed")
+                    return False
+        except Exception as e:
+            self.logger.error(f"Failed to set up canbus network: {e}")
+            raise
 
         for actuator_id, node_id in self.actuator_defs:
             # Check if actuator already exists without lock
@@ -85,11 +94,6 @@ class ActuatorManager(metaclass=Singleton):
                 return False
 
             try:
-                # Setup network first if needed
-                if self.network is None:
-                    if not self.setup_network():
-                        self.logger.error("Network setup failed")
-                        return False
 
                 # Create operation lock for this actuator
                 self.operation_locks[actuator_id] = threading.Lock()
@@ -175,7 +179,7 @@ class ActuatorManager(metaclass=Singleton):
         except Exception as e:
             raise e
         finally:
-            self.cleanup()
+            # self.cleanup()
             if activate_alarm:
                 try:
                     await self.deactivate_warning_alarm()
@@ -205,8 +209,8 @@ class ActuatorManager(metaclass=Singleton):
         except Exception as e:
             self.logger.error(f"Multi-actuator movement error: {e}")
             return False
-        finally:
-            self.cleanup()
+        # finally:
+        #     self.cleanup()
 
 
     def cleanup(self):
