@@ -224,6 +224,8 @@ class ActuatorManager(metaclass=Singleton):
             if self.network:
                 try:
                     self.network.disconnect()
+                    cmd = ['ip', 'link', 'set', 'can0', 'down']
+                    output, status = run_command(cmd, self.logger)
                 except Exception as e:
                     self.logger.error(f"Error disconnecting network: {e}")
             
