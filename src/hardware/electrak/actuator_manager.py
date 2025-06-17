@@ -176,7 +176,6 @@ class ActuatorManager(metaclass=Singleton):
         except Exception as e:
             raise e
         finally:
-            # self.cleanup()
             if activate_alarm:
                 try:
                     await self.deactivate_warning_alarm()
@@ -206,11 +205,9 @@ class ActuatorManager(metaclass=Singleton):
         except Exception as e:
             self.logger.error(f"Multi-actuator movement error: {e}")
             return False
-        # finally:
-        #     self.cleanup()
 
 
-    def cleanup(self):
+    async def cleanup(self):
         """Cleanup all resources"""
         self.logger.info("Starting cleanup")
         try:
