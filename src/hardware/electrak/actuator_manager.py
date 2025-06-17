@@ -74,7 +74,9 @@ class ActuatorManager(metaclass=Singleton):
         self.logger.info(f"Adding actuator {actuator_id}, but not initializing it")
         self.actuator_defs[actuator_id] = node_id
 
-    def init_actuators(self):
+    def init_actuators(self) -> bool:
+        if self.actuators:
+            return True
         try:
             # Setup network first if needed
             if self.network is None:
@@ -125,8 +127,7 @@ class ActuatorManager(metaclass=Singleton):
 
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
-        if not self.actuators:
-            self.init_actuators()
+        self.init_actuators()
         return self.actuators.get(actuator_id)
 
     def get_slave_ids(self) -> List[str]:
@@ -164,8 +165,7 @@ class ActuatorManager(metaclass=Singleton):
 
     async def move_one(self, actuator_id, target_position: float, target_speed: float, activate_alarm: bool):
         self.logger.info("Starting single actuator movement")
-        if not self.actuators:
-            self.init_actuators()
+        self.init_actuators()
         actuator = self.actuators[actuator_id]
         try:
             if activate_alarm:
@@ -188,8 +188,7 @@ class ActuatorManager(metaclass=Singleton):
     async def move_multiple(self, target_position: float, target_speed: float):
         """Move multiple actuators simultaneously"""
         self.logger.info("Starting multiple actuator movement")
-        if not self.actuators:
-            self.init_actuators()
+        self.init_actuators()
         try:
            
             # Create movement tasks
