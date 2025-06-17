@@ -79,7 +79,7 @@ class ActuatorManager(metaclass=Singleton):
     def init_actuators(self):
         try:
             # Setup network first if needed
-            if self.network is None:
+            if self.network is None or True:
                 if not self.setup_network():
                     self.logger.error("Network setup failed")
                     return False
@@ -123,6 +123,7 @@ class ActuatorManager(metaclass=Singleton):
                 # Cleanup if failure
                 if actuator_id in self.operation_locks:
                     del self.operation_locks[actuator_id]
+                self.network = None
                 return False
 
 
