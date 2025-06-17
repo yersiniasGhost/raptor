@@ -22,7 +22,7 @@ class ActuatorManager(metaclass=Singleton):
         self.executor = ThreadPoolExecutor(max_workers=4)
         self.connection_lock = threading.RLock()  # Using RLock instead of Lock
         self.operation_locks: Dict[str, threading.Lock] = {}
-        self.alarm = BannerAlarm
+        self.alarm: Optional[BannerAlarm] = None
         self.channel = channel
         self.eds_file = eds
         self.hardware_definition: dict = {}
@@ -31,6 +31,7 @@ class ActuatorManager(metaclass=Singleton):
 
     def setup_network(self):
         if self.network:
+            self.logger.info("Network is set up already")
             return True
         """Initialize CAN network connection"""
         self.logger.info("Running linux commands to set up network")
@@ -61,7 +62,7 @@ class ActuatorManager(metaclass=Singleton):
             return False
 
     def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
-        self.logger.info("Restarting actuators")
+        self.logger.info(f"Restarting actuators: {self.network}")
         self.setup_network()
         return self.ping_hardware()
 
