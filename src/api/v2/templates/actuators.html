@@ -318,6 +318,10 @@
         startStatusUpdates();
 
         window.addEventListener('beforeunload', function(event) {
+            if (statusUpdateInterval) {
+               clearInterval(statusUpdateInterval);
+                statusUpdateInterval = null;
+            }
             if (navigator.sendBeacon) {
                 navigator.sendBeacon('/actuator/disconnect', '{}');
             } else {
