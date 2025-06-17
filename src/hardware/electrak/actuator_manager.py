@@ -87,7 +87,9 @@ class ActuatorManager(metaclass=Singleton):
             self.logger.error(f"Failed to set up canbus network: {e}")
             raise
 
+        print("BETTER BE HERE")
         for actuator_id, node_id in self.actuator_defs.items():
+            print("HERE", actuator_id)
             # Check if actuator already exists without lock
             if actuator_id in self.actuators:
                 self.logger.warning(f"Actuator {actuator_id} already exists")
