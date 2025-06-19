@@ -1,0 +1,48 @@
+#!/bin/busybox sh
+
+export PATH=/bin:/sbin
+/bin/busybox --install -s
+ln -s /slib/libc.so.0 /slib/libgcc_s.so.1
+mount -t devtmpfs devtmpfs /dev
+. /ts.subr
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mkdir /etc/
+ln -s /dev/resolv.conf /etc/resolv.conf
+mkdir /dev/pts
+mount -t devpts devpts /dev/pts
+ifconfig lo 127.0.0.1 up
+route add -net 127.0.0.0 netmask 255.0.0.0 lo
+eval `dmesg|grep boardID`
+echo $boardID > /dev/tsmodel
+export MODEL=$boardID
+eval `tshwctl --getmac`
+export shortmac
+eval `tshwctl --info`
+export bootmode
+
+stty -F /dev/ttyAM0 ospeed 115200 raw -echo >/dev/null 2>&1
+eval `xuartctl --server --proxy 2>&1`
+xuarg="--port=127.0.0.1:$tcp_port"
+xuartctl $xuarg </dev/ttyAM0 >/dev/ttyAM0 2>&1 &
+export CONSOLE=$ttyname
+
+echo -e "#!/bin/sh\nstty raw -echo -isig && exec xuartctl $xuarg\n" > /xuartlogin
+chmod +x /xuartlogin
+
+stty -F $CONSOLE ospeed 115200 sane >/dev/null 2>&1
+setconsole -r $CONSOLE
+stty -F $CONSOLE rows 25 cols 80 isig
+
+exec 0>&- 1>&- 2>&- >$CONSOLE 2>&1
+
+bootname
+
+echo $MODEL > /dev/tsmodel
+echo $baseboard_model > /dev/tsbaseboardid
+echo $baseboard > /dev/tsbaseboard
+echo -1 > /proc/sys/kernel/sched_rt_runtime_us
+hostname ts${MODEL}-$shortmac
+if [ "$boardID" == "unknown" -o "$revision" == "0xf" -o -z "$reboot_source" ];
+

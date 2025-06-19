@@ -5,8 +5,7 @@ from pymodbus.client import ModbusSerialClient, ModbusTcpClient
 from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
-
-from utils import LogManager
+from utils import LogManager, check_interface, set_tcp_interface
 
 
 class ModbusClientType(Enum):
@@ -26,6 +25,7 @@ class ModbusHardware(HardwareBase):
     client_type: ModbusClientType = ModbusClientType.RTU
     host: str = ""
     port: Optional[Union[str, int]] = None
+    interface: Optional[str] = None
     modbus_map_path: str = ""
     _modbus_map: Optional[ModbusMap] = None
 
@@ -54,6 +54,22 @@ class ModbusHardware(HardwareBase):
             output[mac] = modbus_data_acquisition(self, registers, slave_id)
         return output    
 
+    # TCP Modbus resets/checks the interface settings
+    def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
+        if self.client_type == ModbusClientType.TCP:
+            self.logger.info(f"Resetting Modbus TCP interface on {self.interface}")
+            status, info = set_tcp_interface(self.interface, self.host, self.logger)
+            return (f"Modbus TCP: UP: {info['is_up']}, RUNNING: {info['is_running']}, ADDR: {info['ip_address']}",
+                    info['interface_good'])
+        return "Modus RTU Reset Hardware TBD", True
+
+    def ping_hardware(self) -> Tuple[str, Union[str, bool]]:
+        if self.client_type == ModbusClientType.TCP:
+            self.logger.info(f"Running check on Modbus TCP interface on {self.interface}")
+            status, info = check_interface(self.interface, self.logger)
+            return (f"Modbus TCP: UP: {info['is_up']}, RUNNING: {info['is_running']}, ADDR: {info['ip_address']}",
+                    info['interface_good'])
+        return "Modus RTU Reset Hardware TBD", True
 
 
     def get_modbus_serial_client(self) -> ModbusSerialClient:
@@ -148,7 +164,13 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
 
     client = modbus_hardware.get_modbus_client()
     if not client.connect():
-        logger.error("Failed to connect")
+        logger.error("Modbus client not connected... resetting")
+        modbus_hardware.reset_hardware()
+        client = modbus_hardware.get_modbus_client()
+        if not client.connect():
+            logger.error("Modbus client FAILEd to connect")
+        else:
+            logger.info("Modbus client reconnected")
         return {}
 
     output: Dict[str, Union[float, int]] = {}

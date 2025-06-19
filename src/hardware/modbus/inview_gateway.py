@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Tuple, Union
 
 from .modbus_hardware import ModbusHardware, ModbusClientType
 
