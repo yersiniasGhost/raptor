@@ -9,7 +9,8 @@ It provides a menu-driven interface to control relays connected to DIO pins.
 import time
 import logging
 import subprocess
-from relay_controller import SingleRelayController, GPIOException
+from hardware.power_5v.power_5v import Power5V
+from single_relay_controller import SingleRelayController, GPIOException
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -22,32 +23,14 @@ class RelayDemoApp:
         self.relays = {}
         self.power_enabled = False
 
-
-
     def enable_5v_power(self):
-        """Enable the 5V power supply for DIO outputs"""
-        try:
-            subprocess.run(["gpioset", "5", "16=1"], check=True)
-            self.power_enabled = True
-            logger.info("5V power enabled")
-            return True
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to enable 5V power: {e}")
-            return False
-
+        Power5V().request_power_on()
+        self.power_enabled = True
 
 
     def disable_5v_power(self):
-        """Disable the 5V power supply"""
-        try:
-            subprocess.run(["gpioset", "5", "16=0"], check=True)
-            self.power_enabled = False
-            logger.info("5V power disabled")
-            return True
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to disable 5V power: {e}")
-            return False
-
+        Power5V().request_power_off()
+        self.power_enabled = False
 
 
     def setup_relay(self, dio_number, polarity="high"):

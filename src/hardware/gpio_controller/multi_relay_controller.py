@@ -8,11 +8,12 @@ class MultiRelayError(Exception):
 
 
 class MultiRelayController:
-    def __init__(self, config: Dict[str, int], polarity: str = "low", fpga_gpio_label: str = "50004010.fpga_gpio"):
-        self.label = fpga_gpio_label
-        self.relays: Dict[str, SingleRelayController] = {
-            name: SingleRelayController(chip_label=self.label, line_number=line, polarity=polarity) for name, line in
-            config.items()}
+    def __init__(self, config: dict, polarity: str = "low"):
+        self.relays: Dict[str, SingleRelayController] = {}
+        for name, definition in config.items():
+            line = definition.get("relay_power_control")
+            self.relays[name] = SingleRelayController(dio_number=line, polarity=polarity)
+
         self.verify_gpio()
 
 
