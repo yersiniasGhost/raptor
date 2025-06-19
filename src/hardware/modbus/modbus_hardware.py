@@ -26,6 +26,7 @@ class ModbusHardware(HardwareBase):
     host: str = ""
     port: Optional[Union[str, int]] = None
     interface: Optional[str] = None
+    interface_ip: Optional[str] = None
     modbus_map_path: str = ""
     _modbus_map: Optional[ModbusMap] = None
 
@@ -58,7 +59,7 @@ class ModbusHardware(HardwareBase):
     def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
         if self.client_type == ModbusClientType.TCP:
             self.logger.info(f"Resetting Modbus TCP interface on {self.interface}")
-            status, info = set_tcp_interface(self.interface, self.host, self.logger)
+            status, info = set_tcp_interface(self.interface, self.interface_ip, self.logger)
             return (f"Modbus TCP: UP: {info['is_up']}, RUNNING: {info['is_running']}, ADDR: {info['ip_address']}",
                     info['interface_good'])
         return "Modus RTU Reset Hardware TBD", True
