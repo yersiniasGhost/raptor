@@ -63,7 +63,7 @@ def set_tcp_interface(interface_name: str, expected_ip: str, logger: Optional[Lo
         logger.error(f"Cannot flush addr on {interface_name}")
         return check_interface(interface_name, logger)
 
-    cmd = ['ip,', 'addr', 'add',  f"{expected_ip}/24", "dev", interface_name]
+    cmd = ['ip,', 'addr', 'add',  f"{expected_ip}", "dev", interface_name]
     output, status = run_command(cmd, logger)
     if not status:
         logger.error(f"Cannot run ip link set {interface_name} down")
