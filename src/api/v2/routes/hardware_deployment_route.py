@@ -59,7 +59,7 @@ class HardwareDeploymentRoute:
             hw = instantiate_hardware_from_dict(hardware, self.logger, keep_definition)
             return hw
         except Exception as e:
-            self.logger.error("Caught")
+            self.logger.error(f"Caught:  {str(e)}")
             return None
 
 
