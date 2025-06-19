@@ -167,12 +167,6 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
     if not client.connect():
         logger.error("Modbus client not connected... resetting")
         modbus_hardware.reset_hardware()
-        client = modbus_hardware.get_modbus_client()
-        if not client.connect():
-            logger.error("Modbus client FAILEd to connect")
-        else:
-            logger.info("Modbus client reconnected")
-        return {}
 
     output: Dict[str, Union[float, int]] = {}
     for register in registers:
