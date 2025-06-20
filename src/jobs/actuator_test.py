@@ -27,7 +27,7 @@ from utils import LogManager
 @dataclass
 class TestMetrics:
     """Data structure for test metrics"""
-    timestamp: float
+    timestamp: int
     cycle_number: int
     actuator_id: str
     target_position: float
@@ -35,8 +35,6 @@ class TestMetrics:
     current_draw: float
     speed: float
     voltage: float
-    target_speed: float
-    position_error: float
     error_flags: str
     motion_in_progress: bool
     operation_type: str  # 'extend' or 'retract'
@@ -169,7 +167,7 @@ class ContinuousDataLogger:
 
                 # Create metrics record
                 metric = TestMetrics(
-                    timestamp=time.time(),
+                    timestamp=int(time.time()),
                     cycle_number=current_cycle,
                     actuator_id=actuator_id,
                     target_position=current_target,
@@ -177,8 +175,6 @@ class ContinuousDataLogger:
                     current_draw=current,
                     speed=speed,
                     voltage=voltage,
-                    target_speed=current_target_speed,
-                    position_error=position_error,
                     operation_type=current_op,
                     motion_in_progress=in_motion,
                     error_flags=error_flags
