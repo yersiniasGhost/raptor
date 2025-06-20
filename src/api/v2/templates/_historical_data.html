@@ -1,10 +1,10 @@
 <div class="chart-container">
     <h3>Historical Data</h3>
     <div class="mb-3">
-        <button type="button" class="btn btn-danger me-2" onclick="handleDataAction('clear', {{ unit_id }})">
+        <button type="button" class="btn btn-danger me-2" onclick="handleDataAction('clear')">
             Clear Data
         </button>
-        <button type="button" class="btn btn-secondary" onclick="handleDataAction('archive', {{ unit_id }})">
+        <button type="button" class="btn btn-secondary" onclick="handleDataAction('archive')">
             Archive Data
         </button>
     </div>
@@ -17,15 +17,14 @@
 </div>
 
 <script>
-function handleDataAction(action, unitId) {
-    fetch('/history_route', {
+function handleDataAction(action) {
+    fetch('/history_data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             action: action,
-            unit_id: unitId,
             system: '{{ system }}'
         })
     })

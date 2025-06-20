@@ -83,6 +83,25 @@ class DatabaseManager(metaclass=Singleton):
             self.logger.error(f"Error inserting telemetry/mqtt configuration: {e}")
             raise
 
+    def add_raptor_id(self, raptor_config: Dict[str, str]):
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                INSERT OR REPLACE INTO raptor
+                (id, location, client)
+                VALUES (1, ?, ?)
+                """, (raptor_config.get("location", "NO Location"),
+                      raptor_config.get("client", "NO Client")))
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            self.logger.error(f"Database error: {e}")
+            raise
+
+        except Exception as e:
+            self.connection.rollback()
+            self.logger.error(f"Error processing configuration: {e}")
+            raise
+
     def add_hardware(self, hardware_configuration: Dict[str, Any]):
 
         try:
@@ -101,7 +120,8 @@ class DatabaseManager(metaclass=Singleton):
                         json.dumps(the_hardware.get("devices")),
                         the_hardware.get("crem3_id")
                     ))
-                    self.logger.info(f"Inserting: {hw_name}")
+                    self.logger.info(f":q"
+                                     f"Inserting: {hw_name}")
             self.connection.commit()
             self.logger.info("TOD:  Inserted into hardware table.")
             cursor = self.connection.cursor()

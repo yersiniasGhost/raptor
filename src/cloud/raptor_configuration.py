@@ -11,7 +11,7 @@ from database.database_manager import DatabaseManager
 class RaptorConfiguration:
     SCHEMA = {
         "type": "object",
-        "required": ["mqtt", "telemetry", "hardware"],
+        "required": ["mqtt", "telemetry", "hardware", "raptor"],
         "properties": {
             "mqtt": {
                 "type": "object",
@@ -36,6 +36,7 @@ class RaptorConfiguration:
                     "status_path": {"type": "string"}
                 }
             },
+            "raptor": {"type": "object"},
             "hardware": {"type": "object"}
         }
     }
@@ -100,10 +101,12 @@ class RaptorConfiguration:
             # Extract MQTT and telemetry config
             mqtt_config = json.dumps(config_data["mqtt"])
             telemetry_config = json.dumps(config_data["telemetry"])
+            raptor = config_data["raptor"]
             db = DatabaseManager(EnvVars().db_path)
             db.clear_existing_configuration()
             db.update_telemetry(telemetry_config, mqtt_config)
             db.add_hardware(config_data['hardware'])
+            db.add_raptor_id(raptor)
         except Exception as e:
             self.logger.error(f"Unable to save configuration: {config_data}")
             self.logger.error(f"Error: {e}")
