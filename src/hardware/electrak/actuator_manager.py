@@ -8,6 +8,8 @@ from concurrent.futures import ThreadPoolExecutor
 import canopen
 from .electrak import ElectrakMD
 from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
+from hardware.power_5v.power_5v import Power5V
+from hardware.gpio_controller.multi_relay_controller import MultiRelayController
 from utils import Singleton, run_command, LogManager
 
 
@@ -26,7 +28,11 @@ class ActuatorManager(metaclass=Singleton):
         self.channel = channel
         self.eds_file = eds
         self.hardware_definition: dict = {}
-        self.actuator_defs = {}
+        self.actuator_defs = Dict[str, dict]
+        # power control:
+        self.relay_config = {}
+        self.relays: Optional[MultiRelayController] = None
+
 
 
     def setup_network(self):
@@ -35,15 +41,15 @@ class ActuatorManager(metaclass=Singleton):
             return True
         """Initialize CAN network connection"""
         self.logger.info("Running linux commands to set up network")
-        cmd = ['ip', 'link', 'set', 'can0', 'down']
+        cmd = ['ip', 'link', 'set', self.channel, 'down']
         output, status = run_command(cmd, self.logger)
-        cmd = ["ip", "link", "set", "can0", "type", "can", "bitrate", "500000"]
+        cmd = ["ip", "link", "set", self.channel, "type", "can", "bitrate", "500000"]
         output, status = run_command(cmd, self.logger)
         self.logger.info(f"ip link set: {status}")
-        cmd = ['ip', 'link', 'set', 'can0', 'up']
+        cmd = ['ip', 'link', 'set', self.channel, 'up']
         output, status = run_command(cmd, self.logger)
-        self.logger.info(f"ip link can0 up: {status}")
-        cmd = ['ip', 'link', 'show', 'can0']
+        self.logger.info(f"ip link {self.channel} up: {status}")
+        cmd = ['ip', 'link', 'show', self.channel]
         output, status = run_command(cmd, self.logger)
         self.logger.info(f"ip link show: {status} / {output}")
 
@@ -69,14 +75,15 @@ class ActuatorManager(metaclass=Singleton):
         result, returnstatus = run_command(["ip", "-details", "link", "show", self.channel], self.logger)
         return result, returnstatus
 
-    def add_actuator(self, actuator_id: str, node_id: int):
+    def add_actuator(self, actuator_id: str, definition: dict):
         """Add a new actuator to the management system"""
         self.logger.info(f"Adding actuator {actuator_id}, but not initializing it")
-        self.actuator_defs[actuator_id] = node_id
+        self.actuator_defs[actuator_id] = definition
 
     def init_actuators(self) -> bool:
         if self.actuators:
             return True
+
         try:
             # Setup network first if needed
             if self.network is None:
@@ -89,7 +96,7 @@ class ActuatorManager(metaclass=Singleton):
 
         self.executor = ThreadPoolExecutor(max_workers=4)
 
-        for actuator_id, node_id in self.actuator_defs.items():
+        for actuator_id, definition in self.actuator_defs.items():
             # Check if actuator already exists without lock
             if actuator_id in self.actuators:
                 self.logger.warning(f"Actuator {actuator_id} already exists")
@@ -103,7 +110,7 @@ class ActuatorManager(metaclass=Singleton):
                 self.logger.info(f"Creating actuator instance {actuator_id}")
                 actuator = ElectrakMD(
                     network=self.network,
-                    node_id=node_id,
+                    definition=definition,
                     eds_file=self.eds_file,
                     operation_lock=self.operation_locks[actuator_id],
                     executor=self.executor
@@ -114,6 +121,9 @@ class ActuatorManager(metaclass=Singleton):
                     self.actuators[actuator_id] = actuator
 
                 self.logger.info(f"Successfully added actuator {actuator_id}")
+                relay_power = definition.get("relay_power_control", None)
+                if relay_power:
+                    self.relay_config[actuator_id] = relay_power
 
             except Exception as e:
                 self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
@@ -123,7 +133,17 @@ class ActuatorManager(metaclass=Singleton):
                     del self.operation_locks[actuator_id]
                 self.network = None
                 return False
+        self.setup_power()
+
         return True
+
+    def setup_power(self):
+        if self.relay_config:
+            self.logger.info("Actuators are RELAY controlled")
+            Power5V().request_power_on()
+            self.relays = MultiRelayController(self.relay_config)
+            self.relays.set_all(True)
+
 
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
         """Get actuator instance by ID"""
@@ -233,11 +253,15 @@ class ActuatorManager(metaclass=Singleton):
                 self.executor.shutdown(wait=False)
             except Exception as e:
                 self.logger.error(f"Error shutting down executor: {e}")
-            
+
+            if self.relays:
+                self.relays.set_all(False)
+
         finally:
             self.network = None
             self.actuators.clear()
             self.operation_locks.clear()
+            Power5V().request_power_off()
             self.logger.info("Cleanup complete")
 
 
@@ -256,7 +280,7 @@ class ActuatorManager(metaclass=Singleton):
             manager = cls(parameters['channel'], parameters['eds'])
             manager.hardware_definition = actuator_map
             for device in devices:
-                manager.add_actuator(device['mac'], device['node_id'])
+                manager.add_actuator(device['mac'], device)
         except (ValueError, TypeError) as e:
             logger.error(f"Invalid actuators configuration: {e}")
             raise ValueError(f"Failed to create ActuatorManager: {e}")

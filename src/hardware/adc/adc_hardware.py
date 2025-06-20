@@ -29,7 +29,7 @@ class ADCHardware(HardwareBase):
     adc_max_raw: int = 4095  # 12-bit ADC
     adc_max_voltage: float = 10.9  # High Voltage range
     gpio_bank: int = 5  # GPIO bank for ADC control
-    disable_pwr_between_reads: bool = True
+    disable_pwr_between_reads: bool = False
     initialized: bool = False
     iio_device_name: str = "2198000.adc"
     channels_configured: bool = False
@@ -69,16 +69,6 @@ class ADCHardware(HardwareBase):
         #     disable_pwr_between_reads=config_dict.get("disable_pwr_between_reads", True)
         # )
 
-
-    @staticmethod
-    def disable_5v_power():
-        """Disable the 5V power output for the ADC devices """
-        Power5V().request_power_off()
-
-    @staticmethod
-    def enable_5v_power():
-        """Enable the 5V power output for the ADC devices """
-        Power5V().request_power_on()
 
     def initialize_device(self, device: Dict[str, Any]) -> bool:
         """Initialize a device's ADC channel"""
@@ -189,7 +179,6 @@ class ADCHardware(HardwareBase):
         # Initialize devices if not already done
         if not self.initialized:
             self.logger.info("Initializing ADC channels for devices")
-            self.enable_5v_power()
             for device in devices:
                 self.initialize_device(device)
             self.initialized = True
@@ -203,9 +192,5 @@ class ADCHardware(HardwareBase):
 
             voltage = self.read_device(device)
             result[mac] = voltage
-
-        if self.disable_pwr_between_reads:
-            self.disable_5v_power()
-            self.initialized = False
 
         return result
