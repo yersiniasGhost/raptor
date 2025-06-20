@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import subprocess
 from enum import Enum
 from hardware.hardware_base import HardwareBase
+from hardware.power_5v.power_5v import Power5V
 from utils import LogManager
 import iio
 
@@ -28,7 +29,6 @@ class ADCHardware(HardwareBase):
     adc_max_raw: int = 4095  # 12-bit ADC
     adc_max_voltage: float = 10.9  # High Voltage range
     gpio_bank: int = 5  # GPIO bank for ADC control
-    enable_5v_pwr: bool = False
     disable_pwr_between_reads: bool = True
     initialized: bool = False
     iio_device_name: str = "2198000.adc"
@@ -66,37 +66,19 @@ class ADCHardware(HardwareBase):
         #     adc_max_voltage=config_dict.get('adc_max_voltage', 2.5),
         #     gpio_bank=config_dict.get('gpio_bank', 5),
         #     iio_device_name=config_dict.get('iio_device_name', "2198000.adc"),
-        #     enable_5v_pwr=config_dict.get('enable_5v_pwr', False),
         #     disable_pwr_between_reads=config_dict.get("disable_pwr_between_reads", True)
         # )
 
 
-    def disable_5v_power(self):
+    @staticmethod
+    def disable_5v_power():
         """Disable the 5V power output for the ADC devices """
-        if not self.enable_5v_pwr:  # power wasn't required
-            return True
+        Power5V().request_power_off()
 
-        try:
-            # Disable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
-            subprocess.run(["gpioset", "5", "16=0"])
-            self.logger.info(f"Disabled 5V power output for ADC devices")
-            return True
-        except Exception as e:
-            self.logger.exception(f"Error disabling 5V power: {e}")
-            return False
-
-    def enable_5v_power(self):
+    @staticmethod
+    def enable_5v_power():
         """Enable the 5V power output for the ADC devices """
-        if self.enable_5v_pwr:
-            return True
-        try:
-            # Enable 5V power output on P3-B pin 9 (EN_OFF_BD_5V)
-            subprocess.run(["gpioset", "5", "16=1"])
-            self.logger.info(f"Enabled 5V power output for ADC devices")
-            return True
-        except Exception as e:
-            self.logger.exception(f"Error enabling 5V power: {e}")
-            return False
+        Power5V().request_power_on()
 
     def initialize_device(self, device: Dict[str, Any]) -> bool:
         """Initialize a device's ADC channel"""
