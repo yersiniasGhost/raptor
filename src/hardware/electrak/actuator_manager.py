@@ -28,7 +28,7 @@ class ActuatorManager(metaclass=Singleton):
         self.channel = channel
         self.eds_file = eds
         self.hardware_definition: dict = {}
-        self.actuator_defs = Dict[str, dict]
+        self.actuator_defs: Dict[str, dict] = {}
         # power control:
         self.relay_config = {}
         self.relays: Optional[MultiRelayController] = None
