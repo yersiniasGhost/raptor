@@ -110,7 +110,7 @@ class ActuatorManager(metaclass=Singleton):
                 self.logger.info(f"Creating actuator instance {actuator_id}")
                 actuator = ElectrakMD(
                     network=self.network,
-                    definition=definition,
+                    node_id=definition.get("node_id"),
                     eds_file=self.eds_file,
                     operation_lock=self.operation_locks[actuator_id],
                     executor=self.executor
