@@ -15,7 +15,7 @@ class TailLogAction(Action):
 
         try:
             log_file = self.params.get('process', None)
-            lines = self.params.get('lines', 10)  # Default to last 10 lines
+            lines = int(self.params.get('lines', 10))  # Default to last 10 lines
             if not log_file:
                 logger.error("No log file specified")
                 return ActionStatus.FAILED, {"error": "No log file specified"}
