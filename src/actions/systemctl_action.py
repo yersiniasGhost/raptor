@@ -10,10 +10,10 @@ class SystemctlAction(Action):
 
     async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:
         logger = LogManager().get_logger("SystemctlAction")
-        logger.info("Received systemctl status command")
 
         try:
             cmd = self.params.get('cmd', "status")
+            logger.info(f"Received systemctl {cmd} command")
             target = self.params.get('target', 'all')  # 'all' or specific process name
             processes = SERVICES
             if EnvVars().get_bool("ACTUATOR_STRESS_TEST", "False"):

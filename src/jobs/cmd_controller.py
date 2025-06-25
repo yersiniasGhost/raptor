@@ -27,7 +27,7 @@ class CmdController:
 
     async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = {}):
         payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
-        self.logger.info(f"Responding to received message with status:{status}, id: {action_id}, {payload}")
+        self.logger.info(f"Responding to received message with status:{status}, id: {action_id}")
 
         # The new upload_command_response returns a boolean indicating success
         success = await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
