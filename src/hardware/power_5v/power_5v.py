@@ -1,3 +1,4 @@
+import time
 import subprocess
 from utils.singleton import Singleton
 from utils import LogManager
@@ -36,6 +37,7 @@ class Power5V(metaclass=Singleton):
             try:
                 subprocess.run(["gpioset", "5", "16=1"], check=True)
                 self.logger.info("5V power enabled")
+                time.sleep(0.1)
                 return True
             except subprocess.CalledProcessError as e:
                 self.logger.error(f"Failed to enable 5V power: {e}")
