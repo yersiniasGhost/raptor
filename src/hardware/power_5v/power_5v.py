@@ -64,11 +64,13 @@ class Power5V(metaclass=Singleton):
 
             # gpioget returns '0' or '1' followed by newline
             gpio_state = result.stdout.strip()
+            self.logger.info(result)
+            state = "ON" if gpio_state == "1" else "OFF"
             if self.power_on_requests > 0:
-                self.logger.info(f"Number of requests: {self.power_on_requests}. State: {gpio_state == '1'}")
+                self.logger.info(f"Number of requests: {self.power_on_requests}. State: {state}")
                 return gpio_state == '1'
             else:
-                self.logger.info(f"No power on requests.  State: {gpio_state == '0'}")
+                self.logger.info(f"No power on requests.  State: {state}")
                 return gpio_state == '0'
 
         except subprocess.CalledProcessError as e:

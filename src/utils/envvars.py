@@ -52,5 +52,9 @@ class EnvVars(metaclass=Singleton):
 
     def get_bool(self, key: str, default: str) -> bool:
         value = self.get_env(key, default)
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return False
         return value.lower() in ('true', '1', 'yes', 'y')
 
