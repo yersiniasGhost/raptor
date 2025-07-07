@@ -106,7 +106,7 @@ class RaptorConfiguration:
             db.clear_existing_configuration()
             db.update_telemetry(telemetry_config, mqtt_config)
             db.add_hardware(config_data['hardware'])
-            db.add_raptor_id(raptor)
+            # db.add_raptor_id(raptor)
         except Exception as e:
             self.logger.error(f"Unable to save configuration: {config_data}")
             self.logger.error(f"Error: {e}")

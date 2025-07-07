@@ -11,7 +11,7 @@ THIS IS TS-7180 ready only!
 class Power5V(metaclass=Singleton):
     def __init__(self):
         self.power_on_requests = 0
-        self.logger = LogManager("power5v").get_logger("Power5V")
+        self.logger = LogManager("power5v.log").get_logger("Power5V")
 
     def request_power_on(self):
         self.power_on_requests += 1
