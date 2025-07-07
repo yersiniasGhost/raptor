@@ -11,7 +11,7 @@ THIS IS TS-7180 ready only!
 class Power5V(metaclass=Singleton):
     def __init__(self):
         self.power_on_requests = 0
-        self.logger = LogManager().get_logger("Power5V")
+        self.logger = LogManager("power5v").get_logger("Power5V")
 
     def request_power_on(self):
         self.power_on_requests += 1
@@ -23,6 +23,7 @@ class Power5V(metaclass=Singleton):
 
     def _power_on(self):
         """Enable the 5V power supply for DIO outputs on the first time N =1 """
+        self.logger.info(f"Request power ON.  Power on requests: {self.power_on_requests}")
         if self.power_on_requests == 1:
             try:
                 subprocess.run(["gpioset", "5", "16=1"], check=True)
@@ -34,6 +35,7 @@ class Power5V(metaclass=Singleton):
 
 
     def _power_off(self):
+        self.logger.info(f"Request power off.  Remaining requests: {self.power_on_requests}")
         """Disable the 5V power supply"""
         if self.power_on_requests == 0:
             try:
