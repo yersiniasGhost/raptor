@@ -26,11 +26,13 @@ class RelayDemoApp:
     def enable_5v_power(self):
         Power5V().request_power_on()
         self.power_enabled = True
+        return True
 
 
     def disable_5v_power(self):
         Power5V().request_power_off()
         self.power_enabled = False
+        return True
 
 
     def setup_relay(self, dio_number, polarity="high"):
