@@ -8,7 +8,7 @@ from datetime import datetime
 from utils import LogManager, EnvVars
 
 # Configuration
-CHECK_INTERVAL = 300  # Check every 5 minutes (300 seconds)
+CHECK_INTERVAL = 120  # Check every so often
 PING_HOST = "8.8.8.8"  # Google DNS server
 PING_COUNT = 3
 INTERFACES = {
@@ -311,7 +311,7 @@ class NetworkWatchdog:
             self.logger.warning(f"Failed to stop reverse tunnel service: {stop_error}")
 
         # Reset wired interfaces
-        wired_success = self.restart_wired_interfaces()
+        # wired_success = self.restart_wired_interfaces()
 
         # Restart wireless (most important for internet connectivity)
         wireless_success = self.restart_wireless()
