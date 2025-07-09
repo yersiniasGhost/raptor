@@ -2,7 +2,8 @@
 # autosshh.sh - Configure and start system services
 
 APP_DIR="/root/raptor"
-
+TUNNEL_PORT=${REVERSE_TUNNEL:-2022}
+UI_PORT=${VMC_UI_PORT:-2002}
 echo "Setting up system services..."
 echo "reverse-tunnel service..."
 
@@ -31,7 +32,7 @@ After=sys-subsystem-net-devices-wlan0.device
 
 [Service]
 Environment="AUTOSSH_GATETIME=0"
-ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -o "ExitOnForwardFailure yes" -N -R 0.0.0.0:2002:localhost:8002 -R 0.0.0.0:2022:localhost:22 -i /root/.ssh/CREM3-API-03.pem ubuntu@54.226.49.65
+ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -o "ExitOnForwardFailure yes" -N -R 0.0.0.0:${UI_PORT}:localhost:8002 -R 0.0.0.0:${TUNNEL_PORT}:localhost:22 -i /root/.ssh/CREM3-API-03.pem ubuntu@54.226.49.65
 Restart=always
 RestartSec=60
 StartLimitInterval=200
