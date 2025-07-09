@@ -9,7 +9,7 @@ from database.database_manager import DatabaseManager
 from utils.envvars import EnvVars
 from logging import Logger
 from utils import JSON
-
+import uuid
 
 # Track last connection attempt time and backoff parameters
 _last_connection_attempt = 0
@@ -140,11 +140,11 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
             async with aiomqtt.Client(
                     hostname=mqtt_config.broker,
                     port=mqtt_config.port,
-                    username=mqtt_config.username,
-                    password=mqtt_config.password,
+                    # username=mqtt_config.username,
+                    # password=mqtt_config.password,
                     keepalive=mqtt_config.keepalive,
-                    identifier=mqtt_config.client_id,
-                    clean_session=False
+                    identifier=f"{mqtt_config.client_id}_{uuid.uuid4().hex[:8]}",  # Make unique
+                    clean_session=True
             ) as client:
                 # Subscribe to the messages topic
                 await client.subscribe(telemetry_config.messages_topic)
@@ -217,6 +217,7 @@ async def check_connection(mqtt_config: MQTTConfig, logger: Logger) -> bool:
             # Simple ping test - subscribe to a test topic briefly
             await client.subscribe("$SYS/broker/uptime")  # Standard MQTT broker topic
             logger.info("Successfully connected and ping'd.")
+
             return True
     except  asyncio.TimeoutError:
         logger.warning(f"MQTT connection test timed out after 5 seconds")
