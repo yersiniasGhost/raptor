@@ -7,12 +7,12 @@ from . import templates
 import json
 from typing import Annotated
 
-from database.db_utils import get_mqtt_config
+from database.db_utils import get_mqtt_config, get_telemetry_config
 from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from utils import LogManager, get_mac_address, EnvVars
-from cloud.mqtt_comms import check_connection
+from cloud.mqtt_comms import check_connection, publish_payload
 
 logger = LogManager().get_logger(__name__)
 COMMON_PATH = "/root/raptor-common"
@@ -23,8 +23,13 @@ router = APIRouter(prefix="/configuration", tags=["configuration"])
 @router.post("/mqtt-test", name="mqtt-test")
 async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
+    telemetry_config = get_telemetry_config(logger)
+
     status = await check_connection(mqtt_broker, logger)
-    return status
+    status2 = await publish_payload(mqtt_broker, telemetry_config.status_path,
+                                   {"source": "VMC UI",
+                                    "status": "OPERATING"}, None, logger)
+    return status and status2
 
 
 @router.get("/", name="configuration_index")
