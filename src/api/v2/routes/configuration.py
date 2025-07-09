@@ -8,6 +8,7 @@ import json
 from typing import Annotated
 
 from database.db_utils import get_mqtt_config, get_telemetry_config
+from database.database_manager import DatabaseManager
 from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
@@ -44,6 +45,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     current_common_branch = get_current_branch(COMMON_PATH)
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
     mac_address = get_mac_address()
+    raptor_data = DatabaseManager().get_raptor()
     services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
     if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
         services += ["actuator-stress"]
@@ -62,7 +64,9 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
             "mqtt_broker_port": mqtt_broker.port,
             "mqtt_path": mqtt_broker.client_id,
             "mac_address": mac_address,
-            "services": services
+            "services": services,
+            "raptor_name": raptor_data['name'],
+            "raptor_client": raptor_data['client']
         }
     )
 
