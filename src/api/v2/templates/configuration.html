@@ -149,10 +149,10 @@
 
                 <div class="library-item">
                     <label for="raptor-common-branch">Select Raptor Common version:</label>
-                    <select id="raptor-common-branch" name="raptor_common_branch" class="form-control" required>
+                    <select id="raptor-common-branch" name="common_branch" class="form-control" required>
                         <option value="">-- Select Raptor Common version --</option>
                         {% for branch in raptor_common_branches %}
-                            <option value="{{ branch }}" {% if branch == current_raptor_common_branch %}selected{% endif %}>{{ branch }}</option>
+                            <option value="{{ branch }}" {% if branch == current_common_branch %}selected{% endif %}>{{ branch }}</option>
                         {% endfor %}
                     </select>
                 </div>

@@ -106,6 +106,7 @@ async def recommission(request: Request):
                 "request": request,
                 "error_message": f"Failed to recommission system: {str(e)}",
                 "git_branches": get_git_branches(),
+                'raptor_common_branches': get_git_branches(COMMON_PATH),
                 "current_branch": get_current_branch()
             }
         )
@@ -134,6 +135,7 @@ async def reconfigure(request: Request, hardware: Annotated[HardwareDeploymentRo
                 "request": request,
                 "error_message": f"Failed to reconfigure system: {str(e)}",
                 "git_branches": get_git_branches(),
+                'raptor_common_branches': get_git_branches(COMMON_PATH),
                 "current_branch": get_current_branch()
             }
         )
@@ -144,8 +146,11 @@ async def reconfigure(request: Request, hardware: Annotated[HardwareDeploymentRo
 async def update_firmware(
         request: Request,
         branch: str = Form(...),
+        common_branch: str = Form(...),
         action: str = Form(...)
 ):
+    print(common_branch)
+    x
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("firmware_update", {"tag": branch}, None, None)
@@ -165,6 +170,7 @@ async def update_firmware(
                 "request": request,
                 "error_message": f"Failed to update firmware: {str(e)}",
                 "git_branches": get_git_branches(),
+                'raptor_common_branches': get_git_branches(COMMON_PATH),
                 "current_branch": get_current_branch()
             }
         )
@@ -258,33 +264,6 @@ async def get_current_configuration(section: str):
         raise HTTPException(status_code=404, detail="Configuration not found")
 
     return JSONResponse(configurations[section])
-
-
-# Helper functions to interact with git
-def get_git_branches_orig():
-    """Get list of available git branches"""
-    # fetch first?
-    subprocess.run(["git", "remote", "update", "origin", "--prune"])
-    result = subprocess.run(
-        ["git", "branch", "--list", "--all"],
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    logger.info(f"git branch --list --all  returns: {result}")
-
-    branches = []
-    for line in result.stdout.splitlines():
-        # Clean branch names (remove asterisks and whitespace)
-        branch = line.strip().replace("* ", "")
-        # Remove remote prefixes if needed
-        if branch.startswith("remotes/origin/"):
-            branch = branch.replace("remotes/origin/", "")
-
-        if branch and branch not in branches and not branch.startswith("HEAD"):
-            branches.append(branch)
-
-    return branches
 
 
 def get_git_branches(repo_path: Optional[str] = None):
