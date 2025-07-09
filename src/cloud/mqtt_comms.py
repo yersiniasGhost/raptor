@@ -71,7 +71,8 @@ async def publish_payload(mqtt_config: MQTTConfig, topic: str, payload: JSON, lo
                 password=mqtt_config.password
         ) as client:
             # Publish to telemetry topic
-            await client.publish(topic=topic, payload=payload, qos=1)
+            payload_s = json.dumps(payload)
+            await client.publish(topic=topic, payload=payload_s, qos=1)
 
         # Reset connection failures on success
         if _connection_failures > 0:
@@ -100,7 +101,7 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
     try:
         db = DatabaseManager(EnvVars().db_path)
         payload = db.get_stored_telemetry_data()
-        payload = json.dumps(payload)
+        # payload = json.dumps(payload)
         return await publish_payload(mqtt_config, telemetry_config.telemetry_topic, payload, logger)
     except Exception as e:
         logger.error(f"Error uploading telemetry data: {e}")
@@ -194,9 +195,8 @@ async def upload_command_response(mqtt_config: MQTTConfig, telemetry_config: Tel
                                   payload: JSON, logger: Logger) -> bool:
     """Upload command response with backoff strategy"""
     try:
-        payload_str = json.dumps(payload)
-        logger.info(f"Command response: {payload_str}")
-        return await publish_payload(mqtt_config, telemetry_config.response_topic, payload_str, logger)
+        logger.info(f"Command response: {payload}")
+        return await publish_payload(mqtt_config, telemetry_config.response_topic, payload, logger)
     except Exception as e:
         logger.error(f"Error uploading command response: {e}")
         return False
