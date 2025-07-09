@@ -44,6 +44,12 @@ CREATE TABLE IF NOT EXISTS raptor (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS power_5V (
+    id INTEGER PRIMARY CHECK (id = 1),
+    requests INTEGER DEFAULT 0
+);
+
+
 -- Devices (specific devices on a hardware instance)
 --CREATE TABLE IF NOT EXISTS devices (
 --    id INTEGER PRIMARY KEY,
