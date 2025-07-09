@@ -71,7 +71,7 @@ async def publish_payload(mqtt_config: MQTTConfig, topic: str, payload: JSON, lo
                 password=mqtt_config.password
         ) as client:
             # Publish to telemetry topic
-            await client.publish(topic=topic, payload=payload.encode(), qos=1)
+            await client.publish(topic=topic, payload=payload, qos=1)
 
         # Reset connection failures on success
         if _connection_failures > 0:
