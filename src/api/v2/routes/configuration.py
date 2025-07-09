@@ -33,6 +33,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     if success == "reconfigure":
         success_message = "Reconfiguration completed successfully!"
     git_branches = get_git_branches()
+    raptor_common_branches = get_git_branches(COMMON_PATH)
     current_branch = get_current_branch()
     current_common_branch = get_current_branch(COMMON_PATH)
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
@@ -48,6 +49,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
             "hardware": hardware,
             "request": request,
             "git_branches": git_branches,
+            "raptor_common_branches": raptor_common_branches,
             "current_branch": current_branch,
             "current_common_branch": current_common_branch,
             "mqtt_broker_ip": mqtt_broker.broker,
@@ -285,10 +287,14 @@ def get_git_branches_orig():
     return branches
 
 
-def get_git_branches():
+def get_git_branches(repo_path: Optional[str] = None):
     """Get list of available git branches without fetching content"""
+    cmd = ["git", "ls-remote", "--heads", "origin"]
+    if repo_path:
+        cmd = ["git", "-C", repo_path] + cmd[1:]
+
     result = subprocess.run(
-        ["git", "ls-remote", "--heads", "origin"],
+        cmd,
         capture_output=True,
         text=True,
         check=True
