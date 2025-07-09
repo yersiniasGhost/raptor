@@ -149,8 +149,6 @@ async def update_firmware(
         common_branch: str = Form(...),
         action: str = Form(...)
 ):
-    print(common_branch)
-    x
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("firmware_update", {"tag": branch}, None, None)

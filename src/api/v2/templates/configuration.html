@@ -109,26 +109,6 @@
 <h2>Firmware version and control</h2>
 
 <div class="firmware-control-container">
-    Current version: {{ current_branch }}
-    <form action="/configuration/update_firmware" method="post">
-        <div class="form-group">
-            <span>
-                <label for="git-branch">Select firmware version:</label>
-                <select id="git-branch" name="branch" class="form-control">
-                    {% for branch in git_branches %}
-                        <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
-                    {% endfor %}
-                </select>
-
-                <div class="form-actions">
-                    <button type="submit" name="action" value="update" class="btn btn-primary">Update</button>
-                    <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update & Restart</button>
-                </div>
-            </span>
-       </div>
-    </form>
-</div>
-<div class="firmware-control-container">
     <div class="current-versions">
         <div>Current firmware version: {{ current_branch }}</div>
         <div>Current Raptor Common version: {{ current_common_branch }}</div>
