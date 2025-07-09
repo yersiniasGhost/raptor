@@ -83,14 +83,14 @@ class DatabaseManager(metaclass=Singleton):
             self.logger.error(f"Error inserting telemetry/mqtt configuration: {e}")
             raise
 
-    def add_raptor_id(self, raptor_config: Dict[str, str]):
+    def add_raptor(self, raptor_config: Dict[str, str]):
         try:
             cursor = self.connection.cursor()
             cursor.execute("""
                 INSERT OR REPLACE INTO raptor
-                (id, location, client)
+                (id, name, client)
                 VALUES (1, ?, ?)
-                """, (raptor_config.get("location", "NO Location"),
+                """, (raptor_config.get("name", "NO Location"),
                       raptor_config.get("client", "NO Client")))
         except sqlite3.Error as e:
             self.connection.rollback()
@@ -100,6 +100,18 @@ class DatabaseManager(metaclass=Singleton):
         except Exception as e:
             self.connection.rollback()
             self.logger.error(f"Error processing configuration: {e}")
+            raise
+
+    def get_raptor(self) -> Optional[Dict[str, str]]:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                SELECT name, client, timestamp FROM raptor ORDER BY timestamp DESC LIMIT 1
+            """)
+            result = cursor.fetchone()
+            return dict(result) if result else None
+        except Exception as e:
+            self.logger.error(f"Error retrieving raptor data: {e}")
             raise
 
     def add_hardware(self, hardware_configuration: Dict[str, Any]):

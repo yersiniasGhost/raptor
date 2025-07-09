@@ -36,6 +36,13 @@ CREATE TABLE IF NOT EXISTS firmware_status (
     version_tag TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 )
+
+CREATE TABLE IF NOT EXISTS raptor (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    client TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)
 -- Devices (specific devices on a hardware instance)
 --CREATE TABLE IF NOT EXISTS devices (
 --    id INTEGER PRIMARY KEY,
