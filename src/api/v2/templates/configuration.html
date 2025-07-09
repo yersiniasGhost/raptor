@@ -124,7 +124,7 @@
 .info-value {
     font-family: 'Courier New', monospace;
     background: #ffffff;
-    padding: 6px 12px;
+    padding: 3px 6px;
     border-radius: 4px;
     border: 1px solid #dee2e6;
     color: #212529;
@@ -136,14 +136,14 @@
 /* Alternative card-style layout */
 .device-info-container.card-style {
     background: #ffffff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     border: none;
 }
 
 .device-info-container.card-style .info-item {
     background: #f8f9fa;
     margin-bottom: 10px;
-    padding: 15px;
+    padding: 5px;
     border-radius: 6px;
     border: none;
     display: block;
@@ -151,7 +151,7 @@
 
 .device-info-container.card-style .info-label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 1px;
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -192,10 +192,17 @@
 <h2>Firmware version and control</h2>
 
 <div class="firmware-control-container">
-    <div class="current-versions">
-        <div>Current firmware version: {{ current_branch }}</div>
-        <div>Current Raptor Common version: {{ current_common_branch }}</div>
+    <div class="device-info-container">
+    <div class="info-item">
+        <span class="info-label">Current firmware version:</span>
+        <span class="info-value">{{current_branch}}</span>
     </div>
+    <div class="info-item">
+        <span class="info-label">Current common library version:</span>
+        <span class="info-value">{{current_common_branch}}</span>
+    </div>
+
+</div>
 
     <form action="/configuration/update_firmware" method="post">
         <div class="form-group">

@@ -29,7 +29,7 @@ async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRout
     status = await check_connection(mqtt_broker, logger)
     status2 = await publish_payload(mqtt_broker, telemetry_config.status_path,
                                    {"source": "VMC UI",
-                                    "status": "OPERATING"}, None, logger)
+                                    "status": "OPERATING"}, logger)
     logger.info(f"Ping: {status}, Publish: {status2}")
     return status and status2
 
