@@ -128,6 +128,43 @@
        </div>
     </form>
 </div>
+<div class="firmware-control-container">
+    <div class="current-versions">
+        <div>Current firmware version: {{ current_branch }}</div>
+        <div>Current Raptor Common version: {{ current_raptor_common_branch }}</div>
+    </div>
+
+    <form action="/configuration/update_firmware" method="post">
+        <div class="form-group">
+            <div class="library-selection">
+                <div class="library-item">
+                    <label for="git-branch">Select firmware version:</label>
+                    <select id="git-branch" name="branch" class="form-control" required>
+                        <option value="">-- Select firmware version --</option>
+                        {% for branch in git_branches %}
+                            <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="library-item">
+                    <label for="raptor-common-branch">Select Raptor Common version:</label>
+                    <select id="raptor-common-branch" name="raptor_common_branch" class="form-control" required>
+                        <option value="">-- Select Raptor Common version --</option>
+                        {% for branch in raptor_common_branches %}
+                            <option value="{{ branch }}" {% if branch == current_raptor_common_branch %}selected{% endif %}>{{ branch }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" name="action" value="update" class="btn btn-primary">Update Both Libraries</button>
+                <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update Both Libraries & Restart</button>
+            </div>
+        </div>
+    </form>
+</div>
 
 <h2>System commission and configuration</h2>
 <div class="firmware-control-container">
