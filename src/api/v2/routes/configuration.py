@@ -36,39 +36,53 @@ async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRout
 
 @router.get("/", name="configuration_index")
 async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)],  success: str= None):
-    success_message = None
-    if success == "reconfigure":
-        success_message = "Reconfiguration completed successfully!"
-    git_branches = get_git_branches()
-    raptor_common_branches = get_git_branches(COMMON_PATH)
-    current_branch = get_current_branch()
-    current_common_branch = get_current_branch(COMMON_PATH)
-    mqtt_broker: MQTTConfig = get_mqtt_config(logger)
-    mac_address = get_mac_address()
-    raptor_data = DatabaseManager().get_raptor()
-    services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
-    if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
-        services += ["actuator-stress"]
+    try:
+        success_message = None
+        if success == "reconfigure":
+            success_message = "Reconfiguration completed successfully!"
+        git_branches = get_git_branches()
+        raptor_common_branches = get_git_branches(COMMON_PATH)
+        current_branch = get_current_branch()
+        current_common_branch = get_current_branch(COMMON_PATH)
+        mqtt_broker: MQTTConfig = get_mqtt_config(logger)
+        mac_address = get_mac_address()
+        raptor_data = DatabaseManager().get_raptor()
+        services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
+        if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
+            services += ["actuator-stress"]
 
-    return templates.TemplateResponse(
-        "configuration.html",
-        {
-            "success_message": success_message,
-            "hardware": hardware,
-            "request": request,
-            "git_branches": git_branches,
-            "raptor_common_branches": raptor_common_branches,
-            "current_branch": current_branch,
-            "current_common_branch": current_common_branch,
-            "mqtt_broker_ip": mqtt_broker.broker,
-            "mqtt_broker_port": mqtt_broker.port,
-            "mqtt_path": mqtt_broker.client_id,
-            "mac_address": mac_address,
-            "services": services,
-            "raptor_name": raptor_data['name'],
-            "raptor_client": raptor_data['client']
-        }
-    )
+        return templates.TemplateResponse(
+            "configuration.html",
+            {
+                "success_message": success_message,
+                "hardware": hardware,
+                "request": request,
+                "git_branches": git_branches,
+                "raptor_common_branches": raptor_common_branches,
+                "current_branch": current_branch,
+                "current_common_branch": current_common_branch,
+                "mqtt_broker_ip": mqtt_broker.broker,
+                "mqtt_broker_port": mqtt_broker.port,
+                "mqtt_path": mqtt_broker.client_id,
+                "mac_address": mac_address,
+                "services": services,
+                "raptor_name": raptor_data['name'],
+                "raptor_client": raptor_data['client']
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error in recommission: {e}")
+        return templates.TemplateResponse(
+            "configuration.html",
+            {
+                "request": request,
+                "error_message": f"Failed to recommission system: {str(e)}",
+                "git_branches": get_git_branches(),
+                'raptor_common_branches': get_git_branches(COMMON_PATH),
+                "current_branch": get_current_branch()
+            }
+        )
+
 
 
 @router.post("/service/{action}", name="service-action")
@@ -110,6 +124,7 @@ async def recommission(request: Request):
 
     except Exception as e:
         # Handle errors
+        logger.error(f"Error in recommission: {e}")
         return templates.TemplateResponse(
             "configuration.html",
             {
