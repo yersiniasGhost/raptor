@@ -1,3 +1,4 @@
+from typing import Optional
 import subprocess
 from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File, Form
 from fastapi.responses import RedirectResponse
@@ -14,7 +15,7 @@ from utils import LogManager, get_mac_address, EnvVars
 from cloud.mqtt_comms import check_connection
 
 logger = LogManager().get_logger(__name__)
-
+COMMON_PATH = "/root/raptor-common"
 
 router = APIRouter(prefix="/configuration", tags=["configuration"])
 
@@ -33,6 +34,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         success_message = "Reconfiguration completed successfully!"
     git_branches = get_git_branches()
     current_branch = get_current_branch()
+    current_common_branch = get_current_branch(COMMON_PATH)
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
     mac_address = get_mac_address()
     services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
@@ -47,6 +49,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
             "request": request,
             "git_branches": git_branches,
             "current_branch": current_branch,
+            "current_common_branch": current_common_branch,
             "mqtt_broker_ip": mqtt_broker.broker,
             "mqtt_broker_port": mqtt_broker.port,
             "mqtt_path": mqtt_broker.client_id,
@@ -308,10 +311,16 @@ def get_git_branches():
     return branches
 
 
-def get_current_branch():
+def get_current_branch(repo_path: Optional[str] = None) -> str:
     """Get the name of the current git branch"""
+    cmd = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+
+    if repo_path:
+        # Use git -C to run command in different directory
+        cmd = ["git", "-C", repo_path] + cmd[1:]
+
     result = subprocess.run(
-        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cmd,
         capture_output=True,
         text=True,
         check=True
