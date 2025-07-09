@@ -47,6 +47,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         mqtt_broker: MQTTConfig = get_mqtt_config(logger)
         mac_address = get_mac_address()
         raptor_data = DatabaseManager().get_raptor()
+        if not raptor_data:
+            raptor_data = {"name": "error", "client": "error"}
         services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
         if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
             services += ["actuator-stress"]
