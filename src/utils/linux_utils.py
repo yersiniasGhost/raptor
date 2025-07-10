@@ -172,4 +172,41 @@ def start_screen_session(session_name: str, command: str, cwd: Optional[str] = N
         return False
 
 
+def get_local_ip() -> str:
+    """Get the local IP address of the device"""
+    try:
+        # Try to get IP from the default route interface
+        import socket
 
+        # Create a socket and connect to a remote address to determine local IP
+        # This doesn't actually send data, just determines which interface would be used
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+            return local_ip
+
+    except Exception:
+        try:
+            # Fallback: try to get IP from network interfaces
+            import netifaces
+
+            # Get default gateway interface
+            gateways = netifaces.gateways()
+            default_interface = gateways['default'][netifaces.AF_INET][1]
+
+            # Get IP address of the default interface
+            addrs = netifaces.ifaddresses(default_interface)
+            local_ip = addrs[netifaces.AF_INET][0]['addr']
+            return local_ip
+
+        except Exception:
+            try:
+                # Another fallback: use hostname resolution
+                import socket
+                hostname = socket.gethostname()
+                local_ip = socket.gethostbyname(hostname)
+                return local_ip
+
+            except Exception:
+                # Final fallback: return localhost
+                return "127.0.0.1"
