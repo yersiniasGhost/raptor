@@ -1,6 +1,7 @@
 import subprocess
 import signal
 import os
+import time
 from typing import Tuple
 from .base_action import Action
 from .action_status import ActionStatus
@@ -76,7 +77,7 @@ class InviewGwLinkAction(Action):
             tunnel_pid = process.pid
             logger.info(f"SSH tunnel started with PID: {tunnel_pid}")
             logger.info(process)
-
+            time.sleep(1.5)
             status = await self.get_tunnel_status()
             return ActionStatus.SUCCESS, {
                 "message": "SSH tunnel run successfully. Check status",
