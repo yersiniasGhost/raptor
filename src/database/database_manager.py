@@ -120,11 +120,11 @@ class DatabaseManager(metaclass=Singleton):
             cursor.execute("""
                 UPDATE power_5V SET requests = requests + 1 WHERE id = 1
             """)
+            conn.commit()
             # Get the updated value
             cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
             result = cursor.fetchone()
             self.logger.info(f"AFTER ON: {result}")
-            conn.commit()
             return result[0] if result else 0
 
 
