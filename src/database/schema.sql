@@ -45,9 +45,12 @@ CREATE TABLE IF NOT EXISTS raptor (
 );
 
 CREATE TABLE IF NOT EXISTS power_5V (
-    id INTEGER PRIMARY CHECK (id = 1),
-    requests INTEGER DEFAULT 0
+    id INTEGER PRIMARY KEY,
+    requests INTEGER DEFAULT 0,
+    CHECK (id = 1)
 );
+
+INSERT OR IGNORE INTO power_5V (id, requests) VALUES (1, 0);
 
 
 -- Devices (specific devices on a hardware instance)
