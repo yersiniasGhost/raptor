@@ -11,7 +11,7 @@ from config.raptor_config import RaptorConfig
 
 
 def get_api_key(logger: Logger):
-    db = DatabaseManager(EnvVars().db_path)
+    db = DatabaseManager()
     try:
         with db.connection as conn:
             cursor = conn.execute("SELECT * FROM commission LIMIT 1")
@@ -26,7 +26,7 @@ def get_api_key(logger: Logger):
 
 
 def get_telemetry_config(logger: Logger) -> Optional[TelemetryConfig]:
-    db = DatabaseManager(EnvVars().db_path)
+    db = DatabaseManager()
     try:
         with db.connection as conn:
             cursor = conn.execute("SELECT telemetry_config FROM telemetry_configuration LIMIT 1")
@@ -42,7 +42,7 @@ def get_telemetry_config(logger: Logger) -> Optional[TelemetryConfig]:
 
 
 def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
-    db = DatabaseManager(EnvVars().db_path)
+    db = DatabaseManager()
     try:
         with db.connection as conn:
             cursor = conn.execute("SELECT mqtt_config FROM telemetry_configuration LIMIT 1")
@@ -59,7 +59,7 @@ def get_mqtt_config(logger: Logger) -> Optional[MQTTConfig]:
 
 
 def get_raptor_configuration(logger: Logger) -> Optional[RaptorConfig]:
-    db = DatabaseManager(EnvVars().db_path)
+    db = DatabaseManager()
     try:
         with db.connection as conn:
             cursor = conn.execute("SELECT raptor_id, firmware_tag, api_key FROM commission LIMIT 1")

@@ -25,7 +25,7 @@ class FirmwareUpdater:
         if success:
             self.current_version = output
             self.logger.info(f"Current git version is {output}")
-        db = DatabaseManager(EnvVars().db_path)
+        db = DatabaseManager()
         db_version = db.get_current_firmware_version()
         if db_version:
             self.logger.info(f"Current registered version: {db_version['version_tag']} at {db_version['timestamp']}")
@@ -112,7 +112,7 @@ class FirmwareUpdater:
             if not self.update_repository(self.target_tag):
                 return False
 
-            db = DatabaseManager(EnvVars().db_path)
+            db = DatabaseManager()
             db.add_firmware_version(self.target_tag)
             self.logger.info("Update completed successfully")
             self.cleanup_repository()

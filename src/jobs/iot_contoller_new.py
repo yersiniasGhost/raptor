@@ -47,7 +47,7 @@ class IoTDataLogger(BaseDataLogger):
 
     def _setup_hardware(self):
         """Setup all hardware deployments"""
-        db = DatabaseManager(EnvVars().db_path)
+        db = DatabaseManager()
 
         for system in SUPPORTED_SYSTEMS:
             hardware_deployments = {}
@@ -203,7 +203,7 @@ class IoTController:
             formatted_data = self.telemetry_formatter.format_telemetry_data(telemetry_points)
 
             # Store in database temporarily
-            db = DatabaseManager(EnvVars().db_path)
+            db = DatabaseManager()
             db.store_telemetry_data(formatted_data)
 
             # Upload based on configured mode

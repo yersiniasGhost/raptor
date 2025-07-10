@@ -40,7 +40,7 @@ class RaptorCommissioner:
                 envvars = EnvVars()
                 raptor_id = data.get('raptor_id')
                 firmware_tag = data.get('firmware_tag')
-                db = DatabaseManager(envvars.db_path)
+                db = DatabaseManager()
 
                 try:
                     with db.connection as conn:

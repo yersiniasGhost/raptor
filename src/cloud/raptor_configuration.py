@@ -102,7 +102,7 @@ class RaptorConfiguration:
             mqtt_config = json.dumps(config_data["mqtt"])
             telemetry_config = json.dumps(config_data["telemetry"])
             raptor = config_data["raptor"]
-            db = DatabaseManager(EnvVars().db_path)
+            db = DatabaseManager()
             db.clear_existing_configuration()
             db.update_telemetry(telemetry_config, mqtt_config)
             db.add_hardware(config_data['hardware'])

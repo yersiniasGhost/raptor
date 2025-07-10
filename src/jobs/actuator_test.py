@@ -255,7 +255,7 @@ class StressTestRunner:
     def initialize_actuators(self) -> bool:
         """Initialize the actuator manager"""
         try:
-            db = DatabaseManager(EnvVars().db_path)
+            db = DatabaseManager()
             for hardware in db.get_hardware_systems("Actuators"):
                 self.logger.info(f"Adding Actuators")
                 self.logger.info(f"TOD: {hardware}")

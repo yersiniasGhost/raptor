@@ -182,6 +182,7 @@ async def update_firmware(
 
         # If the action is update_restart, restart the application
         if action == "update_restart":
+            DatabaseManager().reset_power_requests()
             await ActionFactory.execute_action("restart", {"skip_reverse_tunnel": True}, None, None)
 
         logger.info("Redirecting to configuration page")

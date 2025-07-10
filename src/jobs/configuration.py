@@ -37,8 +37,7 @@ def main():
         firmware.update()
 
     if args.rebuild:
-        schema = Path(envvars.schema_path)
-        db = DatabaseManager(envvars.db_path, schema)
+        db = DatabaseManager()
         db.rebuild_db(True)
 
     if args.commission:

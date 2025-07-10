@@ -2,7 +2,7 @@ from typing import Optional, Union, Dict, Any, Iterable, List
 from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
-from utils.singleton import Singleton
+from utils import EnvVars, Singleton
 import time
 import shutil
 
@@ -12,12 +12,10 @@ import json
 
 class DatabaseManager(metaclass=Singleton):
 
-    def __init__(self, db_path: Union[Path, str], schema_path: Optional[Union[Path, str]] = None):
+    def __init__(self):
         self.logger = LogManager().get_logger("DatabaseManager")
-        self.db_path = Path(db_path)
-        self.schema_path: Optional[Path] = None
-        if schema_path:
-            self.schema_path = Path(schema_path)
+        self.db_path = Path(EnvVars().db_path)
+        self.schema_path = Path(EnvVars().schema_path)
         self._connection: Optional[Connection] = None
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -103,6 +101,18 @@ class DatabaseManager(metaclass=Singleton):
             raise
 
 
+    def reset_power_requests(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            # Increment the counter
+            cursor.execute("""
+                UPDATE power_5V SET requests = 0 WHERE id = 1
+            """)
+            conn.commit()
+            # Get the updated value
+            cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
+            result = cursor.fetchone()
+            return result[0] if result else 0
 
     def power_on(self) -> int:
         """

@@ -31,7 +31,7 @@ async def publish_payload(mqtt_config: MQTTConfig, topic: str, payload: JSON, lo
 
 async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: TelemetryConfig, logger: Logger):
     try:
-        db = DatabaseManager(EnvVars().db_path)
+        db = DatabaseManager()
         payload = db.get_stored_telemetry_data()
         payload = json.dumps(payload)
         return await publish_payload(mqtt_config, telemetry_config.telemetry_topic, payload, logger)

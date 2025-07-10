@@ -50,7 +50,7 @@ class IoTController:
         Takes a single synchronized sample of all systems.
         This ensures all systems are measured at the same point in time.
         """
-        db = DatabaseManager(EnvVars().db_path)
+        db = DatabaseManager()
         system_measurements = {}
 
         # Setup all hardware objects first
@@ -274,7 +274,7 @@ class IoTController:
 
                         data = self.telemetry_data.get("data", [])
                         if data:
-                            db = DatabaseManager(EnvVars().db_path)
+                            db = DatabaseManager()
                             db.store_telemetry_data(self.telemetry_data)
 
                             # Store locally if needed
@@ -379,7 +379,7 @@ class IoTController:
 
                         data = self.telemetry_data.get("data", [])
                         if data:
-                            db = DatabaseManager(EnvVars().db_path)
+                            db = DatabaseManager()
                             db.store_telemetry_data(self.telemetry_data)
 
                             # Store locally if needed

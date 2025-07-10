@@ -19,7 +19,7 @@ class RebuildAction(Action):
             logger.info("Starting rebuild action.")
             schema_path = Path(EnvVars().schema_path)
             logger.info(f"Updating database with schema: {schema_path}")
-            db = DatabaseManager(EnvVars().db_path, schema_path)
+            db = DatabaseManager()
             db.rebuild_db(True)
             logger.info("Completed database rebuild")
 
