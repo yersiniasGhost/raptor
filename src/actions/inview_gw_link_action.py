@@ -81,7 +81,8 @@ class InviewGwLinkAction(Action):
             return ActionStatus.SUCCESS, {
                 "message": "SSH tunnel connected successfully",
                 "pid": tunnel_pid,
-                "status": status
+                "status": status[0],
+                "state": status[1]
             }
 
         except Exception as e:
