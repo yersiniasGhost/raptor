@@ -114,12 +114,16 @@ class DatabaseManager(metaclass=Singleton):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             # Increment the counter
+            cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
+            result = cursor.fetchone()
+            self.logger.info(f"BEFORE ON {result}")
             cursor.execute("""
                 UPDATE power_5V SET requests = requests + 1 WHERE id = 1
             """)
             # Get the updated value
             cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
             result = cursor.fetchone()
+            self.logger.info(f"AFTER ON: {result}")
             conn.commit()
             return result[0] if result else 0
 
@@ -136,16 +140,20 @@ class DatabaseManager(metaclass=Singleton):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             # Decrement the counter but don't go below 0
+            cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
+            result = cursor.fetchone()
+            self.logger.info(f"BEFORE {result}")
             cursor.execute("""
                 UPDATE power_5V 
                 SET requests = MAX(0, requests - 1) 
                 WHERE id = 1
             """)
+            conn.commit()
 
             # Get the updated value
             cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
             result = cursor.fetchone()
-            conn.commit()
+            self.logger.info(f"AFTER {result}")
             return result[0] if result else 0
 
 
