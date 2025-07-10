@@ -7,7 +7,7 @@ from .action_status import ActionStatus
 from utils import LogManager, JSON, get_local_ip
 
 
-class InviewGwLink(Action):
+class InviewGwLinkAction(Action):
     """
     Stateless action class for managing SSH tunnel connections.
     Supports connecting and disconnecting SSH reverse tunnels without maintaining state.
