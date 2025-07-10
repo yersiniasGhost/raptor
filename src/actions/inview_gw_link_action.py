@@ -79,9 +79,9 @@ class InviewGwLinkAction(Action):
 
             status = await self.get_tunnel_status()
             return ActionStatus.SUCCESS, {
-                "message": "SSH tunnel connected successfully",
+                "message": "SSH tunnel run successfully. Check status",
                 "pid": tunnel_pid,
-                "status": status[0],
+                "status": str(status[0]),
                 "state": status[1]
             }
 
