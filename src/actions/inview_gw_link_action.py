@@ -19,7 +19,7 @@ class InviewGwLinkAction(Action):
 
         try:
             # Get the action type
-            action_type = self.params.get('action', 'connect')  # 'connect' or 'disconnect'
+            action_type = self.params.get('action')  # 'connect' or 'disconnect'
 
             if action_type == 'connect':
                 return await self._connect_tunnel(logger)
@@ -75,11 +75,13 @@ class InviewGwLinkAction(Action):
 
             tunnel_pid = process.pid
             logger.info(f"SSH tunnel started with PID: {tunnel_pid}")
+            logger.info(process)
 
+            status = self.get_tunnel_status()
             return ActionStatus.SUCCESS, {
                 "message": "SSH tunnel connected successfully",
                 "pid": tunnel_pid,
-                "status": "connected"
+                "status": status
             }
 
         except Exception as e:
