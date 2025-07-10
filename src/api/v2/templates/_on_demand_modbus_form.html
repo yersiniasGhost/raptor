@@ -2,8 +2,8 @@
 <div class="form-group">
     <label for="register_names_{{slave_id}}">Register Name:</label>
     <select id="register_names_{{slave_id}}">
-    {% for register, name in register_map.items() %}
-        <option value="{{register}}">{{name}}</option>
+    {% for name in register_map %}
+        <option value="{{name}}">{{name}}</option>
     {% endfor %}
     </select>
 </div>
