@@ -177,14 +177,14 @@ class ADCHardware(HardwareBase):
         result = {}
 
         # Initialize devices if not already done
+        self.logger.info("Turning ON offboard 5V power")
+        Power5V().request_power_on()
         if not self.initialized:
             self.logger.info("Initializing ADC channels for devices")
             for device in devices:
                 self.initialize_device(device)
             self.initialized = True
             self.channels_configured = True
-        self.logger.info("Turning on OFFboard 5V power")
-        Power5V().request_power_on()
 
         for device in devices:
             mac = device.get('mac')
@@ -195,7 +195,7 @@ class ADCHardware(HardwareBase):
             voltage = self.read_device(device)
             result[mac] = voltage
 
-        self.logger.info("Turning off OFFboard 5V power")
+        self.logger.info("Turning OFF offboard 5V power")
         Power5V().request_power_off()
 
         return result
