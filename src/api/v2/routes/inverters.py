@@ -25,14 +25,15 @@ def get_inverter(deployment: HardwareDeploymentRoute):
 
 @router.get("/")
 async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
-    try:
-        hardware = get_inverter(deployment)
+    hardware = get_inverter(deployment)
 
-        if not hardware:
-            return templates.TemplateResponse('hardware_not_configured.html',
-                                              {"request": request,
-                                               "hardware": "Inverters/Converters"}
-                                              )
+    if not hardware:
+        return templates.TemplateResponse('hardware_not_configured.html',
+                                          {"request": request,
+                                           "hardware": "Inverters/Converters"}
+                                          )
+    try:
+
         hardware.get_identifiers()
         logger.info(f"Got Inverter identifiers")
         data = await bms_store.get_all_data()
@@ -55,7 +56,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         return templates.TemplateResponse(
             "inverters.html",
             {
-                "hardware": [],
+                "hardware": hardware,
                 "request": request,
                 "register_map": {},
                 "error": str(e)
