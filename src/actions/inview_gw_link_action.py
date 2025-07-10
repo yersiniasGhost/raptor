@@ -77,7 +77,7 @@ class InviewGwLinkAction(Action):
             logger.info(f"SSH tunnel started with PID: {tunnel_pid}")
             logger.info(process)
 
-            status = self.get_tunnel_status()
+            status = await self.get_tunnel_status()
             return ActionStatus.SUCCESS, {
                 "message": "SSH tunnel connected successfully",
                 "pid": tunnel_pid,
