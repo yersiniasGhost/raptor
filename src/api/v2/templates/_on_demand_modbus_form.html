@@ -1,164 +1,81 @@
-        <div class="collapsible-section">
-            <div class="section-header" onclick="toggleModbusForm()">
-                <h4>Modbus Register Control</h4>
-                <span id="modbus_toggle_icon" class="toggle-icon">▼</span>
-            </div>
-            <div id="modbus_form_container" class="collapsible-content">
-    <div class="form-group">
-        <label for="group_select">Select Group:</label>
-        <select id="group_select" onchange="updateGroupSelection()">
-            <option value="">-- Select a group --</option>
-            {% for group, registers in modbus_map.items() %}
-            <option value="{{group}}">{{group}}</option>
-            {% endfor %}
-        </select>
+<div class="collapsible-section">
+    <div class="section-header" onclick="toggleModbusForm()">
+        <h4>Modbus Register Control</h4>
+        <span id="modbus_toggle_icon" class="toggle-icon">▼</span>
     </div>
-
-    <div id="register_selection" style="display: none;">
+    <div id="modbus_form_container" class="collapsible-content">
         <div class="form-group">
-            <label for="register_select">Select Register:</label>
-            <select id="register_select" onchange="updateRegisterMetadata()">
-                <option value="">-- Select a register --</option>
+            <label for="group_select">Select Group:</label>
+            <select id="group_select" onchange="updateGroupSelection()">
+                <option value="">-- Select a group --</option>
+                {% for group, registers in modbus_map.items() %}
+                <option value="{{group}}">{{group}}</option>
+                {% endfor %}
             </select>
         </div>
 
-        <div id="metadata_container" class="metadata-container" style="display: none;">
-            <div class="metadata-grid">
-                <div class="metadata-item">
-                    <strong>Address:</strong> <span id="meta_address"></span>
-                </div>
-                <div class="metadata-item">
-                    <strong>Data Type:</strong> <span id="meta_data_type"></span>
-                </div>
-                <div class="metadata-item">
-                    <strong>Register Type:</strong> <span id="meta_type"></span>
-                </div>
-                <div class="metadata-item">
-                    <strong>Range Size:</strong> <span id="meta_range"></span>
-                </div>
-                <div class="metadata-item">
-                    <strong>Units:</strong> <span id="meta_units"></span>
-                </div>
-                <div class="metadata-item">
-                    <strong>Access:</strong> <span id="meta_access"></span>
-                </div>
-                <div class="metadata-item">
-                    <strong>Slave ID:</strong> <span id="meta_slave_id"></span>
-                </div>
-                <div class="metadata-item description">
-                    <strong>Description:</strong> <span id="meta_description"></span>
-                </div>
-            </div>
-        </div>
-
-        <div id="controls_container" class="controls-container" style="display: none;">
+        <div id="register_selection" style="display: none;">
             <div class="form-group">
-                <label for="result">Result:</label>
-                <input type="text" id="result" readonly>
+                <label for="register_select">Select Register:</label>
+                <select id="register_select" onchange="updateRegisterMetadata()">
+                    <option value="">-- Select a register --</option>
+                </select>
             </div>
 
-            <div class="button-group">
-                <button id="read_btn" onclick="readSelectedRegister()">Read Register</button>
-
-                <div id="write_controls" class="write-controls" style="display: none;">
-                    <div class="form-group">
-                        <label for="register_value">Value to Write:</label>
-                        <input type="number" id="register_value" step="any">
+            <div id="metadata_container" class="metadata-container" style="display: none;">
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <strong>Address:</strong> <span id="meta_address"></span>
                     </div>
-                    <button onclick="writeSelectedRegister()">Write Register</button>
+                    <div class="metadata-item">
+                        <strong>Data Type:</strong> <span id="meta_data_type"></span>
+                    </div>
+                    <div class="metadata-item">
+                        <strong>Register Type:</strong> <span id="meta_type"></span>
+                    </div>
+                    <div class="metadata-item">
+                        <strong>Range Size:</strong> <span id="meta_range"></span>
+                    </div>
+                    <div class="metadata-item">
+                        <strong>Units:</strong> <span id="meta_units"></span>
+                    </div>
+                    <div class="metadata-item">
+                        <strong>Access:</strong> <span id="meta_access"></span>
+                    </div>
+                    <div class="metadata-item">
+                        <strong>Slave ID:</strong> <span id="meta_slave_id"></span>
+                    </div>
+                    <div class="metadata-item description">
+                        <strong>Description:</strong> <span id="meta_description"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="controls_container" class="controls-container" style="display: none;">
+                <div class="form-group">
+                    <label for="result">Result:</label>
+                    <input type="text" id="result" readonly>
+                </div>
+
+                <div class="button-group">
+                    <button id="read_btn" onclick="readSelectedRegister()">Read Register</button>
+
+                    <div id="write_controls" class="write-controls" style="display: none;">
+                        <div class="form-group">
+                            <label for="register_value">Value to Write:</label>
+                            <input type="number" id="register_value" step="any">
+                        </div>
+                        <button onclick="writeSelectedRegister()">Write Register</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-            </div>
-        </div>
-
-            .collapsible-section {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        overflow: hidden;
-    }
-
-    .section-header {
-        background-color: #f8f9fa;
-        padding: 15px 20px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        user-select: none;
-        transition: background-color 0.2s ease;
-    }
-
-    .section-header:hover {
-        background-color: #e9ecef;
-    }
-
-    .section-header h4 {
-        margin: 0;
-        color: #495057;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .toggle-icon {
-        font-size: 14px;
-        color: #6c757d;
-        transition: transform 0.3s ease;
-        font-family: monospace;
-    }
-
-    .toggle-icon.collapsed {
-        transform: rotate(-90deg);
-    }
-
-    .collapsible-content {
-        padding: 20px;
-        background-color: #ffffff;
-        transition: max-height 0.3s ease, padding 0.3s ease;
-        overflow: hidden;
-        max-height: 2000px; /* Adjust based on your content height */
-    }
-
-    .collapsible-content.hidden {
-        max-height: 0;
-        padding: 0 20px;
-    }
-
-    /* Optional: Add a subtle shadow when expanded */
-    .collapsible-section:has(.collapsible-content:not(.hidden)) {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    </style>
-
-    <script>
-    function toggleModbusForm() {
-        const container = document.getElementById('modbus_form_container');
-        const icon = document.getElementById('modbus_toggle_icon');
-
-        if (container.classList.contains('hidden')) {
-            // Show the form
-            container.classList.remove('hidden');
-            icon.classList.remove('collapsed');
-            icon.textContent = '▼';
-        } else {
-            // Hide the form
-            container.classList.add('hidden');
-            icon.classList.add('collapsed');
-            icon.textContent = '▶';
-        }
-    }
-
-    // Optional: Start collapsed
-    document.addEventListener('DOMContentLoaded', function() {
-        toggleModbusForm();
-    });
-    </script>
+</div>
 
 <!-- Hidden data for JavaScript -->
 <script type="application/json" id="modbus_data">
-    {
+{
 {% for group, registers in modbus_map.items() %}
     "{{group}}": [
         {% for register in registers %}
@@ -180,15 +97,65 @@
 </script>
 
 <style>
-.register-form-container {
+/* Collapsible Section Styles */
+.collapsible-section {
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 20px;
     margin-bottom: 20px;
-    background-color: #f9f9f9;
-    max-width: 800px;
+    overflow: hidden;
 }
 
+.section-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.section-header:hover {
+    background-color: #e9ecef;
+}
+
+.section-header h4 {
+    margin: 0;
+    color: #495057;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.toggle-icon {
+    font-size: 14px;
+    color: #6c757d;
+    transition: transform 0.3s ease;
+    font-family: monospace;
+}
+
+.toggle-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+.collapsible-content {
+    padding: 20px;
+    background-color: #ffffff;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+    max-height: 2000px;
+}
+
+.collapsible-content.hidden {
+    max-height: 0;
+    padding: 0 20px;
+}
+
+.collapsible-section:has(.collapsible-content:not(.hidden)) {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Form Styles */
 .metadata-container {
     background: #ffffff;
     border: 1px solid #e0e0e0;
@@ -274,163 +241,185 @@ button:hover {
 </style>
 
 <script>
-    // Get the modbus data from the JSON script tag
-    const modbusData = JSON.parse(document.getElementById('modbus_data').textContent);
+// Get the modbus data from the JSON script tag
+const modbusData = JSON.parse(document.getElementById('modbus_data').textContent);
 
-    function updateGroupSelection() {
-        const groupSelect = document.getElementById('group_select');
-        const registerSelect = document.getElementById('register_select');
-        const selectedGroup = groupSelect.value;
+function toggleModbusForm() {
+    const container = document.getElementById('modbus_form_container');
+    const icon = document.getElementById('modbus_toggle_icon');
 
-        if (!selectedGroup) {
-            document.getElementById('register_selection').style.display = 'none';
-            return;
-        }
+    if (container.classList.contains('hidden')) {
+        // Show the form
+        container.classList.remove('hidden');
+        icon.classList.remove('collapsed');
+        icon.textContent = '▼';
+    } else {
+        // Hide the form
+        container.classList.add('hidden');
+        icon.classList.add('collapsed');
+        icon.textContent = '▶';
+    }
+}
 
-        // Show register selection
-        document.getElementById('register_selection').style.display = 'block';
+function updateGroupSelection() {
+    const groupSelect = document.getElementById('group_select');
+    const registerSelect = document.getElementById('register_select');
+    const selectedGroup = groupSelect.value;
 
-        // Clear and populate register dropdown
-        registerSelect.innerHTML = '<option value="">-- Select a register --</option>';
+    if (!selectedGroup) {
+        document.getElementById('register_selection').style.display = 'none';
+        return;
+    }
 
-        const registers = modbusData[selectedGroup];
-        registers.forEach(register => {
-            const option = document.createElement('option');
-            option.value = register.name;
-            option.textContent = register.name;
+    // Show register selection
+    document.getElementById('register_selection').style.display = 'block';
 
-            // Store register data as data attributes
-            option.dataset.address = register.address;
-            option.dataset.type = register.type;
-            option.dataset.dataType = register.data_type;
-            option.dataset.range = register.range_size;
-            option.dataset.units = register.units;
-            option.dataset.description = register.description;
-            option.dataset.access = register.access;
-            option.dataset.slaveId = register.slave_id;
+    // Clear and populate register dropdown
+    registerSelect.innerHTML = '<option value="">-- Select a register --</option>';
 
-            registerSelect.appendChild(option);
-        });
+    const registers = modbusData[selectedGroup];
+    registers.forEach(register => {
+        const option = document.createElement('option');
+        option.value = register.name;
+        option.textContent = register.name;
 
-        // Hide metadata and controls when group changes
+        // Store register data as data attributes
+        option.dataset.address = register.address;
+        option.dataset.type = register.type;
+        option.dataset.dataType = register.data_type;
+        option.dataset.range = register.range_size;
+        option.dataset.units = register.units;
+        option.dataset.description = register.description;
+        option.dataset.access = register.access;
+        option.dataset.slaveId = register.slave_id;
+
+        registerSelect.appendChild(option);
+    });
+
+    // Hide metadata and controls when group changes
+    document.getElementById('metadata_container').style.display = 'none';
+    document.getElementById('controls_container').style.display = 'none';
+    document.getElementById('result').value = '';
+}
+
+function updateRegisterMetadata() {
+    const selectElement = document.getElementById('register_select');
+    const selectedOption = selectElement.selectedOptions[0];
+
+    if (!selectedOption.value) {
         document.getElementById('metadata_container').style.display = 'none';
         document.getElementById('controls_container').style.display = 'none';
-        document.getElementById('result').value = '';
+        return;
     }
 
-    function updateRegisterMetadata() {
+    // Show metadata container
+    document.getElementById('metadata_container').style.display = 'block';
+    document.getElementById('controls_container').style.display = 'block';
+
+    // Update metadata fields
+    document.getElementById('meta_address').textContent = selectedOption.dataset.address;
+    document.getElementById('meta_data_type').textContent = selectedOption.dataset.dataType;
+    document.getElementById('meta_type').textContent = selectedOption.dataset.type;
+    document.getElementById('meta_range').textContent = selectedOption.dataset.range;
+    document.getElementById('meta_units').textContent = selectedOption.dataset.units || 'N/A';
+    document.getElementById('meta_access').textContent = selectedOption.dataset.access;
+    document.getElementById('meta_slave_id').textContent = selectedOption.dataset.slaveId || 'N/A';
+    document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
+
+    // Show/hide write controls based on access rights
+    const access = selectedOption.dataset.access;
+    const writeControls = document.getElementById('write_controls');
+
+    if (access === 'RW' || access === 'WO') {
+        writeControls.style.display = 'block';
+    } else {
+        writeControls.style.display = 'none';
+    }
+
+    // Clear previous result
+    document.getElementById('result').value = '';
+}
+
+function getSelectedRegisterData() {
+    const selectElement = document.getElementById('register_select');
+    const selectedOption = selectElement.selectedOptions[0];
+
+    if (!selectedOption.value) {
+        alert('Please select a register');
+        return null;
+    }
+
+    return {
+        name: selectedOption.value,
+        unit_id: selectedOption.dataset.slaveId,
+        register: parseInt(selectedOption.dataset.address),
+        range: parseInt(selectedOption.dataset.range),
+        type: selectedOption.dataset.type.toLowerCase(),
+        data_type: selectedOption.dataset.dataType,
+        page: "{{ page }}"
+    };
+}
+
+async function readSelectedRegister() {
+    const data = getSelectedRegisterData();
+    if (!data) return;
+
+    try {
+        const response = await fetch(`/modbus/modbus_register/${JSON.stringify(data)}`);
+        const result = await response.json();
+
+        // Display result with units if available
         const selectElement = document.getElementById('register_select');
         const selectedOption = selectElement.selectedOptions[0];
+        const units = selectedOption.dataset.units;
 
-        if (!selectedOption.value) {
-            document.getElementById('metadata_container').style.display = 'none';
-            document.getElementById('controls_container').style.display = 'none';
-            return;
+        let displayValue = result.value;
+        if (units) {
+            displayValue += ` ${units}`;
         }
 
-        // Show metadata container
-        document.getElementById('metadata_container').style.display = 'block';
-        document.getElementById('controls_container').style.display = 'block';
+        document.getElementById('result').value = displayValue;
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to read register data');
+    }
+}
 
-        // Update metadata fields
-        document.getElementById('meta_address').textContent = selectedOption.dataset.address;
-        document.getElementById('meta_data_type').textContent = selectedOption.dataset.dataType;
-        document.getElementById('meta_type').textContent = selectedOption.dataset.type;
-        document.getElementById('meta_range').textContent = selectedOption.dataset.range;
-        document.getElementById('meta_units').textContent = selectedOption.dataset.units || 'N/A';
-        document.getElementById('meta_access').textContent = selectedOption.dataset.access;
-        document.getElementById('meta_slave_id').textContent = selectedOption.dataset.slaveId || 'N/A';
-        document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
+async function writeSelectedRegister() {
+    const data = getSelectedRegisterData();
+    if (!data) return;
 
-        // Show/hide write controls based on access rights
-        const access = selectedOption.dataset.access;
-        const writeControls = document.getElementById('write_controls');
-
-        if (access === 'RW' || access === 'WO') {
-            writeControls.style.display = 'block';
-        } else {
-            writeControls.style.display = 'none';
-        }
-
-        // Clear previous result
-        document.getElementById('result').value = '';
+    const writeValue = document.getElementById('register_value').value;
+    if (!writeValue && writeValue !== '0') {
+        alert('Please enter a value to write');
+        return;
     }
 
-    function getSelectedRegisterData() {
+    data.value = parseFloat(writeValue);
+
+    try {
+        const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
+        const result = await response.json();
+
+        // Display result with units if available
         const selectElement = document.getElementById('register_select');
         const selectedOption = selectElement.selectedOptions[0];
+        const units = selectedOption.dataset.units;
 
-        if (!selectedOption.value) {
-            alert('Please select a register');
-            return null;
+        let displayValue = result.value;
+        if (units) {
+            displayValue += ` ${units}`;
         }
 
-        return {
-            name: selectedOption.value,
-            unit_id: selectedOption.dataset.slaveId,
-            register: parseInt(selectedOption.dataset.address),
-            range: parseInt(selectedOption.dataset.range),
-            type: selectedOption.dataset.type.toLowerCase(),
-            data_type: selectedOption.dataset.dataType,
-            page: "{{ page }}"
-        };
+        document.getElementById('result').value = displayValue;
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to write register data');
     }
+}
 
-    async function readSelectedRegister() {
-        const data = getSelectedRegisterData();
-        if (!data) return;
-
-        try {
-            const response = await fetch(`/modbus/modbus_register/${JSON.stringify(data)}`);
-            const result = await response.json();
-
-            // Display result with units if available
-            const selectElement = document.getElementById('register_select');
-            const selectedOption = selectElement.selectedOptions[0];
-            const units = selectedOption.dataset.units;
-
-            let displayValue = result.value;
-            if (units) {
-                displayValue += ` ${units}`;
-            }
-
-            document.getElementById('result').value = displayValue;
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to read register data');
-        }
-    }
-
-    async function writeSelectedRegister() {
-        const data = getSelectedRegisterData();
-        if (!data) return;
-
-        const writeValue = document.getElementById('register_value').value;
-        if (!writeValue && writeValue !== '0') {
-            alert('Please enter a value to write');
-            return;
-        }
-
-        data.value = parseFloat(writeValue);
-
-        try {
-            const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
-            const result = await response.json();
-
-            // Display result with units if available
-            const selectElement = document.getElementById('register_select');
-            const selectedOption = selectElement.selectedOptions[0];
-            const units = selectedOption.dataset.units;
-
-            let displayValue = result.value;
-            if (units) {
-                displayValue += ` ${units}`;
-            }
-
-            document.getElementById('result').value = displayValue;
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to write register data');
-        }
-    }
+// Optional: Start collapsed
+document.addEventListener('DOMContentLoaded', function() {
+    toggleModbusForm();
+});
 </script>
