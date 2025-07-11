@@ -35,11 +35,13 @@
            {% include "_unit_specification.html" %}
             {% endwith %}
         </div>
-        <div class="side-by-side-item">
-            {% with page = "Inverter" %}
-                {% include '_on_demand_modbus_form.html'%}
-            {% endwith %}
-        </div>
+        {% if modbus_map %}
+            <div class="side-by-side-item">
+                {% with page = "Inverter" %}
+                    {% include '_on_demand_modbus_form.html'%}
+                {% endwith %}
+            </div>
+        {% endif %}
     </div>
 
     <h3>Status Table</h3>

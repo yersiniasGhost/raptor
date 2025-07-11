@@ -208,8 +208,8 @@
         <div class="form-group">
             <div class="library-selection">
                 <div class="library-item">
-                    <label for="git-branch">Select firmware version:</label>
-                    <select id="git-branch" name="branch" class="form-control" required>
+                    <label for="git-branch" class="info-label">Select firmware version:</label>
+                    <select id="git-branch" name="branch" class="form-control info-value" required>
                         <option value="">-- Select firmware version --</option>
                         {% for branch in git_branches %}
                             <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>

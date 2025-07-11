@@ -37,7 +37,14 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         hardware.get_identifiers()
         logger.info(f"Got Inverter identifiers")
         data = await bms_store.get_all_data()
-        register_map = hardware.get_points("DATA")
+        get_all_registers(hardware)
+        data = hardware.get_points("DATA")
+        alarms = hardware.get_points("ALARM")
+        diagnositc = hardware.get_points("DIAGNOSTIC")
+        control = hardware.get_points("CONTROL")
+        register_map = data
+        modbus_map = {"DATA": data, "ALARM": alarms, "DIAGNOSTICS": diagnositc, "CONTROL": control}
+
         logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")
         logger.info(f"DATA registers: {len(register_map)}")
 
@@ -48,6 +55,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
                 "request": request,
                 "data": data,
                 "register_map": register_map,
+                "modbus_map": modbus_map,
                 "error": None
             }
         )

@@ -1,12 +1,288 @@
 <h3>On Demand Register Read & Write</h3>
-<div class="form-group">
-    <label for="register_names_{{slave_id}}">Register Name:</label>
-    <select id="register_names_{{slave_id}}">
-    {% for register in register_map %}
-        <option value="{{register.address}}">{{register.name}}</option>
-    {% endfor %}
-    </select>
+<h3>On Demand Register Read & Write</h3>
+{% for group, registers in modbus_map.items() %}
+<h1>Group: {{group}}</h1>
+<div class="register-form-container">
+    <div class="form-group">
+        <label for="register_select_{{group}}">Select Register:</label>
+        <select id="register_select_{{group}}" onchange="updateRegisterMetadata('{{group}}')">
+            <option value="">-- Select a register --</option>
+            {% for register in registers %}
+            <option value="{{register.name}}"
+                    data-address="{{register.address}}"
+                    data-type="{{register.type}}"
+                    data-data-type="{{register.data_type}}"
+                    data-range="{{register.range_size}}"
+                    data-units="{{register.units}}"
+                    data-description="{{register.description}}"
+                    data-access="{{register.access}}"
+                    data-slave-id="{{register.slave_id}}">
+                {{register.name}}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="metadata_{{group}}" class="metadata-container" style="display: none;">
+        <div class="metadata-grid">
+            <div class="metadata-item">
+                <strong>Address:</strong> <span id="meta_address_{{group}}"></span>
+            </div>
+            <div class="metadata-item">
+                <strong>Data Type:</strong> <span id="meta_data_type_{{group}}"></span>
+            </div>
+            <div class="metadata-item">
+                <strong>Register Type:</strong> <span id="meta_type_{{group}}"></span>
+            </div>
+            <div class="metadata-item">
+                <strong>Range Size:</strong> <span id="meta_range_{{group}}"></span>
+            </div>
+            <div class="metadata-item">
+                <strong>Units:</strong> <span id="meta_units_{{group}}"></span>
+            </div>
+            <div class="metadata-item">
+                <strong>Access:</strong> <span id="meta_access_{{group}}"></span>
+            </div>
+            <div class="metadata-item">
+                <strong>Slave ID:</strong> <span id="meta_slave_id_{{group}}"></span>
+            </div>
+            <div class="metadata-item description">
+                <strong>Description:</strong> <span id="meta_description_{{group}}"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls_{{group}}" class="controls-container" style="display: none;">
+        <div class="form-group">
+            <label for="result_{{group}}">Result:</label>
+            <input type="text" id="result_{{group}}" readonly>
+        </div>
+
+        <div class="button-group">
+            <button id="read_btn_{{group}}" onclick="readSelectedRegister('{{group}}')">Read Register</button>
+
+            <div id="write_controls_{{group}}" class="write-controls" style="display: none;">
+                <div class="form-group">
+                    <label for="register_value_{{group}}">Value to Write:</label>
+                    <input type="number" id="register_value_{{group}}" step="any">
+                </div>
+                <button onclick="writeSelectedRegister('{{group}}')">Write Register</button>
+            </div>
+        </div>
+    </div>
 </div>
+{% endfor %}
+
+<style>
+.register-form-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.metadata-container {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.metadata-item {
+    padding: 5px 0;
+}
+
+.metadata-item.description {
+    grid-column: 1 / -1;
+}
+
+.controls-container {
+    margin-top: 15px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.write-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.write-controls button {
+    background-color: #28a745;
+}
+
+.write-controls button:hover {
+    background-color: #1e7e34;
+}
+
+#result_{{group}} {
+    background-color: #f8f9fa;
+    font-family: monospace;
+}
+</style>
+
+<script>
+    function updateRegisterMetadata(group) {
+        const selectElement = document.getElementById(`register_select_${group}`);
+        const selectedOption = selectElement.selectedOptions[0];
+
+        if (!selectedOption.value) {
+            document.getElementById(`metadata_${group}`).style.display = 'none';
+            document.getElementById(`controls_${group}`).style.display = 'none';
+            return;
+        }
+
+        // Show metadata container
+        document.getElementById(`metadata_${group}`).style.display = 'block';
+        document.getElementById(`controls_${group}`).style.display = 'block';
+
+        // Update metadata fields
+        document.getElementById(`meta_address_${group}`).textContent = selectedOption.dataset.address;
+        document.getElementById(`meta_data_type_${group}`).textContent = selectedOption.dataset.dataType;
+        document.getElementById(`meta_type_${group}`).textContent = selectedOption.dataset.type;
+        document.getElementById(`meta_range_${group}`).textContent = selectedOption.dataset.range;
+        document.getElementById(`meta_units_${group}`).textContent = selectedOption.dataset.units || 'N/A';
+        document.getElementById(`meta_access_${group}`).textContent = selectedOption.dataset.access;
+        document.getElementById(`meta_slave_id_${group}`).textContent = selectedOption.dataset.slaveId || 'N/A';
+        document.getElementById(`meta_description_${group}`).textContent = selectedOption.dataset.description || 'No description available';
+
+        // Show/hide write controls based on access rights
+        const access = selectedOption.dataset.access;
+        const writeControls = document.getElementById(`write_controls_${group}`);
+
+        if (access === 'RW' || access === 'WO') {
+            writeControls.style.display = 'block';
+        } else {
+            writeControls.style.display = 'none';
+        }
+
+        // Clear previous result
+        document.getElementById(`result_${group}`).value = '';
+    }
+
+    function getSelectedRegisterData(group) {
+        const selectElement = document.getElementById(`register_select_${group}`);
+        const selectedOption = selectElement.selectedOptions[0];
+
+        if (!selectedOption.value) {
+            alert('Please select a register');
+            return null;
+        }
+
+        return {
+            name: selectedOption.value,
+            unit_id: selectedOption.dataset.slaveId,
+            register: parseInt(selectedOption.dataset.address),
+            range: parseInt(selectedOption.dataset.range),
+            type: selectedOption.dataset.type.toLowerCase(),
+            data_type: selectedOption.dataset.dataType,
+            page: "{{ page }}"
+        };
+    }
+
+    async function readSelectedRegister(group) {
+        const data = getSelectedRegisterData(group);
+        if (!data) return;
+
+        try {
+            const response = await fetch(`/modbus/modbus_register/${JSON.stringify(data)}`);
+            const result = await response.json();
+
+            // Display result with units if available
+            const selectElement = document.getElementById(`register_select_${group}`);
+            const selectedOption = selectElement.selectedOptions[0];
+            const units = selectedOption.dataset.units;
+
+            let displayValue = result.value;
+            if (units) {
+                displayValue += ` ${units}`;
+            }
+
+            document.getElementById(`result_${group}`).value = displayValue;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to read register data');
+        }
+    }
+
+    async function writeSelectedRegister(group) {
+        const data = getSelectedRegisterData(group);
+        if (!data) return;
+
+        const writeValue = document.getElementById(`register_value_${group}`).value;
+        if (!writeValue && writeValue !== '0') {
+            alert('Please enter a value to write');
+            return;
+        }
+
+        data.value = parseFloat(writeValue);
+
+        try {
+            const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
+            const result = await response.json();
+
+            // Display result with units if available
+            const selectElement = document.getElementById(`register_select_${group}`);
+            const selectedOption = selectElement.selectedOptions[0];
+            const units = selectedOption.dataset.units;
+
+            let displayValue = result.value;
+            if (units) {
+                displayValue += ` ${units}`;
+            }
+
+            document.getElementById(`result_${group}`).value = displayValue;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to write register data');
+        }
+    }
+</script>
 <div class="form-group">
     <label for="register_address_{{slave_id}}">Register Address:</label>
     <input type="number" id="register_address_{{slave_id}}" min="0" required>
