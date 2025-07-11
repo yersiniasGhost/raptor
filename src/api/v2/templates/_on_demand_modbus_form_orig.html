@@ -1,119 +1,349 @@
 <h3>On Demand Register Read & Write</h3>
 
-<div class="form-group">
-    <label for="register_address_{{slave_id}}">Register Address:</label>
-    <input type="number" id="register_address_{{slave_id}}" min="0" required>
-</div>
-<div class="form-group">
-    <label for="slave_id_{{slave_id}}">Device (slave) ID:</label>
-    <input type="number" id="slave_id_{{slave_id}}" min="0" value="{{slave_id}}"required>
-</div>
-<div class="form-group">
-    <label for="register_kind_{{slave_id}}">Register Type:</label>
-    <select id="register_kind_{{slave_id}}">
-        <option value="holding">HOLDING</option>
-        <option value="input">INPUT</option>
-    </select>
-</div>
-<div class="form-group">
-    <label for="data_type_{{slave_id}}">Register Data Type:</label>
-    <select id="data_type_{{slave_id}}">
-        <option value="uint16">UINT16</option>
-        <option value="int8">INT8</option>
-        <option value="int16">INT16</option>
-        <option value="ascii16">ASCII 16</option>
-        <option value="ascii8">ASCII 8</option>
-    </select>
-</div>
-<div class="form-group">
-    <label for="register_range_{{slave_id}}">Register Count:</label>
-    <input type="number" id="register_range_{{slave_id}}" min="1" value="1" required>
+<div class="register-form-container">
+    <div class="form-group">
+        <label for="group_select">Select Group:</label>
+        <select id="group_select" onchange="updateGroupSelection()">
+            <option value="">-- Select a group --</option>
+            {% for group, registers in modbus_map.items() %}
+            <option value="{{group}}">{{group}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="register_selection" style="display: none;">
+        <div class="form-group">
+            <label for="register_select">Select Register:</label>
+            <select id="register_select" onchange="updateRegisterMetadata()">
+                <option value="">-- Select a register --</option>
+            </select>
+        </div>
+
+        <div id="metadata_container" class="metadata-container" style="display: none;">
+            <div class="metadata-grid">
+                <div class="metadata-item">
+                    <strong>Address:</strong> <span id="meta_address"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Data Type:</strong> <span id="meta_data_type"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Register Type:</strong> <span id="meta_type"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Range Size:</strong> <span id="meta_range"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Units:</strong> <span id="meta_units"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Access:</strong> <span id="meta_access"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Slave ID:</strong> <span id="meta_slave_id"></span>
+                </div>
+                <div class="metadata-item description">
+                    <strong>Description:</strong> <span id="meta_description"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="controls_container" class="controls-container" style="display: none;">
+            <div class="form-group">
+                <label for="result">Result:</label>
+                <input type="text" id="result" readonly>
+            </div>
+
+            <div class="button-group">
+                <button id="read_btn" onclick="readSelectedRegister()">Read Register</button>
+
+                <div id="write_controls" class="write-controls" style="display: none;">
+                    <div class="form-group">
+                        <label for="register_value">Value to Write:</label>
+                        <input type="number" id="register_value" step="any">
+                    </div>
+                    <button onclick="writeSelectedRegister()">Write Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<button onclick="fetchRegisterData({{slave_id}})">Read Register</button>
+<!-- Hidden data for JavaScript -->
+<script type="application/json" id="modbus_data">
+{
+{% for group, registers in modbus_map.items() %}
+    "{{group}}": [
+        {% for register in registers %}
+        {
+            "name": "{{register.name}}",
+            "address": {{register.address}},
+            "type": "{{register.type}}",
+            "data_type": "{{register.data_type}}",
+            "range_size": {{register.range_size}},
+            "units": "{{register.units}}",
+            "description": "{{register.description}}",
+            "access": "{{register.access}}",
+            "slave_id": {% if register.slave_id %}{{register.slave_id}}{% else %}null{% endif %}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+</script>
 
-<div class="form-group">
-    <label for="result_{{slave_id}}">Result:</label>
-    <input type="text" id="result_{{slave_id}}" readonly>
-</div>
+<style>
+.register-form-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    max-width: 800px;
+}
 
-<div class="form-group">
-    <label for="register_value_{{slave_id}}">Value to Write:</label>
-    <input type="number" id="register_value_{{slave_id}}" min="0" required>
-</div>
-<button onclick="writeRegisterData({{slave_id}})">Write Register</button>
+.metadata-container {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 15px 0;
+}
 
+.metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.metadata-item {
+    padding: 5px 0;
+}
+
+.metadata-item.description {
+    grid-column: 1 / -1;
+}
+
+.controls-container {
+    margin-top: 15px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.write-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.write-controls button {
+    background-color: #28a745;
+}
+
+.write-controls button:hover {
+    background-color: #1e7e34;
+}
+
+#result {
+    background-color: #f8f9fa;
+    font-family: monospace;
+}
+</style>
 
 <script>
-    function getRegisterData(unitId) {
-        const registerAddress = document.getElementById(`register_address_${unitId}`).value;
-        const dataType = document.getElementById(`data_type_${unitId}`).value;
-        const registerRange = document.getElementById(`register_range_${unitId}`).value;
-        const slaveId = document.getElementBId(`slave_id_${unitId}`).value;
-        const registerKind = document.getElementById(`register_kind_${unitId}`).value;
+    // Get the modbus data from the JSON script tag
+    const modbusData = JSON.parse(document.getElementById('modbus_data').textContent);
 
-        if (!registerAddress) {
-            alert('Please enter a register address');
+    function updateGroupSelection() {
+        const groupSelect = document.getElementById('group_select');
+        const registerSelect = document.getElementById('register_select');
+        const selectedGroup = groupSelect.value;
+
+        if (!selectedGroup) {
+            document.getElementById('register_selection').style.display = 'none';
+            return;
+        }
+
+        // Show register selection
+        document.getElementById('register_selection').style.display = 'block';
+
+        // Clear and populate register dropdown
+        registerSelect.innerHTML = '<option value="">-- Select a register --</option>';
+
+        const registers = modbusData[selectedGroup];
+        registers.forEach(register => {
+            const option = document.createElement('option');
+            option.value = register.name;
+            option.textContent = register.name;
+
+            // Store register data as data attributes
+            option.dataset.address = register.address;
+            option.dataset.type = register.type;
+            option.dataset.dataType = register.data_type;
+            option.dataset.range = register.range_size;
+            option.dataset.units = register.units;
+            option.dataset.description = register.description;
+            option.dataset.access = register.access;
+            option.dataset.slaveId = register.slave_id;
+
+            registerSelect.appendChild(option);
+        });
+
+        // Hide metadata and controls when group changes
+        document.getElementById('metadata_container').style.display = 'none';
+        document.getElementById('controls_container').style.display = 'none';
+        document.getElementById('result').value = '';
+    }
+
+    function updateRegisterMetadata() {
+        const selectElement = document.getElementById('register_select');
+        const selectedOption = selectElement.selectedOptions[0];
+
+        if (!selectedOption.value) {
+            document.getElementById('metadata_container').style.display = 'none';
+            document.getElementById('controls_container').style.display = 'none';
+            return;
+        }
+
+        // Show metadata container
+        document.getElementById('metadata_container').style.display = 'block';
+        document.getElementById('controls_container').style.display = 'block';
+
+        // Update metadata fields
+        document.getElementById('meta_address').textContent = selectedOption.dataset.address;
+        document.getElementById('meta_data_type').textContent = selectedOption.dataset.dataType;
+        document.getElementById('meta_type').textContent = selectedOption.dataset.type;
+        document.getElementById('meta_range').textContent = selectedOption.dataset.range;
+        document.getElementById('meta_units').textContent = selectedOption.dataset.units || 'N/A';
+        document.getElementById('meta_access').textContent = selectedOption.dataset.access;
+        document.getElementById('meta_slave_id').textContent = selectedOption.dataset.slaveId || 'N/A';
+        document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
+
+        // Show/hide write controls based on access rights
+        const access = selectedOption.dataset.access;
+        const writeControls = document.getElementById('write_controls');
+
+        if (access === 'RW' || access === 'WO') {
+            writeControls.style.display = 'block';
+        } else {
+            writeControls.style.display = 'none';
+        }
+
+        // Clear previous result
+        document.getElementById('result').value = '';
+    }
+
+    function getSelectedRegisterData() {
+        const selectElement = document.getElementById('register_select');
+        const selectedOption = selectElement.selectedOptions[0];
+
+        if (!selectedOption.value) {
+            alert('Please select a register');
             return null;
         }
 
         return {
-            unit_id: slaveId,
-            register: parseInt(registerAddress),
-            range: parseInt(registerRange),
-            type: registerKind,
-            data_type: dataType,
+            name: selectedOption.value,
+            unit_id: selectedOption.dataset.slaveId,
+            register: parseInt(selectedOption.dataset.address),
+            range: parseInt(selectedOption.dataset.range),
+            type: selectedOption.dataset.type.toLowerCase(),
+            data_type: selectedOption.dataset.dataType,
             page: "{{ page }}"
         };
     }
-    async function writeRegisterData(unitId) {
-            data = getRegisterData(unitId)
-            if (!data) return;
-            const writeValue = document.getElementById(`register_value_${unitId}`).value;
-            if (!writeValue && writeValue !== '0') {
-                alert('Please enter a value to write');
-                return null;
-            }
-            data.value = parseInt(writeValue);
 
-            try {
-                const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
-                const result = await response.json();
-                document.getElementById(`result_${unitId}`).value = result.value;
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to fetch register data');
+    async function readSelectedRegister() {
+        const data = getSelectedRegisterData();
+        if (!data) return;
+
+        try {
+            const response = await fetch(`/modbus/modbus_register/${JSON.stringify(data)}`);
+            const result = await response.json();
+
+            // Display result with units if available
+            const selectElement = document.getElementById('register_select');
+            const selectedOption = selectElement.selectedOptions[0];
+            const units = selectedOption.dataset.units;
+
+            let displayValue = result.value;
+            if (units) {
+                displayValue += ` ${units}`;
             }
+
+            document.getElementById('result').value = displayValue;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to read register data');
+        }
     }
 
-    async function fetchRegisterData(unitId) {
-            const registerAddress = document.getElementById(`register_address_${unitId}`).value;
-            const dataType = document.getElementById(`data_type_${unitId}`).value;
-            const registerRange = document.getElementById(`register_range_${unitId}`).value;
-            const registerType = document.getElementById(`register_kind_${unitId}`).value;
-            const slave_id = document.getElementById(`slave_id_${unitId}`).value;
+    async function writeSelectedRegister() {
+        const data = getSelectedRegisterData();
+        if (!data) return;
 
-            if (!registerAddress) {
-                alert('Please enter a register address');
-                return;
-            }
-
-            const data = {
-                unit_id: slave_id,
-                register: parseInt(registerAddress),
-                range: parseInt(registerRange),
-                data_type: dataType,
-                register_type: registerType,
-                page: "{{ page }}"
-            };
-
-            try {
-                const response = await fetch(`/modbus/modbus_register/${JSON.stringify(data)}`);
-                const result = await response.json();
-                document.getElementById(`result_${unitId}`).value = result.value;
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to fetch register data');
-            }
+        const writeValue = document.getElementById('register_value').value;
+        if (!writeValue && writeValue !== '0') {
+            alert('Please enter a value to write');
+            return;
         }
+
+        data.value = parseFloat(writeValue);
+
+        try {
+            const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
+            const result = await response.json();
+
+            // Display result with units if available
+            const selectElement = document.getElementById('register_select');
+            const selectedOption = selectElement.selectedOptions[0];
+            const units = selectedOption.dataset.units;
+
+            let displayValue = result.value;
+            if (units) {
+                displayValue += ` ${units}`;
+            }
+
+            document.getElementById('result').value = displayValue;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to write register data');
+        }
+    }
 </script>
