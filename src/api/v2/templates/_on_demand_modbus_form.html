@@ -1,5 +1,9 @@
-<h3>On Demand Register Read & Write</h3>
-
+        <div class="collapsible-section">
+            <div class="section-header" onclick="toggleModbusForm()">
+                <h4>Modbus Register Control</h4>
+                <span id="modbus_toggle_icon" class="toggle-icon">▼</span>
+            </div>
+            <div id="modbus_form_container" class="collapsible-content">
     <div class="form-group">
         <label for="group_select">Select Group:</label>
         <select id="group_select" onchange="updateGroupSelection()">
@@ -66,6 +70,91 @@
             </div>
         </div>
     </div>
+            </div>
+        </div>
+
+            .collapsible-section {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+        transition: background-color 0.2s ease;
+    }
+
+    .section-header:hover {
+        background-color: #e9ecef;
+    }
+
+    .section-header h4 {
+        margin: 0;
+        color: #495057;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .toggle-icon {
+        font-size: 14px;
+        color: #6c757d;
+        transition: transform 0.3s ease;
+        font-family: monospace;
+    }
+
+    .toggle-icon.collapsed {
+        transform: rotate(-90deg);
+    }
+
+    .collapsible-content {
+        padding: 20px;
+        background-color: #ffffff;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+        overflow: hidden;
+        max-height: 2000px; /* Adjust based on your content height */
+    }
+
+    .collapsible-content.hidden {
+        max-height: 0;
+        padding: 0 20px;
+    }
+
+    /* Optional: Add a subtle shadow when expanded */
+    .collapsible-section:has(.collapsible-content:not(.hidden)) {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    </style>
+
+    <script>
+    function toggleModbusForm() {
+        const container = document.getElementById('modbus_form_container');
+        const icon = document.getElementById('modbus_toggle_icon');
+
+        if (container.classList.contains('hidden')) {
+            // Show the form
+            container.classList.remove('hidden');
+            icon.classList.remove('collapsed');
+            icon.textContent = '▼';
+        } else {
+            // Hide the form
+            container.classList.add('hidden');
+            icon.classList.add('collapsed');
+            icon.textContent = '▶';
+        }
+    }
+
+    // Optional: Start collapsed
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleModbusForm();
+    });
+    </script>
 
 <!-- Hidden data for JavaScript -->
 <script type="application/json" id="modbus_data">
