@@ -37,7 +37,7 @@
         </div>
         {% if modbus_map %}
             <div class="side-by-side-item">
-                {% with page = "Inverter", modbus_map = register_map %}
+                {% with page = "Inverter" %}
                     {% include '_on_demand_modbus_form.html'%}
                 {% endwith %}
             </div>

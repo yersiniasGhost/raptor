@@ -37,7 +37,6 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         hardware.get_identifiers()
         logger.info(f"Got Inverter identifiers")
         data = await bms_store.get_all_data()
-        get_all_registers(hardware)
         data = hardware.get_points("DATA")
         alarms = hardware.get_points("ALARM")
         diagnositc = hardware.get_points("DIAGNOSTIC")
