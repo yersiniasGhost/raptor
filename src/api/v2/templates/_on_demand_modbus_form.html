@@ -365,7 +365,7 @@ async function readSelectedRegister() {
     if (!data) return;
 
     try {
-        const response = await fetch(`/modbus/modbus_register/${JSON.stringify(data)}`);
+        const response = await fetch(`/modbus/modbus_register_data/${JSON.stringify(data)}`);
         const result = await response.json();
 
         // Display result with units if available
