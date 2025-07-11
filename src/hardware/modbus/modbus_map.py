@@ -122,7 +122,7 @@ class ModbusMap:
 
     def register_iterator(self, register_names: Optional[List[str]] = None) -> Iterable[ModbusRegister]:
         if not register_names:
-            for name, register in self.registers:
+            for name, register in self.registers.items():
                 yield register
         else:
             for name in register_names:
