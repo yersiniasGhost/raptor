@@ -143,6 +143,7 @@ class ActuatorManager(metaclass=Singleton):
             Power5V().request_power_on()
             self.relays = MultiRelayController(self.relay_config)
             self.relays.set_all(True)
+            self.logger.info(f"SETUP Power to relays: {self.relays.get_status_all()}")
 
 
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
