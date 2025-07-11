@@ -123,7 +123,7 @@ class ActuatorManager(metaclass=Singleton):
                 self.logger.info(f"Successfully added actuator {actuator_id}")
                 relay_power = definition.get("relay_power_control", None)
                 if relay_power:
-                    self.relay_config[actuator_id] = relay_power
+                    self.relay_config[actuator_id] = definition
 
             except Exception as e:
                 self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
