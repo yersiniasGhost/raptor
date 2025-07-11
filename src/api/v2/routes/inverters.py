@@ -41,7 +41,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         alarms = hardware.get_points("ALARM")
         diagnositc = hardware.get_points("DIAGNOSTIC")
         control = hardware.get_points("CONTROL")
-        register_map = data
+        register_map = data_registers
         modbus_map = {"DATA": data_registers, "ALARM": alarms, "DIAGNOSTICS": diagnositc, "CONTROL": control}
 
         logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")
