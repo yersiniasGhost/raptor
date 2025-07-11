@@ -1,4 +1,6 @@
-<h3>On Demand Register Read & Write</h3>
+<div class="unit-container">
+    <div class="unit-specification">
+        <h3>On Demand Register Read & Write</h3>
 
 <div class="register-form-container">
     <div class="form-group">
@@ -68,10 +70,12 @@
         </div>
     </div>
 </div>
+    </div>
+</div>
 
 <!-- Hidden data for JavaScript -->
 <script type="application/json" id="modbus_data">
-{
+    {
 {% for group, registers in modbus_map.items() %}
     "{{group}}": [
         {% for register in registers %}
