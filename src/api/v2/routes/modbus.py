@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from hardware.modbus.modbus import modbus_data_write
 from hardware.modbus.modbus_hardware import modbus_data_acquisition
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
-from hardware.modbus.modbus_map import ModbusMap
+from hardware.modbus.modbus_map import ModbusMap, ModbusRegisterType
 from utils import LogManager
 
 
@@ -55,6 +55,36 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
             "address": parsed_data['register'],
             "range_size": range,
             "type": parsed_data['register_type'],
+            "slave_id": int(parsed_data['unit_id']),
+            "units": "",
+            "conversion_factor": 1.0,
+            "description": "On demand query"
+        }
+    })
+    if page == "BMS":
+        hardware = hardware_def.batteries.hardware
+    elif page == "Inverter":
+        hardware = hardware_def.inverter.hardware
+    elif page == "Charge Controller":
+        hardware = hardware_def.charge_controller.hardware
+    values = modbus_data_acquisition(hardware, m_map.get_registers(["ODQ"]), slave_id=unit_id)
+    logger.info(values)
+    return {"success": True, "value": values['ODQ']}
+
+@router.get("/modbus_register_data/{data}")
+async def read_modbus_register_by_name(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    parsed_data = json.loads(data)
+    logger.info(f"Reading from MODBUS: {parsed_data}")
+    unit_id = parsed_data['unit_id']
+    page = parsed_data['page']
+    range = parsed_data['range']
+    m_type = ModbusRegisterType.HOLDING
+    m_map = ModbusMap.from_dict({"ODQ": {
+            "name": "ODQ",
+            "data_type": parsed_data['data_type'],
+            "address": parsed_data['register'],
+            "range_size": range,
+            "type": m_type,
             "slave_id": int(parsed_data['unit_id']),
             "units": "",
             "conversion_factor": 1.0,
