@@ -1,76 +1,96 @@
 <h3>On Demand Register Read & Write</h3>
-{% for group, registers in modbus_map.items() %}
-<h1>Group: {{group}}</h1>
+
 <div class="register-form-container">
     <div class="form-group">
-        <label for="register_select_{{group}}">Select Register:</label>
-        <select id="register_select_{{group}}" onchange="updateRegisterMetadata('{{group}}')">
-            <option value="">-- Select a register --</option>
-            {% for register in registers %}
-            <option value="{{register.name}}"
-                    data-address="{{register.address}}"
-                    data-type="{{register.type}}"
-                    data-data-type="{{register.data_type}}"
-                    data-range="{{register.range_size}}"
-                    data-units="{{register.units}}"
-                    data-description="{{register.description}}"
-                    data-access="{{register.access}}"
-                    data-slave-id="{{register.slave_id}}">
-                {{register.name}}
-            </option>
+        <label for="group_select">Select Group:</label>
+        <select id="group_select" onchange="updateGroupSelection()">
+            <option value="">-- Select a group --</option>
+            {% for group, registers in modbus_map.items() %}
+            <option value="{{group}}">{{group}}</option>
             {% endfor %}
         </select>
     </div>
 
-    <div id="metadata_{{group}}" class="metadata-container" style="display: none;">
-        <div class="metadata-grid">
-            <div class="metadata-item">
-                <strong>Address:</strong> <span id="meta_address_{{group}}"></span>
-            </div>
-            <div class="metadata-item">
-                <strong>Data Type:</strong> <span id="meta_data_type_{{group}}"></span>
-            </div>
-            <div class="metadata-item">
-                <strong>Register Type:</strong> <span id="meta_type_{{group}}"></span>
-            </div>
-            <div class="metadata-item">
-                <strong>Range Size:</strong> <span id="meta_range_{{group}}"></span>
-            </div>
-            <div class="metadata-item">
-                <strong>Units:</strong> <span id="meta_units_{{group}}"></span>
-            </div>
-            <div class="metadata-item">
-                <strong>Access:</strong> <span id="meta_access_{{group}}"></span>
-            </div>
-            <div class="metadata-item">
-                <strong>Slave ID:</strong> <span id="meta_slave_id_{{group}}"></span>
-            </div>
-            <div class="metadata-item description">
-                <strong>Description:</strong> <span id="meta_description_{{group}}"></span>
-            </div>
-        </div>
-    </div>
-
-    <div id="controls_{{group}}" class="controls-container" style="display: none;">
+    <div id="register_selection" style="display: none;">
         <div class="form-group">
-            <label for="result_{{group}}">Result:</label>
-            <input type="text" id="result_{{group}}" readonly>
+            <label for="register_select">Select Register:</label>
+            <select id="register_select" onchange="updateRegisterMetadata()">
+                <option value="">-- Select a register --</option>
+            </select>
         </div>
 
-        <div class="button-group">
-            <button id="read_btn_{{group}}" onclick="readSelectedRegister('{{group}}')">Read Register</button>
-
-            <div id="write_controls_{{group}}" class="write-controls" style="display: none;">
-                <div class="form-group">
-                    <label for="register_value_{{group}}">Value to Write:</label>
-                    <input type="number" id="register_value_{{group}}" step="any">
+        <div id="metadata_container" class="metadata-container" style="display: none;">
+            <div class="metadata-grid">
+                <div class="metadata-item">
+                    <strong>Address:</strong> <span id="meta_address"></span>
                 </div>
-                <button onclick="writeSelectedRegister('{{group}}')">Write Register</button>
+                <div class="metadata-item">
+                    <strong>Data Type:</strong> <span id="meta_data_type"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Register Type:</strong> <span id="meta_type"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Range Size:</strong> <span id="meta_range"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Units:</strong> <span id="meta_units"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Access:</strong> <span id="meta_access"></span>
+                </div>
+                <div class="metadata-item">
+                    <strong>Slave ID:</strong> <span id="meta_slave_id"></span>
+                </div>
+                <div class="metadata-item description">
+                    <strong>Description:</strong> <span id="meta_description"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="controls_container" class="controls-container" style="display: none;">
+            <div class="form-group">
+                <label for="result">Result:</label>
+                <input type="text" id="result" readonly>
+            </div>
+
+            <div class="button-group">
+                <button id="read_btn" onclick="readSelectedRegister()">Read Register</button>
+
+                <div id="write_controls" class="write-controls" style="display: none;">
+                    <div class="form-group">
+                        <label for="register_value">Value to Write:</label>
+                        <input type="number" id="register_value" step="any">
+                    </div>
+                    <button onclick="writeSelectedRegister()">Write Register</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Hidden data for JavaScript -->
+<script type="application/json" id="modbus_data">
+{
+{% for group, registers in modbus_map.items() %}
+    "{{group}}": [
+        {% for register in registers %}
+        {
+            "name": "{{register.name}}",
+            "address": {{register.address}},
+            "type": "{{register.type}}",
+            "data_type": "{{register.data_type}}",
+            "range_size": {{register.range_size}},
+            "units": "{{register.units}}",
+            "description": "{{register.description}}",
+            "access": "{{register.access}}",
+            "slave_id": {% if register.slave_id %}{{register.slave_id}}{% else %}null{% endif %}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]{% if not loop.last %},{% endif %}
 {% endfor %}
+}
+</script>
 
 <style>
 .register-form-container {
@@ -79,6 +99,7 @@
     padding: 20px;
     margin-bottom: 20px;
     background-color: #f9f9f9;
+    max-width: 800px;
 }
 
 .metadata-container {
@@ -159,40 +180,84 @@ button:hover {
     background-color: #1e7e34;
 }
 
-#result_{{group}} {
+#result {
     background-color: #f8f9fa;
     font-family: monospace;
 }
 </style>
 
 <script>
-    function updateRegisterMetadata(group) {
-        const selectElement = document.getElementById(`register_select_${group}`);
+    // Get the modbus data from the JSON script tag
+    const modbusData = JSON.parse(document.getElementById('modbus_data').textContent);
+
+    function updateGroupSelection() {
+        const groupSelect = document.getElementById('group_select');
+        const registerSelect = document.getElementById('register_select');
+        const selectedGroup = groupSelect.value;
+
+        if (!selectedGroup) {
+            document.getElementById('register_selection').style.display = 'none';
+            return;
+        }
+
+        // Show register selection
+        document.getElementById('register_selection').style.display = 'block';
+
+        // Clear and populate register dropdown
+        registerSelect.innerHTML = '<option value="">-- Select a register --</option>';
+
+        const registers = modbusData[selectedGroup];
+        registers.forEach(register => {
+            const option = document.createElement('option');
+            option.value = register.name;
+            option.textContent = register.name;
+
+            // Store register data as data attributes
+            option.dataset.address = register.address;
+            option.dataset.type = register.type;
+            option.dataset.dataType = register.data_type;
+            option.dataset.range = register.range_size;
+            option.dataset.units = register.units;
+            option.dataset.description = register.description;
+            option.dataset.access = register.access;
+            option.dataset.slaveId = register.slave_id;
+
+            registerSelect.appendChild(option);
+        });
+
+        // Hide metadata and controls when group changes
+        document.getElementById('metadata_container').style.display = 'none';
+        document.getElementById('controls_container').style.display = 'none';
+        document.getElementById('result').value = '';
+    }
+
+    function updateRegisterMetadata() {
+        const selectElement = document.getElementById('register_select');
         const selectedOption = selectElement.selectedOptions[0];
 
         if (!selectedOption.value) {
-            document.getElementById(`metadata_${group}`).style.display = 'none';
-            document.getElementById(`controls_${group}`).style.display = 'none';
+            document.getElementById('metadata_container').style.display = 'none';
+            document.getElementById('controls_container').style.display = 'none';
             return;
         }
 
         // Show metadata container
-        document.getElementById(`metadata_${group}`).style.display = 'block';
-        document.getElementById(`controls_${group}`).style.display = 'block';
+        document.getElementById('metadata_container').style.display = 'block';
+        document.getElementById('controls_container').style.display = 'block';
 
         // Update metadata fields
-        document.getElementById(`meta_address_${group}`).textContent = selectedOption.dataset.address;
-        document.getElementById(`meta_data_type_${group}`).textContent = selectedOption.dataset.dataType;
-        document.getElementById(`meta_type_${group}`).textContent = selectedOption.dataset.type;
-        document.getElementById(`meta_range_${group}`).textContent = selectedOption.dataset.range;
-        document.getElementById(`meta_units_${group}`).textContent = selectedOption.dataset.units || 'N/A';
-        document.getElementById(`meta_access_${group}`).textContent = selectedOption.dataset.access;
-        document.getElementById(`meta_slave_id_${group}`).textContent = selectedOption.dataset.slaveId || 'N/A';
-        document.getElementById(`meta_description_${group}`).textContent = selectedOption.dataset.description || 'No description available';
+        document.getElementById('meta_address').textContent = selectedOption.dataset.address;
+        document.getElementById('meta_data_type').textContent = selectedOption.dataset.dataType;
+        document.getElementById('meta_type').textContent = selectedOption.dataset.type;
+        document.getElementById('meta_range').textContent = selectedOption.dataset.range;
+        document.getElementById('meta_units').textContent = selectedOption.dataset.units || 'N/A';
+        document.getElementById('meta_access').textContent = selectedOption.dataset.access;
+        document.getElementById('meta_slave_id').textContent = selectedOption.dataset.slaveId || 'N/A';
+        document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
 
         // Show/hide write controls based on access rights
         const access = selectedOption.dataset.access;
-        const writeControls = document.getElementById(`write_controls_${group}`);
+        const writeControls = document.getElementById('write_controls');
 
         if (access === 'RW' || access === 'WO') {
             writeControls.style.display = 'block';
@@ -201,11 +266,11 @@ button:hover {
         }
 
         // Clear previous result
-        document.getElementById(`result_${group}`).value = '';
+        document.getElementById('result').value = '';
     }
 
-    function getSelectedRegisterData(group) {
-        const selectElement = document.getElementById(`register_select_${group}`);
+    function getSelectedRegisterData() {
+        const selectElement = document.getElementById('register_select');
         const selectedOption = selectElement.selectedOptions[0];
 
         if (!selectedOption.value) {
@@ -224,8 +289,8 @@ button:hover {
         };
     }
 
-    async function readSelectedRegister(group) {
-        const data = getSelectedRegisterData(group);
+    async function readSelectedRegister() {
+        const data = getSelectedRegisterData();
         if (!data) return;
 
         try {
@@ -233,7 +298,7 @@ button:hover {
             const result = await response.json();
 
             // Display result with units if available
-            const selectElement = document.getElementById(`register_select_${group}`);
+            const selectElement = document.getElementById('register_select');
             const selectedOption = selectElement.selectedOptions[0];
             const units = selectedOption.dataset.units;
 
@@ -242,18 +307,18 @@ button:hover {
                 displayValue += ` ${units}`;
             }
 
-            document.getElementById(`result_${group}`).value = displayValue;
+            document.getElementById('result').value = displayValue;
         } catch (error) {
             console.error('Error:', error);
             alert('Failed to read register data');
         }
     }
 
-    async function writeSelectedRegister(group) {
-        const data = getSelectedRegisterData(group);
+    async function writeSelectedRegister() {
+        const data = getSelectedRegisterData();
         if (!data) return;
 
-        const writeValue = document.getElementById(`register_value_${group}`).value;
+        const writeValue = document.getElementById('register_value').value;
         if (!writeValue && writeValue !== '0') {
             alert('Please enter a value to write');
             return;
@@ -266,7 +331,7 @@ button:hover {
             const result = await response.json();
 
             // Display result with units if available
-            const selectElement = document.getElementById(`register_select_${group}`);
+            const selectElement = document.getElementById('register_select');
             const selectedOption = selectElement.selectedOptions[0];
             const units = selectedOption.dataset.units;
 
@@ -275,7 +340,7 @@ button:hover {
                 displayValue += ` ${units}`;
             }
 
-            document.getElementById(`result_${group}`).value = displayValue;
+            document.getElementById('result').value = displayValue;
         } catch (error) {
             console.error('Error:', error);
             alert('Failed to write register data');
