@@ -246,19 +246,22 @@
 <div class="config-section">
     <span>
         <div>
+            <select id="serviceSelect" class="service-selector">
+                <option value="">Select a service...</option>
 {% for service in services %}
-        {{ service }}
-	<div>
-        <span>
-        <button class="test-button" onclick="serviceAction('{{ service }}', 'status')">Status</button>
-        <button class="test-button" onclick="serviceAction('{{ service }}', 'restart')">Restart</button>
-        <button class="test-button" onclick="serviceAction('{{ service }}', 'stop')">Stop</button>
-        <button class="test-button" onclick="serviceAction('{{ service }}', 'tail')">Tail Logs</button>
-		</span>
-    </div>
+                <option value="{{ service }}">{{ service }}</option>
 {% endfor %}
-            </div>
-    <textarea id="ServicesResponse" class="json-display" readonly></textarea>
+            </select>
+        </div>
+        <div>
+            <span>
+                <button class="test-button" onclick="performServiceAction('status')">Status</button>
+                <button class="test-button" onclick="performServiceAction('restart')">Restart</button>
+                <button class="test-button" onclick="performServiceAction('stop')">Stop</button>
+                <button class="test-button" onclick="performServiceAction('tail')">Tail Logs</button>
+            </span>
+        </div>
+        <textarea id="ServicesResponse" class="json-display" readonly></textarea>
     </span>
 </div>
 
@@ -487,5 +490,16 @@
             }
         });
     });
+function performServiceAction(action) {
+    const serviceSelect = document.getElementById('serviceSelect');
+    const selectedService = serviceSelect.value;
+
+    if (!selectedService) {
+        alert('Please select a service first');
+        return;
+    }
+
+    serviceAction(selectedService, action);
+}
 </script>
 {% endblock %}
