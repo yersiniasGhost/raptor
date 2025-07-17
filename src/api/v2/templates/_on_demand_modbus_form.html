@@ -363,6 +363,11 @@ function getSelectedRegisterData() {
 async function readSelectedRegister() {
     const data = getSelectedRegisterData();
     if (!data) return;
+    //  Button spinner
+    const button = document.getElementById('read_btn');
+    const originalText = button.textContent;
+    button.innerHTML = '<span style="animation: spin 1s linear infinite;">⏳</span> Reading...';
+    button.disabled = true;
 
     try {
         const response = await fetch(`/modbus/modbus_register_data/${JSON.stringify(data)}`);
@@ -379,9 +384,27 @@ async function readSelectedRegister() {
         }
 
         document.getElementById('result').value = displayValue;
+         // Show success briefly
+        button.innerHTML = '✓ Success';
+        button.style.backgroundColor = '#28a745';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.backgroundColor = '#007bff';
+        }, 1000);
+
     } catch (error) {
         console.error('Error:', error);
+        // Show error briefly
+        button.innerHTML = '✗ Error';
+        button.style.backgroundColor = '#dc3545';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.backgroundColor = '#007bff';
+        }, 2000);
         alert('Failed to read register data');
+
+    } finally {
+    button.disabled = false;
     }
 }
 
