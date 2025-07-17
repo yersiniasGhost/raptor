@@ -234,11 +234,21 @@ function toggleCollapse(contentId, iconId) {
     const content = document.getElementById(contentId);
     const icon = document.getElementById(iconId);
 
-    if (content.style.display === 'none') {
+    if (!content) {
+        console.error('Content element not found:', contentId);
+        return;
+    }
+
+    // Check current display state
+    const isHidden = content.style.display === 'none' || content.classList.contains('collapsed');
+
+    if (isHidden) {
         content.style.display = 'block';
+        content.classList.remove('collapsed');
         if (icon) icon.textContent = '▼';
     } else {
         content.style.display = 'none';
+        content.classList.add('collapsed');
         if (icon) icon.textContent = '▶';
     }
 }
