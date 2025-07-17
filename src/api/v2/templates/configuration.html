@@ -189,7 +189,13 @@
         <span class="info-value">{{raptor_client}}</span>
     </div>
 </div>
-<h2>Firmware version and control</h2>
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('firmware-content', 'firmware-icon')">
+        <span class="collapse-icon" id="firmware-icon">▼</span>
+        Commission and Configure
+    </h2>
+    <div id="firmware-content" class="collapsible-content style="display: none;">
+
 
 <div class="firmware-control-container">
     <div class="device-info-container">
@@ -203,6 +209,8 @@
     </div>
 
 </div>
+    </div>
+    </div>
 
     <form action="/configuration/update_firmware" method="post">
         <div class="form-group">
@@ -239,7 +247,7 @@
 <div class="collapsible-section">
     <h2 class="collapsible-header" onclick="toggleCollapse('config-content', 'config-icon')">
         <span class="collapse-icon" id="config-icon">▼</span>
-        Services Status
+        Commission and Configure
     </h2>
     <div id="config-content" class="collapsible-content style="display: none;">
 <div class="firmware-control-container">
@@ -279,11 +287,13 @@
     </div>
 </div>
 
-<h2>Communications Configuration</h2>
-<div class="config-container">
-    <div class="config-section">
-        <h3 class="config-title">MQTT Broker Configuration</h3>
-            <div class="mqtt-config">
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('services-content', 'services-icon')">
+        <span class="collapse-icon" id="mqtt-icon">▼</span>
+        MQTT Broker
+    </h2>
+            <div id="mqtt-content" class="collapsible-content style="display: none;">
+    <div class="mqtt-config">
                 <span class="config-label">IP Address:</span>
                 <span class="config-value">{{ mqtt_broker_ip }}</span>
 
@@ -298,15 +308,21 @@
                 <div id="mqtt-status"></div>
             </div>
 
-        <h3 class="config-title">Commissioning Comms</h3>
-        <h3 class="config-title">System configuration comms</h3>
     </div>
 </div>
 
 
 <h1>System Configuration</h1>
 {% for config in ["Actuators", "BMS", "Inverter", "Charge Controller", "Generation"] %}
-<div class="config-container">
+
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('{{config}}-content', '{{config}}-icon')">
+        <span class="collapse-icon" id="{{config}}-icon">▼</span>
+        Commission and Configure
+    </h2>
+    <div id="{{config}}-content" class="collapsible-content style="display: none;">
+
+
     <div class="config-section">
         <h3 class="config-title">{{ config }} Configuration</h3>
 <!--        <form class="upload-form" id="{{ config | lower }}ConfigForm">-->
@@ -331,6 +347,8 @@
         <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
     </div>
 </div>
+</div>
+
 {% endfor %}
 {% endblock %}
 
