@@ -4,7 +4,7 @@
         <span id="modbus_toggle_icon" class="toggle-icon">▼</span>
     </div>
     <div id="modbus_form_container" class="collapsible-content">
-        <div class="form-group">
+        <div class="form-row">
             <label for="group_select">Select Group:</label>
             <select id="group_select" onchange="updateGroupSelection()">
                 <option value="">-- Select a group --</option>
@@ -15,11 +15,16 @@
         </div>
 
         <div id="register_selection" style="display: none;">
-            <div class="form-group">
+            <div class="form-row">
                 <label for="register_select">Select Register:</label>
                 <select id="register_select" onchange="updateRegisterMetadata()">
                     <option value="">-- Select a register --</option>
                 </select>
+            </div>
+
+            <div class="form-row">
+                <label for="slave_id_input">Slave ID:</label>
+                <input type="number" id="slave_id_input" min="1" max="255" placeholder="Enter Slave ID" required>
             </div>
 
             <div id="metadata_container" class="metadata-container" style="display: none;">
@@ -41,9 +46,6 @@
                     </div>
                     <div class="metadata-item">
                         <strong>Access:</strong> <span id="meta_access"></span>
-                    </div>
-                    <div class="metadata-item">
-                        <strong>Slave ID:</strong> <span id="meta_slave_id"></span>
                     </div>
                     <div class="metadata-item description">
                         <strong>Description:</strong> <span id="meta_description"></span>
@@ -155,6 +157,29 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Form row styling for side-by-side labels and inputs */
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+.form-row label {
+    min-width: 120px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-row select,
+.form-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
 /* Form Styles */
 .metadata-container {
     background: #ffffff;
@@ -238,6 +263,10 @@ button:hover {
     background-color: #f8f9fa;
     font-family: monospace;
 }
+
+#slave_id_input {
+    max-width: 150px;
+}
 </style>
 
 <script>
@@ -291,7 +320,7 @@ function updateGroupSelection() {
         option.dataset.units = register.units;
         option.dataset.description = register.description;
         option.dataset.access = register.access;
-        option.dataset.slaveId = register.slave_id;
+        option.dataset.defaultSlaveId = register.slave_id;
 
         registerSelect.appendChild(option);
     });
@@ -305,6 +334,7 @@ function updateGroupSelection() {
 function updateRegisterMetadata() {
     const selectElement = document.getElementById('register_select');
     const selectedOption = selectElement.selectedOptions[0];
+    const slaveIdInput = document.getElementById('slave_id_input');
 
     if (!selectedOption.value) {
         document.getElementById('metadata_container').style.display = 'none';
@@ -323,8 +353,12 @@ function updateRegisterMetadata() {
     document.getElementById('meta_range').textContent = selectedOption.dataset.range;
     document.getElementById('meta_units').textContent = selectedOption.dataset.units || 'N/A';
     document.getElementById('meta_access').textContent = selectedOption.dataset.access;
-    document.getElementById('meta_slave_id').textContent = selectedOption.dataset.slaveId || 'N/A';
     document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
+
+    // Set default slave ID if available
+    if (selectedOption.dataset.defaultSlaveId && selectedOption.dataset.defaultSlaveId !== 'null') {
+        slaveIdInput.value = selectedOption.dataset.defaultSlaveId;
+    }
 
     // Show/hide write controls based on access rights
     const access = selectedOption.dataset.access;
@@ -343,18 +377,24 @@ function updateRegisterMetadata() {
 function getSelectedRegisterData() {
     const selectElement = document.getElementById('register_select');
     const selectedOption = selectElement.selectedOptions[0];
+    const slaveIdInput = document.getElementById('slave_id_input');
 
     if (!selectedOption.value) {
         alert('Please select a register');
         return null;
     }
 
+    if (!slaveIdInput.value) {
+        alert('Please enter a Slave ID');
+        return null;
+    }
+
     return {
         name: selectedOption.value,
-        unit_id: selectedOption.dataset.slaveId,
+        unit_id: parseInt(slaveIdInput.value),
         register: parseInt(selectedOption.dataset.address),
         range: parseInt(selectedOption.dataset.range),
-        type: selectedOption.dataset.type.toLowerCase(),
+        register_type: selectedOption.dataset.type.toLowerCase(),
         data_type: selectedOption.dataset.dataType,
         page: "{{ page }}"
     };
@@ -363,7 +403,8 @@ function getSelectedRegisterData() {
 async function readSelectedRegister() {
     const data = getSelectedRegisterData();
     if (!data) return;
-    //  Button spinner
+
+    // Button spinner
     const button = document.getElementById('read_btn');
     const originalText = button.textContent;
     button.innerHTML = '<span style="animation: spin 1s linear infinite;">⏳</span> Reading...';
@@ -379,12 +420,12 @@ async function readSelectedRegister() {
         const units = selectedOption.dataset.units;
 
         let displayValue = result.value;
-        if (units) {
+        if (units && units !== 'N/A') {
             displayValue += ` ${units}`;
         }
 
         document.getElementById('result').value = displayValue;
-         // Show success briefly
+        // Show success briefly
         button.innerHTML = '✓ Success';
         button.style.backgroundColor = '#28a745';
         setTimeout(() => {
@@ -404,7 +445,7 @@ async function readSelectedRegister() {
         alert('Failed to read register data');
 
     } finally {
-    button.disabled = false;
+        button.disabled = false;
     }
 }
 
@@ -430,7 +471,7 @@ async function writeSelectedRegister() {
         const units = selectedOption.dataset.units;
 
         let displayValue = result.value;
-        if (units) {
+        if (units && units !== 'N/A') {
             displayValue += ` ${units}`;
         }
 
