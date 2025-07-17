@@ -206,7 +206,8 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
                 "bms_data": bms_data,
                 "register_map": register_map,
                 "modbus_map": modbus_map,
-                "error": None
+                "error": None,
+                "page": "BMS"
             }
         )
     except Exception as e:

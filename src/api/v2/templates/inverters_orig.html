@@ -1,22 +1,11 @@
-{# templates/_base_device_view.html #}
 {% extends "base.html" %}
 
-{% block title %} {{ page_title }} {% endblock %}
-
+{% block title %} Inverter systems {% endblock %}
 {% block head %}
-<!-- Only device-specific styles that aren't in base.html -->
-<style>
-    /* Device-specific overrides or additions only */
-    .chart {
-        height: 400px; /* Override base chart height for device views */
-    }
-
-    /* Any device-specific styles that don't belong in base */
-</style>
 {% endblock %}
 
 {% block content %}
-<h1>{{ page_title }} Data</h1>
+<h1>Inverter / Converter Systems Data</h1>
 
 <div id="error-message" class="error" style="display: none;"></div>
 
@@ -28,61 +17,67 @@
         Last refresh: <span id="last-refresh">-</span>
     </div>
 </div>
-
 <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
     <div>
         <label for="lookback">Number of chart data points:</label>
-        <input type="number" id="lookback" value="800" min="10" step="100">
+        <input type="number" id="lookback" min="10" value="800" step="100">
     </div>
-    <button onclick="updateDeviceData()">Refresh</button>
+    <button onclick="updateData()">Refresh</button>
 </div>
-
-{% include '_on_demand_modbus_form.html'%}
 
 {% if register_map %}
-{% for device in devices.devices %}
-{% set unit_id = device["mac"] %}
-{% set slave_id = device["slave_id"] %}
+{% for modbus_hardware in hardware.devices %}
+{% set unit_id = modbus_hardware['mac'] %}
+{% set slave_id = modbus_hardware['slave_id'] %}
+    <div class="side-by-side-container">
+        <!-- Left side: Unit Specification -->
+        <div class="side-by-side-item">
+            {% with hardware = modbus_hardware %}
+                {% include "_unit_specification.html" %}
+            {% endwith %}
+        </div>
 
-<h3>Status Table</h3>
-<table>
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% with hardware = device %}
-           {% include '_unit_specification_table_entry.html'%}
-    {% endwith %}
-
-    {% for reg in register_map %}
-    <tr>
-        <td>{{ reg.name }}</td>
-        <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
-            -
-        </td>
-        <td>{{ reg.description }}</td>
-    </tr>
-    {% endfor %}
-
-    {% block additional_metrics %}
-    {# Custom metrics specific to device type can be added here #}
-    {% endblock %}
-    </tbody>
-</table>
-
-<div class="chart-container">
-    <h3>Historical Data</h3>
-    <div id="charts-unit{{ unit_id }}">
-        <div class="text-gray-500">Loading charts...</div>
+        <!-- Right side: Modbus Control Form -->
+        {% if modbus_map %}
+        <div class="side-by-side-item">
+            {% with page = "Inverter" %}
+                {% include '_on_demand_modbus_form.html' %}
+            {% endwith %}
+        </div>
+        {% endif %}
     </div>
-</div>
-</div>
+
+    <h3>Status Table</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for reg in register_map %}
+        <tr>
+            <td>{{ reg.name }}</td>
+            <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
+                -
+            </td>
+            <td>{{ reg.description }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="chart-container">
+        <h3>Historical Data</h3>
+        <div id="charts-unit{{ unit_id }}">
+            <div class="text-gray-500">Loading charts...</div>
+        </div>
+    </div>
 {% endfor %}
 {% endif %}
+
 {% endblock %}
 
 {% block scripts %}
@@ -92,12 +87,11 @@
     let updateInterval;
     const UPDATE_FREQUENCY = 30000; // 30 seconds
     let lastValues = {};
-    const API_ENDPOINT = "/{{ api_endpoint }}";
 
     async function loadHistoricalData(unitId) {
         try {
             const num_points = document.getElementById('lookback').value;
-            const response = await fetch(`${API_ENDPOINT}/historical/${unitId}?num_points=${num_points}`);
+            const response = await fetch(`/inverters/historical/${unitId}?num_points=${num_points}`);
             const result = await response.json();
 
             if (result.error || !result.data) {
@@ -200,18 +194,14 @@
         }
     }
 
-    async function updateDeviceData() {
-        {% if devices is none %}
-            return; // Exit function early if devices is None
-        {% endif %}
-
-        const units = {{ devices.get_slave_ids() | tojson | safe }}
+    async function updateData() {
+        const units = {{ hardware.get_slave_ids() | tojson | safe }};
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
 
         try {
-            const response = await fetch(`${API_ENDPOINT}/data`);
+            const response = await fetch('/inverters/data');
             const result = await response.json();
             if (result.error) {
                 showError(result.error);
@@ -253,14 +243,9 @@
             document.getElementById('unit-count').textContent =
                 Object.keys(unitData).length;
 
-            // Call any device-specific update handlers
-            if (typeof deviceSpecificUpdate === 'function') {
-                deviceSpecificUpdate(unitData);
-            }
-
         } catch (error) {
-            console.error(`Error updating ${API_ENDPOINT} data:`, error);
-            showError(`Failed to update ${API_ENDPOINT} data`);
+            console.error('Error updating inverter data:', error);
+            showError('Failed to update inverter data');
         }
     }
 
@@ -286,18 +271,14 @@
         }
     }
 
-    function loadAllHistoricalData() {
-        const units = {{ devices.get_slave_ids() | tojson | safe }}
+    // Start updates when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        updateData();
+        const units = {{ hardware.get_slave_ids() | tojson | safe }};
         units.forEach(unitId => {
             loadHistoricalData(unitId);
         });
-    }
-
-    // Start updates when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        updateDeviceData();
-        loadAllHistoricalData();
-        updateInterval = setInterval(updateDeviceData, UPDATE_FREQUENCY);
+        updateInterval = setInterval(updateData, UPDATE_FREQUENCY);
     });
 
     // Clean up when page is hidden/closed
@@ -305,8 +286,8 @@
         if (document.hidden) {
             clearInterval(updateInterval);
         } else {
-            updateDeviceData();
-            updateInterval = setInterval(updateDeviceData, UPDATE_FREQUENCY);
+            updateData();
+            updateInterval = setInterval(updateData, UPDATE_FREQUENCY);
         }
     });
 </script>
