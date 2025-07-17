@@ -5,7 +5,7 @@
 
 {% block head %}
 <style>
-        .config-container {
+    .config-container {
         display: flex;
         align-items: flex-start;
         gap: 20px;
@@ -24,7 +24,7 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-	max-width: 400;
+        max-width: 400px;
     }
     .config-title {
         margin-top: 0;
@@ -44,7 +44,7 @@
     .upload-button:hover, .test-button:hover {
         background-color: #0056b3;
     }
-        .firmware-control-container {
+    .firmware-control-container {
         margin: 20px 0;
         padding: 15px;
         border: 1px solid #ddd;
@@ -66,6 +66,7 @@
     .form-actions {
         display: flex;
         gap: 10px;
+        margin-top: 15px;
     }
 
     .btn {
@@ -84,86 +85,78 @@
         background-color: #ffc107;
         color: #212529;
     }
+
     .mqtt-config {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 10px 20px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border: 1px solid #dee2e6;
-        }
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 10px 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+
     .device-info-container {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 10px;
-    margin: 10px 0;
-    max-width: 500px;
-}
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px 0;
+        max-width: 500px;
+    }
 
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    border-bottom: 1px solid #e9ecef;
-}
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
 
-.info-item:last-child {
-    border-bottom: none;
-}
+    .info-item:last-child {
+        border-bottom: none;
+    }
 
-.info-label {
-    font-weight: 600;
-    color: #495057;
-    min-width: 120px;
-}
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        min-width: 120px;
+    }
 
-.info-value {
-    font-family: 'Courier New', monospace;
-    background: #ffffff;
-    padding: 3px 6px;
-    border-radius: 4px;
-    border: 1px solid #dee2e6;
-    color: #212529;
-    flex-grow: 1;
-    margin-left: 15px;
-    text-align: right;
-}
+    .info-value {
+        font-family: 'Courier New', monospace;
+        background: #ffffff;
+        padding: 3px 6px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        color: #212529;
+        flex-grow: 1;
+        margin-left: 15px;
+        text-align: right;
+    }
 
-/* Alternative card-style layout */
-.device-info-container.card-style {
-    background: #ffffff;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    border: none;
-}
+    /* Form row styling for side-by-side labels and inputs */
+    .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
 
-.device-info-container.card-style .info-item {
-    background: #f8f9fa;
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 6px;
-    border: none;
-    display: block;
-}
+    .form-row label {
+        min-width: 200px;
+        font-weight: 600;
+        color: #495057;
+    }
 
-.device-info-container.card-style .info-label {
-    display: block;
-    margin-bottom: 1px;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+    .form-row .form-control {
+        flex: 1;
+    }
 
-.device-info-container.card-style .info-value {
-    display: block;
-    margin-left: 0;
-    text-align: left;
-    font-size: 16px;
-    font-weight: 500;
-}
+    .library-selection {
+        margin-bottom: 20px;
+    }
 </style>
 {% endblock %}
 
@@ -189,213 +182,193 @@
         <span class="info-value">{{raptor_client}}</span>
     </div>
 </div>
+
+<!-- Firmware Configuration Section -->
 <div class="collapsible-section">
     <h2 class="collapsible-header" onclick="toggleCollapse('firmware-content', 'firmware-icon')">
-        <span class="collapse-icon" id="firmware-icon">▼</span>
-        Commission and Configure
+        <span class="collapse-icon" id="firmware-icon">▶</span>
+        Firmware Configuration
     </h2>
-    <div id="firmware-content" class="collapsible-content style="display: none;">
-
-
-<div class="firmware-control-container">
-    <div class="device-info-container">
-    <div class="info-item">
-        <span class="info-label">Current firmware version:</span>
-        <span class="info-value">{{current_branch}}</span>
-    </div>
-    <div class="info-item">
-        <span class="info-label">Current common library version:</span>
-        <span class="info-value">{{current_common_branch}}</span>
-    </div>
-
-</div>
-    </div>
-    </div>
-
-    <form action="/configuration/update_firmware" method="post">
-        <div class="form-group">
-            <div class="library-selection">
-                <div class="library-item">
-                    <label for="git-branch">Select firmware version:</label>
-                    <select id="git-branch" name="branch" class="form-control" required>
-                        <option value="">-- Select firmware version --</option>
-                        {% for branch in git_branches %}
-                            <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
-                        {% endfor %}
-                    </select>
+    <div id="firmware-content" class="collapsible-content" style="display: none;">
+        <div class="firmware-control-container">
+            <div class="device-info-container">
+                <div class="info-item">
+                    <span class="info-label">Current firmware version:</span>
+                    <span class="info-value">{{current_branch}}</span>
                 </div>
-
-                <div class="library-item">
-                    <label for="raptor-common-branch">Select Raptor Common version:</label>
-                    <select id="raptor-common-branch" name="common_branch" class="form-control" required>
-                        <option value="">-- Select Raptor Common version --</option>
-                        {% for branch in raptor_common_branches %}
-                            <option value="{{ branch }}" {% if branch == current_common_branch %}selected{% endif %}>{{ branch }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="info-item">
+                    <span class="info-label">Current common library version:</span>
+                    <span class="info-value">{{current_common_branch}}</span>
                 </div>
             </div>
 
-            <div class="form-actions">
-                <button type="submit" name="action" value="update" class="btn btn-primary">Update Both Libraries</button>
-                <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update Both Libraries & Restart</button>
-            </div>
+            <form action="/configuration/update_firmware" method="post">
+                <div class="library-selection">
+                    <div class="form-row">
+                        <label for="git-branch">Select firmware version:</label>
+                        <select id="git-branch" name="branch" class="form-control" required>
+                            <option value="">-- Select firmware version --</option>
+                            {% for branch in git_branches %}
+                                <option value="{{ branch }}" {% if branch == current_branch %}selected{% endif %}>{{ branch }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="raptor-common-branch">Select Raptor Common version:</label>
+                        <select id="raptor-common-branch" name="common_branch" class="form-control" required>
+                            <option value="">-- Select Raptor Common version --</option>
+                            {% for branch in raptor_common_branches %}
+                                <option value="{{ branch }}" {% if branch == current_common_branch %}selected{% endif %}>{{ branch }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" name="action" value="update" class="btn btn-primary">Update Both Libraries</button>
+                    <button type="submit" name="action" value="update_restart" class="btn btn-warning">Update Both Libraries & Restart</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
+<!-- Commission and Configure Section -->
 <div class="collapsible-section">
     <h2 class="collapsible-header" onclick="toggleCollapse('config-content', 'config-icon')">
-        <span class="collapse-icon" id="config-icon">▼</span>
+        <span class="collapse-icon" id="config-icon">▶</span>
         Commission and Configure
     </h2>
-    <div id="config-content" class="collapsible-content style="display: none;">
-<div class="firmware-control-container">
-      <button class="test-button" onclick="recommission()">Recommission system</button>
-      <button class="test-button" onclick="reconfigure()">Reconfigure system</button>
-</div>
+    <div id="config-content" class="collapsible-content" style="display: none;">
+        <div class="firmware-control-container">
+            <button class="test-button" onclick="recommission()">Recommission system</button>
+            <button class="test-button" onclick="reconfigure()">Reconfigure system</button>
+        </div>
     </div>
 </div>
 
+<!-- Services Status Section -->
 <div class="collapsible-section">
     <h2 class="collapsible-header" onclick="toggleCollapse('services-content', 'services-icon')">
-        <span class="collapse-icon" id="services-icon">▼</span>
+        <span class="collapse-icon" id="services-icon">▶</span>
         Services Status
     </h2>
-    <div id="services-content" class="collapsible-content style="display: none;">
-<div class="config-section">
-    <span>
-        <div>
-            <select id="serviceSelect" class="service-selector">
-                <option value="">Select a service...</option>
-{% for service in services %}
-                <option value="{{ service }}">{{ service }}</option>
-{% endfor %}
-            </select>
-        </div>
-        <div>
-            <span>
+    <div id="services-content" class="collapsible-content" style="display: none;">
+        <div class="config-section">
+            <div>
+                <select id="serviceSelect" class="service-selector">
+                    <option value="">Select a service...</option>
+                    {% for service in services %}
+                        <option value="{{ service }}">{{ service }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
                 <button class="test-button" onclick="performServiceAction('status')">Status</button>
                 <button class="test-button" onclick="performServiceAction('restart')">Restart</button>
                 <button class="test-button" onclick="performServiceAction('stop')">Stop</button>
                 <button class="test-button" onclick="performServiceAction('tail')">Tail Logs</button>
-            </span>
+            </div>
+            <textarea id="ServicesResponse" class="json-display" readonly></textarea>
         </div>
-        <textarea id="ServicesResponse" class="json-display" readonly></textarea>
-    </span>
-</div>
     </div>
 </div>
 
+<!-- MQTT Broker Section -->
 <div class="collapsible-section">
-    <h2 class="collapsible-header" onclick="toggleCollapse('services-content', 'services-icon')">
-        <span class="collapse-icon" id="mqtt-icon">▼</span>
+    <h2 class="collapsible-header" onclick="toggleCollapse('mqtt-content', 'mqtt-icon')">
+        <span class="collapse-icon" id="mqtt-icon">▶</span>
         MQTT Broker
     </h2>
-            <div id="mqtt-content" class="collapsible-content style="display: none;">
-    <div class="mqtt-config">
-                <span class="config-label">IP Address:</span>
-                <span class="config-value">{{ mqtt_broker_ip }}</span>
+    <div id="mqtt-content" class="collapsible-content" style="display: none;">
+        <div class="mqtt-config">
+            <span class="config-label">IP Address:</span>
+            <span class="config-value">{{ mqtt_broker_ip }}</span>
 
-                <span class="config-label">Port number:</span>
-                <span class="config-value">{{ mqtt_broker_port }}</span>
+            <span class="config-label">Port number:</span>
+            <span class="config-value">{{ mqtt_broker_port }}</span>
 
-                <span class="config-label">Broker path:</span>
-                <span class="config-value">{{ mqtt_path }}</span>
-            </div>
-            <div class="test-section">
-                <button type="button" class="test-button" onclick="mqttTest()">Test Connection</button>
-                <div id="mqtt-status"></div>
-            </div>
-
-    </div>
-</div>
-
-
-<h1>System Configuration</h1>
-{% for config in ["Actuators", "BMS", "Inverter", "Charge Controller", "Generation"] %}
-
-<div class="collapsible-section">
-    <h2 class="collapsible-header" onclick="toggleCollapse('{{config}}-content', '{{config}}-icon')">
-        <span class="collapse-icon" id="{{config}}-icon">▼</span>
-        Commission and Configure
-    </h2>
-    <div id="{{config}}-content" class="collapsible-content style="display: none;">
-
-
-    <div class="config-section">
-        <h3 class="config-title">{{ config }} Configuration</h3>
-<!--        <form class="upload-form" id="{{ config | lower }}ConfigForm">-->
-<!--            <input type="file" accept=".json" id="{{ config }}ConfigFile" style="display: none;">-->
-<!--            <button type="button" class="upload-button" onclick="document.getElementById('{{ config }}ConfigFile').click()">-->
-<!--                Load {{ config }} configuration-->
-<!--            </button>-->
-<!--        </form>-->
-        <div id="{{ config | lower }}ConfigDisplay" class="json-display" contenteditable="true">
-            {% set definition = hardware.get_hardware_definition(config) %}
-            {{ definition | tojson(indent=4) if definition else "No configuration loaded" }}
+            <span class="config-label">Broker path:</span>
+            <span class="config-value">{{ mqtt_path }}</span>
+        </div>
+        <div class="test-section">
+            <button type="button" class="test-button" onclick="mqttTest()">Test Connection</button>
+            <div id="mqtt-status"></div>
         </div>
     </div>
-    <div class="config-controls">
-        <h3>{{ config }} Test and Diagnostics</h3>
-        <span>
-            <button class="test-button" onclick="testConfig('{{ config }}')">Test system</button>
-            <button class="test-button" onclick="resetConfig('{{ config }}')">Reset system</button>
-            <button class="test-button" onclick="diagnosticsConfig('{{ config }}')">Diagnostics</button>
-            <button class="test-button" onclick="alarmsConfig('{{ config }}')">Query Alarms</button>
-        </span>
-        <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
-    </div>
-</div>
 </div>
 
+<!-- System Configuration Sections -->
+<h1>System Configuration</h1>
+{% for config in ["Actuators", "BMS", "Inverter", "Charge Controller", "Generation"] %}
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('{{config}}-content', '{{config}}-icon')">
+        <span class="collapse-icon" id="{{config}}-icon">▶</span>
+        {{ config }} Configuration
+    </h2>
+    <div id="{{config}}-content" class="collapsible-content" style="display: none;">
+        <div class="config-container">
+            <div class="config-section">
+                <h3 class="config-title">{{ config }} Configuration</h3>
+                <div id="{{ config | lower }}ConfigDisplay" class="json-display" contenteditable="true">
+                    {% set definition = hardware.get_hardware_definition(config) %}
+                    {{ definition | tojson(indent=4) if definition else "No configuration loaded" }}
+                </div>
+            </div>
+            <div class="config-controls">
+                <h3>{{ config }} Test and Diagnostics</h3>
+                <button class="test-button" onclick="testConfig('{{ config }}')">Test system</button>
+                <button class="test-button" onclick="resetConfig('{{ config }}')">Reset system</button>
+                <button class="test-button" onclick="diagnosticsConfig('{{ config }}')">Diagnostics</button>
+                <button class="test-button" onclick="alarmsConfig('{{ config }}')">Query Alarms</button>
+                <textarea id="{{ config }}Response" class="json-display" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</div>
 {% endfor %}
 {% endblock %}
 
 {% block scripts %}
-
 <script>
     async function mqttTest() {
-            const button = document.querySelector('.test-button');
-            const statusDiv = document.getElementById('mqtt-status');
+        const button = document.querySelector('.test-button');
+        const statusDiv = document.getElementById('mqtt-status');
 
-            // Disable button and show loading state
-            button.disabled = true;
-            button.textContent = 'Testing...';
-            statusDiv.innerHTML = '<span class="loading">🔄 Testing connection...</span>';
+        // Disable button and show loading state
+        button.disabled = true;
+        button.textContent = 'Testing...';
+        statusDiv.innerHTML = '<span class="loading">🔄 Testing connection...</span>';
 
-            try {
-                const response = await fetch('/configuration/mqtt-test', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    // Add any required request body data here if needed
-                    // body: JSON.stringify({})
-                });
+        try {
+            const response = await fetch('/configuration/mqtt-test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                // Check if the response indicates success
-                if (result === true || result.success === true || result.status === 'success') {
-                    statusDiv.innerHTML = '<span class="status-success"><span class="status-icon">✅</span>Connection successful</span>';
-                } else {
-                    statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Connection failed</span>';
-                }
-
-            } catch (error) {
-                console.error('MQTT test error:', error);
-                statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Connection failed: ' + error.message + '</span>';
-            } finally {
-                // Re-enable button
-                button.disabled = false;
-                button.textContent = 'Test Connection';
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-       }
+
+            const result = await response.json();
+
+            if (result === true || result.success === true || result.status === 'success') {
+                statusDiv.innerHTML = '<span class="status-success"><span class="status-icon">✅</span>Connection successful</span>';
+            } else {
+                statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Connection failed</span>';
+            }
+
+        } catch (error) {
+            console.error('MQTT test error:', error);
+            statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Connection failed: ' + error.message + '</span>';
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Test Connection';
+        }
+    }
 
     async function recommission() {
         try {
@@ -467,7 +440,6 @@
         }
     }
 
-
     async function alarmsConfig(section) {
         const responseBox = document.getElementById(`${section}Response`);
         try {
@@ -478,7 +450,6 @@
             responseBox.value = "Error executing hardware diagnosis.";
         }
     }
-
 
     async function resetConfig(section) {
         const responseBox = document.getElementById(`${section}Response`);
@@ -491,47 +462,16 @@
         }
     }
 
+    function performServiceAction(action) {
+        const serviceSelect = document.getElementById('serviceSelect');
+        const selectedService = serviceSelect.value;
 
-    
-    const configSections = ["Actuators", "BMS", "Inverter", "Generation"];
-    configSections.forEach(section => {
-        const fileInput = document.getElementById(`${section}ConfigFile`);
-        const display = document.getElementById(`${section}ConfigDisplay`);
+        if (!selectedService) {
+            alert('Please select a service first');
+            return;
+        }
 
-        fileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-
-                    const response = await fetch(`/configuration/upload/${section}`, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        display.textContent = JSON.stringify(result.config, null, 2);
-                    } else {
-                        display.textContent = 'Error uploading configuration';
-                    }
-                } catch (error) {
-                    display.textContent = 'Error processing configuration file';
-                }
-            }
-        });
-    });
-function performServiceAction(action) {
-    const serviceSelect = document.getElementById('serviceSelect');
-    const selectedService = serviceSelect.value;
-
-    if (!selectedService) {
-        alert('Please select a service first');
-        return;
+        serviceAction(selectedService, action);
     }
-
-    serviceAction(selectedService, action);
-}
 </script>
 {% endblock %}
