@@ -242,7 +242,12 @@
       <button class="test-button" onclick="reconfigure()">Reconfigure system</button>
 </div>
 
-<h2>Services Status</h2>
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('services-content', 'services-icon')">
+        <span class="collapse-icon" id="services-icon">▼</span>
+        Services Status
+    </h2>
+    <div id="services-content" class="collapsible-content">
 <div class="config-section">
     <span>
         <div>
@@ -263,6 +268,8 @@
         </div>
         <textarea id="ServicesResponse" class="json-display" readonly></textarea>
     </span>
+</div>
+    </div>
 </div>
 
 <h2>Communications Configuration</h2>
