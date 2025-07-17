@@ -46,13 +46,14 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         return templates.TemplateResponse(
             "inverters.html",
             {
-                "hardware": hardware,
+                "devices": hardware,
                 "request": request,
                 "data": data,
                 "register_map": register_map,
                 "modbus_map": modbus_map,
                 "page_title": "Inverter/Converter System",
-                "device_type": "Inverter",
+                "device_type": "Inverter2",
+                "page": "Inverter",
                 "api_endpoint": "inverters",
                 "error": None
             }

@@ -97,6 +97,8 @@ async def read_modbus_register_by_name(data: str, hardware_def: Annotated[Hardwa
         hardware = hardware_def.inverter.hardware
     elif page == "Charge Controller":
         hardware = hardware_def.charge_controller.hardware
+    else:
+        return {"success": False, "error": f"Invalid page: {page}"}
     values = modbus_data_acquisition(hardware, m_map.get_registers(["ODQ"]), slave_id=unit_id)
     logger.info(values)
     return {"success": True, "value": values['ODQ']}
