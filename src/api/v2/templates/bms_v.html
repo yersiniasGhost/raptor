@@ -28,13 +28,14 @@
     <button onclick="updateBMSData()">Refresh</button>
 </div>
 
+{% with page = "BMS" %}
+   {% include '_on_demand_modbus_form.html'%}
+{% endwith %}
+
 {% if register_map %}
 {% for battery in batteries.devices %}
 {% set unit_id = battery["mac"] %}
 {% set slave_id = battery["slave_id"] %}
-{% with page = "BMS" %}
-            {% include '_on_demand_modbus_form.html'%}
-        {% endwith %}
         {% with hardware = battery %}
            {% include "_unit_specification.html" %}
         {% endwith %}
