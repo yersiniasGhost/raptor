@@ -32,21 +32,14 @@
 {% for battery in batteries.devices %}
 {% set unit_id = battery["mac"] %}
 {% set slave_id = battery["slave_id"] %}
-<div class="side-by-side-container">
-    <!-- Left side: Unit Specification -->
-    <div class="side-by-side-item">
+{% with page = "BMS" %}
+            {% include '_on_demand_modbus_form.html'%}
+        {% endwith %}
         {% with hardware = battery %}
            {% include "_unit_specification.html" %}
         {% endwith %}
-    </div>
-    <div class="side-by-side-item">
-        {% with page = "BMS" %}
-            {% include '_on_demand_modbus_form.html'%}
-        {% endwith %}
-    </div>
-</div>
 
-    <h3>Status Table</h3>
+    <h3>Status Table (Slave: {{slave_id}}</h3>
     <table>
         <thead>
         <tr>
@@ -56,6 +49,25 @@
         </tr>
         </thead>
         <tbody>
+        {% with hardware = battery %}
+           {% include '_unit_specification_table_entry.html'%}
+        {% endwith %}
+
+        <tr>
+            <td>CREM3 MAC</td>
+            <td class="value-cell" id="crem3-mac">{{hardware.mac}}</td>
+            <td>Assigned MAC or Identifier in CREM3 database </td>
+            </tr>
+         <tr>
+            <td>Local MAC/ID</td>
+            <td class="value-cell">{{hardware.identifier}}</td>
+            <td>Local MAC or Identifier queried on hardware </td>
+            </tr>
+         <tr>
+            <td>Slave ID</td>
+            <td class="value-cell">{{hardware.slave_id}}</td>
+            <td>Modbus slave or unit ID </td>
+            </tr>
         {% for reg in register_map %}
         <tr>
             <td>{{ reg.name }}</td>
