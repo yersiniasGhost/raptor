@@ -356,9 +356,9 @@ function updateRegisterMetadata() {
     document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
 
     // Set default slave ID if available
-    if (selectedOption.dataset.defaultSlaveId && selectedOption.dataset.defaultSlaveId !== 'null') {
-        slaveIdInput.value = selectedOption.dataset.defaultSlaveId;
-    }
+<!--    if (selectedOption.dataset.defaultSlaveId && selectedOption.dataset.defaultSlaveId !== 'null') {-->
+<!--        slaveIdInput.value = selectedOption.dataset.defaultSlaveId;-->
+<!--    }-->
 
     // Show/hide write controls based on access rights
     const access = selectedOption.dataset.access;
