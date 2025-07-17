@@ -51,6 +51,9 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
                 "data": data,
                 "register_map": register_map,
                 "modbus_map": modbus_map,
+                "page_title": "Inverter/Converter System",
+                "device_type": "Inverter",
+                "api_endpoint": "inverters",
                 "error": None
             }
         )

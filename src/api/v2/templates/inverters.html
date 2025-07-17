@@ -1,12 +1,8 @@
-{% extends "_base_device_template.html" %}
+{# templates/inverter.html #}
+{% extends "_base_device_view.html" %}
 
-{% block title %} Inverter systems {% endblock %}
-{% block head %}
-{{ super() }}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block additional_metrics %}
+{# Inverter-specific metrics #}
 {% endblock %}
-
-{% set page_title = "Inverter/Converter System" %}
-{% set device_type = "Inverter" %}
-{% set api_endpoint = "inverters" %}
-
-{{ super() }}
