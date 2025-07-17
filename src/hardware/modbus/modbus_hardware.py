@@ -105,8 +105,13 @@ class ModbusHardware(HardwareBase):
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         raise ValueError("Get identifier must be implemented by sub-class of ModbusHardware")
 
+    # Override this method in the base classes if needed
+    def decode_flag_status(self, register, raw_value):
+        print("BASE method decode_flag-status")
+        return raw_value
 
-def convert_register_value(raw_values: List[int], register: ModbusRegister) -> Union[float, str]:
+
+def convert_register_value(hardware: ModbusHardware, raw_values: List[int], register: ModbusRegister) -> Union[float, str]:
     """Convert raw register value based on data type and apply conversion factor"""
     data_type = register.data_type
     raw_value = raw_values[0]
@@ -129,7 +134,7 @@ def convert_register_value(raw_values: List[int], register: ModbusRegister) -> U
         # Convert to signed using 2's complement
         value = (raw_value - 256) if (raw_value & 0x80) else raw_value
     elif data_type == ModbusDatatype.FLAG16:
-        value = raw_value
+        value = hardware.decode_flag_status(raw_value)
     elif data_type == ModbusDatatype.ASCII16:
         # ASCII16: Two ASCII characters from a 16-bit register
         # Extract high byte and low byte as ASCII characters
@@ -182,13 +187,15 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             else:
                 logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
                 result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
+
+
             if result is None:
                 logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
             elif hasattr(result, 'isError') and result.isError():
                 logger.info(f"Error reading register: {result}")
             else:
                 logger.info(f"Result is: {result.registers}")
-                output[register.name] = convert_register_value(result.registers, register)
+                output[register.name] = convert_register_value(modbus_hardware, result.registers, register)
         except Exception as e:
             logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
 
