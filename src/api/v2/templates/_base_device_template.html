@@ -37,23 +37,17 @@
     <button onclick="updateDeviceData()">Refresh</button>
 </div>
 
+{% with page = "BMS" %}
+   {% include '_on_demand_modbus_form.html'%}
+{% endwith %}
+
 {% if register_map %}
 {% for device in devices.devices %}
 {% set unit_id = device["mac"] %}
 {% set slave_id = device["slave_id"] %}
-<div class="side-by-side-container">
-    <!-- Left side: Unit Specification -->
-    <div class="side-by-side-item">
         {% with hardware = device %}
            {% include "_unit_specification.html" %}
         {% endwith %}
-    </div>
-    <div class="side-by-side-item">
-        {% with page = device_type %}
-            {% include '_on_demand_modbus_form.html'%}
-        {% endwith %}
-    </div>
-</div>
 
 <h3>Status Table</h3>
 <table>
@@ -65,6 +59,10 @@
     </tr>
     </thead>
     <tbody>
+            {% with hardware = device %}
+           {% include '_unit_specification_table_entry.html'%}
+        {% endwith %}
+
     {% for reg in register_map %}
     <tr>
         <td>{{ reg.name }}</td>
