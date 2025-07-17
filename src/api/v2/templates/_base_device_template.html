@@ -45,9 +45,6 @@
 {% for device in devices.devices %}
 {% set unit_id = device["mac"] %}
 {% set slave_id = device["slave_id"] %}
-        {% with hardware = device %}
-           {% include "_unit_specification.html" %}
-        {% endwith %}
 
 <h3>Status Table</h3>
 <table>
@@ -59,9 +56,9 @@
     </tr>
     </thead>
     <tbody>
-            {% with hardware = device %}
+    {% with hardware = device %}
            {% include '_unit_specification_table_entry.html'%}
-        {% endwith %}
+    {% endwith %}
 
     {% for reg in register_map %}
     <tr>
