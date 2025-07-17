@@ -41,6 +41,14 @@ class HardwareDeployment:
         values = self.hardware.data_acquisition(self.devices, data_registers, self.hardware_id)
         return values
 
+    def get_modbus_maps(self) -> dict:
+        data_registers = self.get_points("DATA")
+        alarms = self.get_points("ALARM")
+        diagnositc = self.get_points("DIAGNOSTIC")
+        control = self.get_points("CONTROL")
+        modbus_map = {"DATA": data_registers, "ALARM": alarms, "DIAGNOSTICS": diagnositc, "CONTROL": control}
+        return modbus_map
+
     def get_points(self, data_type: str = "DATA") -> List[dict]:
         data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
         points = self.hardware.get_points(data_registers)

@@ -194,6 +194,8 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
     batteries.get_identifiers()
     logger.info("Got BMS identifiers")
     register_map = batteries.get_points("DATA")
+    modbus_map = batteries.get_modbus_maps()
+
     try:
         bms_data = await bms_store.get_all_data()
         return templates.TemplateResponse(
@@ -203,6 +205,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
                 "request": request,
                 "bms_data": bms_data,
                 "register_map": register_map,
+                "modbus_map": modbus_map,
                 "error": None
             }
         )
