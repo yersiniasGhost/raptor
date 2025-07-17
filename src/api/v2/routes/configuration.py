@@ -12,7 +12,7 @@ from database.database_manager import DatabaseManager
 from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
-from utils import LogManager, get_mac_address, EnvVars
+from utils import LogManager, get_mac_address, EnvVars, SERVICES
 from cloud.mqtt_comms import check_connection, publish_payload
 
 logger = LogManager().get_logger(__name__)
@@ -49,7 +49,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         raptor_data = DatabaseManager().get_raptor()
         if not raptor_data:
             raptor_data = {"name": "error", "client": "error"}
-        services = ["vmc-ui", "cmd-controller", "iot-controller", "reverse-tunnel", "network-watchdog"]
+        services = SERVICES
         if EnvVars().get_bool("ACTUATOR_STRESS_TEST", False):
             services += ["actuator-stress"]
 

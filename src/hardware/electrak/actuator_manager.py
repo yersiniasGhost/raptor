@@ -123,7 +123,7 @@ class ActuatorManager(metaclass=Singleton):
                 self.logger.info(f"Successfully added actuator {actuator_id}")
                 relay_power = definition.get("relay_power_control", None)
                 if relay_power:
-                    self.relay_config[actuator_id] = relay_power
+                    self.relay_config[actuator_id] = definition
 
             except Exception as e:
                 self.logger.error(f"Failed to add actuator {actuator_id}: {e}")
@@ -143,6 +143,7 @@ class ActuatorManager(metaclass=Singleton):
             Power5V().request_power_on()
             self.relays = MultiRelayController(self.relay_config)
             self.relays.set_all(True)
+            self.logger.info(f"SETUP Power to relays: {self.relays.get_status_all()}")
 
 
     def get_actuator(self, actuator_id: str) -> Optional[ElectrakMD]:
