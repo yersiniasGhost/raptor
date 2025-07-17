@@ -55,19 +55,19 @@ class ModbusRegister:
         # Convert string to enum if string was provided
         if isinstance(self.data_type, str):
             try:
-                self.data_type = ModbusDatatype(self.data_type)
+                self.data_type = ModbusDatatype(self.data_type.lower())
             except ValueError:
                 raise ValueError(f"Invalid data type: {self.data_type}")
         if isinstance(self.acquisition_type, str):
             try:
-                self.acquisition_type = ModbusAcquisitionType(self.acquisition_type)
+                self.acquisition_type = ModbusAcquisitionType(self.acquisition_type.lower())
             except ValueError:
                 raise ValueError(f"Invalid acquisition type: {self.acquisition_type}")
         if isinstance(self.type, str):
             try:
                 self.type = ModbusRegisterType(self.type)
             except ValueError:
-                raise ValueError(f"Invalid register type: {self.type}")
+                raise ValueError(f"Invalid register type: {self.type.lower()}")
 
 
     def get_addresses(self) -> List[int]:
