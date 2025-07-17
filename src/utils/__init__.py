@@ -6,5 +6,5 @@ from .mac_address import get_mac_address
 from .logger import LogManager
 from .vmc_types import JSON
 
-SERVICES = ["iot-controller", "vmc-ui", "cmd-controller", "network-watchdog", "reverse-tunnel"]
+SERVICES = ["cellular-init", "iot-controller", "vmc-ui", "cmd-controller", "network-watchdog", "reverse-tunnel"]
 
