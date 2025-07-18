@@ -111,6 +111,9 @@ class ModbusMap:
     def get_register_by_name(self, name: str) -> Optional[ModbusRegister]:
         return self.registers.get(name, None)
 
+    # better to use a Dict?
+    def get_registers_by_key(self, keys: List[str]) -> Dict[str, ModbusRegister]:
+        return {k: self.registers[k] for k in keys if k in self.registers}
 
     def get_registers(self, names: List[str]) -> List[ModbusRegister]:
         regs = []

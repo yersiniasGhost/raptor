@@ -21,7 +21,7 @@ class HardwareBase(ABC):
         raise ValueError("Must be implemented in sub-class")
 
     @abstractmethod
-    def get_points(self, names: List[str]) -> List:
+    def get_points(self, names: List[str]) -> Dict[str, Any]:
         pass
 
     @abstractmethod

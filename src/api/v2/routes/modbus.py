@@ -57,10 +57,10 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
     else:
         logger.error(F"Invalid page : {page}")
         return {"success": False, "error": F"Invalid page: {page}"}
-    reg_name = parsed_data['name']
-    values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers([reg_name]), slave_id=unit_id)
+    register_key = parsed_data['register_key']
+    values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers_by_key([register_key]), slave_id=unit_id)
     logger.info(values)
-    return {"success": True, "value": values[reg_name]}
+    return {"success": True, "value": values[register_key]}
 
 
 @router.get("/modbus_register_data/{data}")

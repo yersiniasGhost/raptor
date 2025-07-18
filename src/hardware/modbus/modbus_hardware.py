@@ -42,12 +42,14 @@ class ModbusHardware(HardwareBase):
             self._modbus_map = ModbusMap.from_json(self.modbus_map_path)
         return self._modbus_map
 
-    def get_points(self, names: List[str]) -> List:
-        return [p for p in self.modbus_map.register_iterator(names)]
+    def get_points(self, names: List[str]) -> Dict[str, ModbusRegister]:
+        if len(names) == 0:
+            return self.modbus_map.registers
+        return {reg.name: reg for reg in self.modbus_map.register_iterator(names)}
 
 
     def data_acquisition(self, devices: list, scan_group_registers: List[str], _):
-        registers = [r for r in self.modbus_map.register_iterator(scan_group_registers)]
+        registers = self.modbus_map.get_registers_by_key(scan_group_registers)
         output = {}
         for device in devices:
             slave_id = device['slave_id']
@@ -106,12 +108,13 @@ class ModbusHardware(HardwareBase):
         raise ValueError("Get identifier must be implemented by sub-class of ModbusHardware")
 
     # Override this method in the base classes if needed
-    def decode_flag_status(self, register, raw_value):
+    def decode_flag_status(self, register, raw_value, key: str):
         print("BASE method decode_flag-status")
         return raw_value
 
 
-def convert_register_value(hardware: ModbusHardware, raw_values: List[int], register: ModbusRegister) -> Union[float, str]:
+def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
+                           register: ModbusRegister, key: str) -> Union[float, str]:
     """Convert raw register value based on data type and apply conversion factor"""
     data_type = register.data_type
     raw_value = raw_values[0]
@@ -134,7 +137,7 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int], regi
         # Convert to signed using 2's complement
         value = (raw_value - 256) if (raw_value & 0x80) else raw_value
     elif data_type == ModbusDatatype.FLAG16:
-        value = hardware.decode_flag_status(raw_value)
+        value = hardware.decode_flag_status(raw_value, key)
     elif data_type == ModbusDatatype.ASCII16:
         # ASCII16: Two ASCII characters from a 16-bit register
         # Extract high byte and low byte as ASCII characters
@@ -159,7 +162,7 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int], regi
 
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
-                            registers: List[ModbusRegister], slave_id: int,
+                            registers: Dict[str, ModbusRegister], slave_id: int,
                             logger=None) -> Dict[str, Union[float, int]]:
     """
     This method queries the modbus hardware based upon the slave_id and the provided registers.
@@ -174,7 +177,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         modbus_hardware.reset_hardware()
 
     output: Dict[str, Union[float, int]] = {}
-    for register in registers:
+    for key, register in registers.items():
         address = int(register.address)
         try:
             # In some cases, like Inview S the slave ID is used to query different systems not devices
@@ -195,7 +198,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                 logger.info(f"Error reading register: {result}")
             else:
                 logger.info(f"Result is: {result.registers}")
-                output[register.name] = convert_register_value(modbus_hardware, result.registers, register)
+                output[key] = convert_register_value(modbus_hardware, result.registers, register, key)
         except Exception as e:
             logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
 

@@ -39,7 +39,7 @@
 	"conversion_factor": 0.01,
 	"description": "Remaining battery capacity"
   },
-  "Full Capacity": {
+  "Full_Capacity": {
 	"name": "Full Capacity",
 	"data_type": "uint16",
 	"address": 5,
@@ -47,7 +47,7 @@
 	"conversion_factor": 0.01,
 	"description": "Full battery capacity"
   },
-  "Design Capacity": {
+  "Design_Capacity": {
 	"name": "Design Capacity",
 	"data_type": "uint16",
 	"address": 6,
@@ -55,7 +55,7 @@
 	"conversion_factor": 0.01,
 	"description": "Design battery capacity"
   },
-  "Cycle Count": {
+  "Cycle_Count": {
 	"name": "Cycle Count",
 	"data_type": "uint16",
 	"address": 7,
@@ -63,31 +63,31 @@
 	"conversion_factor": 1,
 	"description": "Battery cycle counts"
   },
-  "Warning Flags": {
+  "Warning_Flags": {
 	"name": "Warning Flags",
-	"data_type": "uint16",
+	"data_type": "flag16",
 	"address": 9,
 	"units": "hex",
 	"conversion_factor": 1,
 	"description": "Warning flag register"
   },
-  "Protection Flags": {
+  "Protection_Flags": {
 	"name": "Protection Flags",
-	"data_type": "uint16",
+	"data_type": "flag16",
 	"address": 10,
 	"units": "hex",
 	"conversion_factor": 1,
 	"description": "Protection flag register"
   },
-  "Status Flags": {
+  "Status_Flags": {
 	"name": "Status/Fault Flags",
-	"data_type": "uint16",
+	"data_type": "flag16",
 	"address": 11,
 	"units": "hex",
 	"conversion_factor": 1,
 	"description": "Status and fault flag register"
   },
-  "Balance Status": {
+  "Balance_Status": {
 	"name": "Balance Status",
 	"data_type": "uint16",
 	"address": 12,
@@ -95,7 +95,7 @@
 	"conversion_factor": 1,
 	"description": "Cell balancing status"
   },
-  "Cell Voltages": {
+  "Cell_Voltages": {
 	"name": "Cell Voltages",
 	"data_type": "uint16",
 	"address": 15,
@@ -104,7 +104,7 @@
 	"conversion_factor": 0.001,
 	"description": "Individual cell voltages (16 cells, 2 bytes each)"
   },
-  "Cell Temperatures": {
+  "Cell_Temperatures": {
 	"name": "Cell Temperatures",
 	"data_type": "int16",
 	"address": 31,
@@ -113,7 +113,7 @@
 	"conversion_factor": 0.1,
 	"description": "Cell temperatures (4 sensors, 2 bytes each)"
   },
-  "MOSFET Temperature": {
+  "MOSFET_Temperature": {
 	"name": "MOSFET Temperature",
 	"data_type": "int16",
 	"address": 35,
@@ -121,7 +121,7 @@
 	"conversion_factor": 0.1,
 	"description": "MOSFET temperature"
   },
-  "Environment Temperature": {
+  "Environment_Temperature": {
 	"name": "Environment Temperature",
 	"data_type": "int16",
 	"address": 36,
@@ -129,7 +129,7 @@
 	"conversion_factor": 0.1,
 	"description": "Environment temperature"
   },
-  "Pack OV Alarm": {
+  "Pack_OV_Alarm": {
 	"name": "Pack Overvoltage Alarm",
 	"data_type": "uint16",
 	"address": 60,
@@ -138,7 +138,7 @@
 	"description": "Pack overvoltage alarm threshold",
 	"access": "RW"
   },
-  "Pack OV Protection": {
+  "Pack_OV_Protection": {
 	"name": "Pack Overvoltage Protection",
 	"data_type": "uint16",
 	"address": 61,

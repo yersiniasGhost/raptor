@@ -25,8 +25,8 @@ class Tristar(ModbusHardware):
 
         # First let's get the scaling registers
         self.logger.info("IN TRISTAR")
-        scaling_registers = [r for r in self.modbus_map.register_iterator(self.SCALING_REGISTERS)]
-        registers = [r for r in self.modbus_map.register_iterator(scan_group_registers)]
+        scaling_registers = self.modbus_map.get_registers_by_key(self.SCALING_REGISTERS)
+        registers = self.modbus_map.get_registers_by_key(scan_group_registers)
         output = {}
         for device in devices:
             slave_id = device['slave_id']

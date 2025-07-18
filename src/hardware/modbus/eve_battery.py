@@ -26,7 +26,7 @@ class EveBattery(ModbusHardware):
         return identifiers
 
 
-    def decode_flag_status(self, register: ModbusRegister, register_value: int) -> Dict[str, bool]:
+    def decode_flag_status(self, register: ModbusRegister, register_value: int, key: str) -> Dict[str, bool]:
         """
         Decode BMS status register bits and return a dictionary of states
         Args:
@@ -35,7 +35,7 @@ class EveBattery(ModbusHardware):
         """
 
         print("Register name: ", register.name)
-        if register.name == "Warning_Flags":
+        if key == "Warning_Flags":
             # if register.data_type == ModbusDatatype.FLAG16:
             # Dictionary to store all states
             status = {

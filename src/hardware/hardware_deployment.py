@@ -46,10 +46,14 @@ class HardwareDeployment:
         alarms = self.get_points("ALARM")
         diagnositc = self.get_points("DIAGNOSTIC")
         control = self.get_points("CONTROL")
-        modbus_map = {"DATA": data_registers, "ALARM": alarms, "DIAGNOSTICS": diagnositc, "CONTROL": control}
+        all = self.get_points("ALL")
+        modbus_map = {"DATA": data_registers, "ALARM": alarms, "DIAGNOSTICS": diagnositc,
+                      "CONTROL": control, "ALL": all}
         return modbus_map
 
-    def get_points(self, data_type: str = "DATA") -> List[dict]:
+    def get_points(self, data_type: str = "DATA") -> Dict[str, Any]:
+        if data_type == "ALL":
+            return self.hardware.get_points([])
         data_registers = self.scan_groups.get(data_type, {}).get('registers', [])
         points = self.hardware.get_points(data_registers)
         return points
