@@ -42,10 +42,10 @@ class ModbusHardware(HardwareBase):
             self._modbus_map = ModbusMap.from_json(self.modbus_map_path)
         return self._modbus_map
 
-    def get_points(self, names: List[str]) -> Dict[str, ModbusRegister]:
-        if len(names) == 0:
+    def get_points(self, keys: List[str]) -> Dict[str, ModbusRegister]:
+        if len(keys) == 0:
             return self.modbus_map.registers
-        return {reg.name: reg for reg in self.modbus_map.register_iterator(names)}
+        return self.modbus_map.get_registers_by_key(keys)
 
 
     def data_acquisition(self, devices: list, scan_group_registers: List[str], _):
