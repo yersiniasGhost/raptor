@@ -78,8 +78,10 @@ async def read_modbus_register_by_name(data: str, hardware_def: Annotated[Hardwa
         hardware = hardware_def.charge_controller.hardware
     else:
         return {"success": False, "error": f"Invalid page: {page}"}
-    reg_name = parsed_data['name']
-    values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers([reg_name]), slave_id=unit_id)
+    print(parsed_data)
+    reg_name = parsed_data['register_key']
+
+    values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers_by_key([reg_name]), slave_id=unit_id)
     if reg_name not in values:
         logger.error(f"Didn't get values back from modbus: {values}")
         return {"success": False, "error": f"Couldn't read {reg_name}"}
