@@ -137,20 +137,20 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
         values = batteries.data_acquisition()
         for device in batteries.devices:
             unit_id = device["mac"]
-            filename = f"{BMS_SYSTEM}_{unit_id}.csv"
-            trending_data = read_last_n_tail(filename, 5)
-            trend = calculate_soc_trend(trending_data)
-            current_soc = float(trending_data[-1]["Remaining_Capacity"])
-            time_to_go, soc_1hr, soc_2hr = calculate_charge_projections(current_soc, trend)
-            trend_data = {
-                "trend": trend,
-                "time-to-go": time_to_go,
-                "soc-1hr": soc_1hr,
-                "soc-2hr": soc_2hr
-            }
+            # filename = f"{BMS_SYSTEM}_{unit_id}.csv"
+            # trending_data = read_last_n_tail(filename, 5)
+            # trend = calculate_soc_trend(trending_data)
+            # current_soc = float(trending_data[-1]["Remaining Capacity"])
+            # time_to_go, soc_1hr, soc_2hr = calculate_charge_projections(current_soc, trend)
+            # trend_data = {
+            #     "trend": trend,
+            #     "time-to-go": time_to_go,
+            #     "soc-1hr": soc_1hr,
+            #     "soc-2hr": soc_2hr
+            # }
             if isinstance(values, dict):  # Ensure values is a dictionary
                 await bms_store.update_unit_data(unit_id, values[unit_id])
-                await bms_store.add_unit_data(unit_id, trend_data)
+                # await bms_store.add_unit_data(unit_id, trend_data)
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()
