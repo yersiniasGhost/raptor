@@ -137,7 +137,7 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
         # Convert to signed using 2's complement
         value = (raw_value - 256) if (raw_value & 0x80) else raw_value
     elif data_type == ModbusDatatype.FLAG16:
-        value = hardware.decode_flag_status(raw_value, key)
+        value = hardware.decode_flag_status(register, raw_value, key)
     elif data_type == ModbusDatatype.ASCII16:
         # ASCII16: Two ASCII characters from a 16-bit register
         # Extract high byte and low byte as ASCII characters

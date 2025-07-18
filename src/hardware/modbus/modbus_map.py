@@ -50,8 +50,6 @@ class ModbusRegister:
     type: Union[ModbusRegisterType, str] = ModbusRegisterType.HOLDING
 
     def __post_init__(self):
-        # Ensure the name has no spaces:
-        self.name = self.name.replace(' ', '_')
         # Convert string to enum if string was provided
         if isinstance(self.data_type, str):
             try:
