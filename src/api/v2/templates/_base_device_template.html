@@ -58,10 +58,10 @@
            {% include '_unit_specification_table_entry.html'%}
     {% endwith %}
 
-    {% for reg in register_map.values() %}
+    {% for key, reg in register_map.items() %}
     <tr>
         <td>{{ reg.name }}</td>
-        <td class="value-cell" id="value-{{ unit_id }}-{{ reg.name }}">
+        <td class="value-cell" id="value-{{ unit_id }}-{{key}}">
             -
         </td>
         <td>{{ reg.description }}</td>
@@ -232,8 +232,8 @@
 
             // Update each unit's values
             for (const [unitId, values] of Object.entries(unitData)) {
-                for (const [name, value] of Object.entries(values)) {
-                    const cell = document.getElementById(`value-${unitId}-${name}`);
+                for (const [key, value] of Object.entries(values)) {
+                    const cell = document.getElementById(`value-${unitId}-${key}`);
                     if (cell) {
                         const formattedValue = formatValue(value, name);
                         if (lastValues[unitId][name] !== formattedValue) {
