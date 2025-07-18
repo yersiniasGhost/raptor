@@ -32,6 +32,51 @@ class EveBattery(ModbusHardware):
         """
 
         print("Register name: ", register.name)
+        if key == "Status_Flags":
+            status = {
+                "state of charge":  bool(register_value & (1 << 8)),
+                "state of discharge":  bool(register_value & (1 << 9)),
+                "charging MOSFET fault":  bool(register_value & (1 << 0)),
+                "discharging MOSFET fault":  bool(register_value & (1 << 1)),
+                "temperature sensor fault":  bool(register_value & (1 << 2)),
+                "battery cell fault":  bool(register_value & (1 << 4)),
+                "front end sampling communication fault":  bool(register_value & (1 << 5)),
+                "state of charging MOSFET":  bool(register_value & (1 << 10)),
+                "state of discharging MOSFET":  bool(register_value & (1 << 11)),
+                "charging limiter":  bool(register_value & (1 << 12)),
+                "charger_inversed":  bool(register_value & (1 << 14)),
+                "heater ON":  bool(register_value & (1 << 15)),
+            }
+            output = "Status/Fault: "
+            for key, value in status.items():
+                if value:
+                    output += f"{key}, "
+            return output
+        
+        if key == "Protection_Flags":
+            status = {
+                "battery cell over voltage": bool(register_value & (1 << 0)),
+                "battery cell low voltage": bool(register_value & (1 << 1)),
+                "battery pack over voltage": bool(register_value & (1 << 2)),
+                "battery pack low voltage": bool(register_value & (1 << 3)),
+                "charging over current": bool(register_value & (1 << 4)),
+                "discharging over current": bool(register_value & (1 << 5)),
+                "short circuit": bool(register_value & (1 << 6)),
+                "charger over voltage": bool(register_value & (1 << 7)),
+                "charging high temperature": bool(register_value & (1 << 8)),
+                "discharging high temperature": bool(register_value & (1 << 9)),
+                "charging low temperature": bool(register_value & (1 << 10)),
+                "discharging low temperature": bool(register_value & (1 << 11)),
+                "MOSFET high temperature": bool(register_value & (1 << 12)),
+                "environment high temperature": bool(register_value & (1 << 13)),
+                "environment low temperature": bool(register_value & (1 << 14))
+            }
+            output = "Protection: "
+            for key, value in status.items():
+                if value:
+                    output += f"{key}, "
+            return output
+            
         if key == "Warning_Flags":
             # if register.data_type == ModbusDatatype.FLAG16:
             # Dictionary to store all states
