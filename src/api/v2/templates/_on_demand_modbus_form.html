@@ -79,9 +79,9 @@
 <script type="application/json" id="modbus_data">
 {
 {% for group, registers in modbus_map.items() %}
-    "{{group}}": [
+    "{{group}}": {
         {% for key, register in registers.items() %}
-        {
+        "{{key}}": {
             "name": "{{register.name}}",
             "address": {{register.address}},
             "type": "{{register.type.value}}",
@@ -93,7 +93,7 @@
             "slave_id": {% if register.slave_id %}{{register.slave_id}}{% else %}null{% endif %}
         }{% if not loop.last %},{% endif %}
         {% endfor %}
-    ]{% if not loop.last %},{% endif %}
+    }{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 </script>
@@ -307,13 +307,13 @@ function updateGroupSelection() {
     registerSelect.innerHTML = '<option value="">-- Select a register --</option>';
 
     const registers = modbusData[selectedGroup];
-    Object.entries(registers).forEach([key, register]) => {
+    Object.entries(registers).forEach(([key, register]) => {
         const option = document.createElement('option');
         option.value = register.name;
         option.textContent = register.name;
 
         // Store register data as data attributes
-        option.dataset.register_map = key;
+        option.dataset.register_key = key;
         option.dataset.address = register.address;
         option.dataset.type = register.type;
         option.dataset.dataType = register.data_type;
