@@ -405,9 +405,11 @@ function getSelectedRegisterData() {
 async function readSelectedRegister() {
     const data = getSelectedRegisterData();
     if (!data) return;
-    const { 'register_key', 'page', 'unit_id' } = data;
-    const send_data = { 'register_key', 'page', 'unit_id' };
-
+    const send_data = {
+        register_key: data.register_key,
+        page: data.page,
+        unit_id: data.unit_id
+    };
     // Button spinner
     const button = document.getElementById('read_btn');
     const originalText = button.textContent;
