@@ -262,6 +262,8 @@ class ActuatorManager(metaclass=Singleton):
             self.network = None
             self.actuators.clear()
             self.operation_locks.clear()
+            if self.relays:
+                self.relays.set_all(False)
             Power5V().request_power_off()
             self.logger.info("Cleanup complete")
 
