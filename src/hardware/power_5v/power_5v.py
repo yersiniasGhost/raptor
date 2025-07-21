@@ -70,7 +70,7 @@ class Power5V(metaclass=Singleton):
             self.logger.info(f"Cleaning up dead process PID {pid}")
             # This will check if it's the last request and turn off power if needed
             self.request_power_off(pid)
-
+        return dead_pids
 
     def _power_on(self):
         """Enable the 5V power supply for DIO outputs"""

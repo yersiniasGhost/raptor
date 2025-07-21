@@ -374,17 +374,10 @@ class NetworkWatchdog:
     def cleanup_dead_processes(self):
         """Check for and clean up dead processes"""
         try:
-            db = DatabaseManager()
-            dead_pids = db.get_dead_process_requests()
+            dead_pids = Power5V().cleanup_dead_processes()
 
             if dead_pids:
                 self.logger.info(f"Found {len(dead_pids)} dead processes with power requests: {dead_pids}")
-
-                for pid in dead_pids:
-                    self.logger.info(f"Removing power request for dead process PID {pid}")
-                    # Use the power5v method which will handle turning off power if this is the last request
-                    self.power5v.request_power_off(pid)
-
             else:
                 self.logger.debug("No dead processes found")
 
