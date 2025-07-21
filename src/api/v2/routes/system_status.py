@@ -26,9 +26,8 @@ async def system_status(request: Request):
     except Exception as e:
         logger.error(f"Error collecting historical system status: {e}")
 
-        active_pids, dead_pids = Power5V().get_process_states()
-        power_state = Power5V().check_state()
-
+    active_pids, dead_pids = Power5V().get_process_states()
+    power_state = Power5V().check_state()
 
     try:
         current_stats = collect_system_stats()
