@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import psutil
 import time
 import subprocess
@@ -22,15 +23,13 @@ class Power5V(metaclass=Singleton):
     def log_current_power_state(self):
         """Log current power state and active requests"""
         try:
-            db = DatabaseManager()
-            active_requests = db.get_power_requests()
+            active_requests, dead_pids = self._get_process_states()
             request_count = len(active_requests)
-
             power_state = Power5V().check_state()
 
             if request_count > 0:
-                self.logger.info(
-                    f"Power state: {power_state}, Active requests: {request_count}, PIDs: {active_requests}")
+                self.logger.info(f"Power state: {power_state}, Active requests: {request_count}, PIDs: {active_requests}")
+                self.logger.info(f"Number of dead pids: {len(dead_pids)}, {dead_pids}")
             else:
                 self.logger.debug(f"Power state: {power_state}, No active requests")
 
@@ -65,9 +64,7 @@ class Power5V(metaclass=Singleton):
         if is_last_request:
             self._power_off()
 
-
-
-    def cleanup_dead_processes(self):
+    def _get_process_states(self) -> Tuple[List[int], List[int]]:
         """Remove power requests for processes that are no longer running"""
         db = DatabaseManager()
         active_pids = db.get_power_requests()
@@ -85,7 +82,11 @@ class Power5V(metaclass=Singleton):
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 # Process doesn't exist or we can't access it
                 dead_pids.append(pid)
-        self.logger.info(f"Active requests: {len(active_pids)}, dead requests: {len(dead_pids)}")
+        return active_pids, dead_pids
+
+
+    def cleanup_dead_processes(self):
+        active_pids, dead_pids = self._get_process_states()
         for pid in dead_pids:
             self.logger.info(f"Cleaning up dead process PID {pid}")
             # This will check if it's the last request and turn off power if needed
