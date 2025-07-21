@@ -15,7 +15,7 @@ from utils import LogManager
 logger = LogManager().get_logger(__name__)
 
 router = APIRouter(prefix="/charge_controller", tags=["charge_controller"])
-bms_store = BMSDataStore()
+cc_store = BMSDataStore()
 CC_TEMPLATE = "charge_controllers_template.html"
 
 
@@ -24,7 +24,7 @@ def get_charge_controller(deployment: HardwareDeploymentRoute) -> HardwareDeploy
 
 
 @router.get("/data")
-async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+async def get_cc_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
         # Update each unit
         cc = get_charge_controller(hardware)
@@ -34,13 +34,13 @@ async def get_bms_data(hardware: Annotated[HardwareDeploymentRoute, Depends(get_
         for device in cc.devices:
             unit_id = device["mac"]
             if isinstance(values, dict):  # Ensure values is a dictionary
-                await bms_store.update_unit_data(unit_id, values[unit_id])
+                await cc_store.update_unit_data(unit_id, values[unit_id])
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
-        data = await bms_store.get_all_data()
+        data = await cc_store.get_all_data()
         return JSONResponse(content={"data": data, "error": None})
     except Exception as e:
-        logger.error(f"Error getting BMS data: {e}", exc_info=True)
+        logger.error(f"Error getting ChargeController data: {e}", exc_info=True)
         return JSONResponse(content={"data": None, "error": str(e)})
 
 
@@ -67,6 +67,7 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=4000
 @router.get("/")
 async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     charge_controller = get_charge_controller(hardware)
+    modbus_map = charge_controller.get_modbus_maps()
     if not charge_controller:
         return templates.TemplateResponse('hardware_not_configured.html',
                                           {"request": request,
@@ -75,25 +76,27 @@ async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, 
     charge_controller.get_identifiers()
     register_map = charge_controller.get_points("DATA")
     try:
-        bms_data = await bms_store.get_all_data()
+        cc_data = await cc_store.get_all_data()
         return templates.TemplateResponse(
             CC_TEMPLATE,
             {
                 "devices": charge_controller,
                 "request": request,
-                "charge_data": bms_data,
+                "charge_data": cc_data,
                 "register_map": register_map,
-                "error": None
+                "modbus_map": modbus_map,
+                "error": None,
+                "page": "ChargeController"
             }
         )
     except Exception as e:
-        logger.error(f"Error in BMS route: {e}")
+        logger.error(f"Error in ChargeController route: {e}")
         return templates.TemplateResponse(
             CC_TEMPLATE,
             {
                 "devices": None,
                 "request": request,
-                "bms_data": {},
+                "charge_data": {},
                 "register_map": None,
                 "error": str(e)
             }
