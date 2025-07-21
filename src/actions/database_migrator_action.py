@@ -13,7 +13,6 @@ class DatabaseMigratorAction(Action):
                       mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
         logger = LogManager().get_logger("DatabaseMigratorAction")
         logger.info(f"Starting Database Migrator: {self.params}")
-        tag = self.params["tag"]
         try:
             DatabaseManager().run_schema_sql()
             logger.info(f"Successfully applied database migration")
