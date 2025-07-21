@@ -20,7 +20,7 @@ class FirmwareUpdateAction(Action):
                 logger.error("Unable to Update Firmware")
                 return ActionStatus.FAILED, {"error": "error"}
             logger.info(f"Successfully updated firmware version to {tag}")
-            if self.params['migrate_db']:
+            if self.params.get('migrate_db', None):
                 DatabaseManager().run_schema_sql()
                 logger.info(f"Successfully applied database migration")
             return ActionStatus.SUCCESS, {"message": f"Updated code to {tag}"}
