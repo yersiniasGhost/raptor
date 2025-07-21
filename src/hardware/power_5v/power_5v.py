@@ -23,7 +23,7 @@ class Power5V(metaclass=Singleton):
     def log_current_power_state(self):
         """Log current power state and active requests"""
         try:
-            active_requests, dead_pids = self._get_process_states()
+            active_requests, dead_pids = self.get_process_states()
             request_count = len(active_requests)
             power_state = Power5V().check_state()
 
@@ -64,7 +64,7 @@ class Power5V(metaclass=Singleton):
         if is_last_request:
             self._power_off()
 
-    def _get_process_states(self) -> Tuple[List[int], List[int]]:
+    def get_process_states(self) -> Tuple[List[int], List[int]]:
         """Remove power requests for processes that are no longer running"""
         db = DatabaseManager()
         active_pids = db.get_power_requests()
@@ -86,7 +86,7 @@ class Power5V(metaclass=Singleton):
 
 
     def cleanup_dead_processes(self):
-        active_pids, dead_pids = self._get_process_states()
+        active_pids, dead_pids = self.get_process_states()
         for pid in dead_pids:
             self.logger.info(f"Cleaning up dead process PID {pid}")
             # This will check if it's the last request and turn off power if needed

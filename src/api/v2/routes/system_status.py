@@ -2,6 +2,7 @@ import csv
 from fastapi import APIRouter, Request
 from . import templates
 from utils.system_status import collect_system_stats
+from hardware.power_5v.power_5v import Power5V
 
 from utils import LogManager
 logger = LogManager().get_logger(__name__)
@@ -25,11 +26,18 @@ async def system_status(request: Request):
     except Exception as e:
         logger.error(f"Error collecting historical system status: {e}")
 
+        active_pids, dead_pids = Power5V().get_process_states()
+        power_state = Power5V().check_state()
+
+
     try:
         current_stats = collect_system_stats()
 
         return templates.TemplateResponse("system_status.html", {
             "request": request,
+            "power5v_state": power_state,
+            "dead_requests": len(dead_pids),
+            "on_requests": len(active_pids),
             "current_stats": current_stats,
             "timestamps": timestamps,
             "cpu_history": cpu_history,

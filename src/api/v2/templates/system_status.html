@@ -30,11 +30,66 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+    .power5v-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 15px 0;
+    }
+    .power5v-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+    }
+    .power5v-label {
+        font-weight: bold;
+        color: #495057;
+        margin-bottom: 5px;
+    }
+    .power5v-value {
+        font-size: 18px;
+        font-family: 'Courier New', monospace;
+        color: #212529;
+    }
+    .clear-requests-container {
+        margin-top: 20px;
+        text-align: center;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <h1>System Status</h1>
+
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('power5v-content', 'power5v-icon')">
+        <span class="collapse-icon" id="power5v-icon">▶</span>
+        Off board 5V Power
+    </h2>
+    <div id="power5v-content" class="collapsible-content" style="display: none;">
+        <div class="power5v-grid">
+            <div class="power5v-card">
+                <div class="power5v-label">Power5V State</div>
+                <div class="power5v-value">{{ power5v_state | default('Unknown') }}</div>
+            </div>
+            <div class="power5v-card">
+                <div class="power5v-label">On Requests</div>
+                <div class="power5v-value">{{ on_requests | default(-1) }}</div>
+            </div>
+            <div class="power5v-card">
+                <div class="power5v-label">Dead Requests</div>
+                <div class="power5v-value">{{ dead_requests | default(-1) }}</div>
+            </div>
+        </div>
+
+        <div class="clear-requests-container">
+            <button type="button" class="btn btn-warning" onclick="clearRequests()">
+                Clear Requests
+            </button>
+        </div>
+    </div>
+</div>
 
 <div class="status-grid">
     <div class="status-card">
@@ -99,6 +154,32 @@
             }
         }
     });
+
+    // Function to clear requests
+    function clearRequests() {
+        if (confirm('Are you sure you want to clear all requests?')) {
+            fetch('system-status/clear-requests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Requests cleared successfully!');
+                    // Reload the page to reflect changes
+                    window.location.reload();
+                } else {
+                    alert('Error clearing requests: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error clearing requests');
+            });
+        }
+    }
 
     // Refresh data every 60 seconds
     setInterval(() => {
