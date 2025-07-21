@@ -352,38 +352,6 @@ class NetworkWatchdog:
         tunnel_status, _, _ = self.run_command(f"systemctl status {REVERSE_TUNNEL_SERVICE} | head -3")
         self.logger.info(f"Reverse Tunnel Status:\n{tunnel_status}")
 
-    # POWER Requests
-    def log_current_power_state(self):
-        """Log current power state and active requests"""
-        try:
-            db = DatabaseManager()
-            active_requests = db.get_power_requests()
-            request_count = len(active_requests)
-
-            power_state = Power5V().check_state()
-
-            if request_count > 0:
-                self.logger.info(
-                    f"Power state: {power_state}, Active requests: {request_count}, PIDs: {active_requests}")
-            else:
-                self.logger.debug(f"Power state: {power_state}, No active requests")
-
-        except Exception as e:
-            self.logger.error(f"Error logging current state: {e}")
-
-    def cleanup_dead_processes(self):
-        """Check for and clean up dead processes"""
-        try:
-            dead_pids = Power5V().cleanup_dead_processes()
-
-            if dead_pids:
-                self.logger.info(f"Found {len(dead_pids)} dead processes with power requests: {dead_pids}")
-            else:
-                self.logger.debug("No dead processes found")
-
-        except Exception as e:
-            self.logger.error(f"Error during dead process cleanup: {e}")
-
 
     def run(self):
         """Main watchdog function"""
@@ -444,8 +412,8 @@ class NetworkWatchdog:
                                 time.sleep(RETRY_DELAY)
 
                 # NOW Check the Power requests in the database
-                self.cleanup_dead_processes()
-                self.log_current_power_state()
+                Power5V().cleanup_dead_processes()
+                Power5V().log_current_power_state()
                 # Sleep until next check
                 time.sleep(CHECK_INTERVAL)
 

@@ -19,6 +19,26 @@ class Power5V(metaclass=Singleton):
 
 
 
+    def log_current_power_state(self):
+        """Log current power state and active requests"""
+        try:
+            db = DatabaseManager()
+            active_requests = db.get_power_requests()
+            request_count = len(active_requests)
+
+            power_state = Power5V().check_state()
+
+            if request_count > 0:
+                self.logger.info(
+                    f"Power state: {power_state}, Active requests: {request_count}, PIDs: {active_requests}")
+            else:
+                self.logger.debug(f"Power state: {power_state}, No active requests")
+
+        except Exception as e:
+            self.logger.error(f"Error logging current state: {e}")
+
+
+
     def request_power_on(self, process_id: int = None):
         """Request power on for a specific process ID"""
         if process_id is None:
@@ -65,7 +85,7 @@ class Power5V(metaclass=Singleton):
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 # Process doesn't exist or we can't access it
                 dead_pids.append(pid)
-
+        self.logger.info(f"Active requests: {len(active_pids)}, dead requests: {len(dead_pids)}")
         for pid in dead_pids:
             self.logger.info(f"Cleaning up dead process PID {pid}")
             # This will check if it's the last request and turn off power if needed
