@@ -1,4 +1,5 @@
-from typing import Optional, Union, Dict, Any, Iterable, List
+import os
+from typing import Optional, Dict, Any, Iterable, List
 from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
@@ -52,6 +53,98 @@ class DatabaseManager(metaclass=Singleton):
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Auto-close on context exit"""
         self.close()
+
+
+
+    def add_power_request(self, process_id: int) -> bool:
+        """
+        Add a power request for a specific process ID.
+        Returns:
+            bool: True if this is the first power request (power should be turned on),
+                  False if there were already existing requests
+        """
+        try:
+            cursor = self.connection.cursor()
+            # Check if any requests exist before adding
+            cursor.execute("SELECT COUNT(*) FROM power_requests")
+            existing_count = cursor.fetchone()[0]
+
+            # Insert the new request
+            cursor.execute("""
+                INSERT OR IGNORE INTO power_requests (process_id, timestamp)
+                VALUES (?, CURRENT_TIMESTAMP)
+            """, (process_id,))
+
+            self.connection.commit()
+            # Return True if this was the first request
+            return existing_count == 0
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            self.logger.error(f"Error Adding power on request: {e}")
+            raise
+
+
+
+    def remove_power_request(self, process_id: int) -> bool:
+        """
+        Remove a power request for a specific process ID.
+
+        Args:
+            process_id: The process ID that no longer needs power
+
+        Returns:
+            bool: True if this was the last power request (power should be turned off),
+                  False if there are still other requests
+        """
+        try:
+            cursor = self.connection.cursor()
+            # Remove the request
+            cursor.execute("""
+                DELETE FROM power_requests WHERE process_id = ?
+            """, (process_id,))
+
+            self.connection.commit()
+
+            # Check if any requests remain
+            cursor.execute("SELECT COUNT(*) FROM power_requests")
+            remaining_count = cursor.fetchone()[0]
+
+            # Return True if no requests remain
+            return remaining_count == 0
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            self.logger.error(f"Error Removing power request: {e}")
+            raise
+
+
+
+    def get_power_requests(self) -> List[int]:
+        """
+        Get all current power request process IDs.
+        Returns:
+            List[int]: List of process IDs that have active power requests
+        """
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT process_id FROM power_requests ORDER BY timestamp")
+        results = cursor.fetchall()
+        return [row[0] for row in results]
+
+
+
+    def clear_all_power_requests(self):
+        """Clear all power requests (useful for initialization/cleanup)"""
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM power_requests")
+        self.connection.commit()
+        self.logger.info("Cleared all power requests")
+
+
+
+    def get_power_request_count(self) -> int:
+        """Get the current number of active power requests"""
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT COUNT(*) FROM power_requests")
+        return cursor.fetchone()[0]
 
     def clear_existing_configuration(self):
         """ Clear the existing configuration data.  Keep the telemetry data in case of roll back? """
@@ -407,4 +500,70 @@ class DatabaseManager(metaclass=Singleton):
                     self.logger.error(f"Failed to restore from backup: {restore_error}")
 
             self._connection = None
+            return False
+
+
+
+    def run_schema_sql(self) -> bool:
+        """
+        Execute the schema.sql file on the database.
+        This will create/update tables and indexes as defined in the schema file.
+
+        Returns:
+            bool: True if schema was applied successfully, False otherwise
+        """
+        try:
+            # Ensure we have a valid schema file
+            if not self.schema_path.exists():
+                raise FileNotFoundError(f"Schema file not found: {self.schema_path}")
+
+            self.logger.info(f"Applying schema from {self.schema_path}")
+
+            # Read the schema file
+            with open(self.schema_path, 'r', encoding='utf-8') as f:
+                schema_sql = f.read()
+
+            if not schema_sql.strip():
+                raise ValueError("Schema file is empty")
+
+            # Execute the schema using the existing connection
+            conn = self.connection
+            conn.row_factory = sqlite3.Row
+
+            # Set pragmas for better performance during schema creation
+            conn.execute('PRAGMA journal_mode=WAL')
+            conn.execute('PRAGMA synchronous=NORMAL')
+            conn.execute('PRAGMA foreign_keys=ON')
+
+            # Execute the entire schema script
+            conn.executescript(schema_sql)
+
+            # Verify schema was applied by checking for tables
+            cursor = conn.execute("""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name NOT LIKE 'sqlite_%'
+                ORDER BY name
+            """)
+            tables = [row[0] for row in cursor.fetchall()]
+
+            if tables:
+                self.logger.info(f"Schema applied successfully. Created/updated tables: {', '.join(tables)}")
+            else:
+                self.logger.warning("Schema applied but no tables found")
+
+            conn.commit()
+
+            # Reset connection to pick up any schema changes
+            self.close()
+
+            return True
+
+        except FileNotFoundError as e:
+            self.logger.error(f"Schema file not found: {e}")
+            return False
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error applying schema: {e}")
+            return False
+        except Exception as e:
+            self.logger.error(f"Unexpected error applying schema: {e}")
             return False

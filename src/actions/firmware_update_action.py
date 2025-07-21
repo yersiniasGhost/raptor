@@ -5,6 +5,7 @@ from .action_status import ActionStatus
 from config.telemetry_config import TelemetryConfig
 from config.mqtt_config import MQTTConfig
 from utils import JSON, LogManager
+from database.database_manager import DatabaseManager
 
 
 class FirmwareUpdateAction(Action):
@@ -19,6 +20,9 @@ class FirmwareUpdateAction(Action):
                 logger.error("Unable to Update Firmware")
                 return ActionStatus.FAILED, {"error": "error"}
             logger.info(f"Successfully updated firmware version to {tag}")
+            if self.params['migrate_db']:
+                DatabaseManager().run_schema_sql()
+                logger.info(f"Successfully applied database migration")
             return ActionStatus.SUCCESS, {"message": f"Updated code to {tag}"}
         except Exception as e:
             logger.error(f"Error during Firmware update: {e}")

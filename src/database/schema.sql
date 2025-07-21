@@ -52,14 +52,18 @@ CREATE TABLE IF NOT EXISTS power_5V (
 
 INSERT OR IGNORE INTO power_5V (id, requests) VALUES (1, 0);
 
+DROP TABLE IF EXISTS power_5V;
 
--- Devices (specific devices on a hardware instance)
---CREATE TABLE IF NOT EXISTS devices (
---    id INTEGER PRIMARY KEY,
---    hardware_id INTEGER NOT NULL,
---    mac TEXT NOT NULL,
---    config JSON NOT NULL,                   -- Device-specific configuration
---    enabled BOOLEAN DEFAULT true,
---    external_ref TEXT NOT NULL,
---    FOREIGN KEY (hardware_id) REFERENCES hardware(id)
---);
+-- Create new power_requests table
+CREATE TABLE IF NOT EXISTS power_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    process_id INTEGER NOT NULL UNIQUE,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create index for faster lookups
+CREATE INDEX IF NOT EXISTS idx_power_requests_process_id ON power_requests(process_id);
+CREATE INDEX IF NOT EXISTS idx_power_requests_timestamp ON power_requests(timestamp);
+
+

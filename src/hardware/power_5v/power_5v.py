@@ -1,5 +1,7 @@
+import psutil
 import time
 import subprocess
+import os
 from database.database_manager import DatabaseManager
 from utils import LogManager
 from utils import Singleton
@@ -11,51 +13,89 @@ THIS IS TS-7180 ready only!
 
 
 class Power5V(metaclass=Singleton):
+
     def __init__(self):
         self.logger = LogManager().get_logger("Power5V")
 
-    def request_power_on(self):
+
+
+    def request_power_on(self, process_id: int = None):
+        """Request power on for a specific process ID"""
+        if process_id is None:
+            process_id = os.getpid()
+
         db = DatabaseManager()
-        requests = db.power_on()
-        self.logger.info(f"Request power ON.  Power on requests: {requests}")
-        # self.logger.info(self.check_state())
-        self._power_on(requests)
-        # self.logger.info(self.check_state())
+        is_first_request = db.add_power_request(process_id)
+        self.logger.info(f"Request power ON for PID {process_id}. First request: {is_first_request}")
+
+        if is_first_request:
+            self._power_on()
 
 
-    def request_power_off(self):
+
+    def request_power_off(self, process_id: int = None):
+        """Request power off for a specific process ID"""
+        if process_id is None:
+            process_id = os.getpid()
+
         db = DatabaseManager()
-        requests = db.power_off()
-        self.logger.info(f"Request power OFF.  Remaining requests: {requests}")
-        # self.logger.info(self.check_state())
-        self._power_off(requests)
-        # self.logger.info(self.check_state())
+        is_last_request = db.remove_power_request(process_id)
+        self.logger.info(f"Request power OFF for PID {process_id}. Last request: {is_last_request}")
+
+        if is_last_request:
+            self._power_off()
 
 
 
-    def _power_on(self, requests: int):
-        """Enable the 5V power supply for DIO outputs on the first time N =1 """
-        if requests == 1:
+    def cleanup_dead_processes(self):
+        """Remove power requests for processes that are no longer running"""
+        db = DatabaseManager()
+        active_pids = db.get_power_requests()
+        dead_pids = []
+        for pid in active_pids:
             try:
-                subprocess.run(["gpioset", "5", "16=1"], check=True)
-                self.logger.info("5V power enabled")
-                time.sleep(0.1)
-                return True
-            except subprocess.CalledProcessError as e:
-                self.logger.error(f"Failed to enable 5V power: {e}")
-                return False
+                # Check if process exists and is running
+                if not psutil.pid_exists(pid):
+                    dead_pids.append(pid)
+                else:
+                    # Double-check the process is actually running
+                    process = psutil.Process(pid)
+                    if process.status() == psutil.STATUS_ZOMBIE:
+                        dead_pids.append(pid)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                # Process doesn't exist or we can't access it
+                dead_pids.append(pid)
+
+        for pid in dead_pids:
+            self.logger.info(f"Cleaning up dead process PID {pid}")
+            # This will check if it's the last request and turn off power if needed
+            self.request_power_off(pid)
 
 
-    def _power_off(self, requests: int):
+    def _power_on(self):
+        """Enable the 5V power supply for DIO outputs"""
+        try:
+            subprocess.run(["gpioset", "5", "16=1"], check=True)
+            self.logger.info("5V power enabled")
+            time.sleep(0.1)
+            return True
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Failed to enable 5V power: {e}")
+            return False
+
+
+
+    def _power_off(self):
         """Disable the 5V power supply"""
-        if requests == 0:
-            try:
-                subprocess.run(["gpioset", "5", "16=0"], check=True)
-                self.logger.info("5V power disabled")
-                return True
-            except subprocess.CalledProcessError as e:
-                self.logger.error(f"Failed to disable 5V power: {e}")
-                return False
+        try:
+            subprocess.run(["gpioset", "5", "16=0"], check=True)
+            self.logger.info("5V power disabled")
+            return True
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Failed to disable 5V power: {e}")
+            return False
+
+
 
     def check_state(self):
         try:

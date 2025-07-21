@@ -5,7 +5,9 @@ import subprocess
 import time
 import os
 from datetime import datetime
-from utils import LogManager, EnvVars
+from utils import LogManager
+from database.database_manager import DatabaseManager
+from hardware.power_5v.power_5v import Power5V
 
 # Configuration
 CHECK_INTERVAL = 120  # Check every so often
@@ -350,6 +352,44 @@ class NetworkWatchdog:
         tunnel_status, _, _ = self.run_command(f"systemctl status {REVERSE_TUNNEL_SERVICE} | head -3")
         self.logger.info(f"Reverse Tunnel Status:\n{tunnel_status}")
 
+    # POWER Requests
+    def log_current_power_state(self):
+        """Log current power state and active requests"""
+        try:
+            db = DatabaseManager()
+            active_requests = db.get_power_requests()
+            request_count = len(active_requests)
+
+            power_state = Power5V().check_state()
+
+            if request_count > 0:
+                self.logger.info(
+                    f"Power state: {power_state}, Active requests: {request_count}, PIDs: {active_requests}")
+            else:
+                self.logger.debug(f"Power state: {power_state}, No active requests")
+
+        except Exception as e:
+            self.logger.error(f"Error logging current state: {e}")
+
+    def cleanup_dead_processes(self):
+        """Check for and clean up dead processes"""
+        try:
+            db = DatabaseManager()
+            dead_pids = db.get_dead_process_requests()
+
+            if dead_pids:
+                self.logger.info(f"Found {len(dead_pids)} dead processes with power requests: {dead_pids}")
+
+                for pid in dead_pids:
+                    self.logger.info(f"Removing power request for dead process PID {pid}")
+                    # Use the power5v method which will handle turning off power if this is the last request
+                    self.power5v.request_power_off(pid)
+
+            else:
+                self.logger.debug("No dead processes found")
+
+        except Exception as e:
+            self.logger.error(f"Error during dead process cleanup: {e}")
 
 
     def run(self):
@@ -410,6 +450,9 @@ class NetworkWatchdog:
                                     f"Multiple recovery attempts failed, waiting {RETRY_DELAY * 2}s before next try")
                                 time.sleep(RETRY_DELAY)
 
+                # NOW Check the Power requests in the database
+                self.cleanup_dead_processes()
+                self.log_current_power_state()
                 # Sleep until next check
                 time.sleep(CHECK_INTERVAL)
 
