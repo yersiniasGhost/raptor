@@ -66,4 +66,15 @@ CREATE TABLE IF NOT EXISTS power_requests (
 CREATE INDEX IF NOT EXISTS idx_power_requests_process_id ON power_requests(process_id);
 CREATE INDEX IF NOT EXISTS idx_power_requests_timestamp ON power_requests(timestamp);
 
+-- Create new database migration table to store migration number, name, and date
+CREATE TABLE IF NOT EXISTS database_migration (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    migration_id INTEGER NOT NULL UNIQUE,
+    migration_info TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+);
+
+INSERT INTO database_migration (migration_id, migration_info) VALUES (1, "Base migration.");
+
+
 

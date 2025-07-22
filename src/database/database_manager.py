@@ -1,5 +1,4 @@
-import os
-from typing import Optional, Dict, Any, Iterable, List
+from typing import Optional, Dict, Any, Iterable, List, Tuple
 from pathlib import Path
 import sqlite3
 from sqlite3 import Connection
@@ -550,20 +549,32 @@ class DatabaseManager(metaclass=Singleton):
                 self.logger.info(f"Schema applied successfully. Created/updated tables: {', '.join(tables)}")
             else:
                 self.logger.warning("Schema applied but no tables found")
-
             conn.commit()
-
             # Reset connection to pick up any schema changes
             self.close()
 
-            return True
-
         except FileNotFoundError as e:
             self.logger.error(f"Schema file not found: {e}")
-            return False
+            raise
+
         except sqlite3.Error as e:
             self.logger.error(f"Database error applying schema: {e}")
-            return False
+            raise
         except Exception as e:
             self.logger.error(f"Unexpected error applying schema: {e}")
-            return False
+            raise
+
+    def get_latest_migration(self) -> Tuple[int, str]:
+        try:
+            cursor = self.connection.execute("""
+                            SELECT migration_id, migration_info FROM database_migration
+                            ORDER BY id DESC
+                            LIMIT 1; 
+                        """)
+            results = cursor.fetchall()
+            if not results:
+                return 0, "Very old migration"
+            row = results[0]
+            return row[0], row[1]
+        except Exception as e:
+            return 0, f"Error or no migrations.  {e}"

@@ -234,6 +234,26 @@
     </div>
 </div>
 
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('database-content', 'database-icon')">
+        <span class="collapse-icon" id="database-icon">▶</span>
+        Database Migrations
+    </h2>
+    <div id="database-content" class="collapsible-content" style="display: none;">
+        <div class="mqtt-config">
+            <span class="config-label">Current Database Migration:</span>
+            <span class="config-value">{{current_migration}}</span>
+
+
+        </div>
+        <div class="test-section">
+            <button type="button" class="test-button" onclick="migrateDatabase()">Test Connection</button>
+            <div id="migration-status"></div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Commission and Configure Section -->
 <div class="collapsible-section">
     <h2 class="collapsible-header" onclick="toggleCollapse('config-content', 'config-icon')">
@@ -369,6 +389,26 @@
             button.textContent = 'Test Connection';
         }
     }
+
+    async function migrateDatabase() {
+        if (confirm('Are you sure you want to Migrate the database?')) {
+            try {
+                const statusDiv = document.getElementById('migrate-status');
+                statusDiv.innerHTML = '<span class="loading">🔄 Migrating database...</span>';
+
+                const response = await fetch(`/configuration/migrate_database`, { method: 'POST' });
+                const result = await response.json();
+                if (result === true || result.status === true) {
+                statusDiv.innerHTML = '<span class="status-success"><span class="status-icon">✅</span>Migration: ${result.id}, ${result.info}</span>';
+            } else {
+                statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Migration failed: ${result.error}</span>';
+            }
+            } catch (error) {
+                console.log("BAD ERROR");
+            }
+        }
+    }
+
 
     async function recommission() {
         if (confirm('Are you sure you want to Recommission Raptor?')) {

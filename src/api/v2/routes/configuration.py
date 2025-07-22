@@ -21,6 +21,17 @@ COMMON_PATH = "/root/raptor-common"
 router = APIRouter(prefix="/configuration", tags=["configuration"])
 
 
+@router.post("/migrate_database", name='migrate-database')
+async def migrate_database(request: Request):
+    try:
+        DatabaseManager().run_schema_sql()
+        migration_id, migration_info = DatabaseManager().get_latest_migration()
+        return {"status": True, "id": migration_id, "info": migration_info}
+    except Exception as e:
+        logger.error(f"Error migrating database: {e}")
+        return {"status": False, "error": str(e)}
+
+
 @router.post("/mqtt-test", name="mqtt-test")
 async def mqtt_test(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     mqtt_broker: MQTTConfig = get_mqtt_config(logger)
@@ -47,6 +58,7 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         mqtt_broker: MQTTConfig = get_mqtt_config(logger)
         mac_address = get_mac_address()
         raptor_data = DatabaseManager().get_raptor()
+        migration_data = DatabaseManager().get_migration_data()
         if not raptor_data:
             raptor_data = {"name": "error", "client": "error"}
         services = SERVICES
