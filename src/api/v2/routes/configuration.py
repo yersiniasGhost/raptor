@@ -58,7 +58,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         mqtt_broker: MQTTConfig = get_mqtt_config(logger)
         mac_address = get_mac_address()
         raptor_data = DatabaseManager().get_raptor()
-        migration_data = DatabaseManager().get_migration_data()
+        migration_id, migration_info = DatabaseManager().get_latest_migration()
+
         if not raptor_data:
             raptor_data = {"name": "error", "client": "error"}
         services = SERVICES
@@ -81,7 +82,9 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "mac_address": mac_address,
                 "services": services,
                 "raptor_name": raptor_data['name'],
-                "raptor_client": raptor_data['client']
+                "raptor_client": raptor_data['client'],
+                "migration_id": migration_id,
+                "migration_info": migration_info
             }
         )
     except Exception as e:
