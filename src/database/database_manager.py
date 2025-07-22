@@ -198,57 +198,11 @@ class DatabaseManager(metaclass=Singleton):
             cursor = conn.cursor()
             # Increment the counter
             cursor.execute("""
-                UPDATE power_5V SET requests = 0 WHERE id = 1
+                DELETE FROM power_requests;
             """)
             conn.commit()
             # Get the updated value
-            cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
-            result = cursor.fetchone()
-            return result[0] if result else 0
-
-    def power_on(self) -> int:
-        """
-        Increment the power request counter and return the new value
-
-        Returns:
-            int: The new request count after incrementing
-        """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            # Increment the counter
-            cursor.execute("""
-                UPDATE power_5V SET requests = requests + 1 WHERE id = 1
-            """)
-            conn.commit()
-            # Get the updated value
-            cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
-            result = cursor.fetchone()
-            return result[0] if result else 0
-
-
-
-    def power_off(self) -> int:
-        """
-        Decrement the power request counter and return the new value
-        Prevents going below 0
-
-        Returns:
-            int: The new request count after decrementing
-        """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            # Decrement the counter but don't go below 0
-            cursor.execute("""
-                UPDATE power_5V 
-                SET requests = MAX(0, requests - 1) 
-                WHERE id = 1
-            """)
-            conn.commit()
-
-            # Get the updated value
-            cursor.execute("SELECT requests FROM power_5V WHERE id = 1")
-            result = cursor.fetchone()
-            return result[0] if result else 0
+            return 0
 
 
     def get_raptor(self) -> Optional[Dict[str, str]]:
