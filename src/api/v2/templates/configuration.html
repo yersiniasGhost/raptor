@@ -403,9 +403,19 @@
                 const response = await fetch(`/configuration/migrate_database`, { method: 'POST' });
                 const result = await response.json();
                 if (result === true || result.status === true) {
-                statusDiv.innerHTML = '<span class="status-success"><span class="status-icon">✅</span>Migration: ${result.id}, ${result.info}</span>';
+                statusDiv.innerHTML = `
+                        <span class="status-success">
+                            <span class="status-icon">✅</span>
+                            Migration: ${result.id}, ${result.info}
+                        </span>
+                    `;
             } else {
-                statusDiv.innerHTML = '<span class="status-error"><span class="status-icon">❌</span>Migration failed: ${result.error}</span>';
+            statusDiv.innerHTML = `
+                        <span class="status-error">
+                            <span class="status-icon">❌</span>
+                            Migration: ${result.error}, ${result.info}
+                        </span>
+                    `;
             }
             } catch (error) {
                 console.error(error);
