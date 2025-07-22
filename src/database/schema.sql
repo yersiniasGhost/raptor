@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS database_migration (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO database_migration (migration_id, migration_info) VALUES (1, "Base migration.");
+INSERT OR IGNORE INTO database_migration (migration_id, migration_info) VALUES (1, "Base migration.");
 
 
 
