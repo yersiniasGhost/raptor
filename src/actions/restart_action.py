@@ -12,6 +12,7 @@ class RestartAction(Action):
         logger = LogManager().get_logger("RestartAction")
         logger.info("Received restart command, initiating controller restart")
         processes = SERVICES
+        processes.remove('cellular-init')
         try:
             # Get parameters with defaults
             restart_mode = self.params.get('restart_mode', 'service')  # 'service' or 'exit'
