@@ -96,7 +96,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "error_message": f"Failed to recommission system: {str(e)}",
                 "git_branches": get_git_branches(),
                 'raptor_common_branches': get_git_branches(COMMON_PATH),
-                "current_branch": get_current_branch()
+                "current_branch": get_current_branch(),
+                "hardware": hardware
             }
         )
 
