@@ -88,6 +88,8 @@ ser.close()
     nmcli connection modify cellular connection.autoconnect yes
     nmcli connection modify cellular connection.autoconnect-priority 100
     nmcli connection modify cellular ipv4.route-metric 50
+    nmcli connection modify cellular ipv4.dns "8.8.8.8,1.1.1.1"
+    nmcli connection modify cellular ipv4.ignore-auto-dns no
 
     # Configure Modbus interfaces to never handle internet traffic
     echo "Protecting Modbus interfaces from internet traffic..."
