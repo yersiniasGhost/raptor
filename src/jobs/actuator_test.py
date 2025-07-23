@@ -99,7 +99,7 @@ class ContinuousDataLogger:
             fieldnames = list(asdict(TestMetrics(
                 timestamp=0, cycle_number=0, actuator_id="", target_position=0,
                 actual_position=0, current_draw=0, speed=0, voltage=0,
-                target_speed=0, position_error=0, operation_type="",
+                operation_type="",
                 motion_in_progress=False, error_flags=""
             )).keys())
 
