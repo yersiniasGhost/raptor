@@ -13,8 +13,8 @@ if [ "$1" = "configure" ]; then
     fi
 
     echo "Step 1: Installing packages..."
-    apt update -qq
-    apt install -y libmbim-utils network-manager
+#    apt update -qq
+#    apt install -y libmbim-utils network-manager
 
     echo "Step 2: Configuring NetworkManager to manage all interfaces..."
 
@@ -31,8 +31,8 @@ managed=true
 
 [device]
 # Ensure WiFi devices are always managed
-match-device=type:wifi
-managed=true
+match-device=driver:wilc_spi
+managed=false
 EOF
 
     echo "Step 3: Hardware setup and modem configuration..."
