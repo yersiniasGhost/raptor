@@ -15,7 +15,7 @@ class ReconfigureAction(Action):
 
         logger.info("Starting reconfigure action")
         try:
-            rc = RaptorConfiguration()
+            rc = RaptorConfiguration(self.params.get('api_url', None))
             if not rc.get_configuration():
                 logger.error("Unable to reconfigure Raptor")
                 return ActionStatus.FAILED, {"error": "error"}
