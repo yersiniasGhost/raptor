@@ -12,9 +12,13 @@ from utils import LogManager
 
 class RaptorCommissioner:
 
-    def __init__(self):
+    def __init__(self, api_url: Optional[str] = None):
+
         self.logger = LogManager().get_logger("RaptorCommissioner")
-        self.api_base_url = EnvVars().api_url
+        self.api_base_url = api_url
+        if not self.api_base_url:
+            self.api_base_url = EnvVars().api_url
+
         self.api_key: Optional[str] = None
         self.mac_address = get_mac_address()
 
