@@ -1,5 +1,4 @@
 from typing import Optional
-import subprocess
 from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File, Form
 from fastapi.responses import RedirectResponse
 from fastapi.responses import JSONResponse
@@ -13,10 +12,10 @@ from config.mqtt_config import MQTTConfig
 from actions.action_factory import ActionFactory
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from utils import LogManager, get_mac_address, EnvVars, SERVICES
+from utils import get_git_branches, get_current_branch, COMMON_PATH
 from cloud.mqtt_comms import check_connection, publish_payload
 
 logger = LogManager().get_logger(__name__)
-COMMON_PATH = "/root/raptor-common"
 
 router = APIRouter(prefix="/configuration", tags=["configuration"])
 
@@ -308,48 +307,3 @@ async def get_current_configuration(section: str):
     return JSONResponse(configurations[section])
 
 
-def get_git_branches(repo_path: Optional[str] = None):
-    """Get list of available git branches without fetching content"""
-    cmd = ["git", "ls-remote", "--heads", "origin"]
-    if repo_path:
-        cmd = ["git", "-C", repo_path] + cmd[1:]
-
-    result = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    logger.info(f"git ls-remote --heads origin returns: {result}")
-
-    branches = []
-    for line in result.stdout.splitlines():
-        # Each line has format: "commit_hash refs/heads/branch_name"
-        if not line.strip():
-            continue
-
-        parts = line.split()
-        if len(parts) >= 2:
-            # Extract branch name from refs/heads/branch_name
-            branch = parts[1].replace("refs/heads/", "")
-            if branch and branch not in branches and not branch == "HEAD":
-                branches.append(branch)
-
-    return branches
-
-
-def get_current_branch(repo_path: Optional[str] = None) -> str:
-    """Get the name of the current git branch"""
-    cmd = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
-
-    if repo_path:
-        # Use git -C to run command in different directory
-        cmd = ["git", "-C", repo_path] + cmd[1:]
-
-    result = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    return result.stdout.strip()

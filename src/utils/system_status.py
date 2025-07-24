@@ -1,4 +1,8 @@
+from typing import Optional
 import psutil
+import subprocess
+
+COMMON_PATH = "/root/raptor-common"
 
 
 def collect_system_stats():
@@ -32,3 +36,51 @@ def collect_system_stats():
         'bytes_recv': bytes_recv,
         'temperature': temperature
     }
+
+
+def get_git_branches(repo_path: Optional[str] = None, logger = None):
+    """Get list of available git branches without fetching content"""
+    cmd = ["git", "ls-remote", "--heads", "origin"]
+    if repo_path:
+        cmd = ["git", "-C", repo_path] + cmd[1:]
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    if logger:
+        logger.info(f"git ls-remote --heads origin returns: {result}")
+
+    branches = []
+    for line in result.stdout.splitlines():
+        # Each line has format: "commit_hash refs/heads/branch_name"
+        if not line.strip():
+            continue
+
+        parts = line.split()
+        if len(parts) >= 2:
+            # Extract branch name from refs/heads/branch_name
+            branch = parts[1].replace("refs/heads/", "")
+            if branch and branch not in branches and not branch == "HEAD":
+                branches.append(branch)
+
+    return branches
+
+
+def get_current_branch(repo_path: Optional[str] = None) -> str:
+    """Get the name of the current git branch"""
+    cmd = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+
+    if repo_path:
+        # Use git -C to run command in different directory
+        cmd = ["git", "-C", repo_path] + cmd[1:]
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    return result.stdout.strip()
