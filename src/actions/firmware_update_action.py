@@ -6,6 +6,7 @@ from config.telemetry_config import TelemetryConfig
 from config.mqtt_config import MQTTConfig
 from utils import JSON, LogManager
 from database.database_manager import DatabaseManager
+from .restart_action import RestartAction
 
 
 class FirmwareUpdateAction(Action):
@@ -18,12 +19,20 @@ class FirmwareUpdateAction(Action):
             firmware = FirmwareUpdater(tag, False)
             if not firmware.update():
                 logger.error("Unable to Update Firmware")
-                return ActionStatus.FAILED, {"error": "error"}
+                return ActionStatus.FAILED, {"error": "Unable to update firmware (failed without exception)"}
             logger.info(f"Successfully updated firmware version to {tag}")
+            msg = f"Updated code to {tag}."
             if self.params.get('migrate_db', None):
                 DatabaseManager().run_schema_sql()
+                msg += "  Ran DB migrate."
                 logger.info(f"Successfully applied database migration")
-            return ActionStatus.SUCCESS, {"message": f"Updated code to {tag}"}
+            if self.params.get('restart', None):
+                ra = RestartAction()
+                await ra.execute(telemetry_config, mqtt_config)
+                msg += "  Restarted services."
+
+            return ActionStatus.SUCCESS, {"message": msg}
+
         except Exception as e:
             logger.error(f"Error during Firmware update: {e}")
             return ActionStatus.FAILED, {"error": str(e)}

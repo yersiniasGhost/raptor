@@ -7,5 +7,5 @@ from .logger import LogManager
 from .vmc_types import JSON
 from .system_status import get_git_branches, get_current_branch, COMMON_PATH
 
-SERVICES = ["cellular-init", "iot-controller", "vmc-ui", "cmd-controller", "network-watchdog", "reverse-tunnel"]
+SERVICES = ["cellular-init", "iot-controller", "vmc-ui", "cmd-controller", "network-watchdog"]
 
