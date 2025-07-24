@@ -10,18 +10,14 @@ from config.mqtt_config import MQTTConfig
 from utils import JSON, LogManager
 
 
-class ReverseTunnelAction(Action):
-
-    def __init__(self):
-        super().__init__()
-        self.logger = LogManager().get_logger("ReverseTunnelAction")
-        self.pid_file = "/var/run/reverse-tunnel.pid"
-        self.ssh_key_path = "/root/.ssh/CREM3-API-03.pem"
-
+class CreateReverseTunnelAction(Action):
 
 
     async def execute(self, telemetry_config: TelemetryConfig,
                       mqtt_config: MQTTConfig) -> Tuple[ActionStatus, JSON]:
+        self.logger = LogManager().get_logger("ReverseTunnelAction")
+        self.pid_file = "/var/run/reverse-tunnel.pid"
+        self.ssh_key_path = "/root/.ssh/CREM3-API-03.pem"
 
         # Extract parameters from self.params
         action = self.params.get("action", "start")  # start, stop, status, restart
@@ -272,7 +268,7 @@ class ReverseTunnelAction(Action):
                 # Test connectivity
                 ping_result = subprocess.run(
                     ["ping", "-c", "1", "-W", "3", "8.8.8.8"],
-                    capture_output=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                    capture_output=True
                 )
                 if ping_result.returncode == 0:
                     return "wwan0"
@@ -285,7 +281,7 @@ class ReverseTunnelAction(Action):
             if result.returncode == 0 and "default" in result.stdout:
                 ping_result = subprocess.run(
                     ["ping", "-c", "1", "-W", "3", "8.8.8.8"],
-                    capture_output=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                    capture_output=True
                 )
                 if ping_result.returncode == 0:
                     return "wlan0"
@@ -335,7 +331,7 @@ class ReverseTunnelAction(Action):
                 # Remove existing route
                 subprocess.run(
                     ["ip", "route", "del", remote_host],
-                    capture_output=True, stderr=subprocess.DEVNULL
+                    capture_output=True
                 )
 
                 # Add new route
