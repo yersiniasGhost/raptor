@@ -16,9 +16,9 @@ class DatabaseMigratorAction(Action):
         try:
             DatabaseManager().run_schema_sql()
             logger.info(f"Successfully applied database migration")
-            db_state = DatabaseManager().get_current_firmware_version()
+            db_id, db_info = DatabaseManager().get_latest_migration()
             return ActionStatus.SUCCESS, {"message": f"Migrated database",
-                                          "database": db_state}
+                                          "database": {"id": db_id, "info": db_info}}
         except Exception as e:
             logger.error(f"Error during Database migrator: {e}")
             return ActionStatus.FAILED, {"error": str(e)}
