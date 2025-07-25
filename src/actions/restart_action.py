@@ -30,9 +30,9 @@ class RestartAction(Action):
                     logger.error(f"Invalid target process: {target}")
                     return ActionStatus.FAILED, {"error": f"Invalid target process: {target}"}
 
-                if self.params.get('skip_cmd_controller', False):
-                    if "cmd-controller" in targets:
-                        targets.remove("cmd-controller")
+                # if self.params.get('skip_cmd_controller', False):
+                #     if "cmd-controller" in targets:
+                #         targets.remove("cmd-controller")
 
                 if self.params.get('skip_vmc_ui', False):
                     if 'vmc-ui' in targets:
