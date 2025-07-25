@@ -10,7 +10,7 @@ class RestartAction(Action):
 
     async def execute(self, t, m) -> Tuple[ActionStatus, JSON]:
         logger = LogManager().get_logger("RestartAction")
-        logger.info("Received restart command, initiating controller restart")
+        logger.info(f"Received restart command, initiating controller restart, {self.params}")
         processes = SERVICES
         processes.remove('cellular-init')
         try:
@@ -34,6 +34,7 @@ class RestartAction(Action):
 
             if self.params.get('skip_vmc_ui', False):
                 if 'vmc-ui' in targets:
+                    logger.info(f"TARGETS: {targets}")
                     targets.remove("vmc-ui")
 
             if restart_mode == 'service':
