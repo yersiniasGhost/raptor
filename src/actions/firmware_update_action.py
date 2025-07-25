@@ -27,11 +27,11 @@ class FirmwareUpdateAction(Action):
                 msg += "  Ran DB migrate."
                 logger.info(f"Successfully applied database migration")
             if self.params.get('restart_services', None):
-                ra = RestartAction()
+                ra = RestartAction({"skip_cmd_controller": True})
                 await ra.execute(telemetry_config, mqtt_config)
-                msg += "  Restarted services."
+                msg += "  Restarted services.  USER must restart cmd-controller"
 
-            return ActionStatus.SUCCESS, {"results": {"message":msg, "tag": tag}}
+            return ActionStatus.SUCCESS, {"results": {"message": msg, "tag": tag}}
 
         except Exception as e:
             logger.error(f"Error during Firmware update: {e}")
