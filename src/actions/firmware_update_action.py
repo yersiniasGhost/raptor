@@ -26,12 +26,12 @@ class FirmwareUpdateAction(Action):
                 DatabaseManager().run_schema_sql()
                 msg += "  Ran DB migrate."
                 logger.info(f"Successfully applied database migration")
-            if self.params.get('restart', None):
+            if self.params.get('restart_services', None):
                 ra = RestartAction()
                 await ra.execute(telemetry_config, mqtt_config)
                 msg += "  Restarted services."
 
-            return ActionStatus.SUCCESS, {"message": msg}
+            return ActionStatus.SUCCESS, {"results": {"message":msg, "tag": tag}}
 
         except Exception as e:
             logger.error(f"Error during Firmware update: {e}")
