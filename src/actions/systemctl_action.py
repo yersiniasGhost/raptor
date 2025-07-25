@@ -23,8 +23,8 @@ class SystemctlAction(Action):
             elif target in processes:
                 targets = [target]
             else:
-                logger.error(f"Invalid target process: {target}")
-                return ActionStatus.FAILED, {"error": f"Invalid target process: {target}"}
+                logger.error(f"Invalid target process: {target}, not in {processes}")
+                return ActionStatus.FAILED, {"error": f"Invalid target process: {target}, not in {processes}"}
 
             results = {}
             for process in targets:
