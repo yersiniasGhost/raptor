@@ -4,9 +4,10 @@ from .base_action import Action
 from .action_status import ActionStatus
 from config.telemetry_config import TelemetryConfig
 from config.mqtt_config import MQTTConfig
-from utils import JSON, LogManager
+from utils import JSON, LogManager, BASIC_RESTART
 from database.database_manager import DatabaseManager
 from .restart_action import RestartAction
+
 
 
 class FirmwareUpdateAction(Action):
@@ -27,7 +28,7 @@ class FirmwareUpdateAction(Action):
                 msg += "  Ran DB migrate."
                 logger.info(f"Successfully applied database migration")
             if self.params.get('restart_services', None):
-                ra = RestartAction({"skip_cmd_controller": True})
+                ra = RestartAction({"targets": BASIC_RESTART})
                 await ra.execute(telemetry_config, mqtt_config)
                 msg += "  Restarted services.  USER must restart cmd-controller"
 

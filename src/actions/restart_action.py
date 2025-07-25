@@ -18,24 +18,26 @@ class RestartAction(Action):
             restart_mode = self.params.get('restart_mode', 'service')  # 'service' or 'exit'
             target = self.params.get('target', 'all')  # 'all' or specific process name
             exit_status = self.params.get('exit_status', 42)
+            targets = self.params.get('targets', [])
 
             # Determine which processes to restart
-            if target == 'all':
-                targets = processes
-            elif target in processes:
-                targets = [target]
-            else:
-                logger.error(f"Invalid target process: {target}")
-                return ActionStatus.FAILED, {"error": f"Invalid target process: {target}"}
+            if not targets:
+                if target == 'all':
+                    targets = processes
+                elif target in processes:
+                    targets = [target]
+                else:
+                    logger.error(f"Invalid target process: {target}")
+                    return ActionStatus.FAILED, {"error": f"Invalid target process: {target}"}
 
-            if self.params.get('skip_cmd_controller', False):
-                if "cmd-controller" in targets:
-                    targets.remove("cmd-controller")
+                if self.params.get('skip_cmd_controller', False):
+                    if "cmd-controller" in targets:
+                        targets.remove("cmd-controller")
 
-            if self.params.get('skip_vmc_ui', False):
-                if 'vmc-ui' in targets:
-                    logger.info(f"TARGETS: {targets}")
-                    targets.remove("vmc-ui")
+                if self.params.get('skip_vmc_ui', False):
+                    if 'vmc-ui' in targets:
+                        logger.info(f"TARGETS: {targets}")
+                        targets.remove("vmc-ui")
 
             if restart_mode == 'service':
                 # Restart systemctl services
