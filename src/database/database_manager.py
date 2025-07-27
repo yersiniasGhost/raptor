@@ -267,25 +267,66 @@ class DatabaseManager(metaclass=Singleton):
             self.logger.error(f"Error clearing telemetry data: {e}")
             raise
 
-
-
-    def get_stored_telemetry_data(self) -> List[Dict[str, Any]]:
+    def remove_stored_telemetry_data(self, ids: List[int]):
         try:
             cursor = self.connection.cursor()
-            cursor.execute("SELECT data, timestamp FROM telemetry_data ORDER BY timestamp DESC")
+            if not ids:
+                return
+
+            # Create placeholders for the IN clause
+            placeholders = ','.join('?' * len(ids))
+            cursor.execute(f"DELETE FROM telemetry_data WHERE id IN ({placeholders})", ids)
+            self.connection.commit()
+
+            deleted_count = cursor.rowcount
+            self.logger.info(f"Deleted {deleted_count} telemetry data rows.")
+
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error removing telemetry data: {e}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Error removing telemetry data: {e}")
+            raise
+
+
+    def count_stored_telemetry_data(self) -> int:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM telemetry_data")
+            count = cursor.fetchone()[0]
+            return count
+
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error counting telemetry data: {e}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Error counting telemetry data: {e}")
+            raise
+
+
+    def get_stored_telemetry_data(self, back_log_limit: int = 200) -> Tuple[List[Dict[str, Any]], List[int]]:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT id, data, timestamp FROM telemetry_data ORDER BY timestamp DESC LIMIT ?",
+                           (back_log_limit,))
             rows = cursor.fetchall()
 
             result = []
+            row_ids = []
+
             for row in rows:
-                data_json, timestamp = row
+                row_id, data_json, timestamp = row
                 telemetry_data = json.loads(data_json)
                 # Add metadata from the database
                 telemetry_data['timestamp'] = timestamp
                 result.append(telemetry_data)
+                row_ids.append(row_id)
+
             lr = len(result)
             if lr > 1:
                 self.logger.info(f"Collected backlog {lr} rows of telemetry data.")
-            return result
+            return result, row_ids
+
         except sqlite3.Error as e:
             self.logger.error(f"Database error reading telemetry data: {e}")
             raise

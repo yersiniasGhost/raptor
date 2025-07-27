@@ -100,9 +100,13 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
     """Upload telemetry data with backoff strategy"""
     try:
         db = DatabaseManager()
-        payload = db.get_stored_telemetry_data()
+        payload, row_ids = db.get_stored_telemetry_data()
         # payload = json.dumps(payload)
-        return await publish_payload(mqtt_config, telemetry_config.telemetry_topic, payload, logger)
+        result = await publish_payload(mqtt_config, telemetry_config.telemetry_topic, payload, logger)
+        if result:
+            db.remove_stored_telemetry_data(row_ids)
+        return result
+
     except Exception as e:
         logger.error(f"Error uploading telemetry data: {e}")
         return False

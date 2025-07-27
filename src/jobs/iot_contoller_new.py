@@ -209,8 +209,8 @@ class IoTController:
             # Upload based on configured mode
             if self.telemetry_config.mode == MQTT_MODE:
                 success = await upload_telemetry_data_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
-                if success:
-                    db.clear_telemetry_data()
+                # if success:
+                #     db.clear_telemetry_data()
                 return success
             elif self.telemetry_config.mode == REST_MODE:
                 self.logger.warning("REST mode NOT IMPLEMENTED")
