@@ -26,6 +26,7 @@ class IoTController:
     def __init__(self, store_local: bool, simulator_mode: bool):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("iot-controller.log").get_logger("IoTController")
+        self.logger.info("-----------  STARTING IOT CONTROLLER -----------")
         self.running = True
         self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.telemetry_config: TelemetryConfig = get_telemetry_config(self.logger)
@@ -190,6 +191,7 @@ class IoTController:
 
     async def _upload_telemetry_data(self):
         if self.telemetry_config.mode == MQTT_MODE:
+            self.logger.info("Uploading telemetry data to MQTT....")
             upload_status = await upload_telemetry_data_mqtt(self.mqtt_config, self.telemetry_config, self.logger)
             self.logger.info(f"MQTT upload status: {upload_status}")
             return upload_status
