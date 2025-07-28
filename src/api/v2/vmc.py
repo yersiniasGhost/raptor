@@ -51,7 +51,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # templates.env.globals["version"] = get_git_version()
 raptor_data = DatabaseManager().get_raptor()
 templates.env.globals["raptor_header"] = raptor_data.get('name', "Not configured")
-
+print(raptor_data)
 
 # Include routers
 app.include_router(actuator.router)
