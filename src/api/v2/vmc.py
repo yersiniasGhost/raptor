@@ -63,7 +63,7 @@ app.include_router(modbus.router)
 app.include_router(system_status.router)
 app.include_router(generation.router)
 app.include_router(charge_controller.router)
-logger.info(f"Loaded templates and routes.   Git version: {templates.env.globals['version']}")
+# logger.info(f"Loaded templates and routes.   Git version: {templates.env.globals['version']}")
 
 
 @app.get("/", response_class=HTMLResponse)
