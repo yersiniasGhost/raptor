@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
-from utils import LogManager
+from utils import LogManager, EnvVars
 import os
 
 lm = LogManager("vmc-ui.log")
@@ -48,6 +48,7 @@ logger.info("Created FastAPI app")
 # Initialize templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 templates.env.globals["version"] = get_git_version()
+templates.env.globals["raptor"] = EnvVars().raptor_name
 
 
 # Include routers
@@ -61,11 +62,6 @@ app.include_router(system_status.router)
 app.include_router(generation.router)
 app.include_router(charge_controller.router)
 logger.info(f"Loaded templates and routes.   Git version: {templates.env.globals['version']}")
-
-
-@app.context_processor
-def inject_raptor():
-    return {'raptor': os.environ.get('RAPTOR', 'Environment not set')}
 
 
 @app.get("/", response_class=HTMLResponse)
