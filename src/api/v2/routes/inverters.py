@@ -39,6 +39,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         data = await bms_store.get_all_data()
         modbus_map = hardware.get_modbus_maps()
         register_map = modbus_map.get("DATA", {})
+        ac_voltage = hardware.read_register("AC_input_voltage")
 
         logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")
         logger.info(f"DATA registers: {len(register_map)}")
@@ -55,6 +56,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
                 "device_type": "Inverter2",
                 "page": "Inverter",
                 "api_endpoint": "inverters",
+                "has_ac_in": ac_voltage > 90.0,
                 "error": None
             }
         )
