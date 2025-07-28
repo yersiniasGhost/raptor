@@ -48,7 +48,7 @@ logger.info("Created FastAPI app")
 
 # Initialize templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-templates.env.globals["version"] = get_git_version()
+# templates.env.globals["version"] = get_git_version()
 raptor_data = DatabaseManager().get_raptor()
 templates.env.globals["raptor_header"] = raptor_data.get('name', "Not configured")
 
