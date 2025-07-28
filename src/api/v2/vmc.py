@@ -48,7 +48,7 @@ logger.info("Created FastAPI app")
 # Initialize templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 templates.env.globals["version"] = get_git_version()
-templates.env.globals["raptor"] = EnvVars().raptor_name
+templates.env.globals["raptor_name"] = EnvVars().raptor_name
 
 
 # Include routers
