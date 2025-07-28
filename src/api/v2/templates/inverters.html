@@ -2,7 +2,8 @@
 
 
 {% extends "_base_device_template.html" %}
-    <style>
+{% block more_styles %}
+<style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -164,6 +165,7 @@
             }
         }
     </style>
+{% endblock %}
 {% block title %}{{ page_title }}{% endblock %}
 {% block page_insert %}
 {% if True %}
@@ -266,6 +268,8 @@
             Ideal for battery recovery periods or when excess grid capacity is available.
         </div>
     </div>
+    </div>
+</div>
 
     <script>
         let currentActiveScenario = null;
@@ -398,9 +402,6 @@
         // Auto-refresh scenario status every 30 seconds
         setInterval(checkCurrentScenario, 30000);
     </script>
-</body>
-</html>
-
 
 {% else %}
 <p> Has NO AC INPUT </p>
