@@ -14,9 +14,10 @@ CHECK_INTERVAL = 120  # Check every so often
 PING_HOST = "8.8.8.8"  # Google DNS server
 PING_COUNT = 3
 INTERFACES = {
-    "wlan0": {"priority": 1, "is_wireless": True},
-    "end0": {"priority": 2, "is_wireless": False, "static_ip": "10.250.250.2/24"},
-    "end1": {"priority": 3, "is_wireless": False}
+    "wwan0": {"priority": 1, "is_wireless": True},
+    "wlan0": {"priority": 2, "is_wireless": True},
+    "end0": {"priority": 3, "is_wireless": False, "static_ip": "10.250.250.2/24"},
+    "end1": {"priority": 4, "is_wireless": False}
 }
 RETRY_DELAY = 60  # Retry delay in seconds for failed recovery
 
@@ -24,7 +25,7 @@ RETRY_DELAY = 60  # Retry delay in seconds for failed recovery
 class RaptorWatchdog:
 
     def __init__(self):
-        self.logger = LogManager("network-watchdog.log").get_logger("RaptorWatchdog")
+        self.logger = LogManager("raptor-watchdog.log").get_logger("RaptorWatchdog")
         self.consecutive_failures = 0
         self.recovery_attempts = 0
 
@@ -179,18 +180,12 @@ class RaptorWatchdog:
         interfaces_status, _, _ = self.run_command("ip addr show")
         route_info, _, _ = self.run_command("ip route")
         wpa_status, _, _ = self.run_command("wpa_cli -i wlan0 status 2>/dev/null || echo 'WPA not running'")
-        dhcp_leases, _, _ = self.run_command(
-            "grep wlan0 /var/lib/dhcp/dhclient.leases 2>/dev/null || echo 'No DHCP leases found'")
 
         self.logger.info("Current network status:")
         self.logger.info(f"WPA Status:\n{wpa_status}")
         self.logger.info(f"Interfaces:\n{interfaces_status}")
         self.logger.info(f"Routes:\n{route_info}")
-        self.logger.info(f"DHCP Leases:\n{dhcp_leases}")
 
-        # Check reverse tunnel status
-        tunnel_status, _, _ = self.run_command(f"systemctl status {REVERSE_TUNNEL_SERVICE} | head -3")
-        self.logger.info(f"Reverse Tunnel Status:\n{tunnel_status}")
 
     def check_internet_connectivity(self):
         # Get current status of interfaces

@@ -5,23 +5,23 @@ APP_DIR="/root/raptor"
 
 echo "Setting up system services..."
 
-echo "network-watchdog service..."
+echo "raptor-watchdog service..."
 
-if [ -f "/etc/systemd/system/network-watchdog.service" ]; then
-    echo "network-watchdog service already exists. Skipping creation."
+if [ -f "/etc/systemd/system/raptor-watchdog.service" ]; then
+    echo "raptor-watchdog service already exists. Skipping creation."
 else
 
-echo "Setting up network-watchdog service..."
-cat > "/etc/systemd/system/network-watchdog.service" << EOF
+echo "Setting up raptor-watchdog service..."
+cat > "/etc/systemd/system/raptor-watchdog.service" << EOF
 [Unit]
 Description=Network Watchdog Service
-After=network.target
+After=raptor.target
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=$APP_DIR
-ExecStart=$APP_DIR/venv/bin/python $APP_DIR/src/jobs/network_watchdog.py
+ExecStart=$APP_DIR/venv/bin/python $APP_DIR/src/jobs/raptor_watchdog.py
 Restart=always
 RestartSec=10
 
@@ -42,7 +42,7 @@ else
     cat > "/etc/systemd/system/vmc-ui.service" << EOF
 [Unit]
 Description=VMC UI API Service
-After=network.target
+After=raptor.target
 
 [Service]
 Type=simple
@@ -69,7 +69,7 @@ else
     cat > "/etc/systemd/system/iot-controller.service" << EOF
 [Unit]
 Description=IoT Controller Service
-After=network.target
+After=raptor.target
 
 [Service]
 Type=simple
@@ -95,7 +95,7 @@ else
     cat > "/etc/systemd/system/cmd-controller.service" << EOF
 [Unit]
 Description=CMD Controller Service
-After=network.target
+After=raptor.target
 
 [Service]
 Type=simple
@@ -119,17 +119,17 @@ systemctl daemon-reload
 echo "Enabling and starting services..."
 
 # Network Watchdog
-echo "Enabling network-watchdog service..."
-systemctl enable network-watchdog.service
+echo "Enabling raptor-watchdog service..."
+systemctl enable raptor-watchdog.service
 if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to enable network-watchdog service"
+    echo "ERROR: Failed to enable raptor-watchdog service"
     exit 1
 fi
 
-echo "Starting network-watchdog service..."
-systemctl start network-watchdog.service
+echo "Starting raptor-watchdog service..."
+systemctl start raptor-watchdog.service
 if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to start network-watchdog service"
+    echo "ERROR: Failed to start raptor-watchdog service"
     exit 1
 fi
 
@@ -185,7 +185,7 @@ echo "Checking service status..."
 systemctl status vmc-ui.service --no-pager
 systemctl status iot-controller.service --no-pager
 systemctl status cmd-controller --no-pager
-systemctl status network-watchdog --no-pager
+systemctl status raptor-watchdog --no-pager
 
 echo "Service setup complete!"
 exit 0
