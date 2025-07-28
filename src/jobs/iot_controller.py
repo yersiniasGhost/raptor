@@ -306,7 +306,7 @@ class IoTController:
                                         self.logger.info(
                                             f"Upload succeeded after {upload_failure_count} failed attempts")
                                         upload_failure_count = 0
-                                    db.clear_telemetry_data()
+                                    # db.clear_telemetry_data()
                                 else:
                                     upload_failure_count += 1
                                     backoff_time = min(2 ** upload_failure_count, max_upload_backoff)
@@ -392,9 +392,7 @@ class IoTController:
 
                             # Upload to cloud
                             upload_success = await self._upload_telemetry_data()
-                            if upload_success:
-                                db.clear_telemetry_data()
-                            else:
+                            if not upload_success:
                                 self.logger.error("Wasn't able to upload telemetry data.")
 
                         # Try to collect system stats
