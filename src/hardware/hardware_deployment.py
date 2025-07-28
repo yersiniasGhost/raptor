@@ -32,6 +32,12 @@ class HardwareDeployment:
         for device in self.devices:
             yield device
 
+
+    def read_register(self, register: str) -> dict:
+        values = self.hardware.data_acquisition(self.devices, [register], self.hardware_id)
+        return values
+
+
     def data_acquisition(self, data_type: str = "DATA") -> dict:
         """
         :return: A dictionary of { register_name: value }

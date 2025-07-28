@@ -118,5 +118,60 @@
     "conversion_factor": 100.0,
     "description": "Phase 1 apparent output power",
     "access": "RO"
+  },
+  "AC_input_voltage": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "AC Input Voltage",
+    "data_type": "int16",
+    "address": 320,
+    "units": "V",
+    "conversion_factor": 10.0,
+    "description": "AC Input Voltage",
+    "access": "RO"
+  },
+  "AC_input_current": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "AC Input Current",
+    "data_type": "int16",
+    "address": 321,
+    "units": "A",
+    "conversion_factor": 10.0,
+    "description": "AC Input Current",
+    "access": "RO"
+  },
+  "AC_input_power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "AC Input Active Power",
+    "data_type": "int16",
+    "address": 322,
+    "units": "W",
+    "conversion_factor": 0.01,
+    "description": "AC Input Active Power",
+    "access": "RO"
+  },
+  "AC_input_apparent_power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "AC Input Apparent Power",
+    "data_type": "int16",
+    "address": 323,
+    "units": "VA",
+    "conversion_factor": 0.01,
+    "description": "AC Input Apparent Power",
+    "access": "RO"
+  },
+  "AC_input_frequency": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "AC Input Frequency",
+    "data_type": "int16",
+    "address": 324,
+    "units": "Hz",
+    "conversion_factor": 10.0,
+    "description": "AC Input Frequency",
+    "access": "RO"
   }
 }

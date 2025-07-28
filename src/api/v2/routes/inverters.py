@@ -76,6 +76,7 @@ async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depen
     try:
         hardware = get_inverter(deployment)
         values = hardware.data_acquisition()
+        ac_voltage = hardware.read_register("AC_input_voltage")
 
         # Update each unit
         for device in hardware.devices:
@@ -85,8 +86,8 @@ async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depen
             else:
                 logger.error(f"Unexpected values type: {type(values)}")
         data = await bms_store.get_all_data()
-
-        return JSONResponse(content={"data": data, "error": None})
+        has_ac_input = ac_voltage > 90.0
+        return JSONResponse(content={"data": data, "has_ac_input": has_ac_input, "error": None})
     except Exception as e:
         logger.error(f"Error getting Inverter data: {e}")
         return JSONResponse(content={"data": None, "error": str(e)})
