@@ -6,7 +6,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from utils import LogManager, EnvVars
-import os
+from database.database_manager import DatabaseManager
+
 
 lm = LogManager("vmc-ui.log")
 logger = lm.get_logger("VMC")
@@ -48,7 +49,8 @@ logger.info("Created FastAPI app")
 # Initialize templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 templates.env.globals["version"] = get_git_version()
-templates.env.globals["raptor_name"] = EnvVars().raptor_name
+raptor_data = DatabaseManager().get_raptor()
+templates.env.globals["raptor_header"] = raptor_data.get('name', "Not configured")
 
 
 # Include routers
