@@ -253,5 +253,27 @@
     "units": "W",
     "conversion_factor": 1,
     "description": "0: Normal Mode, 1: AC input power stage in converter is de-activated."
+  },
+  "AC_max_power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Maximum AC input (W)",
+    "data_type": "int16",
+    "address": 1067,
+    "units": "W",
+    "conversion_factor": 0.01,
+    "description": "Global system maximum consumed AC input power by default. ",
+    "access": "RW"
+  },
+  "Battery_charge_current_limit": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Battery charge current limit (A)",
+    "data_type": "int16",
+    "address": 113,
+    "units": "A",
+    "conversion_factor": 10.0,
+    "description": "Maximum current provided to battery charging.",
+    "access": "RW"
   }
 }
