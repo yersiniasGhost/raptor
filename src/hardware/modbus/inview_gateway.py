@@ -15,6 +15,15 @@ class InviewGateway(ModbusHardware):
         output = {d["mac"]: "ID is NA" for d in devices}
         return output
 
+    def has_input_AC(self, devices: List[dict]) -> bool:
+        ac_inputs = self.data_acquisition(devices, ['AC_input_voltage'])
+        ac_input = False
+        for dev in devices:
+            if ac_inputs[dev['mac']]['AC_input_voltage'] > 90.0:
+                ac_input = True
+        return ac_input
+
+
     def scenario_status(self, mode: str,  devices: List[dict], hardware_id: str):
         ac_inputs = self.data_acquisition(devices,['AC_input_voltage', 'AC_input_power'], hardware_id)
         dc_bus = self.data_acquisition(devices,['DC_Voltage', 'DC_Current', "DC_Power"], hardware_id)

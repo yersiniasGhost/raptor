@@ -36,3 +36,7 @@ class HardwareBase(ABC):
 
     def scenario_status(self, mode: str, devices: List[dict], hardware_id: str) -> dict:
         return {}
+
+    # For inverter hardware
+    def has_input_AC(self, devices: List[dict]) -> bool:
+        pass
