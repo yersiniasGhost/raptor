@@ -16,7 +16,7 @@ class InviewGateway(ModbusHardware):
         return output
 
     def has_input_AC(self, devices: List[dict]) -> bool:
-        ac_inputs = self.data_acquisition(devices, ['AC_input_voltage'])
+        ac_inputs = self.data_acquisition(devices, ['AC_input_voltage'], "")
         ac_input = False
         for dev in devices:
             if ac_inputs[dev['mac']]['AC_input_voltage'] > 90.0:
