@@ -85,6 +85,9 @@ class HardwareDeployment:
     def scenario_status(self, mode: str) -> dict:
         return self.hardware.scenario_status(mode, self.devices, self.hardware_id)
 
+    def has_input_AC(self, devices) -> bool:
+        return self.hardware.has_input_AC(devices)
+
     def get_identifiers(self):
         try:
             ids = self.hardware.get_identifier(self.devices)
