@@ -30,36 +30,6 @@ def convert_register_value(raw_value: int, register: ModbusRegister) -> float:
     return value * register.conversion_factor
 
 
-def modbus_data_acquisition_orig(modbus_hardware: ModbusHardware,
-                                 modbus_map: ModbusMap, slave_id: int,
-                                 logger) -> Dict[str, Union[float, int]]:
-    client = modbus_hardware.get_modbus_client()
-    try:
-        if not client.connect():
-            logger.error("Failed to connect")
-            return {}
-
-        output: Dict[str, Union[float, int]] = {}
-        for register in modbus_map.register_iterator():
-            # Calculate CRC if necessary...
-            # message, crc = modbus_hardware.create_read_message(register, slave_id)
-
-            # Attempt the read.
-            address = int(register.get_addresses()[0])
-            result = client.read_holding_registers(address=address, count=1, slave=slave_id)
-            if result is None:
-                logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
-            elif hasattr(result, 'isError') and result.isError():
-                logger.info(f"Error reading register: {result}")
-            else:
-                output[register.name] = convert_register_value(result.registers[0], register)
-
-        return output
-    except Exception as e:
-        logger.exception(f"Error reading modbus: {e}")
-    finally:
-        client.close()
-
 
 def modbus_data_write(modbus_hardware: ModbusHardware,
                       modbus_map: ModbusMap,

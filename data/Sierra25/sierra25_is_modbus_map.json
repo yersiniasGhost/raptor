@@ -256,7 +256,7 @@
   },
   "AC_max_power": {
     "slave_id": 31,
-    "type": "input",
+    "type": "holding",
     "name": "Maximum AC input (W)",
     "data_type": "int16",
     "address": 1067,
