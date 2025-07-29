@@ -469,10 +469,14 @@ async function writeSelectedRegister() {
         return;
     }
 
-    data.value = parseFloat(writeValue);
-
+    const send_data = {
+            register_key: data.register_key,
+            page: data.page,
+            unit_id: data.unit_id,
+            value: parseFloat(writeValue)
+        };
     try {
-        const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
+        const response = await fetch(`/modbus/modbus_write/${JSON.stringify(send_data)}`);
         const result = await response.json();
 
         // Display result with units if available

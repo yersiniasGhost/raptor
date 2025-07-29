@@ -17,7 +17,7 @@ router = APIRouter(prefix="/modbus", tags=["modbus"])
 @router.get("/modbus_write/{data}")
 async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
-    register_name = parsed_data['name']
+    register_key = parsed_data['key']
     value = parsed_data['value']
     page = parsed_data['page']
     slave_id = int(parsed_data['unit_id'])
@@ -32,12 +32,12 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
         logger.error(F"Invalid page : {page}")
         return {"success": False, "error": F"Invalid page: {page}"}
     try:
-        modbus_data_write(hardware, register_name, slave_id, value, logger)
+        modbus_data_write(hardware, register_key, slave_id, value, logger)
     except Exception as e:
         logger.error(e)
 
     # Handle the modbus read operation here
-    values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers_by_key([register_name]), slave_id=slave_id)
+    values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers_by_key([register_key]), slave_id=slave_id)
     logger.info(values)
     return {"success": True, "value": values}
 
