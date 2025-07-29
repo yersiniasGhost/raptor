@@ -252,6 +252,6 @@
     "address": 1050,
     "units": "W",
     "conversion_factor": 1,
-    "description": "0: Normal Mode\n1: AC input power stage in converter is de-activated.",
+    "description": "0: Normal Mode\n1: AC input power stage in converter is de-activated."
   }
 }
