@@ -161,6 +161,37 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
     return value * register.conversion_factor
 
 
+def modbus_data_write(modbus_hardware: ModbusHardware,
+                      register_name: str, slave_id: int, value: int,
+                      logger=None) -> Dict[str, Union[float, int]]:
+    if not logger:
+        logger = LogManager().get_logger("ModbusHardware")
+
+    register = modbus_hardware.modbus_map.get_register_by_name(register_name)
+    if not register:
+        logger.error(f"Cannot find register {register_name}")
+        return {}
+
+    client = modbus_hardware.get_modbus_client()
+    if not client.connect():
+        logger.error("Modbus client not connected... resetting")
+        modbus_hardware.reset_hardware()
+        return {}
+
+    try:
+        # In some cases, like Inview S the slave ID is used to query different systems not devices
+        if register.slave_id:
+            slave_id = register.slave_id
+        result = None
+        if ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
+            logger.info(f"Writing INPUT register: {register.address}, {slave_id}, {register.name}")
+            result = client.write_register(register.address, value, slave=slave_id)
+            print(result)
+    except Exception as e:
+        logger.exception(f"Error writing modbus: {e} on slave: {slave_id}, {register.address}.. .continuing.", exc_info=True)
+        return {}
+
+
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             registers: Dict[str, ModbusRegister], slave_id: int,
                             logger=None) -> Dict[str, Union[float, int]]:
@@ -175,6 +206,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
     if not client.connect():
         logger.error("Modbus client not connected... resetting")
         modbus_hardware.reset_hardware()
+        return {}
 
     output: Dict[str, Union[float, int]] = {}
     for key, register in registers.items():

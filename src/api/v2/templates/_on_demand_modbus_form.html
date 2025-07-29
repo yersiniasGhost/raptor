@@ -47,6 +47,9 @@
                     <div class="metadata-item">
                         <strong>Access:</strong> <span id="meta_access"></span>
                     </div>
+                    <div class="metadata-item">
+                        <strong>Conversion:</strong> <span id="meta_conversion"></span>
+                    </div>
                     <div class="metadata-item description">
                         <strong>Description:</strong> <span id="meta_description"></span>
                     </div>
@@ -354,6 +357,7 @@ function updateRegisterMetadata() {
     document.getElementById('meta_range').textContent = selectedOption.dataset.range;
     document.getElementById('meta_units').textContent = selectedOption.dataset.units || 'N/A';
     document.getElementById('meta_access').textContent = selectedOption.dataset.access;
+    document.getElementById('meta_conversion').textContent = "Get the conversion";
     document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
 
     // Set default slave ID if available
