@@ -479,7 +479,7 @@ async function writeSelectedRegister() {
         const response = await fetch(`/modbus/modbus_write/${JSON.stringify(send_data)}`);
         const result = await response.json();
 
-        // Display result with units if available
+                // Display result with units if available
         const selectElement = document.getElementById('register_select');
         const selectedOption = selectElement.selectedOptions[0];
         const units = selectedOption.dataset.units;
@@ -490,6 +490,14 @@ async function writeSelectedRegister() {
         }
 
         document.getElementById('result').value = displayValue;
+        // Show success briefly
+        button.innerHTML = '✓ Success';
+        button.style.backgroundColor = '#28a745';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.backgroundColor = '#007bff';
+        }, 1000);
+
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to write register data');
