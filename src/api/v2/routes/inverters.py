@@ -40,6 +40,7 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         modbus_map = hardware.get_modbus_maps()
         register_map = modbus_map.get("DATA", {})
         ac_voltage = hardware.read_register("AC_input_voltage")
+        hardware.scenario_status("no mode")
 
         logger.info(f"GET inverters: {hardware.hardware_id}, devices: {len(hardware.devices)}")
         logger.info(f"DATA registers: {len(register_map)}")

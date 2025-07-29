@@ -33,3 +33,6 @@ class HardwareBase(ABC):
 
     def reset_hardware(self) -> Tuple[str, Union[str, bool]]:
         return "Reset Hardware TBD", True
+
+    def scenario_status(self, mode: str, devices: List[dict], hardware_id: str) -> dict:
+        return {}

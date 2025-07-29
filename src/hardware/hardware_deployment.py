@@ -82,6 +82,9 @@ class HardwareDeployment:
     def get_slave_ids(self) -> list:
         return [d['mac'] for d in self.devices]
 
+    def scenario_status(self, mode: str) -> dict:
+        return self.hardware.scenario_status(mode, self.devices, self.hardware_id)
+
     def get_identifiers(self):
         try:
             ids = self.hardware.get_identifier(self.devices)

@@ -23,6 +23,66 @@
       "3": "at least one major alarm"
     }
   },
+  "Converter_DC_Voltage": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Converter DC Voltage",
+    "data_type": "int16",
+    "address": 10,
+    "units": "V",
+    "conversion_factor": 10.0,
+    "description": "The DC bus voltage in volt, given by modules."
+  },
+  "Converter_DC_power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Converter DC Power",
+    "data_type": "int16",
+    "address": 20,
+    "units": "W",
+    "conversion_factor": 0.01,
+    "description": "The sum of the delivered DC power."
+  },
+  "Converter_DC_current": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Converter DC Current",
+    "data_type": "int16",
+    "address": 21,
+    "units": "A",
+    "conversion_factor": 10.0,
+    "description": "The sum of the delivered DC current."
+  },
+  "Global_Load_power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Global Load Power",
+    "data_type": "int16",
+    "address": 50,
+    "units": "W",
+    "conversion_factor": 0.01,
+    "description": "Estimation of the load power consumption"
+  },
+    "Global_Load_current": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Global Load Current (A)",
+    "data_type": "int16",
+    "address": 51,
+    "units": "A",
+    "conversion_factor": 10.0,
+    "description": "Estimation of the load current consumption"
+  },
+  "Operating_mode":    {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Operating Mode",
+    "data_type": "int16",
+    "address": 15,
+    "units": "",
+    "conversion_factor": 1.0,
+    "description": "The DC system can have 3 values: 'Float'(0), 'Boost'(1), 'Battery Test'(2)"
+  },
   "DC_Voltage": {
     "slave_id": 31,
     "type": "input",
@@ -173,5 +233,25 @@
     "conversion_factor": 10.0,
     "description": "AC Input Frequency",
     "access": "RO"
+  },
+  "AC_Configuration": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Global Load Power",
+    "data_type": "int16",
+    "address": 50,
+    "units": "W",
+    "conversion_factor": 0.01,
+    "description": "Estimation of the load power consumption"
+  },
+  "AC_stop_power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "AC 1 stop power",
+    "data_type": "int16",
+    "address": 1050,
+    "units": "W",
+    "conversion_factor": 1,
+    "description": "0: Normal Mode\n1: AC input power stage in converter is de-activated.",
   }
 }

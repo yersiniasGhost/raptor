@@ -48,7 +48,7 @@ class ModbusHardware(HardwareBase):
         return self.modbus_map.get_registers_by_key(keys)
 
 
-    def data_acquisition(self, devices: list, scan_group_registers: List[str], _):
+    def data_acquisition(self, devices: List[dict], scan_group_registers: List[str], _):
         registers = self.modbus_map.get_registers_by_key(scan_group_registers)
         output = {}
         for device in devices:
