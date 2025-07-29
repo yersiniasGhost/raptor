@@ -1,6 +1,5 @@
 {# templates/inverter.html #}
 
-
 {% extends "_base_device_template.html" %}
 {% block more_styles %}
 <style>
@@ -283,7 +282,7 @@
             setButtonsDisabled(true);
 
             // Make API call to backend
-            fetch('/api/activate-scenario', {
+            fetch('/inverters/activate-scenario', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

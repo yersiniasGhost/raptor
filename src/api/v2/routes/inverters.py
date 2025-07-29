@@ -73,6 +73,10 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
             }
         )
 
+@router.post("/activate-scenario")
+async def activate_scenario():
+    pass
+
 
 @router.get("/data")
 async def get_inverter_data(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
