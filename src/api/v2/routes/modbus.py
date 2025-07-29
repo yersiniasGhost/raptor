@@ -17,7 +17,7 @@ router = APIRouter(prefix="/modbus", tags=["modbus"])
 @router.get("/modbus_write/{data}")
 async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     parsed_data = json.loads(data)
-    register_key = parsed_data['key']
+    register_key = parsed_data['register_key']
     value = parsed_data['value']
     page = parsed_data['page']
     slave_id = int(parsed_data['unit_id'])
