@@ -184,7 +184,7 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
             slave_id = register.slave_id
 
         # Convert value based on register data type
-        write_value = value # prepare_write_value(value, register)
+        write_value = int(value) # prepare_write_value(value, register)
 
         result = None
         if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
