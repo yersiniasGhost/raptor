@@ -278,7 +278,7 @@
   },
   "Allow_modbus_write": {
     "slave_id": 100,
-    "type": "input",
+    "type": "holding",
     "name": "Allow writing to registers",
     "data_type": "int16",
     "address": 156,
