@@ -197,6 +197,12 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
             logger.error(f"Unsupported register type for writing: {register.type}")
             return {"success": False, "error": "Unsupported register type"}
 
+        if result and hasattr(result, 'isError') and result.isError():
+            logger.error(f"Modbus write error: {result}")
+            return {"success": False, "error": f"Modbus error: {result}"}
+        elif result is None:
+            logger.error("No response from Modbus write operation")
+            return {"success": False, "error": "No response from device"}
         return {"success": True, "register": register_name, "value": write_value}
 
     except Exception as e:

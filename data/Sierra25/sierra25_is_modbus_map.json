@@ -275,5 +275,16 @@
     "conversion_factor": 10.0,
     "description": "Maximum current provided to battery charging.",
     "access": "RW"
+  },
+  "Allow_modbus_write": {
+    "slave_id": 100,
+    "type": "input",
+    "name": "Allow writing to registers",
+    "data_type": "int16",
+    "address": 156,
+    "units": "",
+    "conversion_factor": 1.0,
+    "description": "A flag to allow the system to write to the modbus registers.",
+    "access": "RW"
   }
 }
