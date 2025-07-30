@@ -255,7 +255,7 @@
     "description": "0: Normal Mode, 1: AC input power stage in converter is de-activated."
   },
   "AC_max_power": {
-    "slave_id": 31,
+    "slave_id": 100,
     "type": "holding",
     "name": "Maximum AC input (W)",
     "data_type": "int16",
