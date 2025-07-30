@@ -259,7 +259,7 @@
     "type": "holding",
     "name": "Maximum AC input (W)",
     "data_type": "int16",
-    "address": 41067,
+    "address": 1067,
     "units": "W",
     "conversion_factor": 0.01,
     "description": "Global system maximum consumed AC input power by default. ",
