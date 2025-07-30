@@ -35,6 +35,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
         modbus_data_write(hardware, register_key, slave_id, value, logger)
     except Exception as e:
         logger.error(e)
+        return {"success": False, "error": str(e)}
 
     # Handle the modbus read operation here
     values = modbus_data_acquisition(hardware, hardware.modbus_map.get_registers_by_key([register_key]), slave_id=slave_id)

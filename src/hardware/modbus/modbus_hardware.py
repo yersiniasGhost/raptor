@@ -197,14 +197,12 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
             logger.error(f"Unsupported register type for writing: {register.type}")
             return {"success": False, "error": "Unsupported register type"}
 
-        if result and not result.isError():
-            return {"success": True, "register": register_name, "value": write_value}
-        else:
-            return {"success": False, "error": str(result)}
+        return {"success": True, "register": register_name, "value": write_value}
 
     except Exception as e:
         logger.exception(f"Error writing modbus: {e}")
         return {"success": False, "error": str(e)}
+
 
 def modbus_data_write_old(modbus_hardware: ModbusHardware,
                       register_name: str, slave_id: int, value: int,
