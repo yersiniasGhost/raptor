@@ -111,6 +111,17 @@
                     <input type="number" id="target-speed-{{a_id}}" min="1" max="100" step="1" required>
                     <span>%</span>
                 </div>
+                <div class="form-group">
+                    <label for="actuator-state-{{a_id}}">Set State</label>
+                    <select id="group_select" onchange="updateGroupSelection()">
+                        <option value="manual">Manual control</option>
+                        {% for state in manager.actuator_definitions.get(a_id).states.keys() %}
+                            <option value="{{state}}">{{state}}</option>
+                        {% endfor %}
+                    </select>
+                <div>
+
+                </div>
                  <div class="checkbox-group">
                     <input type="checkbox" id="activate-alarm-{{a_id}}">
                     <label for="activate-alarm-{{a_id}}">Activate Alarm</label>

@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from pathlib import Path
 import json
 from typing import Dict, Optional, Union, List, Tuple
@@ -11,6 +12,16 @@ from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmExcept
 from hardware.power_5v.power_5v import Power5V
 from hardware.gpio_controller.multi_relay_controller import MultiRelayController
 from utils import Singleton, run_command, LogManager
+
+
+@dataclass
+class ActuatorDefinition:
+    mac: str
+    node_id: int
+    max_extension: int
+    min_extension: int
+    relay_power_control: int = -1
+    states: Dict[str, int] = field(default_factory=dict)
 
 
 class ActuatorManager(metaclass=Singleton):
@@ -29,6 +40,7 @@ class ActuatorManager(metaclass=Singleton):
         self.eds_file = eds
         self.hardware_definition: dict = {}
         self.actuator_defs: Dict[str, dict] = {}
+        self.actuator_definitions: Dict[str, ActuatorDefinition] = {}
         # power control:
         self.relay_config = {}
         self.relays: Optional[MultiRelayController] = None
@@ -79,6 +91,8 @@ class ActuatorManager(metaclass=Singleton):
         """Add a new actuator to the management system"""
         self.logger.info(f"Adding actuator {actuator_id}, but not initializing it")
         self.actuator_defs[actuator_id] = definition
+        self.actuator_definitions[actuator_id] = ActuatorDefinition(**definition)
+
 
     def init_actuators(self) -> bool:
         if self.actuators:
@@ -183,10 +197,19 @@ class ActuatorManager(metaclass=Singleton):
             raise BannerAlarmException(f"Failed to activate warning alarm: {str(e)}")
 
 
+    async def move_to_state(self, actuator_id: str, desired_state: str, target_speed: float, activate_alarm: bool):
+        target_position = self.actuator_definitions[actuator_id].states.get(desired_state, None)
+        if not target_position:
+            self.logger.error(f"No valid actuator state provided: {desired_state}")
+            raise ValueError(f"No valid actuator state provided: {desired_state}")
+        await self.move_one(actuator_id, target_position, target_speed, activate_alarm)
+
 
     async def move_one(self, actuator_id, target_position: float, target_speed: float, activate_alarm: bool):
         self.logger.info("Starting single actuator movement")
         self.init_actuators()
+
+        self.logger.warning("Check position limits")
         actuator = self.actuators[actuator_id]
         try:
             if activate_alarm:
@@ -205,6 +228,35 @@ class ActuatorManager(metaclass=Singleton):
                 except BannerAlarmException as e:
                     self.logger.error(f"Failed to Deactivate alarm {e}")
 
+    async def move_multiple_to_state(self, desired_state: str, target_speed: float, activate_alarm: bool):
+        target_positions = {}
+        for act_id, definition in self.actuator_definitions.items():
+            tp = definition.states.get(desired_state, None)
+            if not tp:
+                self.logger.error(f"No valid actuator state provided: {desired_state}")
+                raise ValueError(f"No valid actuator state provided: {desired_state}")
+            target_positions[act_id] = tp
+        await self.move_multiple_2(target_positions, target_speed, activate_alarm)
+
+
+    async def move_multiple_2(self, target_positions: Dict[str, int], target_speed: float, activate_alarms: bool):
+        self.logger.info(f"Starting multiple actuator movement: {target_positions}")
+        self.init_actuators()
+        try:
+            tasks = []
+            for act_id, target_position in target_positions.items():
+                actuator = self.actuators.get(act_id)
+                tasks.append(actuator.move_to(target_position, target_speed))
+            # Execute all movements concurrently
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            # Check results
+            success = all(isinstance(r, bool) and r for r in results)
+            return success
+
+        except Exception as e:
+            self.logger.error(f"Multi-actuator movement error: {e}")
+            return False
 
     async def move_multiple(self, target_position: float, target_speed: float):
         """Move multiple actuators simultaneously"""
@@ -272,7 +324,7 @@ class ActuatorManager(metaclass=Singleton):
     def from_dict(cls, actuator_map: dict, logger) -> 'ActuatorManager':
         ActuatorManager.delete_instance()
         try:
-            logger.info(actuator_map)
+            logger.debug(actuator_map)
             # hardware = actuator_map['Actuators']
             parameters = actuator_map['parameters']
             devices = actuator_map['devices']

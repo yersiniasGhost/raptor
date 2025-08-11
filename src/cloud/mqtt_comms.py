@@ -154,10 +154,10 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
                     # password=mqtt_config.password,
                     keepalive=mqtt_config.keepalive,
                     identifier=f"{mqtt_config.client_id}_{uuid.uuid4().hex[:8]}",  # Make unique
-                    clean_session=True
+                    clean_session=False
             ) as client:
                 # Subscribe to the messages topic
-                await client.subscribe(telemetry_config.messages_topic)
+                await client.subscribe(telemetry_config.messages_topic, qos=1, retain=True)
 
                 # Log successful connection (with reconnection info if applicable)
                 if connection_failures > 0:
