@@ -6,6 +6,7 @@ from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
 from utils import LogManager, check_interface, set_tcp_interface
+import time
 
 
 class ModbusClientType(Enum):
@@ -88,7 +89,7 @@ class ModbusHardware(HardwareBase):
 
     def get_modbus_tcp_client(self) -> ModbusTcpClient:
         # TODO Error checking required or rely on library?
-        return ModbusTcpClient(host=self.host, port=int(self.port))
+        return ModbusTcpClient(host=self.host, port=int(self.port), timeout=5.0)
 
 
     def get_modbus_client(self) -> Union[ModbusTcpClient, ModbusSerialClient]:
@@ -196,6 +197,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                     logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
                 elif hasattr(result, 'isError') and result.isError():
                     logger.info(f"Error reading register: {result}")
+                    time.sleep(0.5)
                 else:
                     logger.info(f"Result is: {result.registers}")
                     output[key] = convert_register_value(modbus_hardware, result.registers, register, key)
