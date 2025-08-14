@@ -52,7 +52,7 @@ async def read_modbus_register(data: str, hardware_def: Annotated[HardwareDeploy
         hardware = hardware_def.batteries.hardware
     elif page == "Inverter":
         hardware = hardware_def.inverter.hardware
-    elif page == "Charge Controller":
+    elif page == "ChargeController":
         hardware = hardware_def.charge_controller.hardware
     else:
         logger.error(F"Invalid page : {page}")
