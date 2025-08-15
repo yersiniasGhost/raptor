@@ -1438,15 +1438,25 @@
     "description": "System description: InviewGW Pwr system controller",
     "access": "RO"
   },
-  "SystemUpTime": {
-    "name": "System Up Time",
-    "data_type": "uint32",
+  "SystemUpTimeLo": {
+    "name": "System Up Time (lo)",
+    "data_type": "uint16",
     "address": 3636,
     "units": "NA",
     "conversion_factor": "NA",
     "description": "System uptime",
     "access": "RO"
   },
+    "SystemUpTimeHi": {
+    "name": "System Up Time (hi byte)",
+    "data_type": "uint16",
+    "address": 3637,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System uptime",
+    "access": "RO"
+  },
+
   "SystemContact": {
     "name": "System Contact",
     "data_type": "ascii8",
@@ -1940,33 +1950,6 @@
     "units": "NA",
     "conversion_factor": "NA",
     "description": "Use DHCP: FALSE=Disabled, TRUE=Enabled",
-    "access": "RO"
-  },
-  "ConfigIPv4Address": {
-    "name": "Config IPv4 Address",
-    "data_type": "uint32",
-    "address": 4153,
-    "units": "NA",
-    "conversion_factor": "NA",
-    "description": "IPv4 address [0.0.0.0 - 255.255.255.255]",
-    "access": "RO"
-  },
-  "ConfigIPv4Subnet": {
-    "name": "Config IPv4 Subnet",
-    "data_type": "uint32",
-    "address": 4155,
-    "units": "NA",
-    "conversion_factor": "NA",
-    "description": "IPv4 subnet mask [0.0.0.0 - 255.255.255.255]",
-    "access": "RO"
-  },
-  "ConfigIPv4Gateway": {
-    "name": "Config IPv4 Gateway",
-    "data_type": "uint32",
-    "address": 4157,
-    "units": "NA",
-    "conversion_factor": "NA",
-    "description": "IPv4 gateway [0.0.0.0 - 255.255.255.255]",
     "access": "RO"
   },
   "ConfigEnableModbusTCP": {
@@ -2471,33 +2454,6 @@
     "units": "NA",
     "conversion_factor": "NA",
     "description": "Use DHCP - configuration change: FALSE=Disabled, TRUE=Enabled",
-    "access": "RW"
-  },
-  "ConfigChangeIPv4Address": {
-    "name": "Config Change IPv4 Address",
-    "data_type": "uint32",
-    "address": 5623,
-    "units": "NA",
-    "conversion_factor": "NA",
-    "description": "IPv4 address - configuration change [0.0.0.0 - 255.255.255.255]",
-    "access": "RW"
-  },
-  "ConfigChangeIPv4Subnet": {
-    "name": "Config Change IPv4 Subnet",
-    "data_type": "uint32",
-    "address": 5625,
-    "units": "NA",
-    "conversion_factor": "NA",
-    "description": "IPv4 subnet mask - configuration change [0.0.0.0 - 255.255.255.255]",
-    "access": "RW"
-  },
-  "ConfigChangeIPv4Gateway": {
-    "name": "Config Change IPv4 Gateway",
-    "data_type": "uint32",
-    "address": 5627,
-    "units": "NA",
-    "conversion_factor": "NA",
-    "description": "IPv4 gateway - configuration change [0.0.0.0 - 255.255.255.255]",
     "access": "RW"
   },
   "ConfigChangeEnableModbusTCP": {
