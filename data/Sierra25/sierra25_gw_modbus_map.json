@@ -90,5 +90,23 @@
     "conversion_factor": 10,
     "description": "Phase 1 apparent output power",
     "access": "RO"
+  },
+  "ACInVoltage": {
+    "name": "AC Input Voltage",
+    "data_type": "uint16",
+    "address": 1276,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC input power voltage",
+    "access": "RO"
+  },
+    "ACInCurrent": {
+    "name": "AC Input Current",
+    "data_type": "int16",
+    "address": 1277,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC input power voltage",
+    "access": "RO"
   }
 }

@@ -1,0 +1,2548 @@
+{
+  "OverallSystemStatus": {
+    "name": "Overall System Status",
+    "data_type": "unit16",
+    "address": 0,
+    "units": "",
+    "conversion_factor": 1,
+	"enum_values": {
+      "0": "unknown",
+      "1": "system healthy",
+      "2": "at least one minor alarm (no major)",
+      "3": "at least one major alarm"
+    },
+    "description": "Overall status of the system: 0=unknown, 1=system healthy, 2=at least one minor alarm, 3=at least one major alarm",
+    "access": "RO"
+  },
+  "System_Status": {
+    "name": "System_Status",
+    "data_type": "uint16",
+    "address": 0,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Overall status of the system",
+    "enum_values": {
+      "0": "unknown",
+      "1": "system healthy",
+      "2": "at least one minor alarm (no major)",
+      "3": "at least one major alarm"
+    }
+  },
+    "DcGroup1Voltage": {
+    "name": "DC Group 1 Voltage",
+    "data_type": "uint16",
+    "address": 1131,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "DC group 1 voltage measurement",
+    "access": "RO"
+  },
+    "DCGroup1TotalCurrent": {
+    "name": "DC Group 1 Total Current",
+    "data_type": "int16",
+    "address": 1132,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "DC group 1 total current measurement",
+    "access": "RO"
+  },
+    "DC_Current": {
+    "name": "DC_Current",
+    "data_type": "int16",
+    "address": 1132,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "DC Current"
+  }, "DcGroup1Power": {
+    "name": "DC Group 1 Power",
+    "data_type": "int16",
+    "address": 1133,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "DC group 1 power measurement",
+    "access": "RO"
+  },
+  "DC_Power": {
+    "name": "DC Group 1 Power",
+    "data_type": "int16",
+    "address": 1133,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "DC group 1 power measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase1Voltage": {
+    "name": "AC Output Phase 1 Voltage",
+    "data_type": "uint16",
+    "address": 1561,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC output phase 1 voltage measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase1Current": {
+    "name": "AC Output Phase 1 Current",
+    "data_type": "int16",
+    "address": 1562,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "AC output phase 1 current measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase1Frequency": {
+    "name": "AC Output Phase 1 Frequency",
+    "data_type": "uint16",
+    "address": 1563,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "AC output phase 1 frequency measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase1PowerFactor": {
+    "name": "AC Output Phase 1 Power Factor",
+    "data_type": "uint16",
+    "address": 1564,
+    "units": "NA",
+    "conversion_factor": 0.01,
+    "description": "AC output phase 1 power factor",
+    "access": "RO"
+  },
+  "AcOutputPhase1TruePower": {
+    "name": "AC Output Phase 1 True Power",
+    "data_type": "int16",
+    "address": 1565,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "AC output phase 1 true power measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase1ApparentPower": {
+    "name": "AC Output Phase 1 Apparent Power",
+    "data_type": "int16",
+    "address": 1566,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC output phase 1 apparent power measurement",
+    "access": "RO"
+  },"Phase1Voltage": {
+    "name": "Phase1Voltage",
+    "data_type": "uint16",
+    "address": 1561,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Phase 1 voltage",
+    "access": "RO"
+  },
+  "Phase1Current": {
+    "name": "Phase1Current",
+    "data_type": "int16",
+    "address": 1562,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "Phase 1 current",
+    "access": "RO"
+  },
+  "Phase1Frequency": {
+    "name": "Phase1Frequency",
+    "data_type": "uint16",
+    "address": 1563,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "Phase 1 frequency",
+    "access": "RO"
+  },
+  "Phase1PowerFactor": {
+    "name": "Phase1PowerFactor",
+    "data_type": "uint16",
+    "address": 1564,
+    "units": "",
+    "conversion_factor": 0.01,
+    "description": "Phase 1 power factor",
+    "access": "RO"
+  },
+  "Phase1TruePower": {
+    "name": "Phase1TruePower",
+    "data_type": "int16",
+    "address": 1565,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "Phase 1 true output power",
+    "access": "RO"
+  },
+  "Phase1ApparentPower": {
+    "name": "Phase1ApparentPower",
+    "data_type": "int16",
+    "address": 1566,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "Phase 1 apparent output power",
+    "access": "RO"
+  },
+  "NumberOfEvents": {
+    "name": "Number of Events",
+    "data_type": "uint16",
+    "address": 1,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Total number of events",
+    "access": "RO"
+  },
+  "NumberOfNotifications": {
+    "name": "Number of Notifications",
+    "data_type": "uint16",
+    "address": 2,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Total number of notifications",
+    "access": "RO"
+  },
+  "NumberOfMinorAlarms": {
+    "name": "Number of Minor Alarms",
+    "data_type": "uint16",
+    "address": 3,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Total number of minor alarms",
+    "access": "RO"
+  },
+  "NumberOfMajorAlarms": {
+    "name": "Number of Major Alarms",
+    "data_type": "uint16",
+    "address": 4,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Total number of major alarms",
+    "access": "RO"
+  },
+  "TestMinorAlarm": {
+    "name": "Test Minor Alarm",
+    "data_type": "boolean",
+    "address": 10,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test minor alarm: 0=Disabled, 1=Enabled",
+    "access": "RW"
+  },
+  "TestMajorAlarm": {
+    "name": "Test Major Alarm",
+    "data_type": "boolean",
+    "address": 11,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test major alarm: 0=Disabled, 1=Enabled",
+    "access": "RW"
+  },
+  "DcSaturated": {
+    "name": "DC Saturated",
+    "data_type": "boolean",
+    "address": 18,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC saturated alarm status",
+    "access": "RO"
+  },
+  "DcOverload": {
+    "name": "DC Overload",
+    "data_type": "boolean",
+    "address": 19,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC overload alarm status",
+    "access": "RO"
+  },
+  "DcFailure": {
+    "name": "DC Failure",
+    "data_type": "boolean",
+    "address": 20,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC failure alarm status",
+    "access": "RO"
+  },
+  "DcOutOff": {
+    "name": "DC Out Off",
+    "data_type": "boolean",
+    "address": 21,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC output off alarm status",
+    "access": "RO"
+  },
+  "AcInSaturated": {
+    "name": "AC Input Saturated",
+    "data_type": "boolean",
+    "address": 22,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input saturated alarm status",
+    "access": "RO"
+  },
+  "AcInOverload": {
+    "name": "AC Input Overload",
+    "data_type": "boolean",
+    "address": 23,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input overload alarm status",
+    "access": "RO"
+  },
+  "AcInFailure": {
+    "name": "AC Input Failure",
+    "data_type": "boolean",
+    "address": 24,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input failure alarm status",
+    "access": "RO"
+  },
+  "AcOutSaturated": {
+    "name": "AC Output Saturated",
+    "data_type": "boolean",
+    "address": 26,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output saturated alarm status",
+    "access": "RO"
+  },
+  "AcOutOverload": {
+    "name": "AC Output Overload",
+    "data_type": "boolean",
+    "address": 27,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output overload alarm status",
+    "access": "RO"
+  },
+  "AcOutFailure": {
+    "name": "AC Output Failure",
+    "data_type": "boolean",
+    "address": 28,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output failure alarm status",
+    "access": "RO"
+  },
+  "AcOutOff": {
+    "name": "AC Output Off",
+    "data_type": "boolean",
+    "address": 29,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output off alarm status",
+    "access": "RO"
+  },
+  "SystemOnByPass": {
+    "name": "System On Bypass",
+    "data_type": "boolean",
+    "address": 30,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System on bypass alarm status",
+    "access": "RO"
+  },
+  "SystemRemoteOff": {
+    "name": "System Remote Off",
+    "data_type": "boolean",
+    "address": 31,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System remote off alarm status",
+    "access": "RO"
+  },
+  "RedundancyLost": {
+    "name": "Redundancy Lost",
+    "data_type": "boolean",
+    "address": 32,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Redundancy lost alarm status",
+    "access": "RO"
+  },
+  "BackfeedDetected": {
+    "name": "Backfeed Detected",
+    "data_type": "boolean",
+    "address": 33,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Backfeed detected alarm status",
+    "access": "RO"
+  },
+  "ComBusFailure": {
+    "name": "Communication Bus Failure",
+    "data_type": "boolean",
+    "address": 34,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Communication bus failure alarm status",
+    "access": "RO"
+  },
+  "ModuleInWarning": {
+    "name": "Module In Warning",
+    "data_type": "boolean",
+    "address": 35,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module in warning alarm status",
+    "access": "RO"
+  },
+  "ModuleInFailure": {
+    "name": "Module In Failure",
+    "data_type": "boolean",
+    "address": 36,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module in failure alarm status",
+    "access": "RO"
+  },
+  "ModuleMissing": {
+    "name": "Module Missing",
+    "data_type": "boolean",
+    "address": 37,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module missing alarm status",
+    "access": "RO"
+  },
+  "ModulePortOff": {
+    "name": "Module Port Off",
+    "data_type": "boolean",
+    "address": 38,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module port off alarm status",
+    "access": "RO"
+  },
+  "DigitalInput1IsActive": {
+    "name": "Digital Input 1 Is Active",
+    "data_type": "boolean",
+    "address": 39,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 active status",
+    "access": "RO"
+  },
+  "DigitalInput2IsActive": {
+    "name": "Digital Input 2 Is Active",
+    "data_type": "boolean",
+    "address": 40,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 active status",
+    "access": "RO"
+  },
+  "GatewayError": {
+    "name": "Gateway Error",
+    "data_type": "boolean",
+    "address": 42,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Gateway error alarm status",
+    "access": "RO"
+  },
+  "GatewayPowerSupplyError": {
+    "name": "Gateway Power Supply Error",
+    "data_type": "boolean",
+    "address": 43,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Gateway power supply error alarm status",
+    "access": "RO"
+  },
+  "TestMajorAlarmStatus": {
+    "name": "Test Major Alarm Status",
+    "data_type": "boolean",
+    "address": 44,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test major alarm status",
+    "access": "RO"
+  },
+  "TestMinorAlarmStatus": {
+    "name": "Test Minor Alarm Status",
+    "data_type": "boolean",
+    "address": 45,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test minor alarm status",
+    "access": "RO"
+  },
+  "DcGroup1IsConfigured": {
+    "name": "DC Group 1 Is Configured",
+    "data_type": "boolean",
+    "address": 1130,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 configuration status",
+    "access": "RO"
+  },
+  "DcGroup1Saturated": {
+    "name": "DC Group 1 Saturated",
+    "data_type": "boolean",
+    "address": 1141,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 saturated status",
+    "access": "RO"
+  },
+  "DcGroup1Overload": {
+    "name": "DC Group 1 Overload",
+    "data_type": "boolean",
+    "address": 1142,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 overload status",
+    "access": "RO"
+  },
+  "DcGroup1SourceFailure": {
+    "name": "DC Group 1 Source Failure",
+    "data_type": "boolean",
+    "address": 1143,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 source failure status",
+    "access": "RO"
+  },
+  "DcGroup1Failure": {
+    "name": "DC Group 1 Failure",
+    "data_type": "boolean",
+    "address": 1144,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 failure status",
+    "access": "RO"
+  },
+  "DcGroup1Off": {
+    "name": "DC Group 1 Off",
+    "data_type": "boolean",
+    "address": 1145,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 off status",
+    "access": "RO"
+  },
+  "DcGroup1RedundancyLost": {
+    "name": "DC Group 1 Redundancy Lost",
+    "data_type": "boolean",
+    "address": 1146,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC group 1 redundancy lost status (Iris)",
+    "access": "RO"
+  },
+  "AcInputNumberOfPhases": {
+    "name": "AC Input Number of Phases",
+    "data_type": "uint16",
+    "address": 1270,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of AC input phases configured",
+    "access": "RO"
+  },
+  "AcInputPhase1IsConfigured": {
+    "name": "AC Input Phase 1 Is Configured",
+    "data_type": "boolean",
+    "address": 1275,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 1 configuration status",
+    "access": "RO"
+  },
+  "AcInputPhase1Voltage": {
+    "name": "AC Input Phase 1 Voltage",
+    "data_type": "uint16",
+    "address": 1276,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC input phase 1 voltage measurement",
+    "access": "RO"
+  },
+  "AcInputPhase1Current": {
+    "name": "AC Input Phase 1 Current",
+    "data_type": "int16",
+    "address": 1277,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "AC input phase 1 current measurement",
+    "access": "RO"
+  },
+  "AcInputPhase1Frequency": {
+    "name": "AC Input Phase 1 Frequency",
+    "data_type": "uint16",
+    "address": 1278,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "AC input phase 1 frequency measurement",
+    "access": "RO"
+  },
+  "AcInputPhase1TruePower": {
+    "name": "AC Input Phase 1 True Power",
+    "data_type": "int16",
+    "address": 1279,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "AC input phase 1 true power measurement",
+    "access": "RO"
+  },
+  "AcInputPhase1ApparentPower": {
+    "name": "AC Input Phase 1 Apparent Power",
+    "data_type": "int16",
+    "address": 1280,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC input phase 1 apparent power measurement",
+    "access": "RO"
+  },
+  "AcInputPhase1Saturated": {
+    "name": "AC Input Phase 1 Saturated",
+    "data_type": "boolean",
+    "address": 1290,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 1 saturated status",
+    "access": "RO"
+  },
+  "AcInputPhase1Overload": {
+    "name": "AC Input Phase 1 Overload",
+    "data_type": "boolean",
+    "address": 1291,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 1 overload status",
+    "access": "RO"
+  },
+  "AcInputPhase1SourceFailure": {
+    "name": "AC Input Phase 1 Source Failure",
+    "data_type": "boolean",
+    "address": 1292,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 1 source failure status",
+    "access": "RO"
+  },
+  "AcInputPhase1Failure": {
+    "name": "AC Input Phase 1 Failure",
+    "data_type": "boolean",
+    "address": 1293,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 1 failure status",
+    "access": "RO"
+  },
+  "AcInputPhase2IsConfigured": {
+    "name": "AC Input Phase 2 Is Configured",
+    "data_type": "boolean",
+    "address": 1300,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 2 configuration status",
+    "access": "RO"
+  },
+  "AcInputPhase2Voltage": {
+    "name": "AC Input Phase 2 Voltage",
+    "data_type": "uint16",
+    "address": 1301,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC input phase 2 voltage measurement",
+    "access": "RO"
+  },
+  "AcInputPhase2Current": {
+    "name": "AC Input Phase 2 Current",
+    "data_type": "int16",
+    "address": 1302,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "AC input phase 2 current measurement",
+    "access": "RO"
+  },
+  "AcInputPhase2Frequency": {
+    "name": "AC Input Phase 2 Frequency",
+    "data_type": "uint16",
+    "address": 1303,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "AC input phase 2 frequency measurement",
+    "access": "RO"
+  },
+  "AcInputPhase2TruePower": {
+    "name": "AC Input Phase 2 True Power",
+    "data_type": "int16",
+    "address": 1304,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "AC input phase 2 true power measurement",
+    "access": "RO"
+  },
+  "AcInputPhase2ApparentPower": {
+    "name": "AC Input Phase 2 Apparent Power",
+    "data_type": "int16",
+    "address": 1305,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC input phase 2 apparent power measurement",
+    "access": "RO"
+  },
+  "AcInputPhase2Saturated": {
+    "name": "AC Input Phase 2 Saturated",
+    "data_type": "boolean",
+    "address": 1315,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 2 saturated status",
+    "access": "RO"
+  },
+  "AcInputPhase2Overload": {
+    "name": "AC Input Phase 2 Overload",
+    "data_type": "boolean",
+    "address": 1316,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 2 overload status",
+    "access": "RO"
+  },
+  "AcInputPhase2SourceFailure": {
+    "name": "AC Input Phase 2 Source Failure",
+    "data_type": "boolean",
+    "address": 1317,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 2 source failure status",
+    "access": "RO"
+  },
+  "AcInputPhase2Failure": {
+    "name": "AC Input Phase 2 Failure",
+    "data_type": "boolean",
+    "address": 1318,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 2 failure status",
+    "access": "RO"
+  },
+  "AcInputPhase3IsConfigured": {
+    "name": "AC Input Phase 3 Is Configured",
+    "data_type": "boolean",
+    "address": 1325,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 3 configuration status",
+    "access": "RO"
+  },
+  "AcInputPhase3Voltage": {
+    "name": "AC Input Phase 3 Voltage",
+    "data_type": "uint16",
+    "address": 1326,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC input phase 3 voltage measurement",
+    "access": "RO"
+  },
+  "AcInputPhase3Current": {
+    "name": "AC Input Phase 3 Current",
+    "data_type": "int16",
+    "address": 1327,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "AC input phase 3 current measurement",
+    "access": "RO"
+  },
+  "AcInputPhase3Frequency": {
+    "name": "AC Input Phase 3 Frequency",
+    "data_type": "uint16",
+    "address": 1328,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "AC input phase 3 frequency measurement",
+    "access": "RO"
+  },
+  "AcInputPhase3TruePower": {
+    "name": "AC Input Phase 3 True Power",
+    "data_type": "int16",
+    "address": 1329,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "AC input phase 3 true power measurement",
+    "access": "RO"
+  },
+  "AcInputPhase3ApparentPower": {
+    "name": "AC Input Phase 3 Apparent Power",
+    "data_type": "int16",
+    "address": 1330,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC input phase 3 apparent power measurement",
+    "access": "RO"
+  },
+  "AcInputPhase3Saturated": {
+    "name": "AC Input Phase 3 Saturated",
+    "data_type": "boolean",
+    "address": 1340,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 3 saturated status",
+    "access": "RO"
+  },
+  "AcInputPhase3Overload": {
+    "name": "AC Input Phase 3 Overload",
+    "data_type": "boolean",
+    "address": 1341,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 3 overload status",
+    "access": "RO"
+  },
+  "AcInputPhase3SourceFailure": {
+    "name": "AC Input Phase 3 Source Failure",
+    "data_type": "boolean",
+    "address": 1342,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 3 source failure status",
+    "access": "RO"
+  },
+  "AcInputPhase3Failure": {
+    "name": "AC Input Phase 3 Failure",
+    "data_type": "boolean",
+    "address": 1343,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input phase 3 failure status",
+    "access": "RO"
+  },
+  "AcOutputNumberOfPhases": {
+    "name": "AC Output Number of Phases",
+    "data_type": "uint16",
+    "address": 1550,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of AC output phases",
+    "access": "RO"
+  },
+  "AcOutputSystemInstalledPowerVA": {
+    "name": "AC Output System Installed Power VA",
+    "data_type": "uint16",
+    "address": 1551,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "System installed power in VA",
+    "access": "RO"
+  },
+  "AcOutputSystemInstalledPowerW": {
+    "name": "AC Output System Installed Power W",
+    "data_type": "uint16",
+    "address": 1552,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "System installed power in W",
+    "access": "RO"
+  },
+  "AcOutputSystemAvailablePowerVA": {
+    "name": "AC Output System Available Power VA",
+    "data_type": "uint16",
+    "address": 1553,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "System available power in VA",
+    "access": "RO"
+  },
+  "AcOutputSystemAvailablePowerW": {
+    "name": "AC Output System Available Power W",
+    "data_type": "uint16",
+    "address": 1554,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "System available power in W",
+    "access": "RO"
+  },
+  "AcOutputPhase1IsConfigured": {
+    "name": "AC Output Phase 1 Is Configured",
+    "data_type": "boolean",
+    "address": 1560,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 configuration status",
+    "access": "RO"
+  },
+  "AcOutputPhase1AvailablePowerW": {
+    "name": "AC Output Phase 1 Available Power W",
+    "data_type": "uint16",
+    "address": 1567,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "AC output phase 1 available power in W",
+    "access": "RO"
+  },
+  "AcOutputPhase1AvailablePowerVA": {
+    "name": "AC Output Phase 1 Available Power VA",
+    "data_type": "uint16",
+    "address": 1568,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC output phase 1 available power in VA",
+    "access": "RO"
+  },
+  "AcOutputPhase1InstalledPowerVA": {
+    "name": "AC Output Phase 1 Installed Power VA",
+    "data_type": "uint16",
+    "address": 1570,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC output phase 1 installed power in VA",
+    "access": "RO"
+  },
+  "AcOutputPhase1NbModulesConfigured": {
+    "name": "AC Output Phase 1 Number of Modules Configured",
+    "data_type": "uint16",
+    "address": 1571,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 number of modules configured",
+    "access": "RO"
+  },
+  "AcOutputPhase1NbRedundantModules": {
+    "name": "AC Output Phase 1 Number of Redundant Modules",
+    "data_type": "uint16",
+    "address": 1572,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 number of redundant modules configured",
+    "access": "RO"
+  },
+  "AcOutputPhase1NbModulesSeen": {
+    "name": "AC Output Phase 1 Number of Modules Seen",
+    "data_type": "uint16",
+    "address": 1573,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 number of modules seen",
+    "access": "RO"
+  },
+  "AcOutputPhase1NbModulesOk": {
+    "name": "AC Output Phase 1 Number of Modules OK",
+    "data_type": "uint16",
+    "address": 1574,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 number of modules OK",
+    "access": "RO"
+  },
+  "AcOutputPhase1NbModulesManuallyOff": {
+    "name": "AC Output Phase 1 Number of Modules Manually Off",
+    "data_type": "uint16",
+    "address": 1575,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 number of modules manually off",
+    "access": "RO"
+  },
+  "AcOutputPhase1NbModulesKONT": {
+    "name": "AC Output Phase 1 Number of Modules KONT",
+    "data_type": "uint16",
+    "address": 1576,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 number of modules KONT",
+    "access": "RO"
+  },
+  "AcOutputPhase1Saturated": {
+    "name": "AC Output Phase 1 Saturated",
+    "data_type": "boolean",
+    "address": 1590,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 saturated status",
+    "access": "RO"
+  },
+  "AcOutputPhase1Overload": {
+    "name": "AC Output Phase 1 Overload",
+    "data_type": "boolean",
+    "address": 1591,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 overload status",
+    "access": "RO"
+  },
+  "AcOutputPhase1Failure": {
+    "name": "AC Output Phase 1 Failure",
+    "data_type": "boolean",
+    "address": 1593,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 failure status",
+    "access": "RO"
+  },
+  "AcOutputPhase1Off": {
+    "name": "AC Output Phase 1 Off",
+    "data_type": "boolean",
+    "address": 1594,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 off status",
+    "access": "RO"
+  },
+  "AcOutputPhase1RedundancyLost": {
+    "name": "AC Output Phase 1 Redundancy Lost",
+    "data_type": "boolean",
+    "address": 1595,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 1 redundancy lost status",
+    "access": "RO"
+  },
+  "AcOutputPhase2IsConfigured": {
+    "name": "AC Output Phase 2 Is Configured",
+    "data_type": "boolean",
+    "address": 1610,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 2 configuration status",
+    "access": "RO"
+  },
+  "AcOutputPhase2Voltage": {
+    "name": "AC Output Phase 2 Voltage",
+    "data_type": "uint16",
+    "address": 1611,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC output phase 2 voltage measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase2Current": {
+    "name": "AC Output Phase 2 Current",
+    "data_type": "int16",
+    "address": 1612,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "AC output phase 2 current measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase2Frequency": {
+    "name": "AC Output Phase 2 Frequency",
+    "data_type": "uint16",
+    "address": 1613,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "AC output phase 2 frequency measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase2PowerFactor": {
+    "name": "AC Output Phase 2 Power Factor",
+    "data_type": "uint16",
+    "address": 1614,
+    "units": "NA",
+    "conversion_factor": 0.01,
+    "description": "AC output phase 2 power factor",
+    "access": "RO"
+  },
+  "AcOutputPhase2TruePower": {
+    "name": "AC Output Phase 2 True Power",
+    "data_type": "int16",
+    "address": 1615,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "AC output phase 2 true power measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase2ApparentPower": {
+    "name": "AC Output Phase 2 Apparent Power",
+    "data_type": "int16",
+    "address": 1616,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "AC output phase 2 apparent power measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase3IsConfigured": {
+    "name": "AC Output Phase 3 Is Configured",
+    "data_type": "boolean",
+    "address": 1660,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output phase 3 configuration status",
+    "access": "RO"
+  },
+  "AcOutputPhase3Voltage": {
+    "name": "AC Output Phase 3 Voltage",
+    "data_type": "uint16",
+    "address": 1661,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "AC output phase 3 voltage measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase3Current": {
+    "name": "AC Output Phase 3 Current",
+    "data_type": "int16",
+    "address": 1662,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "AC output phase 3 current measurement",
+    "access": "RO"
+  },
+  "AcOutputPhase3Frequency": {
+    "name": "AC Output Phase 3 Frequency",
+    "data_type": "uint16",
+    "address": 1663,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "AC output phase 3 frequency measurement",
+    "access": "RO"
+  },
+  "NominalAcVoltage": {
+    "name": "Nominal AC Voltage",
+    "data_type": "uint16",
+    "address": 1960,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Nominal AC voltage for Sierra/Bravo or External DC voltage for Iris",
+    "access": "RO"
+  },
+  "NominalFrequency": {
+    "name": "Nominal Frequency",
+    "data_type": "uint16",
+    "address": 1961,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "Nominal frequency",
+    "access": "RO"
+  },
+  "NominalTruePower": {
+    "name": "Nominal True Power",
+    "data_type": "uint16",
+    "address": 1962,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "Nominal true power",
+    "access": "RO"
+  },
+  "NominalApparentPower": {
+    "name": "Nominal Apparent Power",
+    "data_type": "uint16",
+    "address": 1963,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "Nominal apparent power",
+    "access": "RO"
+  },
+  "NominalDcVoltage": {
+    "name": "Nominal DC Voltage",
+    "data_type": "uint16",
+    "address": 1964,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Nominal DC voltage",
+    "access": "RO"
+  },
+  "Converter1IsInUse": {
+    "name": "Converter 1 Is In Use",
+    "data_type": "boolean",
+    "address": 1970,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 in use status",
+    "access": "RO"
+  },
+  "Converter1Identifier": {
+    "name": "Converter 1 Identifier",
+    "data_type": "uint16",
+    "address": 1971,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 identifier",
+    "access": "RO"
+  },
+  "Converter1ModuleType": {
+    "name": "Converter 1 Module Type",
+    "data_type": "enum",
+    "address": 1972,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 module type: 0=No module, 1=Other, 2=Sierra, 3=Bravo, 4=Iris, 5=TUS",
+    "access": "RO"
+  },
+  "Converter1SerialNumber": {
+    "name": "Converter 1 Serial Number",
+    "data_type": "uint16",
+    "address": 1973,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 serial number",
+    "access": "RO"
+  },
+  "Converter1ModuleState": {
+    "name": "Converter 1 Module State",
+    "data_type": "enum",
+    "address": 1974,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 module state: 0=Missing, 1=Start, 2=Running, 3=Warning, 4=Overload, 5=SourceFailure, 6=Failure, 7=Off",
+    "access": "RO"
+  },
+  "Converter1DCPortState": {
+    "name": "Converter 1 DC Port State",
+    "data_type": "enum",
+    "address": 1975,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 DC port state: 0=Missing, 1=Start, 2=Running, 3=Warning, 4=Overload, 5=SourceFailure, 6=Failure, 7=Off",
+    "access": "RO"
+  },
+  "Converter1ACInPortState": {
+    "name": "Converter 1 AC Input Port State",
+    "data_type": "enum",
+    "address": 1976,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 AC input port state: 0=Missing, 1=Start, 2=Running, 3=Warning, 4=Overload, 5=SourceFailure, 6=Failure, 7=Off",
+    "access": "RO"
+  },
+  "Converter1ACOutPortState": {
+    "name": "Converter 1 AC Output Port State",
+    "data_type": "enum",
+    "address": 1977,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 AC output port state: 0=Missing, 1=Start, 2=Running, 3=Warning, 4=Overload, 5=SourceFailure, 6=Failure, 7=Off",
+    "access": "RO"
+  },
+  "Converter1FirmwareVersion": {
+    "name": "Converter 1 Firmware Version",
+    "data_type": "uint16",
+    "address": 1978,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 firmware version",
+    "access": "RO"
+  },
+  "Converter1DcCurrent": {
+    "name": "Converter 1 DC Current",
+    "data_type": "int16",
+    "address": 1980,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 DC current measurement",
+    "access": "RO"
+  },
+  "Converter1DcVoltage": {
+    "name": "Converter 1 DC Voltage",
+    "data_type": "uint16",
+    "address": 1981,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 DC voltage measurement",
+    "access": "RO"
+  },
+  "Converter1DcPower": {
+    "name": "Converter 1 DC Power",
+    "data_type": "int16",
+    "address": 1982,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "Converter 1 DC power measurement",
+    "access": "RO"
+  },
+  "Converter1Phase": {
+    "name": "Converter 1 Phase",
+    "data_type": "uint16",
+    "address": 1983,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 phase assignment [1-3]",
+    "access": "RO"
+  },
+  "Converter1AcInputVoltage": {
+    "name": "Converter 1 AC Input Voltage",
+    "data_type": "uint16",
+    "address": 1984,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 AC input voltage measurement",
+    "access": "RO"
+  },
+  "Converter1AcInputCurrent": {
+    "name": "Converter 1 AC Input Current",
+    "data_type": "int16",
+    "address": 1985,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 AC input current measurement",
+    "access": "RO"
+  },
+  "Converter1AcInputFrequency": {
+    "name": "Converter 1 AC Input Frequency",
+    "data_type": "uint16",
+    "address": 1986,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "Converter 1 AC input frequency measurement",
+    "access": "RO"
+  },
+  "Converter1AcInputTruePower": {
+    "name": "Converter 1 AC Input True Power",
+    "data_type": "int16",
+    "address": 1987,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "Converter 1 AC input true power measurement",
+    "access": "RO"
+  },
+  "Converter1AcInputApparentPower": {
+    "name": "Converter 1 AC Input Apparent Power",
+    "data_type": "int16",
+    "address": 1988,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "Converter 1 AC input apparent power measurement",
+    "access": "RO"
+  },
+  "Converter1AcOutputVoltage": {
+    "name": "Converter 1 AC Output Voltage",
+    "data_type": "uint16",
+    "address": 1989,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 AC output voltage measurement",
+    "access": "RO"
+  },
+  "Converter1AcOutputCurrent": {
+    "name": "Converter 1 AC Output Current",
+    "data_type": "int16",
+    "address": 1990,
+    "units": "A",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 AC output current measurement",
+    "access": "RO"
+  },
+  "Converter1AcOutputFrequency": {
+    "name": "Converter 1 AC Output Frequency",
+    "data_type": "uint16",
+    "address": 1991,
+    "units": "Hz",
+    "conversion_factor": 0.01,
+    "description": "Converter 1 AC output frequency measurement",
+    "access": "RO"
+  },
+  "Converter1AcOutputTruePower": {
+    "name": "Converter 1 AC Output True Power",
+    "data_type": "int16",
+    "address": 1992,
+    "units": "W",
+    "conversion_factor": 10,
+    "description": "Converter 1 AC output true power measurement",
+    "access": "RO"
+  },
+  "Converter1AcOutputApparentPower": {
+    "name": "Converter 1 AC Output Apparent Power",
+    "data_type": "int16",
+    "address": 1993,
+    "units": "VA",
+    "conversion_factor": 10,
+    "description": "Converter 1 AC output apparent power measurement",
+    "access": "RO"
+  },
+  "Converter1TimeBeforeFanEndOfLife": {
+    "name": "Converter 1 Time Before Fan End Of Life",
+    "data_type": "uint16",
+    "address": 1994,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 time before fan end of life",
+    "access": "RO"
+  },
+  "Converter1Temperature": {
+    "name": "Converter 1 Temperature",
+    "data_type": "uint16",
+    "address": 1995,
+    "units": "C",
+    "conversion_factor": 0.1,
+    "description": "Converter 1 temperature measurement",
+    "access": "RO"
+  },
+  "Converter1ConfigError": {
+    "name": "Converter 1 Config Error",
+    "data_type": "boolean",
+    "address": 2006,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 configuration error status",
+    "access": "RO"
+  },
+  "Converter1RemoteOff": {
+    "name": "Converter 1 Remote Off",
+    "data_type": "boolean",
+    "address": 2007,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 remote off status",
+    "access": "RO"
+  },
+  "Converter1BackfeedError": {
+    "name": "Converter 1 Backfeed Error",
+    "data_type": "boolean",
+    "address": 2008,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Converter 1 backfeed error status",
+    "access": "RO"
+  },
+  "InviewManufacturerName": {
+    "name": "Inview Manufacturer Name",
+    "data_type": "ascii",
+    "address": 3570,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Inview manufacturer name: CE+T Group",
+    "access": "RO"
+  },
+  "InviewDeviceModel": {
+    "name": "Inview Device Model",
+    "data_type": "ascii",
+    "address": 3586,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Inview device model: Inview GW DIN or Inview GW Rack",
+    "access": "RO"
+  },
+  "InviewDeviceSerialNumber": {
+    "name": "Inview Device Serial Number",
+    "data_type": "ascii",
+    "address": 3602,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Inview device serial number",
+    "access": "RO"
+  },
+  "InviewSoftwareVersionMajor": {
+    "name": "Inview Software Version Major",
+    "data_type": "uint16",
+    "address": 3618,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Inview software version major number",
+    "access": "RO"
+  },
+  "InviewSoftwareVersionMinor": {
+    "name": "Inview Software Version Minor",
+    "data_type": "uint16",
+    "address": 3619,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Inview software version minor number",
+    "access": "RO"
+  },
+  "SystemDescription": {
+    "name": "System Description",
+    "data_type": "ascii",
+    "address": 3620,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System description: InviewGW Pwr system controller",
+    "access": "RO"
+  },
+  "SystemUpTime": {
+    "name": "System Up Time",
+    "data_type": "uint32",
+    "address": 3636,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System uptime",
+    "access": "RO"
+  },
+  "SystemContact": {
+    "name": "System Contact",
+    "data_type": "ascii",
+    "address": 3638,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System contact information",
+    "access": "RO"
+  },
+  "SystemName": {
+    "name": "System Name",
+    "data_type": "ascii",
+    "address": 3654,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System name",
+    "access": "RO"
+  },
+  "SystemLocation": {
+    "name": "System Location",
+    "data_type": "ascii",
+    "address": 3670,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System location",
+    "access": "RO"
+  },
+  "SystemMACAddress": {
+    "name": "System MAC Address",
+    "data_type": "ascii",
+    "address": 3686,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System MAC address",
+    "access": "RO"
+  },
+  "MonitoringConfigNumberOfModulesPhase1": {
+    "name": "Monitoring Config Number of Modules Phase 1",
+    "data_type": "uint16",
+    "address": 4000,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of modules in phase 1 [0-32]",
+    "access": "RO"
+  },
+  "MonitoringConfigNumberOfModulesPhase2": {
+    "name": "Monitoring Config Number of Modules Phase 2",
+    "data_type": "uint16",
+    "address": 4001,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of modules in phase 2 [0-32]",
+    "access": "RO"
+  },
+  "MonitoringConfigNumberOfModulesPhase3": {
+    "name": "Monitoring Config Number of Modules Phase 3",
+    "data_type": "uint16",
+    "address": 4002,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of modules in phase 3 [0-32]",
+    "access": "RO"
+  },
+  "MonitoringConfigRedundancyPhase1": {
+    "name": "Monitoring Config Redundancy Phase 1",
+    "data_type": "uint16",
+    "address": 4008,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Amount of redundancy in phase 1 [0-32]",
+    "access": "RO"
+  },
+  "MonitoringConfigRedundancyPhase2": {
+    "name": "Monitoring Config Redundancy Phase 2",
+    "data_type": "uint16",
+    "address": 4009,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Amount of redundancy in phase 2 [0-32]",
+    "access": "RO"
+  },
+  "MonitoringConfigRedundancyPhase3": {
+    "name": "Monitoring Config Redundancy Phase 3",
+    "data_type": "uint16",
+    "address": 4010,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Amount of redundancy in phase 3 [0-32]",
+    "access": "RO"
+  },
+  "ConfigDcSaturatedSeverity": {
+    "name": "Config DC Saturated Severity",
+    "data_type": "enum",
+    "address": 4016,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC saturated alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigDcOverloadSeverity": {
+    "name": "Config DC Overload Severity",
+    "data_type": "enum",
+    "address": 4017,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC overload alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigDcFailureSeverity": {
+    "name": "Config DC Failure Severity",
+    "data_type": "enum",
+    "address": 4018,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC failure alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigDcOutOffSeverity": {
+    "name": "Config DC Out Off Severity",
+    "data_type": "enum",
+    "address": 4019,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC output off alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcInSaturatedSeverity": {
+    "name": "Config AC Input Saturated Severity",
+    "data_type": "enum",
+    "address": 4020,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input saturated alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcInOverloadSeverity": {
+    "name": "Config AC Input Overload Severity",
+    "data_type": "enum",
+    "address": 4021,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input overload alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcInFailureSeverity": {
+    "name": "Config AC Input Failure Severity",
+    "data_type": "enum",
+    "address": 4022,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input failure alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcOutSaturatedSeverity": {
+    "name": "Config AC Output Saturated Severity",
+    "data_type": "enum",
+    "address": 4024,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output saturated alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcOutOverloadSeverity": {
+    "name": "Config AC Output Overload Severity",
+    "data_type": "enum",
+    "address": 4025,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output overload alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcOutFailureSeverity": {
+    "name": "Config AC Output Failure Severity",
+    "data_type": "enum",
+    "address": 4026,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output failure alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigAcOutOffSeverity": {
+    "name": "Config AC Output Off Severity",
+    "data_type": "enum",
+    "address": 4027,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output off alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigSystemOnByPassSeverity": {
+    "name": "Config System On Bypass Severity",
+    "data_type": "enum",
+    "address": 4028,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System on bypass alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigSystemRemoteOffSeverity": {
+    "name": "Config System Remote Off Severity",
+    "data_type": "enum",
+    "address": 4029,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System remote off alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigRedundancyLostSeverity": {
+    "name": "Config Redundancy Lost Severity",
+    "data_type": "enum",
+    "address": 4030,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Redundancy lost alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigBackfeedDetectedSeverity": {
+    "name": "Config Backfeed Detected Severity",
+    "data_type": "enum",
+    "address": 4031,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Backfeed detected alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigComBusFailureSeverity": {
+    "name": "Config Communication Bus Failure Severity",
+    "data_type": "enum",
+    "address": 4032,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Communication bus failure alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigModuleInWarningSeverity": {
+    "name": "Config Module In Warning Severity",
+    "data_type": "enum",
+    "address": 4033,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module in warning alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigModuleInFailureSeverity": {
+    "name": "Config Module In Failure Severity",
+    "data_type": "enum",
+    "address": 4034,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module in failure alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigModuleMissingSeverity": {
+    "name": "Config Module Missing Severity",
+    "data_type": "enum",
+    "address": 4035,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module missing alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigModulePortOffSeverity": {
+    "name": "Config Module Port Off Severity",
+    "data_type": "enum",
+    "address": 4036,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module port off alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigDigitalInput1IsActiveSeverity": {
+    "name": "Config Digital Input 1 Is Active Severity",
+    "data_type": "enum",
+    "address": 4037,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 active alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigDigitalInput2IsActiveSeverity": {
+    "name": "Config Digital Input 2 Is Active Severity",
+    "data_type": "enum",
+    "address": 4038,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 active alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigGatewayErrorSeverity": {
+    "name": "Config Gateway Error Severity",
+    "data_type": "enum",
+    "address": 4040,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Gateway error alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigGatewayPowerSupplyErrorSeverity": {
+    "name": "Config Gateway Power Supply Error Severity",
+    "data_type": "enum",
+    "address": 4041,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Gateway power supply error alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigTestMajorAlarmSeverity": {
+    "name": "Config Test Major Alarm Severity",
+    "data_type": "enum",
+    "address": 4042,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test major alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigTestMinorAlarmSeverity": {
+    "name": "Config Test Minor Alarm Severity",
+    "data_type": "enum",
+    "address": 4043,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test minor alarm severity: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RO"
+  },
+  "ConfigNotificationTemporization": {
+    "name": "Config Notification Temporization",
+    "data_type": "uint16",
+    "address": 4044,
+    "units": "s",
+    "conversion_factor": "NA",
+    "description": "Notification temporization [2-120] seconds",
+    "access": "RO"
+  },
+  "ConfigMinorAlarmTemporization": {
+    "name": "Config Minor Alarm Temporization",
+    "data_type": "uint16",
+    "address": 4045,
+    "units": "s",
+    "conversion_factor": "NA",
+    "description": "Minor alarm temporization [2-120] seconds",
+    "access": "RO"
+  },
+  "ConfigMajorAlarmTemporization": {
+    "name": "Config Major Alarm Temporization",
+    "data_type": "uint16",
+    "address": 4046,
+    "units": "s",
+    "conversion_factor": "NA",
+    "description": "Major alarm temporization [2-120] seconds",
+    "access": "RO"
+  },
+  "ConfigDigitalInput1ActiveLevel": {
+    "name": "Config Digital Input 1 Active Level",
+    "data_type": "enum",
+    "address": 4047,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 active level: 0=ShortCircuit, 1=Open",
+    "access": "RO"
+  },
+  "ConfigDigitalInput2ActiveLevel": {
+    "name": "Config Digital Input 2 Active Level",
+    "data_type": "enum",
+    "address": 4048,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 active level: 0=ShortCircuit, 1=Open",
+    "access": "RO"
+  },
+  "ConfigDigitalInput3ActiveLevel": {
+    "name": "Config Digital Input 3 Active Level",
+    "data_type": "enum",
+    "address": 4049,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 3 active level (Reserved): 0=ShortCircuit, 1=Open",
+    "access": "RO"
+  },
+  "ConfigDigitalInputLabel1": {
+    "name": "Config Digital Input Label 1",
+    "data_type": "ascii",
+    "address": 4050,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 label - maximum 31 characters",
+    "access": "RO"
+  },
+  "ConfigDigitalInputLabel2": {
+    "name": "Config Digital Input Label 2",
+    "data_type": "ascii",
+    "address": 4066,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 label - maximum 31 characters",
+    "access": "RO"
+  },
+  "ConfigDigitalInputLabel3": {
+    "name": "Config Digital Input Label 3",
+    "data_type": "ascii",
+    "address": 4082,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 3 label (Reserved) - maximum 31 characters",
+    "access": "RO"
+  },
+  "ConfigDigitalInput1Function": {
+    "name": "Config Digital Input 1 Function",
+    "data_type": "boolean",
+    "address": 4098,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 function: 0=Regular, 1=MBP",
+    "access": "RO"
+  },
+  "ConfigDigitalInput2Function": {
+    "name": "Config Digital Input 2 Function",
+    "data_type": "boolean",
+    "address": 4099,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 function (Reserved)",
+    "access": "RO"
+  },
+  "ConfigDigitalInput3Function": {
+    "name": "Config Digital Input 3 Function",
+    "data_type": "boolean",
+    "address": 4100,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 3 function (Reserved)",
+    "access": "RO"
+  },
+  "ConfigAcInSaturation": {
+    "name": "Config AC Input Saturation",
+    "data_type": "uint16",
+    "address": 4101,
+    "units": "%",
+    "conversion_factor": "NA",
+    "description": "AC input saturation threshold [10-100]",
+    "access": "RO"
+  },
+  "ConfigDCOutSaturation": {
+    "name": "Config DC Output Saturation",
+    "data_type": "uint16",
+    "address": 4102,
+    "units": "%",
+    "conversion_factor": "NA",
+    "description": "DC output saturation threshold [10-100]",
+    "access": "RO"
+  },
+  "ConfigACOutSaturation": {
+    "name": "Config AC Output Saturation",
+    "data_type": "uint16",
+    "address": 4103,
+    "units": "%",
+    "conversion_factor": "NA",
+    "description": "AC output saturation threshold [10-100]",
+    "access": "RO"
+  },
+  "ConfigSysContact": {
+    "name": "Config System Contact",
+    "data_type": "ascii",
+    "address": 4104,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System contact - maximum 31 characters",
+    "access": "RO"
+  },
+  "ConfigSysName": {
+    "name": "Config System Name",
+    "data_type": "ascii",
+    "address": 4120,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System name - maximum 31 characters",
+    "access": "RO"
+  },
+  "ConfigSysLocation": {
+    "name": "Config System Location",
+    "data_type": "ascii",
+    "address": 4136,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System location - maximum 31 characters",
+    "access": "RO"
+  },
+  "ConfigUseDHCP": {
+    "name": "Config Use DHCP",
+    "data_type": "boolean",
+    "address": 4152,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Use DHCP: FALSE=Disabled, TRUE=Enabled",
+    "access": "RO"
+  },
+  "ConfigIPv4Address": {
+    "name": "Config IPv4 Address",
+    "data_type": "uint32",
+    "address": 4153,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "IPv4 address [0.0.0.0 - 255.255.255.255]",
+    "access": "RO"
+  },
+  "ConfigIPv4Subnet": {
+    "name": "Config IPv4 Subnet",
+    "data_type": "uint32",
+    "address": 4155,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "IPv4 subnet mask [0.0.0.0 - 255.255.255.255]",
+    "access": "RO"
+  },
+  "ConfigIPv4Gateway": {
+    "name": "Config IPv4 Gateway",
+    "data_type": "uint32",
+    "address": 4157,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "IPv4 gateway [0.0.0.0 - 255.255.255.255]",
+    "access": "RO"
+  },
+  "ConfigEnableModbusTCP": {
+    "name": "Config Enable Modbus TCP",
+    "data_type": "boolean",
+    "address": 4159,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Enable Modbus TCP: FALSE=Disabled, TRUE=Enabled",
+    "access": "RO"
+  },
+  "ConfigEnableModbusTCPWrite": {
+    "name": "Config Enable Modbus TCP Write",
+    "data_type": "boolean",
+    "address": 4160,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Enable Modbus TCP write: FALSE=Disabled, TRUE=Enabled",
+    "access": "RO"
+  },
+  "ConfigUnitId": {
+    "name": "Config Unit ID",
+    "data_type": "uint16",
+    "address": 4161,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Modbus unit ID: 0xFF",
+    "access": "RO"
+  },
+  "ConfigPort": {
+    "name": "Config Port",
+    "data_type": "uint16",
+    "address": 4162,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Modbus TCP port [0-65535]",
+    "access": "RO"
+  },
+  "ConfigAutologout": {
+    "name": "Config Auto Logout",
+    "data_type": "uint16",
+    "address": 4163,
+    "units": "min",
+    "conversion_factor": "NA",
+    "description": "Auto logout timeout [0-600] minutes",
+    "access": "RO"
+  },
+  "ConfigChangeNumberOfModulesPhase1": {
+    "name": "Config Change Number of Modules Phase 1",
+    "data_type": "uint16",
+    "address": 5470,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of modules in phase 1 [0-32] - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeNumberOfModulesPhase2": {
+    "name": "Config Change Number of Modules Phase 2",
+    "data_type": "uint16",
+    "address": 5471,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of modules in phase 2 [0-32] - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeNumberOfModulesPhase3": {
+    "name": "Config Change Number of Modules Phase 3",
+    "data_type": "uint16",
+    "address": 5472,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Number of modules in phase 3 [0-32] - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeRedundancyPhase1": {
+    "name": "Config Change Redundancy Phase 1",
+    "data_type": "uint16",
+    "address": 5478,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Amount of redundancy in phase 1 [0-32] - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeRedundancyPhase2": {
+    "name": "Config Change Redundancy Phase 2",
+    "data_type": "uint16",
+    "address": 5479,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Amount of redundancy in phase 2 [0-32] - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeRedundancyPhase3": {
+    "name": "Config Change Redundancy Phase 3",
+    "data_type": "uint16",
+    "address": 5480,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Amount of redundancy in phase 3 [0-32] - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeDcSaturatedSeverity": {
+    "name": "Config Change DC Saturated Severity",
+    "data_type": "enum",
+    "address": 5486,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC saturated alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeDcOverloadSeverity": {
+    "name": "Config Change DC Overload Severity",
+    "data_type": "enum",
+    "address": 5487,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC overload alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeDcFailureSeverity": {
+    "name": "Config Change DC Failure Severity",
+    "data_type": "enum",
+    "address": 5488,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC failure alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeDcOutOffSeverity": {
+    "name": "Config Change DC Out Off Severity",
+    "data_type": "enum",
+    "address": 5489,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "DC output off alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcInSaturatedSeverity": {
+    "name": "Config Change AC Input Saturated Severity",
+    "data_type": "enum",
+    "address": 5490,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input saturated alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcInOverloadSeverity": {
+    "name": "Config Change AC Input Overload Severity",
+    "data_type": "enum",
+    "address": 5491,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input overload alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcInFailureSeverity": {
+    "name": "Config Change AC Input Failure Severity",
+    "data_type": "enum",
+    "address": 5492,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC input failure alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcOutSaturatedSeverity": {
+    "name": "Config Change AC Output Saturated Severity",
+    "data_type": "enum",
+    "address": 5494,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output saturated alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcOutOverloadSeverity": {
+    "name": "Config Change AC Output Overload Severity",
+    "data_type": "enum",
+    "address": 5495,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output overload alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcOutFailureSeverity": {
+    "name": "Config Change AC Output Failure Severity",
+    "data_type": "enum",
+    "address": 5496,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output failure alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeAcOutOffSeverity": {
+    "name": "Config Change AC Output Off Severity",
+    "data_type": "enum",
+    "address": 5497,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "AC output off alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeSystemOnByPassSeverity": {
+    "name": "Config Change System On Bypass Severity",
+    "data_type": "enum",
+    "address": 5498,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System on bypass alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeSystemRemoteOffSeverity": {
+    "name": "Config Change System Remote Off Severity",
+    "data_type": "enum",
+    "address": 5499,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System remote off alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeRedundancyLostSeverity": {
+    "name": "Config Change Redundancy Lost Severity",
+    "data_type": "enum",
+    "address": 5500,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Redundancy lost alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeBackfeedDetectedSeverity": {
+    "name": "Config Change Backfeed Detected Severity",
+    "data_type": "enum",
+    "address": 5501,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Backfeed detected alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeComBusFailureSeverity": {
+    "name": "Config Change Communication Bus Failure Severity",
+    "data_type": "enum",
+    "address": 5502,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Communication bus failure alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeModuleInWarningSeverity": {
+    "name": "Config Change Module In Warning Severity",
+    "data_type": "enum",
+    "address": 5503,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module in warning alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeModuleInFailureSeverity": {
+    "name": "Config Change Module In Failure Severity",
+    "data_type": "enum",
+    "address": 5504,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module in failure alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeModuleMissingSeverity": {
+    "name": "Config Change Module Missing Severity",
+    "data_type": "enum",
+    "address": 5505,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module missing alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeModulePortOffSeverity": {
+    "name": "Config Change Module Port Off Severity",
+    "data_type": "enum",
+    "address": 5506,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Module port off alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput1IsActiveSeverity": {
+    "name": "Config Change Digital Input 1 Is Active Severity",
+    "data_type": "enum",
+    "address": 5507,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 active alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput2IsActiveSeverity": {
+    "name": "Config Change Digital Input 2 Is Active Severity",
+    "data_type": "enum",
+    "address": 5508,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 active alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeGatewayErrorSeverity": {
+    "name": "Config Change Gateway Error Severity",
+    "data_type": "enum",
+    "address": 5510,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Gateway error alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeGatewayPowerSupplyErrorSeverity": {
+    "name": "Config Change Gateway Power Supply Error Severity",
+    "data_type": "enum",
+    "address": 5511,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Gateway power supply error alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeTestMajorAlarmSeverity": {
+    "name": "Config Change Test Major Alarm Severity",
+    "data_type": "enum",
+    "address": 5512,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test major alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeTestMinorAlarmSeverity": {
+    "name": "Config Change Test Minor Alarm Severity",
+    "data_type": "enum",
+    "address": 5513,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Test minor alarm severity - configuration change: 0=Disabled, 1=Notification, 2=Minor, 3=Major",
+    "access": "RW"
+  },
+  "ConfigChangeNotificationTemporization": {
+    "name": "Config Change Notification Temporization",
+    "data_type": "uint16",
+    "address": 5514,
+    "units": "s",
+    "conversion_factor": "NA",
+    "description": "Notification temporization - configuration change [2-120] seconds",
+    "access": "RW"
+  },
+  "ConfigChangeMinorAlarmTemporization": {
+    "name": "Config Change Minor Alarm Temporization",
+    "data_type": "uint16",
+    "address": 5515,
+    "units": "s",
+    "conversion_factor": "NA",
+    "description": "Minor alarm temporization - configuration change [2-120] seconds",
+    "access": "RW"
+  },
+  "ConfigChangeMajorAlarmTemporization": {
+    "name": "Config Change Major Alarm Temporization",
+    "data_type": "uint16",
+    "address": 5516,
+    "units": "s",
+    "conversion_factor": "NA",
+    "description": "Major alarm temporization - configuration change [2-120] seconds",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput1ActiveLevel": {
+    "name": "Config Change Digital Input 1 Active Level",
+    "data_type": "enum",
+    "address": 5517,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 active level - configuration change: 0=ShortCircuit, 1=Open",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput2ActiveLevel": {
+    "name": "Config Change Digital Input 2 Active Level",
+    "data_type": "enum",
+    "address": 5518,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 active level - configuration change: 0=ShortCircuit, 1=Open",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput3ActiveLevel": {
+    "name": "Config Change Digital Input 3 Active Level",
+    "data_type": "enum",
+    "address": 5519,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 3 active level (Reserved) - configuration change: 0=ShortCircuit, 1=Open",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInputLabel1": {
+    "name": "Config Change Digital Input Label 1",
+    "data_type": "ascii",
+    "address": 5520,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 label - configuration change - maximum 31 characters",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInputLabel2": {
+    "name": "Config Change Digital Input Label 2",
+    "data_type": "ascii",
+    "address": 5536,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 label - configuration change - maximum 31 characters",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInputLabel3": {
+    "name": "Config Change Digital Input Label 3",
+    "data_type": "ascii",
+    "address": 5552,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 3 label (Reserved) - configuration change - maximum 31 characters",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput1Function": {
+    "name": "Config Change Digital Input 1 Function",
+    "data_type": "boolean",
+    "address": 5568,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 1 function - configuration change: 0=Regular, 1=MBP",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput2Function": {
+    "name": "Config Change Digital Input 2 Function",
+    "data_type": "boolean",
+    "address": 5569,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 2 function (Reserved) - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeDigitalInput3Function": {
+    "name": "Config Change Digital Input 3 Function",
+    "data_type": "boolean",
+    "address": 5570,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Digital input 3 function (Reserved) - configuration change",
+    "access": "RW"
+  },
+  "ConfigChangeAcInSaturation": {
+    "name": "Config Change AC Input Saturation",
+    "data_type": "uint16",
+    "address": 5571,
+    "units": "%",
+    "conversion_factor": "NA",
+    "description": "AC input saturation threshold - configuration change [10-100]",
+    "access": "RW"
+  },
+  "ConfigChangeDCOutSaturation": {
+    "name": "Config Change DC Output Saturation",
+    "data_type": "uint16",
+    "address": 5572,
+    "units": "%",
+    "conversion_factor": "NA",
+    "description": "DC output saturation threshold - configuration change [10-100]",
+    "access": "RW"
+  },
+  "ConfigChangeACOutSaturation": {
+    "name": "Config Change AC Output Saturation",
+    "data_type": "uint16",
+    "address": 5573,
+    "units": "%",
+    "conversion_factor": "NA",
+    "description": "AC output saturation threshold - configuration change [10-100]",
+    "access": "RW"
+  },
+  "ConfigChangeSysContact": {
+    "name": "Config Change System Contact",
+    "data_type": "ascii",
+    "address": 5574,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System contact - configuration change - maximum 31 characters",
+    "access": "RW"
+  },
+  "ConfigChangeSysName": {
+    "name": "Config Change System Name",
+    "data_type": "ascii",
+    "address": 5590,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System name - configuration change - maximum 31 characters",
+    "access": "RW"
+  },
+  "ConfigChangeSysLocation": {
+    "name": "Config Change System Location",
+    "data_type": "ascii",
+    "address": 5606,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "System location - configuration change - maximum 31 characters",
+    "access": "RW"
+  },
+  "ConfigChangeUseDHCP": {
+    "name": "Config Change Use DHCP",
+    "data_type": "boolean",
+    "address": 5622,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Use DHCP - configuration change: FALSE=Disabled, TRUE=Enabled",
+    "access": "RW"
+  },
+  "ConfigChangeIPv4Address": {
+    "name": "Config Change IPv4 Address",
+    "data_type": "uint32",
+    "address": 5623,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "IPv4 address - configuration change [0.0.0.0 - 255.255.255.255]",
+    "access": "RW"
+  },
+  "ConfigChangeIPv4Subnet": {
+    "name": "Config Change IPv4 Subnet",
+    "data_type": "uint32",
+    "address": 5625,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "IPv4 subnet mask - configuration change [0.0.0.0 - 255.255.255.255]",
+    "access": "RW"
+  },
+  "ConfigChangeIPv4Gateway": {
+    "name": "Config Change IPv4 Gateway",
+    "data_type": "uint32",
+    "address": 5627,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "IPv4 gateway - configuration change [0.0.0.0 - 255.255.255.255]",
+    "access": "RW"
+  },
+  "ConfigChangeEnableModbusTCP": {
+    "name": "Config Change Enable Modbus TCP",
+    "data_type": "boolean",
+    "address": 5629,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Enable Modbus TCP - configuration change: FALSE=Disabled, TRUE=Enabled",
+    "access": "RW"
+  },
+  "ConfigChangeEnableModbusTCPWrite": {
+    "name": "Config Change Enable Modbus TCP Write",
+    "data_type": "boolean",
+    "address": 5630,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Enable Modbus TCP write - configuration change: FALSE=Disabled, TRUE=Enabled",
+    "access": "RW"
+  },
+  "ConfigChangeUnitId": {
+    "name": "Config Change Unit ID",
+    "data_type": "uint16",
+    "address": 5631,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Modbus unit ID - configuration change [1-255]",
+    "access": "RW"
+  },
+  "ConfigChangePort": {
+    "name": "Config Change Port",
+    "data_type": "uint16",
+    "address": 5632,
+    "units": "NA",
+    "conversion_factor": "NA",
+    "description": "Modbus TCP port - configuration change [0-65535]",
+    "access": "RW"
+  },
+  "ConfigChangeAutologout": {
+    "name": "Config Change Auto Logout",
+    "data_type": "uint16",
+    "address": 5633,
+    "units": "min",
+    "conversion_factor": "NA",
+    "description": "Auto logout timeout - configuration change [0-600] minutes",
+    "access": "RW"
+  }
+}
