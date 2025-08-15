@@ -1,7 +1,7 @@
 {
   "OverallSystemStatus": {
     "name": "Overall System Status",
-    "data_type": "unit16",
+    "data_type": "uint16",
     "address": 0,
     "units": "",
     "conversion_factor": 1,
