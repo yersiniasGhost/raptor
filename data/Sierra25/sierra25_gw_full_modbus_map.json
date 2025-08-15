@@ -216,7 +216,7 @@
   },
   "TestMinorAlarm": {
     "name": "Test Minor Alarm",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 10,
     "units": "NA",
     "conversion_factor": "NA",
@@ -225,7 +225,7 @@
   },
   "TestMajorAlarm": {
     "name": "Test Major Alarm",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 11,
     "units": "NA",
     "conversion_factor": "NA",
@@ -234,7 +234,7 @@
   },
   "DcSaturated": {
     "name": "DC Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 18,
     "units": "NA",
     "conversion_factor": "NA",
@@ -243,7 +243,7 @@
   },
   "DcOverload": {
     "name": "DC Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 19,
     "units": "NA",
     "conversion_factor": "NA",
@@ -252,7 +252,7 @@
   },
   "DcFailure": {
     "name": "DC Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 20,
     "units": "NA",
     "conversion_factor": "NA",
@@ -261,7 +261,7 @@
   },
   "DcOutOff": {
     "name": "DC Out Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 21,
     "units": "NA",
     "conversion_factor": "NA",
@@ -270,7 +270,7 @@
   },
   "AcInSaturated": {
     "name": "AC Input Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 22,
     "units": "NA",
     "conversion_factor": "NA",
@@ -279,7 +279,7 @@
   },
   "AcInOverload": {
     "name": "AC Input Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 23,
     "units": "NA",
     "conversion_factor": "NA",
@@ -288,7 +288,7 @@
   },
   "AcInFailure": {
     "name": "AC Input Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 24,
     "units": "NA",
     "conversion_factor": "NA",
@@ -297,7 +297,7 @@
   },
   "AcOutSaturated": {
     "name": "AC Output Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 26,
     "units": "NA",
     "conversion_factor": "NA",
@@ -306,7 +306,7 @@
   },
   "AcOutOverload": {
     "name": "AC Output Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 27,
     "units": "NA",
     "conversion_factor": "NA",
@@ -315,7 +315,7 @@
   },
   "AcOutFailure": {
     "name": "AC Output Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 28,
     "units": "NA",
     "conversion_factor": "NA",
@@ -324,7 +324,7 @@
   },
   "AcOutOff": {
     "name": "AC Output Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 29,
     "units": "NA",
     "conversion_factor": "NA",
@@ -333,7 +333,7 @@
   },
   "SystemOnByPass": {
     "name": "System On Bypass",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 30,
     "units": "NA",
     "conversion_factor": "NA",
@@ -342,7 +342,7 @@
   },
   "SystemRemoteOff": {
     "name": "System Remote Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 31,
     "units": "NA",
     "conversion_factor": "NA",
@@ -351,7 +351,7 @@
   },
   "RedundancyLost": {
     "name": "Redundancy Lost",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 32,
     "units": "NA",
     "conversion_factor": "NA",
@@ -360,7 +360,7 @@
   },
   "BackfeedDetected": {
     "name": "Backfeed Detected",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 33,
     "units": "NA",
     "conversion_factor": "NA",
@@ -369,7 +369,7 @@
   },
   "ComBusFailure": {
     "name": "Communication Bus Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 34,
     "units": "NA",
     "conversion_factor": "NA",
@@ -378,7 +378,7 @@
   },
   "ModuleInWarning": {
     "name": "Module In Warning",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 35,
     "units": "NA",
     "conversion_factor": "NA",
@@ -387,7 +387,7 @@
   },
   "ModuleInFailure": {
     "name": "Module In Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 36,
     "units": "NA",
     "conversion_factor": "NA",
@@ -396,7 +396,7 @@
   },
   "ModuleMissing": {
     "name": "Module Missing",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 37,
     "units": "NA",
     "conversion_factor": "NA",
@@ -405,7 +405,7 @@
   },
   "ModulePortOff": {
     "name": "Module Port Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 38,
     "units": "NA",
     "conversion_factor": "NA",
@@ -414,7 +414,7 @@
   },
   "DigitalInput1IsActive": {
     "name": "Digital Input 1 Is Active",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 39,
     "units": "NA",
     "conversion_factor": "NA",
@@ -423,7 +423,7 @@
   },
   "DigitalInput2IsActive": {
     "name": "Digital Input 2 Is Active",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 40,
     "units": "NA",
     "conversion_factor": "NA",
@@ -432,7 +432,7 @@
   },
   "GatewayError": {
     "name": "Gateway Error",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 42,
     "units": "NA",
     "conversion_factor": "NA",
@@ -441,7 +441,7 @@
   },
   "GatewayPowerSupplyError": {
     "name": "Gateway Power Supply Error",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 43,
     "units": "NA",
     "conversion_factor": "NA",
@@ -450,7 +450,7 @@
   },
   "TestMajorAlarmStatus": {
     "name": "Test Major Alarm Status",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 44,
     "units": "NA",
     "conversion_factor": "NA",
@@ -459,7 +459,7 @@
   },
   "TestMinorAlarmStatus": {
     "name": "Test Minor Alarm Status",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 45,
     "units": "NA",
     "conversion_factor": "NA",
@@ -468,7 +468,7 @@
   },
   "DcGroup1IsConfigured": {
     "name": "DC Group 1 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1130,
     "units": "NA",
     "conversion_factor": "NA",
@@ -477,7 +477,7 @@
   },
   "DcGroup1Saturated": {
     "name": "DC Group 1 Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1141,
     "units": "NA",
     "conversion_factor": "NA",
@@ -486,7 +486,7 @@
   },
   "DcGroup1Overload": {
     "name": "DC Group 1 Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1142,
     "units": "NA",
     "conversion_factor": "NA",
@@ -495,7 +495,7 @@
   },
   "DcGroup1SourceFailure": {
     "name": "DC Group 1 Source Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1143,
     "units": "NA",
     "conversion_factor": "NA",
@@ -504,7 +504,7 @@
   },
   "DcGroup1Failure": {
     "name": "DC Group 1 Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1144,
     "units": "NA",
     "conversion_factor": "NA",
@@ -513,7 +513,7 @@
   },
   "DcGroup1Off": {
     "name": "DC Group 1 Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1145,
     "units": "NA",
     "conversion_factor": "NA",
@@ -522,7 +522,7 @@
   },
   "DcGroup1RedundancyLost": {
     "name": "DC Group 1 Redundancy Lost",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1146,
     "units": "NA",
     "conversion_factor": "NA",
@@ -540,7 +540,7 @@
   },
   "AcInputPhase1IsConfigured": {
     "name": "AC Input Phase 1 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1275,
     "units": "NA",
     "conversion_factor": "NA",
@@ -594,7 +594,7 @@
   },
   "AcInputPhase1Saturated": {
     "name": "AC Input Phase 1 Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1290,
     "units": "NA",
     "conversion_factor": "NA",
@@ -603,7 +603,7 @@
   },
   "AcInputPhase1Overload": {
     "name": "AC Input Phase 1 Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1291,
     "units": "NA",
     "conversion_factor": "NA",
@@ -612,7 +612,7 @@
   },
   "AcInputPhase1SourceFailure": {
     "name": "AC Input Phase 1 Source Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1292,
     "units": "NA",
     "conversion_factor": "NA",
@@ -621,7 +621,7 @@
   },
   "AcInputPhase1Failure": {
     "name": "AC Input Phase 1 Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1293,
     "units": "NA",
     "conversion_factor": "NA",
@@ -630,7 +630,7 @@
   },
   "AcInputPhase2IsConfigured": {
     "name": "AC Input Phase 2 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1300,
     "units": "NA",
     "conversion_factor": "NA",
@@ -684,7 +684,7 @@
   },
   "AcInputPhase2Saturated": {
     "name": "AC Input Phase 2 Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1315,
     "units": "NA",
     "conversion_factor": "NA",
@@ -693,7 +693,7 @@
   },
   "AcInputPhase2Overload": {
     "name": "AC Input Phase 2 Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1316,
     "units": "NA",
     "conversion_factor": "NA",
@@ -702,7 +702,7 @@
   },
   "AcInputPhase2SourceFailure": {
     "name": "AC Input Phase 2 Source Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1317,
     "units": "NA",
     "conversion_factor": "NA",
@@ -711,7 +711,7 @@
   },
   "AcInputPhase2Failure": {
     "name": "AC Input Phase 2 Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1318,
     "units": "NA",
     "conversion_factor": "NA",
@@ -720,7 +720,7 @@
   },
   "AcInputPhase3IsConfigured": {
     "name": "AC Input Phase 3 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1325,
     "units": "NA",
     "conversion_factor": "NA",
@@ -774,7 +774,7 @@
   },
   "AcInputPhase3Saturated": {
     "name": "AC Input Phase 3 Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1340,
     "units": "NA",
     "conversion_factor": "NA",
@@ -783,7 +783,7 @@
   },
   "AcInputPhase3Overload": {
     "name": "AC Input Phase 3 Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1341,
     "units": "NA",
     "conversion_factor": "NA",
@@ -792,7 +792,7 @@
   },
   "AcInputPhase3SourceFailure": {
     "name": "AC Input Phase 3 Source Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1342,
     "units": "NA",
     "conversion_factor": "NA",
@@ -801,7 +801,7 @@
   },
   "AcInputPhase3Failure": {
     "name": "AC Input Phase 3 Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1343,
     "units": "NA",
     "conversion_factor": "NA",
@@ -855,7 +855,7 @@
   },
   "AcOutputPhase1IsConfigured": {
     "name": "AC Output Phase 1 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1560,
     "units": "NA",
     "conversion_factor": "NA",
@@ -945,7 +945,7 @@
   },
   "AcOutputPhase1Saturated": {
     "name": "AC Output Phase 1 Saturated",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1590,
     "units": "NA",
     "conversion_factor": "NA",
@@ -954,7 +954,7 @@
   },
   "AcOutputPhase1Overload": {
     "name": "AC Output Phase 1 Overload",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1591,
     "units": "NA",
     "conversion_factor": "NA",
@@ -963,7 +963,7 @@
   },
   "AcOutputPhase1Failure": {
     "name": "AC Output Phase 1 Failure",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1593,
     "units": "NA",
     "conversion_factor": "NA",
@@ -972,7 +972,7 @@
   },
   "AcOutputPhase1Off": {
     "name": "AC Output Phase 1 Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1594,
     "units": "NA",
     "conversion_factor": "NA",
@@ -981,7 +981,7 @@
   },
   "AcOutputPhase1RedundancyLost": {
     "name": "AC Output Phase 1 Redundancy Lost",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1595,
     "units": "NA",
     "conversion_factor": "NA",
@@ -990,7 +990,7 @@
   },
   "AcOutputPhase2IsConfigured": {
     "name": "AC Output Phase 2 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1610,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1053,7 +1053,7 @@
   },
   "AcOutputPhase3IsConfigured": {
     "name": "AC Output Phase 3 Is Configured",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1660,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1134,7 +1134,7 @@
   },
   "Converter1IsInUse": {
     "name": "Converter 1 Is In Use",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 1970,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1359,7 +1359,7 @@
   },
   "Converter1ConfigError": {
     "name": "Converter 1 Config Error",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 2006,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1368,7 +1368,7 @@
   },
   "Converter1RemoteOff": {
     "name": "Converter 1 Remote Off",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 2007,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1377,7 +1377,7 @@
   },
   "Converter1BackfeedError": {
     "name": "Converter 1 Backfeed Error",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 2008,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1854,7 +1854,7 @@
   },
   "ConfigDigitalInput1Function": {
     "name": "Config Digital Input 1 Function",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 4098,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1863,7 +1863,7 @@
   },
   "ConfigDigitalInput2Function": {
     "name": "Config Digital Input 2 Function",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 4099,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1872,7 +1872,7 @@
   },
   "ConfigDigitalInput3Function": {
     "name": "Config Digital Input 3 Function",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 4100,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1935,7 +1935,7 @@
   },
   "ConfigUseDHCP": {
     "name": "Config Use DHCP",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 4152,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1971,7 +1971,7 @@
   },
   "ConfigEnableModbusTCP": {
     "name": "Config Enable Modbus TCP",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 4159,
     "units": "NA",
     "conversion_factor": "NA",
@@ -1980,7 +1980,7 @@
   },
   "ConfigEnableModbusTCPWrite": {
     "name": "Config Enable Modbus TCP Write",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 4160,
     "units": "NA",
     "conversion_factor": "NA",
@@ -2385,7 +2385,7 @@
   },
   "ConfigChangeDigitalInput1Function": {
     "name": "Config Change Digital Input 1 Function",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 5568,
     "units": "NA",
     "conversion_factor": "NA",
@@ -2394,7 +2394,7 @@
   },
   "ConfigChangeDigitalInput2Function": {
     "name": "Config Change Digital Input 2 Function",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 5569,
     "units": "NA",
     "conversion_factor": "NA",
@@ -2403,7 +2403,7 @@
   },
   "ConfigChangeDigitalInput3Function": {
     "name": "Config Change Digital Input 3 Function",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 5570,
     "units": "NA",
     "conversion_factor": "NA",
@@ -2466,7 +2466,7 @@
   },
   "ConfigChangeUseDHCP": {
     "name": "Config Change Use DHCP",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 5622,
     "units": "NA",
     "conversion_factor": "NA",
@@ -2502,7 +2502,7 @@
   },
   "ConfigChangeEnableModbusTCP": {
     "name": "Config Change Enable Modbus TCP",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 5629,
     "units": "NA",
     "conversion_factor": "NA",
@@ -2511,7 +2511,7 @@
   },
   "ConfigChangeEnableModbusTCPWrite": {
     "name": "Config Change Enable Modbus TCP Write",
-    "data_type": "boolean",
+    "data_type": "bool",
     "address": 5630,
     "units": "NA",
     "conversion_factor": "NA",
