@@ -28,6 +28,14 @@
       "3": "at least one major alarm"
     }
   },
+  "DC_Voltage": {
+    "name": "DC_Voltage",
+    "data_type": "uint16",
+    "address": 1131,
+    "units": "V",
+    "conversion_factor": 0.1,
+    "description": "DC Voltage"
+  },
     "DcGroup1Voltage": {
     "name": "DC Group 1 Voltage",
     "data_type": "uint16",
