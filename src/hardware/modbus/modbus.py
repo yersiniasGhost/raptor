@@ -78,7 +78,10 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
         logger.error(f"Error writing to modbus: {e}")
         return False
     finally:
-        client.close()
+        try:
+            client.close()
+        except:
+            pass
 
 
 def prepare_value_for_register(value: Union[float, int], register: ModbusRegister) -> int:

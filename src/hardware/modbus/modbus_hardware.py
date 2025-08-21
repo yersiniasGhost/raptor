@@ -6,6 +6,7 @@ from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
 from utils import LogManager, check_interface, set_tcp_interface
+import time
 
 
 class ModbusClientType(Enum):
@@ -88,7 +89,7 @@ class ModbusHardware(HardwareBase):
 
     def get_modbus_tcp_client(self) -> ModbusTcpClient:
         # TODO Error checking required or rely on library?
-        return ModbusTcpClient(host=self.host, port=int(self.port))
+        return ModbusTcpClient(host=self.host, port=int(self.port), timeout=5.0)
 
 
     def get_modbus_client(self) -> Union[ModbusTcpClient, ModbusSerialClient]:
@@ -161,86 +162,6 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
     return value * register.conversion_factor
 
 
-def modbus_data_write(modbus_hardware: ModbusHardware,
-                      register_name: str, slave_id: int, value: Union[int, float],
-                      logger=None) -> Dict[str, Union[bool, str]]:
-
-    if not logger:
-        logger = LogManager().get_logger("ModbusHardware")
-
-    register = modbus_hardware.modbus_map.get_register_by_name(register_name)
-    if not register:
-        logger.error(f"Cannot find register {register_name}")
-        return {}
-
-    client = modbus_hardware.get_modbus_client()
-    if not client.connect():
-        logger.error("Modbus client not connected... resetting")
-        modbus_hardware.reset_hardware()
-        return {}
-
-    try:
-        if register.slave_id:
-            slave_id = register.slave_id
-
-        # Convert value based on register data type
-        write_value = int(value) # prepare_write_value(value, register)
-
-        result = None
-        if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-            logger.info(f"Writing HOLDING register: {register.address}, {slave_id}, {register.name}")
-            result = client.write_register(register.address, write_value, slave=slave_id)
-        elif ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
-            logger.info(f"Writing INPUT register: {register.address}, {slave_id}, {register.name}")
-            result = client.write_register(register.address, write_value, slave=slave_id)
-        else:
-            logger.error(f"Unsupported register type for writing: {register.type}")
-            return {"success": False, "error": "Unsupported register type"}
-
-        if result and hasattr(result, 'isError') and result.isError():
-            logger.error(f"Modbus write error: {result}")
-            return {"success": False, "error": f"Modbus error: {result}"}
-        elif result is None:
-            logger.error("No response from Modbus write operation")
-            return {"success": False, "error": "No response from device"}
-        return {"success": True, "register": register_name, "value": write_value}
-
-    except Exception as e:
-        logger.exception(f"Error writing modbus: {e}")
-        return {"success": False, "error": str(e)}
-
-
-def modbus_data_write_old(modbus_hardware: ModbusHardware,
-                      register_name: str, slave_id: int, value: int,
-                      logger=None) -> Dict[str, Union[float, int]]:
-    if not logger:
-        logger = LogManager().get_logger("ModbusHardware")
-
-    register = modbus_hardware.modbus_map.get_register_by_name(register_name)
-    if not register:
-        logger.error(f"Cannot find register {register_name}")
-        return {}
-
-    client = modbus_hardware.get_modbus_client()
-    if not client.connect():
-        logger.error("Modbus client not connected... resetting")
-        modbus_hardware.reset_hardware()
-        return {}
-
-    try:
-        # In some cases, like Inview S the slave ID is used to query different systems not devices
-        if register.slave_id:
-            slave_id = register.slave_id
-        result = None
-        if ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
-            logger.info(f"Writing INPUT register: {register.address}, {slave_id}, {register.name}")
-            result = client.write_register(register.address, value, slave=slave_id)
-            print(result)
-    except Exception as e:
-        logger.exception(f"Error writing modbus: {e} on slave: {slave_id}, {register.address}.. .continuing.", exc_info=True)
-        return {}
-
-
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             registers: Dict[str, ModbusRegister], slave_id: int,
                             logger=None) -> Dict[str, Union[float, int]]:
@@ -252,38 +173,41 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         logger = LogManager().get_logger("ModbusHardware")
 
     client = modbus_hardware.get_modbus_client()
-    if not client.connect():
-        logger.error("Modbus client not connected... resetting")
-        modbus_hardware.reset_hardware()
-        return {}
+    try:
+        if not client.connect():
+            logger.error("Modbus client not connected... resetting")
+            modbus_hardware.reset_hardware()
 
-    output: Dict[str, Union[float, int]] = {}
-    for key, register in registers.items():
-        address = int(register.address)
+        output: Dict[str, Union[float, int]] = {}
+        for key, register in registers.items():
+            address = int(register.address)
+            try:
+                # In some cases, like Inview S the slave ID is used to query different systems not devices
+                if register.slave_id:
+                    slave_id = register.slave_id
+                result = None
+                if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
+                    logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register.name}")
+                    result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
+                else:
+                    logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
+                    result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
+
+                if result is None:
+                    logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
+                elif hasattr(result, 'isError') and result.isError():
+                    logger.info(f"Error reading register: {result}")
+                    time.sleep(0.5)
+                else:
+                    logger.info(f"Result is: {result.registers}")
+                    output[key] = convert_register_value(modbus_hardware, result.registers, register, key)
+            except Exception as e:
+                logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
+        return output
+
+    finally:
         try:
-            # In some cases, like Inview S the slave ID is used to query different systems not devices
-            if register.slave_id:
-                slave_id = register.slave_id
-            result = None
-            if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-                logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register.name}")
-                result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
-            else:
-                logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
-                result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
-
-
-            if result is None:
-                logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
-            elif hasattr(result, 'isError') and result.isError():
-                logger.info(f"Error reading register: {result}")
-            else:
-                logger.info(f"Result is: {result.registers}")
-                output[key] = convert_register_value(modbus_hardware, result.registers, register, key)
-        except Exception as e:
-            logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
-
-    # output['slave_id'] = slave_id
-    client.close()
-    return output
+            client.close()
+        except:
+            pass
 

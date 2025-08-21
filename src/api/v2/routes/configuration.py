@@ -160,10 +160,10 @@ async def reconfigure(request: Request, hardware: Annotated[HardwareDeploymentRo
     try:
         # Switch to the selected branch
         await ActionFactory.execute_action("reconfigure", {}, None, None)
-        await ActionFactory.execute_action("restart",
-                                           {"skip_vmc_ui": True,
-                                            "skip_reverse_tunnel": True},
-                                           None, None)
+        # await ActionFactory.execute_action("restart",
+        #                                    {"skip_vmc_ui": True,
+        #                                     "skip_reverse_tunnel": True},
+        #                                    None, None)
         # Reinitialize the configuration for the UI
         hardware.initialize()
 
