@@ -1,5 +1,6 @@
 import csv
 from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
 from . import templates
 from utils.system_status import collect_system_stats
 from hardware.power_5v.power_5v import Power5V
@@ -54,3 +55,26 @@ async def system_status(request: Request):
             "memory_history": [],
             "disk_history": [],
         })
+
+
+@router.post("/clear-requests")
+async def clear_requests():
+    """Clear dead power requests and log current power state"""
+    try:
+        power5v = Power5V()
+        dead_pids = power5v.cleanup_dead_processes()
+        power5v.log_current_power_state()
+        
+        logger.info(f"Cleared {len(dead_pids)} dead power requests: {dead_pids}")
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": f"Successfully cleared {len(dead_pids)} dead power requests",
+            "cleared_pids": dead_pids
+        })
+    except Exception as e:
+        logger.error(f"Error clearing requests: {e}")
+        return JSONResponse(content={
+            "success": False,
+            "message": f"Error clearing requests: {str(e)}"
+        }, status_code=500)
