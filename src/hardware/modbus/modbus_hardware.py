@@ -161,6 +161,54 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
 
     return value * register.conversion_factor
 
+def modbus_data_write(modbus_hardware: ModbusHardware,
+                      register_name: str, slave_id: int, value: Union[int, float],
+                      logger=None) -> Dict[str, Union[bool, str]]:
+
+    if not logger:
+        logger = LogManager().get_logger("ModbusHardware")
+
+    register = modbus_hardware.modbus_map.get_register_by_name(register_name)
+    if not register:
+        logger.error(f"Cannot find register {register_name}")
+        return {}
+
+    client = modbus_hardware.get_modbus_client()
+    if not client.connect():
+        logger.error("Modbus client not connected... resetting")
+        modbus_hardware.reset_hardware()
+        return {}
+
+    try:
+        if register.slave_id:
+            slave_id = register.slave_id
+
+        # Convert value based on register data type
+        write_value = int(value) # prepare_write_value(value, register)
+
+        result = None
+        if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
+            logger.info(f"Writing HOLDING register: {register.address}, {slave_id}, {register.name}")
+            result = client.write_register(register.address, write_value, slave=slave_id)
+        elif ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
+            logger.info(f"Writing INPUT register: {register.address}, {slave_id}, {register.name}")
+            result = client.write_register(register.address, write_value, slave=slave_id)
+        else:
+            logger.error(f"Unsupported register type for writing: {register.type}")
+            return {"success": False, "error": "Unsupported register type"}
+
+        if result and hasattr(result, 'isError') and result.isError():
+            logger.error(f"Modbus write error: {result}")
+            return {"success": False, "error": f"Modbus error: {result}"}
+        elif result is None:
+            logger.error("No response from Modbus write operation")
+            return {"success": False, "error": "No response from device"}
+        return {"success": True, "register": register_name, "value": write_value}
+
+    except Exception as e:
+        logger.exception(f"Error writing modbus: {e}")
+        return {"success": False, "error": str(e)}
+
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
                             registers: Dict[str, ModbusRegister], slave_id: int,
