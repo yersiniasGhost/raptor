@@ -468,7 +468,9 @@ async function writeSelectedRegister() {
     data.value = parseFloat(writeValue);
 
     try {
-        const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`);
+        const response = await fetch(`/modbus/modbus_write/${JSON.stringify(data)}`, {
+            method: 'POST'
+        });
         const result = await response.json();
 
         // Display result with units if available
