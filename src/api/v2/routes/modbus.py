@@ -1,3 +1,4 @@
+import time
 import json
 from typing import Annotated
 from fastapi import APIRouter, Depends
@@ -40,7 +41,8 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     if not write_success:
         return {"success": False, "error": "Write operation failed"}
 
-    # Read back the written value for confirmation
+    # Read back the written value for confirmation after brief pause
+    time.sleep(0.5)
     values = modbus_data_read(hardware, register_key, slave_id=unit_id)
     return {"success": True, "value": values.get("ODW", parsed_data['value'])}
 

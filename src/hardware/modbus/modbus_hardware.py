@@ -191,7 +191,7 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
 
         result = None
         if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-            logger.info(f"Writing HOLDING register: {register.address}, {slave_id}, {register.name}")
+            logger.info(f"Writing HOLDING register: {register.address}, Slave ID{slave_id}, {register.name}")
             result = client.write_register(register.address, write_value, slave=slave_id)
         elif ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
             logger.error(f"Cannot write to INPUT register (read-only): {register.address}, {register.name}")
