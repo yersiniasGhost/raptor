@@ -187,6 +187,8 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
         # Convert value based on register data type
         write_value = int(value) # prepare_write_value(value, register)
 
+        logger.info(f"Attempting write - Register: {register.name}, Address: {register.address}, Type: {register.type}, Slave: {slave_id}, Value: {write_value}")
+
         result = None
         if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
             logger.info(f"Writing HOLDING register: {register.address}, {slave_id}, {register.name}")

@@ -21,15 +21,6 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
     register_key = parsed_data['register_key']
-    m_map = ModbusMap.from_dict({"ODW": {
-        "name": "ODW",
-        "data_type": parsed_data['data_type'],
-        "address": parsed_data['register'],
-        "units": "",
-        "conversion_factor": 1.0,
-        "description": "On demand write",
-        "access": "RW"
-    }})
     if page == "BMS":
         hardware = hardware_def.batteries.hardware
     elif page == "Inverter":
