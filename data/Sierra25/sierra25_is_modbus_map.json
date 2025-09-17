@@ -250,7 +250,7 @@
     "name": "AC 1 stop power",
     "data_type": "int16",
     "address": 1050,
-    "units": "W",
+    "units": "",
     "conversion_factor": 1,
     "description": "0: Normal Mode, 1: AC input power stage in converter is de-activated."
   },

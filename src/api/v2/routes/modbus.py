@@ -2,7 +2,7 @@ import json
 from typing import Annotated
 from fastapi import APIRouter, Depends
 
-from hardware.modbus.modbus_hardware import modbus_data_write
+from hardware.modbus.modbus_hardware import modbus_data_write, modbus_data_read
 from hardware.modbus.modbus_hardware import modbus_data_acquisition
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegisterType
@@ -50,7 +50,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
         return {"success": False, "error": "Write operation failed"}
 
     # Read back the written value for confirmation
-    values = modbus_data_acquisition(hardware, m_map.get_registers_by_key(["ODW"]), slave_id=unit_id)
+    values = modbus_data_read(hardware, register_key, slave_id=unit_id)
     return {"success": True, "value": values.get("ODW", parsed_data['value'])}
 
 
