@@ -39,7 +39,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
         logger.error(f"Invalid page: {page}")
         return {"success": False, "error": f"Invalid page: {page}"}
     try:
-        write_success = modbus_data_write(hardware, m_map, slave_id=unit_id,
+        write_success = modbus_data_write(hardware, slave_id=unit_id,
                                           register_name="ODW", value=parsed_data['value'])
     except Exception as e:
         logger.error(e)
