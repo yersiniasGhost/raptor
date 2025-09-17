@@ -20,6 +20,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
     parsed_data = json.loads(data)
     unit_id = parsed_data['unit_id']
     page = parsed_data['page']
+    register_key = parsed_data['register_key']
     m_map = ModbusMap.from_dict({"ODW": {
         "name": "ODW",
         "data_type": parsed_data['data_type'],
@@ -40,7 +41,7 @@ async def write_modbus_register(data: str, hardware_def: Annotated[HardwareDeplo
         return {"success": False, "error": f"Invalid page: {page}"}
     try:
         write_success = modbus_data_write(hardware, slave_id=unit_id,
-                                          register_name="ODW", value=parsed_data['value'])
+                                          register_name=register_key, value=parsed_data['value'])
     except Exception as e:
         logger.error(e)
         return {"success": False, "error": str(e)}
