@@ -281,7 +281,7 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
             logger.warning(f"Register {register_name} not found in map")
             return False
 
-        if register.read_write != "RW":
+        if register.access != "RW":
             logger.warning(f"Cannot write, register is not RW: {register}")
             return False
         # Convert the value to the appropriate format for the register
