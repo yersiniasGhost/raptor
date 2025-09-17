@@ -259,3 +259,80 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
         except:
             pass
 
+
+def modbus_data_write(modbus_hardware: ModbusHardware,
+                      modbus_map: ModbusMap,
+                      slave_id: int,
+                      register_name: str,
+                      value: Union[float, int],
+                      logger=None) -> bool:
+    if not logger:
+        logger = LogManager().get_logger("ModbusHardware")
+
+    client = modbus_hardware.get_modbus_client()
+    try:
+        if not client.connect():
+            logger.warning("Failed to connect to Modbus client.")
+            return False
+
+        # Find the register by name
+        register = modbus_map.get_register_by_name(register_name)
+        if not register:
+            logger.warning(f"Register {register_name} not found in map")
+            return False
+
+        if register.read_write != "RW":
+            logger.warning(f"Cannot write, register is not RW: {register}")
+            return False
+        # Convert the value to the appropriate format for the register
+        try:
+            converted_value = prepare_value_for_register(value, register)
+        except ValueError as e:
+            logger.exception(f"Error converting value: {e}")
+            return False
+
+        # Attempt write to register
+        address = register.get_addresses()[0]
+        result = client.write_register(address=address, value=converted_value, slave=slave_id)
+
+        if result is None:
+            logger.error(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
+            return False
+        elif hasattr(result, 'isError') and result.isError():
+            logger.error(f"Error writing to register: {result}")
+            return False
+        return True
+
+    except Exception as e:
+        logger.error(f"Error writing to modbus: {e}")
+        return False
+    finally:
+        try:
+            client.close()
+        except:
+            pass
+
+
+def prepare_value_for_register(value: Union[float, int], register: ModbusRegister) -> int:
+    """Convert a value to the appropriate format for writing to a register."""
+    data_type = register.data_type
+    if data_type == ModbusDatatype.INT16:
+        # Ensure value is within INT16 range
+        if not -32768 <= value <= 32767:
+            raise ValueError(f"Value {value} out of range for INT16")
+        return int(value)
+
+    elif data_type == ModbusDatatype.UINT16:
+        # Ensure value is within UINT16 range
+        if not 0 <= value <= 65535:
+            raise ValueError(f"Value {value} out of range for UINT16")
+        return int(value)
+
+    elif data_type == ModbusDatatype.INT8:
+        # Ensure value is within INT8 range
+        if not -128 <= value <= 127:
+            raise ValueError(f"Value {value} out of range for INT8")
+        return int(value)
+
+    else:
+        raise ValueError(f"Unsupported register type: {register.type}")

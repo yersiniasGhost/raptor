@@ -158,7 +158,7 @@
     // Function to clear requests
     function clearRequests() {
         if (confirm('Are you sure you want to clear all requests?')) {
-            fetch('system-status/clear-requests', {
+            fetch('clear-requests', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
