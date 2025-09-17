@@ -267,7 +267,7 @@
   },
   "Battery_charge_current_limit": {
     "slave_id": 31,
-    "type": "input",
+    "type": "holding",
     "name": "Battery charge current limit (A)",
     "data_type": "int16",
     "address": 113,
