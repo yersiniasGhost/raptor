@@ -244,7 +244,7 @@ def modbus_data_read(modbus_hardware: ModbusHardware, register_key: str, slave_i
                 slave_id = register.slave_id
             result = None
             if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-                logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register.name}")
+                logger.info(f"Reading HOLDING register: {address}, slaveID: {slave_id}, {register.name}")
                 result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
             else:
                 logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
