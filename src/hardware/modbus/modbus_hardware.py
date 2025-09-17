@@ -161,6 +161,7 @@ def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
 
     return value * register.conversion_factor
 
+
 def modbus_data_write(modbus_hardware: ModbusHardware,
                       register_name: str, slave_id: int, value: Union[int, float],
                       logger=None) -> Dict[str, Union[bool, str]]:
@@ -260,7 +261,7 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
             pass
 
 
-def modbus_data_write(modbus_hardware: ModbusHardware,
+def modbus_data_write_different(modbus_hardware: ModbusHardware,
                       modbus_map: ModbusMap,
                       slave_id: int,
                       register_name: str,
@@ -297,9 +298,11 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
 
         if result is None:
             logger.error(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
+            logger.error(f"Register was: {register}")
             return False
         elif hasattr(result, 'isError') and result.isError():
             logger.error(f"Error writing to register: {result}")
+            logger.error(f"Register was: {register}")
             return False
         return True
 
