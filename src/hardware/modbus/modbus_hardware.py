@@ -255,7 +255,7 @@ def modbus_data_read(modbus_hardware: ModbusHardware, register_key: str, slave_i
                 time.sleep(0.5)
             else:
                 logger.info(f"Result is: {result.registers}")
-                output[register_key] = convert_register_value(modbus_hardware, result.registers, register, key)
+                output[register_key] = convert_register_value(modbus_hardware, result.registers, register, register_key)
         except Exception as e:
             logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
         return output
