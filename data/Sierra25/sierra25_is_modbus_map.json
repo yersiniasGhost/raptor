@@ -324,7 +324,7 @@
     "type": "holding",
     "name": "Turn All Converters ON",
     "data_type": "int16",
-    "address": 40,
+    "address": 5040,
     "units": "",
     "description": "Control to turn all converters ON"
   },
@@ -334,7 +334,7 @@
     "type": "holding",
     "name": "Turn All Converters OFF",
     "data_type": "int16",
-    "address": 41,
+    "address": 5041,
     "units": "",
     "description": "Control to turn all converters OFF"
   },
@@ -344,7 +344,7 @@
     "type": "holding",
     "name": "Override Voltage SetPoint",
     "data_type": "int16",
-    "address": 500,
+    "address": 5500,
     "units": "V",
     "conversion_factor": 0.1,
     "description": "Set DC regulation voltage."
@@ -355,7 +355,7 @@
     "type": "holding",
     "name": "Override Power SetPoint",
     "data_type": "int16",
-    "address": 502,
+    "address": 5502,
     "units": "W",
     "conversion_factor": 100.0,
     "description": "Set DC regulation power"
@@ -452,7 +452,7 @@
     "type": "holding",
     "name": "Start Boost Mode",
     "data_type": "int16",
-    "address": 199,
+    "address": 5200,
     "units": "",
     "description": "Command to start battery boost charging mode"
   },
@@ -462,7 +462,7 @@
     "type": "holding",
     "name": "Back To Float",
     "data_type": "int16",
-    "address": 0,
+    "address": 5000,
     "units": "",
     "description": "Command to return to float charging mode"
   },
@@ -483,7 +483,7 @@
     "type": "holding",
     "name": "Voltage Low Set",
     "data_type": "int16",
-    "address": 51,
+    "address": 49,
     "units": "V",
     "conversion_factor": 0.1,
     "description": "Bus voltage under which the 'DC Bus Voltage Low' alarm is raised. It disappears when 'Voltage low: Clear' parameter is reached."
@@ -494,7 +494,7 @@
     "type": "holding",
     "name": "Voltage High Set",
     "data_type": "int16",
-    "address": 53,
+    "address": 51,
     "units": "V",
     "conversion_factor": 0.1,
     "description": "High voltage alarm threshold (value × 100)"
