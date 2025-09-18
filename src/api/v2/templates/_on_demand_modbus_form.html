@@ -357,15 +357,20 @@ function updateRegisterMetadata() {
     document.getElementById('meta_description').textContent = selectedOption.dataset.description || 'No description available';
 
     // Set default slave ID if available
-<!--    if (selectedOption.dataset.defaultSlaveId && selectedOption.dataset.defaultSlaveId !== 'null') {-->
-<!--        slaveIdInput.value = selectedOption.dataset.defaultSlaveId;-->
-<!--    }-->
+    if (selectedOption.dataset.defaultSlaveId && selectedOption.dataset.defaultSlaveId !== 'null') {
+        slaveIdInput.value = selectedOption.dataset.defaultSlaveId;
+    } else {
+        slaveIdInput.value = ''; // Clear the input if no default
+    }
+    console.log('Selected option:', selectedOption);
+    console.log('Default slave ID:', selectedOption.dataset.defaultSlaveId);
+    console.log('Slave ID input element:', slaveIdInput);
 
     // Show/hide write controls based on access rights
     const access = selectedOption.dataset.access;
     const writeControls = document.getElementById('write_controls');
 
-    if (access === 'RW' || access === 'WO') {
+    if (access === 'RW' || access === 'WO' || selectedOption.dataset.type == "holding") {
         writeControls.style.display = 'block';
     } else {
         writeControls.style.display = 'none';
