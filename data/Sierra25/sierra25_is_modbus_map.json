@@ -366,7 +366,7 @@
     "type": "holding",
     "name": "Override Maximum Consumed Power",
     "data_type": "int16",
-    "address": 300,
+    "address": 5300,
     "units": "W",
     "conversion_factor": 100.0,
     "description": "Set Peak Shaving Value for all phases"
@@ -422,7 +422,7 @@
     "address": 59,
     "units": "V",
     "conversion_factor": 0.1,
-    "description": "Current DC bus/battery voltage (value × 10)"
+    "description": "Current DC bus/battery voltage"
   },
 
   "DC_Input_Current": {
