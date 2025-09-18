@@ -292,7 +292,7 @@
     "type": "input",
     "name": "Converter Status",
     "data_type": "int16",
-    "address": 107,
+    "address": 105,
     "units": "",
     "description": "Current operational status of the converter system"
   },
@@ -302,9 +302,9 @@
     "type": "input",
     "name": "Converter Current",
     "data_type": "int16",
-    "address": 103,
+    "address": 101,
     "units": "A",
-    "conversion_factor": 1.0,
+    "conversion_factor": 0.1,
     "description": "Current flowing through the converter system"
   },
 
@@ -313,7 +313,7 @@
     "type": "input",
     "name": "Converter Active Power",
     "data_type": "int16",
-    "address": 104,
+    "address": 102,
     "units": "W",
     "conversion_factor": 1.0,
     "description": "Active power being processed by the converter"
@@ -324,7 +324,7 @@
     "type": "holding",
     "name": "Turn All Converters ON",
     "data_type": "int16",
-    "address": 42,
+    "address": 40,
     "units": "",
     "description": "Control to turn all converters ON"
   },
@@ -334,7 +334,7 @@
     "type": "holding",
     "name": "Turn All Converters OFF",
     "data_type": "int16",
-    "address": 43,
+    "address": 41,
     "units": "",
     "description": "Control to turn all converters OFF"
   },
@@ -344,7 +344,7 @@
     "type": "holding",
     "name": "Override Voltage SetPoint",
     "data_type": "int16",
-    "address": 502,
+    "address": 500,
     "units": "V",
     "conversion_factor": 10.0,
     "description": "Set DC regulation voltage (value × 10)"
@@ -355,7 +355,7 @@
     "type": "holding",
     "name": "Override Power SetPoint",
     "data_type": "int16",
-    "address": 504,
+    "address": 502,
     "units": "W",
     "conversion_factor": 1.0,
     "description": "Set DC regulation power"
@@ -366,7 +366,7 @@
     "type": "holding",
     "name": "Override Maximum Consumed Power",
     "data_type": "int16",
-    "address": 302,
+    "address": 300,
     "units": "W",
     "conversion_factor": 1.0,
     "description": "Set Peak Shaving Value for all phases"
@@ -377,7 +377,7 @@
     "type": "holding",
     "name": "Charging Voltage",
     "data_type": "int16",
-    "address": 67,
+    "address": 65,
     "units": "V",
     "conversion_factor": 10.0,
     "description": "Battery charging voltage setpoint (value × 10)"
@@ -388,7 +388,7 @@
     "type": "holding",
     "name": "Charging Power",
     "data_type": "int16",
-    "address": 68,
+    "address": 66,
     "units": "W",
     "conversion_factor": 1.0,
     "description": "Battery charging power limit"
@@ -399,7 +399,7 @@
     "type": "holding",
     "name": "AC-in Power Limitation per phase",
     "data_type": "int16",
-    "address": 70,
+    "address": 68,
     "units": "W",
     "conversion_factor": 1.0,
     "description": "AC input power limitation per phase (-1 for unlimited)"
@@ -409,7 +409,7 @@
     "type": "input",
     "name": "DC System State",
     "data_type": "int16",
-    "address": 1,
+    "address": 0,
     "units": "",
     "description": "(NA??)  Current state of the DC/battery system"
   },
@@ -419,7 +419,7 @@
     "type": "input",
     "name": "DC Voltage (Battery)",
     "data_type": "int16",
-    "address": 60,
+    "address": 58,
     "units": "V",
     "conversion_factor": 10.0,
     "description": "Current DC bus/battery voltage (value × 10)"
@@ -430,7 +430,7 @@
     "type": "input",
     "name": "DC Input Current",
     "data_type": "int16",
-    "address": 61,
+    "address": 59,
     "units": "A",
     "conversion_factor": 10.0,
     "description": "Current flowing into/out of battery (value × 10)"
@@ -441,7 +441,7 @@
     "type": "input",
     "name": "DC Input Power",
     "data_type": "int16",
-    "address": 62,
+    "address": 60,
     "units": "W",
     "conversion_factor": 1.0,
     "description": "Power flowing into/out of battery"
@@ -452,7 +452,7 @@
     "type": "holding",
     "name": "Start Boost Mode",
     "data_type": "int16",
-    "address": 201,
+    "address": 199,
     "units": "",
     "description": "Command to start battery boost charging mode"
   },
@@ -462,7 +462,7 @@
     "type": "holding",
     "name": "Back To Float",
     "data_type": "int16",
-    "address": 1,
+    "address": 0,
     "units": "",
     "description": "Command to return to float charging mode"
   },
@@ -472,7 +472,7 @@
     "type": "input",
     "name": "Max Charge Current",
     "data_type": "int16",
-    "address": 19,
+    "address": 18,
     "units": "A",
     "conversion_factor": 10.0,
     "description": "Maximum charging current limit (value × 10)"
@@ -483,10 +483,10 @@
     "type": "holding",
     "name": "Voltage Low Set",
     "data_type": "int16",
-    "address": 50,
+    "address": 51,
     "units": "V",
-    "conversion_factor": 100.0,
-    "description": "Low voltage alarm threshold (value × 100)"
+    "conversion_factor": 0.1,
+    "description": "Bus voltage under which the 'DC Bus Voltage Low' alarm is raised. It disappears when 'Voltage low: Clear' parameter is reached."
   },
 
   "Battery_Voltage_High_Set": {
@@ -494,9 +494,9 @@
     "type": "holding",
     "name": "Voltage High Set",
     "data_type": "int16",
-    "address": 52,
+    "address": 53,
     "units": "V",
-    "conversion_factor": 100.0,
+    "conversion_factor": 0.1,
     "description": "High voltage alarm threshold (value × 100)"
   }
 }
