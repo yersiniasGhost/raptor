@@ -121,7 +121,7 @@
     "address": 120,
     "units": "V",
     "conversion_factor": 0.1,
-    "description": "Phase 1 voltage",
+    "description": "AC Output Phase 1 voltage",
     "access": "RO"
   },
   "Phase1Current": {
@@ -132,7 +132,7 @@
     "address": 121,
     "units": "A",
     "conversion_factor": 0.1,
-    "description": "Phase 1 current",
+    "description": "AC Output Phase 1 current",
     "access": "RO"
   },
   "Phase1Frequency": {
@@ -143,7 +143,7 @@
     "address": 124,
     "units": "Hz",
     "conversion_factor": 0.01,
-    "description": "Phase 1 frequency",
+    "description": "AC Output Phase 1 frequency",
     "access": "RO"
   },
   "Phase1PowerFactor": {
@@ -305,7 +305,7 @@
     "address": 101,
     "units": "A",
     "conversion_factor": 0.1,
-    "description": "Current flowing through the converter system"
+    "description": "Current flowing through the converter system (Global)"
   },
 
   "Converter_Active_Power": {
@@ -315,8 +315,8 @@
     "data_type": "int16",
     "address": 102,
     "units": "W",
-    "conversion_factor": 1.0,
-    "description": "Active power being processed by the converter"
+    "conversion_factor": 100.0,
+    "description": "Active power being processed by the converter (Global)"
   },
 
   "Turn_Converters_ON": {
@@ -346,8 +346,8 @@
     "data_type": "int16",
     "address": 500,
     "units": "V",
-    "conversion_factor": 10.0,
-    "description": "Set DC regulation voltage (value × 10)"
+    "conversion_factor": 0.1,
+    "description": "Set DC regulation voltage."
   },
 
   "Override_Power_SetPoint": {
@@ -357,7 +357,7 @@
     "data_type": "int16",
     "address": 502,
     "units": "W",
-    "conversion_factor": 1.0,
+    "conversion_factor": 100.0,
     "description": "Set DC regulation power"
   },
 
@@ -368,7 +368,7 @@
     "data_type": "int16",
     "address": 300,
     "units": "W",
-    "conversion_factor": 1.0,
+    "conversion_factor": 100.0,
     "description": "Set Peak Shaving Value for all phases"
   },
 
@@ -377,10 +377,10 @@
     "type": "holding",
     "name": "Charging Voltage",
     "data_type": "int16",
-    "address": 65,
+    "address": 1065,
     "units": "V",
-    "conversion_factor": 10.0,
-    "description": "Battery charging voltage setpoint (value × 10)"
+    "conversion_factor": 0.1,
+    "description": "Battery charging voltage setpoint"
   },
 
   "Charging_Power_Config": {
@@ -388,9 +388,9 @@
     "type": "holding",
     "name": "Charging Power",
     "data_type": "int16",
-    "address": 66,
+    "address": 1066,
     "units": "W",
-    "conversion_factor": 1.0,
+    "conversion_factor": 100.0,
     "description": "Battery charging power limit"
   },
 
@@ -399,9 +399,9 @@
     "type": "holding",
     "name": "AC-in Power Limitation per phase",
     "data_type": "int16",
-    "address": 68,
+    "address": 1068,
     "units": "W",
-    "conversion_factor": 1.0,
+    "conversion_factor": 100.0,
     "description": "AC input power limitation per phase (-1 for unlimited)"
   },
   "DC_System_State": {
@@ -419,9 +419,9 @@
     "type": "input",
     "name": "DC Voltage (Battery)",
     "data_type": "int16",
-    "address": 58,
+    "address": 59,
     "units": "V",
-    "conversion_factor": 10.0,
+    "conversion_factor": 0.1,
     "description": "Current DC bus/battery voltage (value × 10)"
   },
 
@@ -430,10 +430,10 @@
     "type": "input",
     "name": "DC Input Current",
     "data_type": "int16",
-    "address": 59,
+    "address": 60,
     "units": "A",
-    "conversion_factor": 10.0,
-    "description": "Current flowing into/out of battery (value × 10)"
+    "conversion_factor": 0.1,
+    "description": "Current flowing into/out of battery"
   },
 
   "DC_Input_Power": {
@@ -441,9 +441,9 @@
     "type": "input",
     "name": "DC Input Power",
     "data_type": "int16",
-    "address": 60,
+    "address": 61,
     "units": "W",
-    "conversion_factor": 1.0,
+    "conversion_factor": 100.0,
     "description": "Power flowing into/out of battery"
   },
 
