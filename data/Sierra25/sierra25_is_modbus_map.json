@@ -91,7 +91,7 @@
     "address": 500,
     "units": "V",
     "conversion_factor": 0.1,
-    "description": "DC Voltage"
+    "description": "DC Voltage on Bus1"
   },
   "DC_Current": {
     "slave_id": 31,
@@ -417,7 +417,7 @@
   "DC_Voltage_Battery": {
     "slave_id": 1,
     "type": "input",
-    "name": "DC Voltage",
+    "name": "DC Voltage (Battery)",
     "data_type": "int16",
     "address": 30060,
     "units": "V",
@@ -430,7 +430,7 @@
     "type": "input",
     "name": "DC Input Current",
     "data_type": "int16",
-    "address": 30061,
+    "address": 61,
     "units": "A",
     "conversion_factor": 10.0,
     "description": "Current flowing into/out of battery (value × 10)"
