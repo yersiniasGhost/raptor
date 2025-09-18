@@ -14,15 +14,13 @@ from utils import get_mac_address
 
 
 class CmdController:
-    mqtt_config: MQTTConfig
-    telemetry_config: TelemetryConfig | None
 
     def __init__(self):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("cmd-controller.log").get_logger("CmdController")
         self.running = True
         self._setup_error_handlers()
-        self.mqtt_config = get_mqtt_config(self.logger)
+        self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
         self.raptor_configuration = get_raptor_configuration(self.logger)
         self.telemetry_config: TelemetryConfig | None = get_telemetry_config(self.logger)
         self.mqtt_task = None
