@@ -13,6 +13,9 @@ from actions.action_status import ActionStatus
 from utils import get_mac_address
 
 
+    mqtt_config: MQTTConfig
+    telemetry_config: TelemetryConfig | None
+
 class CmdController:
 
     def __init__(self):
