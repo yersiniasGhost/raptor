@@ -381,7 +381,7 @@
 
         // Check current scenario status on page load
         function checkCurrentScenario() {
-            fetch('/api/current-scenario')
+            fetch('/inverters/current-scenario')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.scenario) {

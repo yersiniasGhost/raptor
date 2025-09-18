@@ -475,7 +475,7 @@
     "address": 18,
     "units": "A",
     "conversion_factor": 10.0,
-    "description": "Maximum charging current limit (value × 10)"
+    "description": "NA:   Maximum charging current limit (value × 10)"
   },
 
   "Battery_Voltage_Low_Set": {
