@@ -1,10 +1,12 @@
 import argparse
 import asyncio
-from typing import Optional
+from typing import Optional, Any
 from database.db_utils import get_mqtt_config, get_telemetry_config, get_raptor_configuration
 from database.database_manager import DatabaseManager
 from utils import LogManager
 from config.mqtt_config import MQTTConfig
+from config.telemetry_config import TelemetryConfig
+
 from cloud.mqtt_comms import setup_mqtt_listener, upload_command_response
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
@@ -18,7 +20,7 @@ class CmdController:
         self.logger = LogManager("cmd-controller.log").get_logger("CmdController")
         self.running = True
         self._setup_error_handlers()
-        self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
+        self.mqtt_config = get_mqtt_config(self.logger)
         self.raptor_configuration = get_raptor_configuration(self.logger)
         self.telemetry_config: TelemetryConfig | None = get_telemetry_config(self.logger)
         self.mqtt_task = None
@@ -64,10 +66,10 @@ class CmdController:
                                                                                       self.mqtt_config)
                             if status == ActionStatus.NOT_IMPLEMENTED:
                                 cmd_response = {"message": f"Action not implemented: {action_name}"}
-                                await self._respond_to_message(status, action_id, cmd_response)
-
-                            else:
-                                await self._respond_to_message(status, action_id, cmd_response)
+                            
+                            if not isinstance(cmd_response, dict):
+                                cmd_response = {"message": str(cmd_response)}
+                            await self._respond_to_message(status, action_id, cmd_response)
 
                         else:
                             self.logger.error(f"Received message with no action specified")
