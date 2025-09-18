@@ -74,8 +74,73 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
         )
 
 @router.post("/activate-scenario")
-async def activate_scenario():
-    pass
+async def activate_scenario(request: Request, deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        # Parse JSON request body
+        body = await request.json()
+        scenario = body.get("scenario")
+
+        if not scenario:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "error": "Scenario parameter is required"}
+            )
+
+        # Get hardware instance
+        hardware = get_inverter(deployment)
+        if not hardware:
+            return JSONResponse(
+                status_code=500,
+                content={"success": False, "error": "Inverter hardware not configured"}
+            )
+
+        # Set the operational state
+        result = hardware.set_operational_state(scenario)
+
+        if result["success"]:
+            logger.info(f"Successfully activated scenario: {scenario}")
+            return JSONResponse(content=result)
+        else:
+            logger.error(f"Failed to activate scenario {scenario}: {result.get('error', 'Unknown error')}")
+            return JSONResponse(
+                status_code=400,
+                content=result
+            )
+
+    except Exception as e:
+        logger.error(f"Error in activate_scenario: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "error": f"Internal server error: {str(e)}"}
+        )
+
+
+@router.get("/current-scenario")
+async def get_current_scenario(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        # Get hardware instance
+        hardware = get_inverter(deployment)
+        if not hardware:
+            return JSONResponse(
+                status_code=500,
+                content={"success": False, "error": "Inverter hardware not configured"}
+            )
+
+        # Get current state
+        current_state = hardware.get_current_state()
+
+        return JSONResponse(content={
+            "success": True,
+            "scenario": current_state,
+            "available_states": hardware.get_available_states()
+        })
+
+    except Exception as e:
+        logger.error(f"Error in get_current_scenario: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "error": f"Internal server error: {str(e)}"}
+        )
 
 
 @router.get("/data")

@@ -76,5 +76,21 @@ CREATE TABLE IF NOT EXISTS database_migration (
 
 INSERT OR IGNORE INTO database_migration (migration_id, migration_info) VALUES (1, "Base migration.");
 
+-- Migration 2: Add state management for hardware
+-- Create hardware_states table for state change history
+CREATE TABLE IF NOT EXISTS hardware_states (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    hardware_id INTEGER NOT NULL,
+    state_name TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (hardware_id) REFERENCES hardware (id)
+);
+
+-- Create indexes for performance
+CREATE INDEX IF NOT EXISTS idx_hardware_states_hardware_id ON hardware_states(hardware_id);
+CREATE INDEX IF NOT EXISTS idx_hardware_states_timestamp ON hardware_states(timestamp);
+
+INSERT OR IGNORE INTO database_migration (migration_id, migration_info) VALUES (2, "Added state management for hardware operations.");
+
 
 
