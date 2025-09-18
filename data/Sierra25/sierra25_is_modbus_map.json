@@ -286,5 +286,217 @@
     "conversion_factor": 1.0,
     "description": "A flag to allow the system to write to the modbus registers.",
     "access": "RW"
+  },
+  "Converter_Status": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Converter Status",
+    "data_type": "int16",
+    "address": 30107,
+    "units": "",
+    "description": "Current operational status of the converter system"
+  },
+
+  "Converter_Current": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Converter Current",
+    "data_type": "int16",
+    "address": 30103,
+    "units": "A",
+    "conversion_factor": 1.0,
+    "description": "Current flowing through the converter system"
+  },
+
+  "Converter_Active_Power": {
+    "slave_id": 31,
+    "type": "input",
+    "name": "Converter Active Power",
+    "data_type": "int16",
+    "address": 30104,
+    "units": "W",
+    "conversion_factor": 1.0,
+    "description": "Active power being processed by the converter"
+  },
+
+  "Turn_Converters_ON": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Turn All Converters ON",
+    "data_type": "int16",
+    "address": 45042,
+    "units": "",
+    "description": "Control to turn all converters ON"
+  },
+
+  "Turn_Converters_OFF": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Turn All Converters OFF",
+    "data_type": "int16",
+    "address": 45043,
+    "units": "",
+    "description": "Control to turn all converters OFF"
+  },
+
+  "Override_Voltage_SetPoint": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Override Voltage SetPoint",
+    "data_type": "int16",
+    "address": 45502,
+    "units": "V",
+    "conversion_factor": 10.0,
+    "description": "Set DC regulation voltage (value × 10)"
+  },
+
+  "Override_Power_SetPoint": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Override Power SetPoint",
+    "data_type": "int16",
+    "address": 45504,
+    "units": "W",
+    "conversion_factor": 1.0,
+    "description": "Set DC regulation power"
+  },
+
+  "Override_Max_Consumed_Power": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Override Maximum Consumed Power",
+    "data_type": "int16",
+    "address": 45302,
+    "units": "W",
+    "conversion_factor": 1.0,
+    "description": "Set Peak Shaving Value for all phases"
+  },
+
+  "Charging_Voltage_Config": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Charging Voltage",
+    "data_type": "int16",
+    "address": 41067,
+    "units": "V",
+    "conversion_factor": 10.0,
+    "description": "Battery charging voltage setpoint (value × 10)"
+  },
+
+  "Charging_Power_Config": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Charging Power",
+    "data_type": "int16",
+    "address": 41068,
+    "units": "W",
+    "conversion_factor": 1.0,
+    "description": "Battery charging power limit"
+  },
+
+  "AC_Power_Limit_Per_Phase": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "AC-in Power Limitation per phase",
+    "data_type": "int16",
+    "address": 41070,
+    "units": "W",
+    "conversion_factor": 1.0,
+    "description": "AC input power limitation per phase (-1 for unlimited)"
+  },
+  "DC_System_State": {
+    "slave_id": 1,
+    "type": "input",
+    "name": "DC System State",
+    "data_type": "int16",
+    "address": 30001,
+    "units": "",
+    "description": "Current state of the DC/battery system"
+  },
+
+  "DC_Voltage_Battery": {
+    "slave_id": 1,
+    "type": "input",
+    "name": "DC Voltage",
+    "data_type": "int16",
+    "address": 30060,
+    "units": "V",
+    "conversion_factor": 10.0,
+    "description": "Current DC bus/battery voltage (value × 10)"
+  },
+
+  "DC_Input_Current": {
+    "slave_id": 1,
+    "type": "input",
+    "name": "DC Input Current",
+    "data_type": "int16",
+    "address": 30061,
+    "units": "A",
+    "conversion_factor": 10.0,
+    "description": "Current flowing into/out of battery (value × 10)"
+  },
+
+  "DC_Input_Power": {
+    "slave_id": 1,
+    "type": "input",
+    "name": "DC Input Power",
+    "data_type": "int16",
+    "address": 30062,
+    "units": "W",
+    "conversion_factor": 1.0,
+    "description": "Power flowing into/out of battery"
+  },
+
+  "Start_Boost_Mode": {
+    "slave_id": 1,
+    "type": "holding",
+    "name": "Start Boost Mode",
+    "data_type": "int16",
+    "address": 45201,
+    "units": "",
+    "description": "Command to start battery boost charging mode"
+  },
+
+  "Back_To_Float": {
+    "slave_id": 1,
+    "type": "holding",
+    "name": "Back To Float",
+    "data_type": "int16",
+    "address": 45001,
+    "units": "",
+    "description": "Command to return to float charging mode"
+  },
+
+  "Max_Charge_Current": {
+    "slave_id": 1,
+    "type": "input",
+    "name": "Max Charge Current",
+    "data_type": "int16",
+    "address": 30019,
+    "units": "A",
+    "conversion_factor": 10.0,
+    "description": "Maximum charging current limit (value × 10)"
+  },
+
+  "Battery_Voltage_Low_Set": {
+    "slave_id": 1,
+    "type": "holding",
+    "name": "Voltage Low Set",
+    "data_type": "int16",
+    "address": 40050,
+    "units": "V",
+    "conversion_factor": 100.0,
+    "description": "Low voltage alarm threshold (value × 100)"
+  },
+
+  "Battery_Voltage_High_Set": {
+    "slave_id": 1,
+    "type": "holding",
+    "name": "Voltage High Set",
+    "data_type": "int16",
+    "address": 40052,
+    "units": "V",
+    "conversion_factor": 100.0,
+    "description": "High voltage alarm threshold (value × 100)"
   }
 }
