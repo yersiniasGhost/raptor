@@ -25,12 +25,16 @@ class CmdController:
 
 
 
-    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = {}):
-        payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
+    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
+        base = {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
+        merged = {**(payload or {}), **base}
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}")
 
-        # The new upload_command_response returns a boolean indicating success
-        success = await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
+        if not self.telemetry_config or not self.mqtt_config:
+            self.logger.warning("Missing MQTT/Telemetry configuration; cannot send response")
+            return
+
+        success = await upload_command_response(self.mqtt_config, self.telemetry_config, merged, self.logger)
         if not success:
             self.logger.warning(f"Failed to send command response for action_id: {action_id}")
 
@@ -44,6 +48,9 @@ class CmdController:
         # so we no longer need retry logic here
         while self.running:
             try:
+                if not self.telemetry_config or not self.mqtt_config:
+                    await asyncio.sleep(1)
+                    continue
                 async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
                     self.logger.info(f"Received message: {payload}")
                     action_name = payload.get('action')

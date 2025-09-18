@@ -12,11 +12,10 @@ class EnvVars(metaclass=Singleton):
     def __init__(self):
         # Load .env file if it exists
         env_path = Path.home() / ".env"
-        if not env_path.exists():
-            print(f"Error: .env file not found at {env_path}")
-            sys.exit(1)
-
-        load_dotenv(env_path)
+        if env_path.exists():
+            load_dotenv(env_path)
+        else:
+            print(f"Warning: .env file not found at {env_path}. Using defaults and environment variables.")
         self.env_variables = {}
         # Database settings
         self.db_path = self._get_required('DB_PATH')
@@ -28,7 +27,7 @@ class EnvVars(metaclass=Singleton):
 
         # Repository settings
         self.repository_path = self.get_env("VMC_REPOSITORY_PATH", "/root/raptor")
-        self.schema_path = Path(self.get_env("SCHEMA_PATH", "/root/raptor/src/database/schema.sql"))
+        self.schema_path = Path(self.get_env("SCHEMA_PATH", "/root/raptor/src/database/schema.sql") or "/root/raptor/src/database/schema.sql")
 
         # Application settings
         self.debug = self.get_bool('DEBUG', "False")

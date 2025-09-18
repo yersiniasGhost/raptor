@@ -25,13 +25,15 @@ class LogManager(metaclass=Singleton):
             self._log_dir = Path('.')
 
         if self._file_handler is None:
-            self._file_handler = RotatingFileHandler(
-                self._log_dir / log_filename,
-                maxBytes=10485760,  # 10MB
-                backupCount=5
-            )
+            try:
+                self._file_handler = RotatingFileHandler(
+                    self._log_dir / log_filename,
+                    maxBytes=10485760,
+                    backupCount=5
+                )
+            except Exception:
+                self._file_handler = logging.StreamHandler()
 
-            # Detailed formatter with module name
             formatter = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)d]'
             )
@@ -49,14 +51,20 @@ class LogManager(metaclass=Singleton):
     def get_logger(self, name: str) -> logging.Logger:
         if name not in self._loggers:
             logger = logging.getLogger(name)
-            logger.setLevel(EnvVars().log_level)
+            level = EnvVars().log_level
+            if isinstance(level, str):
+                level = logging._nameToLevel.get(level.upper(), logging.INFO)
+            logger.setLevel(level)
 
             # Remove any existing handlers
             for handler in logger.handlers[:]:
                 logger.removeHandler(handler)
 
             # Add our single file handler
-            logger.addHandler(self._file_handler)
+            if self._file_handler:
+                logger.addHandler(self._file_handler)
+            else:
+                logger.addHandler(logging.StreamHandler())
 
             # Prevent propagation to root logger
             logger.propagate = False
@@ -80,6 +88,10 @@ class LogManager(metaclass=Singleton):
         """Configure third-party libraries to use the same file handler"""
         if level is None:
             level = EnvVars().log_level
+        if isinstance(level, str):
+            level = logging._nameToLevel.get(level.upper(), logging.INFO)
+        if not isinstance(level, int):
+            level = logging.INFO
 
         # Configure FastAPI and related libraries
         for logger_name in [
@@ -88,14 +100,15 @@ class LogManager(metaclass=Singleton):
             "uvicorn.access",
             "uvicorn.error",
             "aiomqtt",
-            # Add other libraries as needed
         ]:
             lib_logger = logging.getLogger(logger_name)
             lib_logger.setLevel(level)
 
             # Add our file handler if not already there
-            if not any(isinstance(h, RotatingFileHandler) for h in lib_logger.handlers):
+            if self._file_handler and not any(isinstance(h, type(self._file_handler)) for h in lib_logger.handlers):
                 lib_logger.addHandler(self._file_handler)
+            elif not self._file_handler and not lib_logger.handlers:
+                lib_logger.addHandler(logging.StreamHandler())
 
             # Prevent propagation to root logger to avoid duplicate logs
             lib_logger.propagate = False

@@ -18,24 +18,23 @@ GENERATION_SYSTEM = "Generation"
 @router.get("/")
 async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     try:
-        # Update each unit
-        hardware = hardware.pv_cts
-        if not hardware:
+        cts = hardware.pv_cts
+        if not cts:
             return templates.TemplateResponse('hardware_not_configured.html',
                                               {"request": request,
                                                "hardware": "PV Generation CT's"})
 
-        hardware.get_identifiers()
-        logger.info(f"Got Inverter identifiers")
+        cts.get_identifiers()
+        logger.info("Got Inverter identifiers")
         data = await data_store.get_all_data()
-        register_map = hardware.get_points("DATA")
-        logger.info(f"GET CT's: {hardware.hardware_id}, devices: {len(hardware.devices)}")
-        logger.info(f"CT DATA registers: {register_map}  ")
+        register_map = cts.get_points("DATA")
+        logger.info(f"GET CT's: {cts.hardware_id}, devices: {len(cts.devices)}")
+        logger.info(f"CT DATA registers: {register_map}")
 
         return templates.TemplateResponse(
             "generation.html",
             {
-                "hardware": hardware,
+                "hardware": cts,
                 "request": request,
                 "data": data,
                 "register_map": register_map,

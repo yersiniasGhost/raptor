@@ -2,7 +2,8 @@ import json
 import aiomqtt
 import asyncio
 import time
-from typing import AsyncGenerator, Optional
+import random
+from typing import AsyncGenerator, Optional, Any
 from config.telemetry_config import TelemetryConfig
 from config.mqtt_config import MQTTConfig
 from database.database_manager import DatabaseManager
@@ -29,7 +30,8 @@ def _get_backoff_time() -> float:
 
     # Exponential backoff: 2^n seconds, capped at max_backoff_seconds
     backoff = min(2 ** _connection_failures, _max_backoff_seconds)
-    return backoff
+    jitter = random.uniform(0.5, 1.5)
+    return backoff * jitter
 
 
 async def _should_attempt_connection() -> bool:
@@ -51,7 +53,7 @@ async def _should_attempt_connection() -> bool:
     return time_since_last_attempt >= backoff_time
 
 
-async def publish_payload(mqtt_config: MQTTConfig, topic: str, payload: JSON, logger: Logger) -> bool:
+async def publish_payload(mqtt_config: MQTTConfig, topic: str, payload: Any, logger: Logger) -> bool:
     """Publish payload to MQTT broker with backoff strategy"""
     global _last_connection_attempt, _connection_failures
 
@@ -102,15 +104,25 @@ async def upload_telemetry_data_mqtt(mqtt_config: MQTTConfig, telemetry_config: 
         db = DatabaseManager()
         cnt = db.count_stored_telemetry_data()
         logger.info(f"Found {cnt} rows of data in backlog")
-        payload, row_ids = db.get_stored_telemetry_data()
-        # payload = json.dumps(payload)
-        result = await publish_payload(mqtt_config, telemetry_config.telemetry_topic, payload, logger)
-        if result:
-            db.remove_stored_telemetry_data(row_ids)
-            cnt = db.count_stored_telemetry_data()
-            logger.info(f"Afterward, Found {cnt} rows of data in backlog")
+        payload_list, row_ids = db.get_stored_telemetry_data()
+        if not payload_list:
+            return True
 
-        return result
+        batch_size = 100
+        success_all = True
+        for i in range(0, len(payload_list), batch_size):
+            batch_payload = payload_list[i:i + batch_size]
+            batch_ids = row_ids[i:i + batch_size]
+            result = await publish_payload(mqtt_config, telemetry_config.telemetry_topic, batch_payload, logger)
+            if result:
+                db.remove_stored_telemetry_data(batch_ids)
+            else:
+                success_all = False
+                break
+
+        cnt = db.count_stored_telemetry_data()
+        logger.info(f"Afterward, Found {cnt} rows of data in backlog")
+        return success_all
 
     except Exception as e:
         logger.error(f"Error uploading telemetry data: {e}")
@@ -150,10 +162,10 @@ async def setup_mqtt_listener(mqtt_config: MQTTConfig,
             async with aiomqtt.Client(
                     hostname=mqtt_config.broker,
                     port=mqtt_config.port,
-                    # username=mqtt_config.username,
-                    # password=mqtt_config.password,
+                    username=mqtt_config.username,
+                    password=mqtt_config.password,
                     keepalive=mqtt_config.keepalive,
-                    identifier=f"{mqtt_config.client_id}_{uuid.uuid4().hex[:8]}",  # Make unique
+                    identifier=f"{mqtt_config.client_id}_{uuid.uuid4().hex[:8]}",
                     clean_session=True
             ) as client:
                 # Subscribe to the messages topic

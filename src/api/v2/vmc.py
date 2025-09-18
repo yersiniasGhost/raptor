@@ -32,6 +32,7 @@ def get_hardware_deployment() -> HardwareDeploymentRoute:
 
 def reset_hardware_deployment() -> HardwareDeploymentRoute:
     app.state.hardware = HardwareDeploymentRoute()
+    return app.state.hardware
 
 
 def get_git_version():
@@ -50,7 +51,7 @@ logger.info("Created FastAPI app")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # templates.env.globals["version"] = get_git_version()
 raptor_data = DatabaseManager().get_raptor()
-templates.env.globals["raptor_header"] = raptor_data.get('name', "Not configured")
+templates.env.globals["raptor_header"] = (raptor_data or {}).get('name', "Not configured")
 
 
 # Include routers
