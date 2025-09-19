@@ -19,7 +19,7 @@ cc_store = BMSDataStore()
 CC_TEMPLATE = "charge_controllers_template.html"
 
 
-def get_charge_controller(deployment: HardwareDeploymentRoute) -> HardwareDeployment:
+def get_charge_controller(deployment: HardwareDeploymentRoute) -> Optional[HardwareDeployment]:
     return deployment.charge_controller
 
 
@@ -67,12 +67,12 @@ async def get_historical_data(unit_id: str, num_points: int = Query(default=4000
 @router.get("/")
 async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
     charge_controller = get_charge_controller(hardware)
-    modbus_map = charge_controller.get_modbus_maps()
     if not charge_controller:
         return templates.TemplateResponse('hardware_not_configured.html',
                                           {"request": request,
                                            "hardware": "Charge Controller"}
                                           )
+    modbus_map = charge_controller.get_modbus_maps()
     charge_controller.get_identifiers()
     register_map = charge_controller.get_points("DATA")
     try:
