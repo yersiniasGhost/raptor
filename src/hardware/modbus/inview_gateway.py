@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Any
 
 from .modbus_hardware import ModbusHardware, ModbusClientType
 
@@ -37,4 +37,21 @@ class InviewGateway(ModbusHardware):
             print(converter[device['mac']])
             print(mode[device['mac']])
             print(ac_stop_power[device['mac']])
+
+    # State management methods implementation (pass-through for now)
+    def set_operational_state(self, state_name: str) -> Dict[str, Any]:
+        """Set operational state - not implemented for InviewGateway"""
+        return {"success": False, "error": "State management not implemented for InviewGateway"}
+
+    def get_current_state(self) -> str:
+        """Get current state - not implemented for InviewGateway"""
+        return None
+
+    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
+        """Validate state change - not implemented for InviewGateway"""
+        return {"success": False, "error": "State management not implemented for InviewGateway"}
+
+    def get_available_states(self) -> List[str]:
+        """Get available states - not implemented for InviewGateway"""
+        return []
 

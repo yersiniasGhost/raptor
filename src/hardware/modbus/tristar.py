@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from .modbus_hardware import ModbusHardware, ModbusClientType, modbus_data_acquisition
 from utils import LogManager
@@ -44,3 +44,20 @@ class Tristar(ModbusHardware):
                     output[mac][register_name] = pre_scaled_value * i_pu * self.TWO_NEG_15
 
         return output
+
+    # State management methods implementation (pass-through for now)
+    def set_operational_state(self, state_name: str) -> Dict[str, Any]:
+        """Set operational state - not implemented for Tristar"""
+        return {"success": False, "error": "State management not implemented for Tristar"}
+
+    def get_current_state(self) -> str:
+        """Get current state - not implemented for Tristar"""
+        return None
+
+    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
+        """Validate state change - not implemented for Tristar"""
+        return {"success": False, "error": "State management not implemented for Tristar"}
+
+    def get_available_states(self) -> List[str]:
+        """Get available states - not implemented for Tristar"""
+        return []
