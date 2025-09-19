@@ -1,9 +1,8 @@
-from typing import Optional
+from typing import Optional, List, Dict
 import json
 from logging import Logger
 import sqlite3
 
-from utils.envvars import EnvVars
 from database.database_manager import DatabaseManager
 from config.mqtt_config import MQTTConfig
 from config.telemetry_config import TelemetryConfig
