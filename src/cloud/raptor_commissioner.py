@@ -69,7 +69,7 @@ class RaptorCommissioner:
                 #         VALUES (?, ?, ?)
                 #     """, (raptor_id, self.api_key, firmware_tag))
                 #     conn.commit()
-                self.logger.info("Successfully commissioned Raptor", self.api_key, firmware_tag)
+                self.logger.info("Successfully commissioned Raptor")
                 return True
             else:
                 self.logger.error(f"Commission failed: {response.text}")

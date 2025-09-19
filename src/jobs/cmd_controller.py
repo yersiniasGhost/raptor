@@ -1,10 +1,12 @@
 import argparse
 import asyncio
-from typing import Optional
+from typing import Optional, Any
 from database.db_utils import get_mqtt_config, get_telemetry_config, get_raptor_configuration
 from database.database_manager import DatabaseManager
 from utils import LogManager
 from config.mqtt_config import MQTTConfig
+from config.telemetry_config import TelemetryConfig
+
 from cloud.mqtt_comms import setup_mqtt_listener, upload_command_response
 from actions.action_factory import ActionFactory
 from actions.action_status import ActionStatus
@@ -12,25 +14,31 @@ from utils import get_mac_address
 
 
 class CmdController:
+    mqtt_config: MQTTConfig
+    telemetry_config: TelemetryConfig | None
 
     def __init__(self):
         # Setup logging with rotation and remote logging if needed
         self.logger = LogManager("cmd-controller.log").get_logger("CmdController")
         self.running = True
         self._setup_error_handlers()
-        self.mqtt_config: MQTTConfig = get_mqtt_config(self.logger)
+        self.mqtt_config = get_mqtt_config(self.logger)
         self.raptor_configuration = get_raptor_configuration(self.logger)
         self.telemetry_config = get_telemetry_config(self.logger)
         self.mqtt_task = None
 
 
 
-    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = {}):
-        payload = payload | {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
+    async def _respond_to_message(self, status: ActionStatus, action_id: str, payload: Optional[dict] = None):
+        base = {"mac": get_mac_address(), "action_id": action_id, "action_status": status.value}
+        merged = {**(payload or {}), **base}
         self.logger.info(f"Responding to received message with status:{status}, id: {action_id}")
 
-        # The new upload_command_response returns a boolean indicating success
-        success = await upload_command_response(self.mqtt_config, self.telemetry_config, payload, self.logger)
+        if not self.telemetry_config or not self.mqtt_config:
+            self.logger.warning("Missing MQTT/Telemetry configuration; cannot send response")
+            return
+
+        success = await upload_command_response(self.mqtt_config, self.telemetry_config, merged, self.logger)
         if not success:
             self.logger.warning(f"Failed to send command response for action_id: {action_id}")
 
@@ -44,6 +52,9 @@ class CmdController:
         # so we no longer need retry logic here
         while self.running:
             try:
+                if not self.telemetry_config or not self.mqtt_config:
+                    await asyncio.sleep(1)
+                    continue
                 async for payload in setup_mqtt_listener(self.mqtt_config, self.telemetry_config, self.logger):
                     self.logger.info(f"Received message: {payload}")
                     action_name = payload.get('action')
@@ -57,10 +68,10 @@ class CmdController:
                                                                                       self.mqtt_config)
                             if status == ActionStatus.NOT_IMPLEMENTED:
                                 cmd_response = {"message": f"Action not implemented: {action_name}"}
-                                await self._respond_to_message(status, action_id, cmd_response)
-
-                            else:
-                                await self._respond_to_message(status, action_id, cmd_response)
+                            
+                            if not isinstance(cmd_response, dict):
+                                cmd_response = {"message": str(cmd_response)}
+                            await self._respond_to_message(status, action_id, cmd_response)
 
                         else:
                             self.logger.error(f"Received message with no action specified")

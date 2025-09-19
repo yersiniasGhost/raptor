@@ -507,32 +507,28 @@ class DatabaseManager(metaclass=Singleton):
             bool: True if schema was applied successfully, False otherwise
         """
         try:
-            # Ensure we have a valid schema file
             if not self.schema_path.exists():
-                raise FileNotFoundError(f"Schema file not found: {self.schema_path}")
+                self.logger.error(f"Schema file not found: {self.schema_path}")
+                return False
 
             self.logger.info(f"Applying schema from {self.schema_path}")
 
-            # Read the schema file
             with open(self.schema_path, 'r', encoding='utf-8') as f:
                 schema_sql = f.read()
 
             if not schema_sql.strip():
-                raise ValueError("Schema file is empty")
+                self.logger.error("Schema file is empty")
+                return False
 
-            # Execute the schema using the existing connection
             conn = self.connection
             conn.row_factory = sqlite3.Row
 
-            # Set pragmas for better performance during schema creation
             conn.execute('PRAGMA journal_mode=WAL')
             conn.execute('PRAGMA synchronous=NORMAL')
             conn.execute('PRAGMA foreign_keys=ON')
 
-            # Execute the entire schema script
             conn.executescript(schema_sql)
 
-            # Verify schema was applied by checking for tables
             cursor = conn.execute("""
                 SELECT name FROM sqlite_master 
                 WHERE type='table' AND name NOT LIKE 'sqlite_%'
@@ -545,19 +541,15 @@ class DatabaseManager(metaclass=Singleton):
             else:
                 self.logger.warning("Schema applied but no tables found")
             conn.commit()
-            # Reset connection to pick up any schema changes
             self.close()
-
-        except FileNotFoundError as e:
-            self.logger.error(f"Schema file not found: {e}")
-            raise
+            return True
 
         except sqlite3.Error as e:
             self.logger.error(f"Database error applying schema: {e}")
-            raise
+            return False
         except Exception as e:
             self.logger.error(f"Unexpected error applying schema: {e}")
-            raise
+            return False
 
     def get_latest_migration(self) -> Tuple[int, str]:
         try:
