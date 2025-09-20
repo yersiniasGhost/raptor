@@ -403,7 +403,7 @@ def prepare_value_for_register(value: Union[float, int], register: ModbusRegiste
 
 
     # State management implementation
-    def set_operational_state(self, state_name: str) -> Dict[str, Any]:
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
         """Set the operational state of the modbus hardware"""
         if not self.hardware_id:
             return {"success": False, "error": "Hardware ID not set"}
@@ -441,9 +441,12 @@ def prepare_value_for_register(value: Union[float, int], register: ModbusRegiste
 
             # Apply all register changes
             failed_writes = []
+            parameter_overrides = parameter_overrides or {}
+
             for register_config in state_config.get("registers", []):
                 register_name = register_config["register_name"]
-                value = register_config["value"]
+                # Use override value if provided, otherwise use default from config
+                value = parameter_overrides.get(register_name, register_config["value"])
                 register = self.modbus_map.get_register_by_name(register_name)
 
                 if not register:

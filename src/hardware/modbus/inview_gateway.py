@@ -39,7 +39,7 @@ class InviewGateway(ModbusHardware):
             print(ac_stop_power[device['mac']])
 
     # State management methods implementation (pass-through for now)
-    def set_operational_state(self, state_name: str) -> Dict[str, Any]:
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
         """Set operational state - not implemented for InviewGateway"""
         return {"success": False, "error": "State management not implemented for InviewGateway"}
 

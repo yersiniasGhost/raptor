@@ -46,7 +46,7 @@ class Tristar(ModbusHardware):
         return output
 
     # State management methods implementation (pass-through for now)
-    def set_operational_state(self, state_name: str) -> Dict[str, Any]:
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
         """Set operational state - not implemented for Tristar"""
         return {"success": False, "error": "State management not implemented for Tristar"}
 

@@ -1,0 +1,163 @@
+{
+  "states": {
+    "Battery Priority": {
+      "description": "Batteries Charged - Handle Load from Battery",
+      "registers": [
+        {
+          "register_name": "Override_Max_Consumed_Power",
+          "value": 0,
+          "description": "Set peak shaving to 0 (force battery operation)"
+        },
+        {
+          "register_name": "Turn_Converters_ON",
+          "value": 1,
+          "description": "Turn ON DC converters"
+        },
+        {
+          "register_name": "Back_To_Float",
+          "value": 1,
+          "description": "Return to float charging mode"
+        }
+      ],
+      "validation": {
+        "pre_checks": [
+          {
+            "register_name": "DC_Voltage_Battery",
+            "min_value": 48.0,
+            "description": "Battery voltage must be above 48V for battery priority mode"
+          }
+        ]
+      }
+    },
+    "Split Load": {
+      "description": "Low Batteries - Split Load (50% Battery + 50% AC)",
+      "registers": [
+        {
+          "register_name": "AC_Power_Limit_Per_Phase",
+          "value": 2250,
+          "description": "Limit AC input to 2250W per phase (50% split)"
+        },
+        {
+          "register_name": "Override_Max_Consumed_Power",
+          "value": 2250,
+          "description": "Set peak shaving to 2250W"
+        },
+        {
+          "register_name": "Turn_Converters_ON",
+          "value": 1,
+          "description": "Turn ON DC converters"
+        },
+        {
+          "register_name": "Charging_Power_Config",
+          "value": 1000,
+          "description": "Allow moderate battery charging at 1000W"
+        }
+      ],
+      "validation": {
+        "pre_checks": [
+          {
+            "register_name": "DC_Voltage_Battery",
+            "min_value": 42.0,
+            "description": "Battery voltage must be above low voltage cutoff"
+          }
+        ]
+      }
+    },
+    "AC Only": {
+      "description": "AC Only - Batteries Disconnected",
+      "registers": [
+        {
+          "register_name": "AC_Power_Limit_Per_Phase",
+          "value": -1,
+          "description": "No AC power limitation (unlimited)"
+        },
+        {
+          "register_name": "Override_Max_Consumed_Power",
+          "value": -1,
+          "description": "No peak shaving limit"
+        },
+        {
+          "register_name": "Charging_Power_Config",
+          "value": 0,
+          "description": "Disable battery charging completely"
+        },
+        {
+          "register_name": "Turn_Converters_OFF",
+          "value": 1,
+          "description": "Turn OFF DC converters"
+        }
+      ],
+      "validation": {
+        "pre_checks": [
+          {
+            "register_name": "AC_input_voltage",
+            "min_value": 100.0,
+            "description": "AC input must be available for AC-only mode"
+          }
+        ]
+      }
+    },
+    "AC + Charging": {
+      "description": "AC for Load + Battery Charging",
+      "registers": [
+        {
+          "register_name": "AC_Power_Limit_Per_Phase",
+          "value": -1,
+          "description": "No AC power limitation (full AC capacity)"
+        },
+        {
+          "register_name": "Override_Max_Consumed_Power",
+          "value": -1,
+          "description": "No peak shaving limit"
+        },
+        {
+          "register_name": "Turn_Converters_ON",
+          "value": 1,
+          "description": "Turn ON DC converters"
+        },
+        {
+          "register_name": "Start_Boost_Mode",
+          "value": 1,
+          "description": "Start boost charging mode"
+        },
+        {
+          "register_name": "Charging_Power_Config",
+          "value": 5000,
+          "description": "Enable full battery charging at 5000W"
+        },
+        {
+          "register_name": "Charging_Voltage_Config",
+          "value": 542,
+          "description": "Set charging voltage to 54.2V"
+        }
+      ],
+      "validation": {
+        "pre_checks": [
+          {
+            "register_name": "AC_input_voltage",
+            "min_value": 100.0,
+            "description": "AC input must be available for charging"
+          },
+          {
+            "register_name": "DC_Voltage_Battery",
+            "max_value": 58.0,
+            "description": "Battery voltage must be below maximum for charging"
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "compatible_hardware": ["Sierra25"],
+    "description": "Operation mode configurations for Sierra 25 CE+T converter using Inview S interface",
+    "notes": [
+      "Register names match the updated Sierra 25 modbus register map",
+      "Power values use conversion factor 100.0 (value in register = watts / 100)",
+      "Voltage values use conversion factor 0.1 (value in register = volts * 10)",
+      "Value -1 typically means unlimited/no limit for power registers",
+      "Validation checks are performed before state changes",
+      "All register writes include automatic hybrid rollback on failure"
+    ]
+  }
+}

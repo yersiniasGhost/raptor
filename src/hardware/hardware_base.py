@@ -66,7 +66,7 @@ class HardwareBase(ABC):
 
     # State management methods - to be implemented by subclasses
     @abstractmethod
-    def set_operational_state(self, state_name: str) -> Dict[str, Any]:
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Set the operational state of the hardware
         :param state_name: Name of the state to set (e.g., "Battery Priority", "AC Only")

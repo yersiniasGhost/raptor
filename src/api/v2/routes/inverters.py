@@ -79,6 +79,7 @@ async def activate_scenario(request: Request, deployment: Annotated[HardwareDepl
         # Parse JSON request body
         body = await request.json()
         scenario = body.get("scenario")
+        parameter_overrides = body.get("parameter_overrides", {})
 
         if not scenario:
             return JSONResponse(
@@ -94,11 +95,11 @@ async def activate_scenario(request: Request, deployment: Annotated[HardwareDepl
                 content={"success": False, "error": "Inverter hardware not configured"}
             )
 
-        # Set the operational state
-        result = hardware.set_operational_state(scenario)
+        # Set the operational state with parameter overrides
+        result = hardware.set_operational_state(scenario, parameter_overrides)
 
         if result["success"]:
-            logger.info(f"Successfully activated scenario: {scenario}")
+            logger.info(f"Successfully activated scenario: {scenario} with overrides: {parameter_overrides}")
             return JSONResponse(content=result)
         else:
             logger.error(f"Failed to activate scenario {scenario}: {result.get('error', 'Unknown error')}")
@@ -137,6 +138,38 @@ async def get_current_scenario(deployment: Annotated[HardwareDeploymentRoute, De
 
     except Exception as e:
         logger.error(f"Error in get_current_scenario: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "error": f"Internal server error: {str(e)}"}
+        )
+
+
+@router.get("/state-configuration")
+async def get_state_configuration(deployment: Annotated[HardwareDeploymentRoute, Depends(get_hardware)]):
+    try:
+        # Get hardware instance
+        hardware = get_inverter(deployment)
+        if not hardware:
+            return JSONResponse(
+                status_code=500,
+                content={"success": False, "error": "Inverter hardware not configured"}
+            )
+
+        # Load states configuration
+        states_config = hardware.load_states_config()
+        if not states_config:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "error": "State configuration not found"}
+            )
+
+        return JSONResponse(content={
+            "success": True,
+            "states": states_config
+        })
+
+    except Exception as e:
+        logger.error(f"Error in get_state_configuration: {e}")
         return JSONResponse(
             status_code=500,
             content={"success": False, "error": f"Internal server error: {str(e)}"}
