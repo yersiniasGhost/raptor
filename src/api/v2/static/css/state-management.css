@@ -1,0 +1,283 @@
+/* State Management UI Components - Reusable CSS for hardware state control interfaces */
+
+/* Base container styling */
+.scenario-container {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 5px solid #007bff;
+    position: relative;
+}
+
+.scenario-container.active {
+    border-left-color: #28a745;
+    background-color: #f8fff9;
+}
+
+/* Header and title styling */
+.scenario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.scenario-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.scenario-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status-indicator {
+    font-size: 1.5em;
+    color: #28a745;
+    visibility: hidden;
+}
+
+.status-indicator.active {
+    visibility: visible;
+}
+
+/* Description and content */
+.scenario-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+
+/* Button styling */
+.scenario-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.scenario-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.scenario-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.scenario-button.active {
+    background-color: #28a745;
+}
+
+.scenario-button.active:hover {
+    background-color: #1e7e34;
+}
+
+/* Control panel layout */
+.control-panel-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.control-panel-title {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.control-panel-subtitle {
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* Status panel */
+.status-panel {
+    background: #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.current-scenario {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #28a745;
+}
+
+/* Loading and message indicators */
+.loading-indicator {
+    display: none;
+    color: #007bff;
+    font-style: italic;
+}
+
+.error-message {
+    background-color: #fee2e2;
+    border: 1px solid #ff8080;
+    color: #dc3545;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    display: none;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin: 15px 0;
+    display: none;
+}
+
+/* Parameter override section */
+.parameter-section {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 15px;
+    display: none;
+}
+
+.parameter-section.visible {
+    display: block;
+}
+
+.parameter-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.parameter-label {
+    flex: 1;
+    font-size: 0.9em;
+    color: #495057;
+}
+
+.parameter-input {
+    flex: 0 0 120px;
+    padding: 5px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.parameter-input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.parameter-input.invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 2px rgba(220,53,69,0.25);
+}
+
+.parameter-unit {
+    flex: 0 0 40px;
+    font-size: 0.85em;
+    color: #6c757d;
+}
+
+.parameter-help {
+    flex: 0 0 20px;
+    color: #6c757d;
+    cursor: help;
+}
+
+.toggle-parameters {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9em;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.toggle-parameters:hover {
+    color: #0056b3;
+}
+
+/* Validation feedback */
+.parameter-validation {
+    font-size: 0.8em;
+    color: #dc3545;
+    margin-top: 2px;
+    display: none;
+}
+
+.parameter-validation.visible {
+    display: block;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .scenario-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .scenario-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .parameter-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .parameter-label {
+        flex: none;
+    }
+
+    .parameter-input {
+        flex: none;
+        width: 100%;
+    }
+
+    .parameter-unit {
+        flex: none;
+    }
+}
+
+/* Theme variants for different hardware types */
+.state-management.inverter-theme .scenario-container {
+    border-left-color: #007bff;
+}
+
+.state-management.battery-theme .scenario-container {
+    border-left-color: #28a745;
+}
+
+.state-management.solar-theme .scenario-container {
+    border-left-color: #ffc107;
+}
+
+.state-management.grid-theme .scenario-container {
+    border-left-color: #6f42c1;
+}
