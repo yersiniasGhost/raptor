@@ -91,6 +91,9 @@ class HardwareDeployment:
     def load_states_config(self) -> Optional[Dict[str, Any]]:
         return self.hardware.load_states_config()
 
+    def get_current_state(self) -> str:
+        return self.hardware.get_current_state()
+
     def get_identifiers(self):
         try:
             ids = self.hardware.get_identifier(self.devices)
