@@ -88,6 +88,9 @@ class HardwareDeployment:
     def has_input_AC(self, devices) -> bool:
         return self.hardware.has_input_AC(devices)
 
+    def load_states_config(self) -> Optional[Dict[str, Any]]:
+        return self.hardware.load_states_config()
+
     def get_identifiers(self):
         try:
             ids = self.hardware.get_identifier(self.devices)
