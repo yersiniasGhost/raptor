@@ -143,9 +143,6 @@ class EveBattery(ModbusHardware):
         """Set operational state - not implemented for EveBattery"""
         return {"success": False, "error": "State management not implemented for EveBattery"}
 
-    def get_current_state(self) -> str:
-        """Get current state - not implemented for EveBattery"""
-        return None
 
     def validate_state_change(self, state_name: str) -> Dict[str, Any]:
         """Validate state change - not implemented for EveBattery"""

@@ -42,4 +42,5 @@ class InviewGateway(ModbusHardware):
 
     # State management methods implementation - inherits from ModbusHardware
     # The ModbusHardware base class provides full implementation
+    # get_current_state inherited from HardwareBase
 

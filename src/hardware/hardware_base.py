@@ -2,6 +2,7 @@ from typing import List, Dict, Any, Tuple, Union, Optional
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from utils import LogManager
+from database.db_utils import get_current_hardware_state
 import json
 import os
 
@@ -74,13 +75,15 @@ class HardwareBase(ABC):
         """
         raise ValueError("Must be implemented in sub-class")
 
-    @abstractmethod
     def get_current_state(self) -> str:
         """
-        Get the current operational state of the hardware
+        Get the current operational state of the hardware from database
         :return: Current state name or None if no state set
         """
-        raise ValueError("Must be implemented in sub-class")
+        if not self.hardware_id:
+            self.logger.warning("Hardware ID not set, cannot get current state")
+            return None
+        return get_current_hardware_state(self.hardware_id, self.logger)
 
     @abstractmethod
     def validate_state_change(self, state_name: str) -> Dict[str, Any]:
@@ -91,10 +94,10 @@ class HardwareBase(ABC):
         """
         raise ValueError("Must be implemented in sub-class")
 
-    @abstractmethod
     def get_available_states(self) -> List[str]:
-        """
-        Get list of available operational states for this hardware
-        :return: List of state names
-        """
-        raise ValueError("Must be implemented in sub-class")
+        """Get list of available operational states for this hardware"""
+        states_config = self.load_states_config()
+        if not states_config:
+            return []
+
+        return list(states_config.get("states", {}).keys())

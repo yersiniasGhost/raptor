@@ -1,4 +1,4 @@
-from typing import Tuple, Union, Optional, List, Dict
+from typing import Tuple, Union, Optional, List, Dict, Any
 from enum import Enum
 from dataclasses import dataclass
 from pymodbus.client import ModbusSerialClient, ModbusTcpClient
@@ -6,10 +6,8 @@ from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
 from utils import LogManager, check_interface, set_tcp_interface
-from database.db_utils import add_hardware_state, get_current_hardware_state, get_hardware_state_history, get_previous_hardware_state
+from database.db_utils import add_hardware_state, get_previous_hardware_state
 import time
-import json
-import os
 
 
 class ModbusClientType(Enum):
@@ -115,6 +113,163 @@ class ModbusHardware(HardwareBase):
     def decode_flag_status(self, register, raw_value, key: str):
         print("BASE method decode_flag-status")
         return raw_value
+
+
+
+    # State management implementation
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Set the operational state of the modbus hardware"""
+        if not self.hardware_id:
+            return {"success": False, "error": "Hardware ID not set"}
+
+        # Load states configuration
+        states_config = self.load_states_config()
+        if not states_config:
+            return {"success": False, "error": "No states configuration available"}
+
+        # Check if state exists
+        available_states = states_config.get("states", {})
+        if state_name not in available_states:
+            return {"success": False, "error": f"State '{state_name}' not found in configuration"}
+
+        state_config = available_states[state_name]
+
+        # Validate state change
+        validation_result = self.validate_state_change(state_name)
+        if not validation_result["success"]:
+            return validation_result
+
+        # Store current register values for fallback rollback
+        rollback_values = {}
+
+        try:
+            # Read current values before making changes
+            for register_config in state_config.get("registers", []):
+                register_name = register_config["register_name"]
+                register = self.modbus_map.get_register_by_name(register_name)
+                if register:
+                    # Use the first device for reading current state
+                    current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
+                    if register_name in current_values:
+                        rollback_values[register_name] = current_values[register_name]
+
+            # Apply all register changes
+            failed_writes = []
+            parameter_overrides = parameter_overrides or {}
+
+            for register_config in state_config.get("registers", []):
+                register_name = register_config["register_name"]
+                # Use override value if provided, otherwise use default from config
+                value = parameter_overrides.get(register_name, register_config["value"])
+                register = self.modbus_map.get_register_by_name(register_name)
+
+                if not register:
+                    failed_writes.append(f"Register {register_name} not found in modbus map")
+                    continue
+
+                # Perform the write
+                write_result = modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=value)
+                if not write_result.get("success", False):
+                    failed_writes.append(
+                        f"Failed to write {register_name}: {write_result.get('error', 'Unknown error')}")
+
+            # If any writes failed, perform hybrid rollback
+            if failed_writes:
+                self.logger.error(f"State change failed, attempting rollback: {failed_writes}")
+                self._perform_hybrid_rollback(rollback_values)
+                return {"success": False, "error": f"State change failed: {'; '.join(failed_writes)}"}
+
+            # Record successful state change in database
+            success = add_hardware_state(self.hardware_id, state_name, self.logger)
+            if not success:
+                self.logger.warning("Failed to record state change in database")
+
+            return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
+
+        except Exception as e:
+            self.logger.error(f"Unexpected error during state change: {e}")
+            # Attempt hybrid rollback on unexpected error
+            self._perform_hybrid_rollback(rollback_values)
+            return {"success": False, "error": f"Unexpected error: {str(e)}"}
+
+
+
+    def _perform_hybrid_rollback(self, rollback_values: Dict[str, Any]):
+        """Perform hybrid rollback: try previous state first, fallback to stored values"""
+        try:
+            # Primary rollback: revert to previous state
+            previous_state = get_previous_hardware_state(self.hardware_id, self.logger)
+            if previous_state:
+                self.logger.info(f"Attempting rollback to previous state: {previous_state}")
+                # Recursive call but with previous state - should not fail validation
+                result = self.set_operational_state(previous_state)
+                if result.get("success", False):
+                    self.logger.info("Successfully rolled back to previous state")
+                    return
+                else:
+                    self.logger.warning(f"Previous state rollback failed: {result.get('error', 'Unknown error')}")
+
+            # Fallback rollback: restore individual register values
+            self.logger.info("Attempting fallback rollback using stored values")
+            for register_name, rollback_value in rollback_values.items():
+                try:
+                    register = self.modbus_map.get_register_by_name(register_name)
+                    if register:
+                        modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=rollback_value)
+                        self.logger.debug(f"Restored {register_name} to {rollback_value}")
+                except Exception as e:
+                    self.logger.error(f"Failed to restore {register_name}: {e}")
+
+        except Exception as e:
+            self.logger.error(f"Rollback failed completely: {e}")
+
+
+
+    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
+        """Validate if a state change is possible given current conditions"""
+        states_config = self.load_states_config()
+        if not states_config:
+            return {"success": False, "error": "No states configuration available"}
+
+        available_states = states_config.get("states", {})
+        if state_name not in available_states:
+            return {"success": False, "error": f"State '{state_name}' not found"}
+
+        state_config = available_states[state_name]
+        validation_config = state_config.get("validation", {})
+        pre_checks = validation_config.get("pre_checks", [])
+
+        # Perform pre-flight checks
+        for check in pre_checks:
+            register_name = check["register_name"]
+            register = self.modbus_map.get_register_by_name(register_name)
+
+            if not register:
+                return {"success": False, "error": f"Validation register {register_name} not found"}
+
+            # Read current value
+            current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
+            if register_name not in current_values:
+                return {"success": False, "error": f"Could not read validation register {register_name}"}
+
+            current_value = current_values[register_name]
+
+            # Check minimum value if specified
+            if "min_value" in check and current_value < check["min_value"]:
+                return {
+                    "success": False,
+                    "error": f"Validation failed: {check['description']} (current: {current_value}, required: >= {check['min_value']})"
+                }
+
+            # Check maximum value if specified
+            if "max_value" in check and current_value > check["max_value"]:
+                return {
+                    "success": False,
+                    "error": f"Validation failed: {check['description']} (current: {current_value}, required: <= {check['max_value']})"
+                }
+
+        return {"success": True, "message": "Validation passed"}
+
 
 
 def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
@@ -401,167 +556,3 @@ def prepare_value_for_register(value: Union[float, int], register: ModbusRegiste
     else:
         raise ValueError(f"Unsupported register type: {register.type}")
 
-
-    # State management implementation
-    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Set the operational state of the modbus hardware"""
-        if not self.hardware_id:
-            return {"success": False, "error": "Hardware ID not set"}
-
-        # Load states configuration
-        states_config = self.load_states_config()
-        if not states_config:
-            return {"success": False, "error": "No states configuration available"}
-
-        # Check if state exists
-        available_states = states_config.get("states", {})
-        if state_name not in available_states:
-            return {"success": False, "error": f"State '{state_name}' not found in configuration"}
-
-        state_config = available_states[state_name]
-
-        # Validate state change
-        validation_result = self.validate_state_change(state_name)
-        if not validation_result["success"]:
-            return validation_result
-
-        # Store current register values for fallback rollback
-        rollback_values = {}
-
-        try:
-            # Read current values before making changes
-            for register_config in state_config.get("registers", []):
-                register_name = register_config["register_name"]
-                register = self.modbus_map.get_register_by_name(register_name)
-                if register:
-                    # Use the first device for reading current state
-                    current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
-                    if register_name in current_values:
-                        rollback_values[register_name] = current_values[register_name]
-
-            # Apply all register changes
-            failed_writes = []
-            parameter_overrides = parameter_overrides or {}
-
-            for register_config in state_config.get("registers", []):
-                register_name = register_config["register_name"]
-                # Use override value if provided, otherwise use default from config
-                value = parameter_overrides.get(register_name, register_config["value"])
-                register = self.modbus_map.get_register_by_name(register_name)
-
-                if not register:
-                    failed_writes.append(f"Register {register_name} not found in modbus map")
-                    continue
-
-                # Perform the write
-                write_result = modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=value)
-                if not write_result.get("success", False):
-                    failed_writes.append(f"Failed to write {register_name}: {write_result.get('error', 'Unknown error')}")
-
-            # If any writes failed, perform hybrid rollback
-            if failed_writes:
-                self.logger.error(f"State change failed, attempting rollback: {failed_writes}")
-                self._perform_hybrid_rollback(rollback_values)
-                return {"success": False, "error": f"State change failed: {'; '.join(failed_writes)}"}
-
-            # Record successful state change in database
-            success = add_hardware_state(self.hardware_id, state_name, self.logger)
-            if not success:
-                self.logger.warning("Failed to record state change in database")
-
-            return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
-
-        except Exception as e:
-            self.logger.error(f"Unexpected error during state change: {e}")
-            # Attempt hybrid rollback on unexpected error
-            self._perform_hybrid_rollback(rollback_values)
-            return {"success": False, "error": f"Unexpected error: {str(e)}"}
-
-    def _perform_hybrid_rollback(self, rollback_values: Dict[str, Any]):
-        """Perform hybrid rollback: try previous state first, fallback to stored values"""
-        try:
-            # Primary rollback: revert to previous state
-            previous_state = get_previous_hardware_state(self.hardware_id, self.logger)
-            if previous_state:
-                self.logger.info(f"Attempting rollback to previous state: {previous_state}")
-                # Recursive call but with previous state - should not fail validation
-                result = self.set_operational_state(previous_state)
-                if result.get("success", False):
-                    self.logger.info("Successfully rolled back to previous state")
-                    return
-                else:
-                    self.logger.warning(f"Previous state rollback failed: {result.get('error', 'Unknown error')}")
-
-            # Fallback rollback: restore individual register values
-            self.logger.info("Attempting fallback rollback using stored values")
-            for register_name, rollback_value in rollback_values.items():
-                try:
-                    register = self.modbus_map.get_register_by_name(register_name)
-                    if register:
-                        modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=rollback_value)
-                        self.logger.debug(f"Restored {register_name} to {rollback_value}")
-                except Exception as e:
-                    self.logger.error(f"Failed to restore {register_name}: {e}")
-
-        except Exception as e:
-            self.logger.error(f"Rollback failed completely: {e}")
-
-    def get_current_state(self) -> str:
-        """Get the current operational state of the hardware"""
-        if not self.hardware_id:
-            return None
-
-        return get_current_hardware_state(self.hardware_id, self.logger)
-
-    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
-        """Validate if a state change is possible given current conditions"""
-        states_config = self.load_states_config()
-        if not states_config:
-            return {"success": False, "error": "No states configuration available"}
-
-        available_states = states_config.get("states", {})
-        if state_name not in available_states:
-            return {"success": False, "error": f"State '{state_name}' not found"}
-
-        state_config = available_states[state_name]
-        validation_config = state_config.get("validation", {})
-        pre_checks = validation_config.get("pre_checks", [])
-
-        # Perform pre-flight checks
-        for check in pre_checks:
-            register_name = check["register_name"]
-            register = self.modbus_map.get_register_by_name(register_name)
-
-            if not register:
-                return {"success": False, "error": f"Validation register {register_name} not found"}
-
-            # Read current value
-            current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
-            if register_name not in current_values:
-                return {"success": False, "error": f"Could not read validation register {register_name}"}
-
-            current_value = current_values[register_name]
-
-            # Check minimum value if specified
-            if "min_value" in check and current_value < check["min_value"]:
-                return {
-                    "success": False,
-                    "error": f"Validation failed: {check['description']} (current: {current_value}, required: >= {check['min_value']})"
-                }
-
-            # Check maximum value if specified
-            if "max_value" in check and current_value > check["max_value"]:
-                return {
-                    "success": False,
-                    "error": f"Validation failed: {check['description']} (current: {current_value}, required: <= {check['max_value']})"
-                }
-
-        return {"success": True, "message": "Validation passed"}
-
-    def get_available_states(self) -> List[str]:
-        """Get list of available operational states for this hardware"""
-        states_config = self.load_states_config()
-        if not states_config:
-            return []
-
-        return list(states_config.get("states", {}).keys())
