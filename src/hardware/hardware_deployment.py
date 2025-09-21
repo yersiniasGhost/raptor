@@ -94,6 +94,10 @@ class HardwareDeployment:
     def get_current_state(self) -> str:
         return self.hardware.get_current_state()
 
+    def get_available_states(self):
+        return self.hardware.get_available_states()
+
+
     def get_identifiers(self):
         try:
             ids = self.hardware.get_identifier(self.devices)
