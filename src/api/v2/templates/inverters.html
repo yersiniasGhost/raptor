@@ -2,7 +2,7 @@
 
 {% extends "_base_device_template.html" %}
 {% block more_styles %}
-<link rel="stylesheet" href="{{ url_for('static', path='/css/state-management.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='css/state-management.css') }}">
 <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,18 +43,28 @@
     </div>
 </div>
 
-    <script src="{{ url_for('static', path='/js/state-management.js') }}"></script>
+    <script src="{{ url_for('static', path='js/state-management.js') }}"></script>
     <script>
         let stateManager;
         let statesConfig = null;
 
         async function loadStateConfiguration() {
+            console.log('Loading state configuration...');
             try {
+                console.log('Fetching /inverters/state-configuration');
                 const response = await fetch('/inverters/state-configuration');
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 const data = await response.json();
+                console.log('State configuration response:', data);
 
                 if (data.success) {
                     statesConfig = data.states;
+                    console.log('States config loaded:', statesConfig);
                     generateScenarioHTML();
 
                     // Initialize the state manager
@@ -64,13 +74,14 @@
                         parameterDefinitions: extractParameterDefinitions(),
                         refreshInterval: 30000
                     });
+                    console.log('State manager initialized');
                 } else {
                     console.error('Failed to load state configuration:', data.error);
-                    showError('Failed to load state configuration');
+                    showError('Failed to load state configuration: ' + (data.error || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error loading state configuration:', error);
-                showError('Error loading state configuration');
+                showError('Error loading state configuration: ' + error.message);
             }
         }
 
@@ -131,9 +142,22 @@
         }
 
         function generateScenarioHTML() {
-            if (!statesConfig || !statesConfig.states) return;
+            console.log('Generating scenario HTML...');
+            if (!statesConfig || !statesConfig.states) {
+                console.error('No states config available:', statesConfig);
+                return;
+            }
+
+            console.log('States found:', Object.keys(statesConfig.states));
 
             const container = document.querySelector('.collapsible-content');
+            console.log('Container found:', !!container);
+
+            if (!container) {
+                console.error('Could not find .collapsible-content container');
+                return;
+            }
+
             const existingScenarios = container.querySelector('.scenario-container');
             if (existingScenarios) {
                 // Remove existing scenarios if any
@@ -142,9 +166,12 @@
             }
 
             Object.entries(statesConfig.states).forEach(([stateName, stateConfig]) => {
+                console.log('Creating scenario:', stateName);
                 const scenarioHTML = createScenarioHTML(stateName, stateConfig);
                 container.insertAdjacentHTML('beforeend', scenarioHTML);
             });
+
+            console.log('Scenario HTML generation complete');
         }
 
         function createScenarioHTML(stateName, stateConfig) {

@@ -10,6 +10,8 @@ class InviewGateway(ModbusHardware):
     def __post_init__(self):
         super().__post_init__()
         self.client_type = ModbusClientType.TCP
+        # Set states configuration path for Sierra25 converter states
+        self.states_config_path = "data/Sierra25/sierra25_states.json"
 
     def get_identifier(self, devices: List[dict]) -> Dict[str, str]:
         output = {d["mac"]: "ID is NA" for d in devices}
@@ -38,20 +40,6 @@ class InviewGateway(ModbusHardware):
             print(mode[device['mac']])
             print(ac_stop_power[device['mac']])
 
-    # State management methods implementation (pass-through for now)
-    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Set operational state - not implemented for InviewGateway"""
-        return {"success": False, "error": "State management not implemented for InviewGateway"}
-
-    def get_current_state(self) -> str:
-        """Get current state - not implemented for InviewGateway"""
-        return None
-
-    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
-        """Validate state change - not implemented for InviewGateway"""
-        return {"success": False, "error": "State management not implemented for InviewGateway"}
-
-    def get_available_states(self) -> List[str]:
-        """Get available states - not implemented for InviewGateway"""
-        return []
+    # State management methods implementation - inherits from ModbusHardware
+    # The ModbusHardware base class provides full implementation
 
