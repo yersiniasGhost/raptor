@@ -374,6 +374,7 @@ class DatabaseManager(metaclass=Singleton):
                 config['parameters'] = json.loads(config['parameters'])
                 config['scan_groups'] = json.loads(config['scan_groups'])
                 config['devices'] = json.loads(config['devices'])
+                config['hardware_id'] = config['id']
                 yield config
 
         except sqlite3.Error as e:

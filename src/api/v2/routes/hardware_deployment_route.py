@@ -22,7 +22,6 @@ class HardwareDeploymentRoute:
         self.initialize()
 
     def initialize(self):
-        from pathlib import Path
         db = DatabaseManager()
         self.actuator_manager, self.batteries, self.inverter, self.pv_cts, self.charge_controller = None, None, None, None, None
         for hardware in db.get_hardware_systems("Actuators"):
