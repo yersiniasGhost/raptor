@@ -5,6 +5,7 @@ from pymodbus.client import ModbusSerialClient, ModbusTcpClient
 from pymodbus.framer import FramerType
 from hardware.hardware_base import HardwareBase
 from hardware.modbus.modbus_map import ModbusMap, ModbusRegister, ModbusDatatype, ModbusRegisterType
+from hardware.hardware_lock import modbus_lock, get_resource_key_for_modbus, HardwareLockTimeout, HardwareLockError
 from utils import LogManager, check_interface, set_tcp_interface
 from database.db_utils import add_hardware_state, get_previous_hardware_state
 import time
@@ -139,58 +140,70 @@ class ModbusHardware(HardwareBase):
         if not validation_result["success"]:
             return validation_result
 
-        # Store current register values for fallback rollback
-        rollback_values = {}
-
+        # Use hardware locking for the entire state change operation
         try:
-            # Read current values before making changes
-            for register_config in state_config.get("registers", []):
-                register_name = register_config["register_name"]
-                register = self.modbus_map.get_register_by_name(register_name)
-                if register:
-                    # Use the first device for reading current state
-                    current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
-                    if register_name in current_values:
-                        rollback_values[register_name] = current_values[register_name]
+            with modbus_lock(self, timeout=60.0,
+                            lock_info=f"state change to {state_name}"):
 
-            # Apply all register changes
-            failed_writes = []
-            parameter_overrides = parameter_overrides or {}
+                # Store current register values for fallback rollback
+                rollback_values = {}
 
-            for register_config in state_config.get("registers", []):
-                register_name = register_config["register_name"]
-                # Use override value if provided, otherwise use default from config
-                value = parameter_overrides.get(register_name, register_config["value"])
-                register = self.modbus_map.get_register_by_name(register_name)
+                try:
+                    # Read current values before making changes
+                    for register_config in state_config.get("registers", []):
+                        register_name = register_config["register_name"]
+                        register = self.modbus_map.get_register_by_name(register_name)
+                        if register:
+                            # Use the first device for reading current state
+                            current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
+                            if register_name in current_values:
+                                rollback_values[register_name] = current_values[register_name]
 
-                if not register:
-                    failed_writes.append(f"Register {register_name} not found in modbus map")
-                    continue
+                    # Apply all register changes
+                    failed_writes = []
+                    parameter_overrides = parameter_overrides or {}
 
-                # Perform the write
-                write_result = modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=value)
-                if not write_result.get("success", False):
-                    failed_writes.append(
-                        f"Failed to write {register_name}: {write_result.get('error', 'Unknown error')}")
+                    for register_config in state_config.get("registers", []):
+                        register_name = register_config["register_name"]
+                        # Use override value if provided, otherwise use default from config
+                        value = parameter_overrides.get(register_name, register_config["value"])
+                        register = self.modbus_map.get_register_by_name(register_name)
 
-            # If any writes failed, perform hybrid rollback
-            if failed_writes:
-                self.logger.error(f"State change failed, attempting rollback: {failed_writes}")
-                self._perform_hybrid_rollback(rollback_values)
-                return {"success": False, "error": f"State change failed: {'; '.join(failed_writes)}"}
+                        if not register:
+                            failed_writes.append(f"Register {register_name} not found in modbus map")
+                            continue
 
-            # Record successful state change in database
-            success = add_hardware_state(self.hardware_id, state_name, self.logger)
-            if not success:
-                self.logger.warning("Failed to record state change in database")
+                        # Perform the write
+                        write_result = modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=value)
+                        if not write_result.get("success", False):
+                            failed_writes.append(
+                                f"Failed to write {register_name}: {write_result.get('error', 'Unknown error')}")
 
-            return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
+                    # If any writes failed, perform hybrid rollback
+                    if failed_writes:
+                        self.logger.error(f"State change failed, attempting rollback: {failed_writes}")
+                        self._perform_hybrid_rollback(rollback_values)
+                        return {"success": False, "error": f"State change failed: {'; '.join(failed_writes)}"}
 
-        except Exception as e:
-            self.logger.error(f"Unexpected error during state change: {e}")
-            # Attempt hybrid rollback on unexpected error
-            self._perform_hybrid_rollback(rollback_values)
-            return {"success": False, "error": f"Unexpected error: {str(e)}"}
+                    # Record successful state change in database
+                    success = add_hardware_state(self.hardware_id, state_name, self.logger)
+                    if not success:
+                        self.logger.warning("Failed to record state change in database")
+
+                    return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
+
+                except Exception as e:
+                    self.logger.error(f"Unexpected error during state change: {e}")
+                    # Attempt hybrid rollback on unexpected error
+                    self._perform_hybrid_rollback(rollback_values)
+                    return {"success": False, "error": f"Unexpected error: {str(e)}"}
+
+        except HardwareLockTimeout:
+            self.logger.error(f"Timeout waiting for modbus lock for state change to {state_name}")
+            return {"success": False, "error": "Timeout waiting for hardware access"}
+        except HardwareLockError as e:
+            self.logger.error(f"Hardware lock error during state change to {state_name}: {e}")
+            return {"success": False, "error": f"Hardware lock error: {str(e)}"}
 
 
 
@@ -330,45 +343,62 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
     register = modbus_hardware.modbus_map.get_register_by_name(register_name)
     if not register:
         logger.error(f"Cannot find register {register_name}")
-        return {}
+        return {"success": False, "error": f"Register {register_name} not found"}
 
-    client = modbus_hardware.get_modbus_client()
-    if not client.connect():
-        logger.error("Modbus client not connected... resetting")
-        modbus_hardware.reset_hardware()
-        return {}
-
+    # Use hardware locking to prevent concurrent access
     try:
-        if register.slave_id:
-            slave_id = register.slave_id
+        with modbus_lock(modbus_hardware, timeout=30.0,
+                         lock_info=f"write {register_name}={value}"):
 
-        # Convert value based on register data type
-        write_value = int(value) # prepare_write_value(value, register)
+            client = modbus_hardware.get_modbus_client()
+            if not client.connect():
+                logger.error("Modbus client not connected... resetting")
+                modbus_hardware.reset_hardware()
+                return {"success": False, "error": "Cannot connect to modbus client"}
 
-        logger.info(f"Attempting write - Register: {register.name}, Address: {register.address}, Type: {register.type}, Slave: {slave_id}, Value: {write_value}")
+            try:
+                if register.slave_id:
+                    slave_id = register.slave_id
 
-        result = None
-        if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-            logger.info(f"Writing HOLDING register: {register.address}, Slave ID{slave_id}, {register.name}")
-            result = client.write_register(register.address, write_value, slave=slave_id)
-        elif ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
-            logger.error(f"Cannot write to INPUT register (read-only): {register.address}, {register.name}")
-            return {"success": False, "error": "INPUT registers are read-only"}
-        else:
-            logger.error(f"Unsupported register type for writing: {register.type}")
-            return {"success": False, "error": "Unsupported register type"}
+                # Convert value based on register data type
+                write_value = int(value)  # prepare_write_value(value, register)
 
-        if result and hasattr(result, 'isError') and result.isError():
-            logger.error(f"Modbus write error: {result}")
-            return {"success": False, "error": f"Modbus error: {result}"}
-        elif result is None:
-            logger.error("No response from Modbus write operation")
-            return {"success": False, "error": "No response from device"}
-        return {"success": True, "register": register_name, "value": write_value}
+                logger.info(f"Attempting write - Register: {register.name}, Address: {register.address}, Type: {register.type}, Slave: {slave_id}, Value: {write_value}")
 
-    except Exception as e:
-        logger.exception(f"Error writing modbus: {e}")
-        return {"success": False, "error": str(e)}
+                result = None
+                if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
+                    logger.info(f"Writing HOLDING register: {register.address}, Slave ID{slave_id}, {register.name}")
+                    result = client.write_register(register.address, write_value, slave=slave_id)
+                elif ModbusRegisterType(register.type) == ModbusRegisterType.INPUT:
+                    logger.error(f"Cannot write to INPUT register (read-only): {register.address}, {register.name}")
+                    return {"success": False, "error": "INPUT registers are read-only"}
+                else:
+                    logger.error(f"Unsupported register type for writing: {register.type}")
+                    return {"success": False, "error": "Unsupported register type"}
+
+                if result and hasattr(result, 'isError') and result.isError():
+                    logger.error(f"Modbus write error: {result}")
+                    return {"success": False, "error": f"Modbus error: {result}"}
+                elif result is None:
+                    logger.error("No response from Modbus write operation")
+                    return {"success": False, "error": "No response from device"}
+                return {"success": True, "register": register_name, "value": write_value}
+
+            except Exception as e:
+                logger.exception(f"Error writing modbus: {e}")
+                return {"success": False, "error": str(e)}
+            finally:
+                try:
+                    client.close()
+                except:
+                    pass
+
+    except HardwareLockTimeout:
+        logger.error(f"Timeout waiting for modbus lock to write {register_name}")
+        return {"success": False, "error": "Timeout waiting for hardware access"}
+    except HardwareLockError as e:
+        logger.error(f"Hardware lock error writing {register_name}: {e}")
+        return {"success": False, "error": f"Hardware lock error: {str(e)}"}
 
 
 def modbus_data_read(modbus_hardware: ModbusHardware, register_key: str, slave_id: int,
@@ -385,46 +415,58 @@ def modbus_data_read(modbus_hardware: ModbusHardware, register_key: str, slave_i
         logger.error(f"Cannot find register {register_key}")
         return {}
 
-    client = modbus_hardware.get_modbus_client()
-    if not client.connect():
-        logger.error("Modbus client not connected... resetting")
-        modbus_hardware.reset_hardware()
-
+    # Use hardware locking to prevent concurrent access
     try:
+        with modbus_lock(modbus_hardware, timeout=30.0,
+                        lock_info=f"read {register_key}"):
 
-        if register.slave_id:
-            slave_id = register.slave_id
-        output: Dict[str, Union[float, int]] = {}
-        address = int(register.address)
-        try:
-            # In some cases, like Inview S the slave ID is used to query different systems not devices
-            if register.slave_id:
-                slave_id = register.slave_id
-            result = None
-            if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-                logger.info(f"Reading HOLDING register: {address}, slaveID: {slave_id}, {register.name}")
-                result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
-            else:
-                logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
-                result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
+            client = modbus_hardware.get_modbus_client()
+            if not client.connect():
+                logger.error("Modbus client not connected... resetting")
+                modbus_hardware.reset_hardware()
+                return {}
 
-            if result is None:
-                logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
-            elif hasattr(result, 'isError') and result.isError():
-                logger.info(f"Error reading register: {result}")
-                time.sleep(0.5)
-            else:
-                logger.info(f"Result is: {result.registers}")
-                output[register_key] = convert_register_value(modbus_hardware, result.registers, register, register_key)
-        except Exception as e:
-            logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
-        return output
+            try:
+                if register.slave_id:
+                    slave_id = register.slave_id
+                output: Dict[str, Union[float, int]] = {}
+                address = int(register.address)
+                try:
+                    # In some cases, like Inview S the slave ID is used to query different systems not devices
+                    if register.slave_id:
+                        slave_id = register.slave_id
+                    result = None
+                    if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
+                        logger.info(f"Reading HOLDING register: {address}, slaveID: {slave_id}, {register.name}")
+                        result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
+                    else:
+                        logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
+                        result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
 
-    finally:
-        try:
-            client.close()
-        except:
-            pass
+                    if result is None:
+                        logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
+                    elif hasattr(result, 'isError') and result.isError():
+                        logger.info(f"Error reading register: {result}")
+                        time.sleep(0.5)
+                    else:
+                        logger.info(f"Result is: {result.registers}")
+                        output[register_key] = convert_register_value(modbus_hardware, result.registers, register, register_key)
+                except Exception as e:
+                    logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
+                return output
+
+            finally:
+                try:
+                    client.close()
+                except:
+                    pass
+
+    except HardwareLockTimeout:
+        logger.error(f"Timeout waiting for modbus lock to read {register_key}")
+        return {}
+    except HardwareLockError as e:
+        logger.error(f"Hardware lock error reading {register_key}: {e}")
+        return {}
 
 
 def modbus_data_acquisition(modbus_hardware: ModbusHardware,
@@ -437,44 +479,58 @@ def modbus_data_acquisition(modbus_hardware: ModbusHardware,
     if not logger:
         logger = LogManager().get_logger("ModbusHardware")
 
-    client = modbus_hardware.get_modbus_client()
+    # Use hardware locking to prevent concurrent access
+    register_list = list(registers.keys())
     try:
-        if not client.connect():
-            logger.error("Modbus client not connected... resetting")
-            modbus_hardware.reset_hardware()
+        with modbus_lock(modbus_hardware, timeout=30.0,
+                        lock_info=f"acquisition {len(register_list)} registers"):
 
-        output: Dict[str, Union[float, int]] = {}
-        for key, register in registers.items():
-            address = int(register.address)
+            client = modbus_hardware.get_modbus_client()
             try:
-                # In some cases, like Inview S the slave ID is used to query different systems not devices
-                if register.slave_id:
-                    slave_id = register.slave_id
-                result = None
-                if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
-                    logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register.name}")
-                    result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
-                else:
-                    logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
-                    result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
+                if not client.connect():
+                    logger.error("Modbus client not connected... resetting")
+                    modbus_hardware.reset_hardware()
+                    return {}
 
-                if result is None:
-                    logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
-                elif hasattr(result, 'isError') and result.isError():
-                    logger.info(f"Error reading register: {result}")
-                    time.sleep(0.5)
-                else:
-                    logger.info(f"Result is: {result.registers}")
-                    output[key] = convert_register_value(modbus_hardware, result.registers, register, key)
-            except Exception as e:
-                logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
-        return output
+                output: Dict[str, Union[float, int]] = {}
+                for key, register in registers.items():
+                    address = int(register.address)
+                    try:
+                        # In some cases, like Inview S the slave ID is used to query different systems not devices
+                        if register.slave_id:
+                            slave_id = register.slave_id
+                        result = None
+                        if ModbusRegisterType(register.type) == ModbusRegisterType.HOLDING:
+                            logger.info(f"Reading HOLDING register: {address}, {slave_id}, {register.name}")
+                            result = client.read_holding_registers(address=address, count=register.range_size, slave=slave_id)
+                        else:
+                            logger.info(f"Reading INPUT register: {address}, {slave_id}, {register.name}")
+                            result = client.read_input_registers(address=address, count=register.range_size, slave=slave_id)
 
-    finally:
-        try:
-            client.close()
-        except:
-            pass
+                        if result is None:
+                            logger.info(f"No response received from port {modbus_hardware.port}, slave: {slave_id}")
+                        elif hasattr(result, 'isError') and result.isError():
+                            logger.info(f"Error reading register: {result}")
+                            time.sleep(0.5)
+                        else:
+                            logger.info(f"Result is: {result.registers}")
+                            output[key] = convert_register_value(modbus_hardware, result.registers, register, key)
+                    except Exception as e:
+                        logger.exception(f"Error reading modbus: {e} on slave: {slave_id}, {address}.. .continuing.", exc_info=True)
+                return output
+
+            finally:
+                try:
+                    client.close()
+                except:
+                    pass
+
+    except HardwareLockTimeout:
+        logger.error(f"Timeout waiting for modbus lock for data acquisition")
+        return {}
+    except HardwareLockError as e:
+        logger.error(f"Hardware lock error during data acquisition: {e}")
+        return {}
 
 
 def modbus_data_write_different(modbus_hardware: ModbusHardware,

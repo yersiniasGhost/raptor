@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS database_migration (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     migration_id INTEGER NOT NULL UNIQUE,
     migration_info TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP2
 );
 
 INSERT OR IGNORE INTO database_migration (migration_id, migration_info) VALUES (1, "Base migration.");
@@ -92,5 +92,35 @@ CREATE INDEX IF NOT EXISTS idx_hardware_states_timestamp ON hardware_states(time
 
 INSERT OR IGNORE INTO database_migration (migration_id, migration_info) VALUES (2, "Added state management for hardware operations.");
 
+-- Migration 3: Add exclusive hardware resource locking
+-- Create hardware_resource_locks table for exclusive access control
+CREATE TABLE IF NOT EXISTS hardware_resource_locks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    resource_key TEXT NOT NULL UNIQUE,
+    owner_pid INTEGER NOT NULL,
+    acquired_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    lock_info TEXT DEFAULT NULL
+);
+
+-- Create hardware_lock_queue table for queued lock requests
+CREATE TABLE IF NOT EXISTS hardware_lock_queue (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    resource_key TEXT NOT NULL,
+    waiting_pid INTEGER NOT NULL,
+    queued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    timeout_at DATETIME NOT NULL,
+    priority INTEGER DEFAULT 0
+);
+
+-- Create indexes for performance
+CREATE INDEX IF NOT EXISTS idx_hardware_locks_resource_key ON hardware_resource_locks(resource_key);
+CREATE INDEX IF NOT EXISTS idx_hardware_locks_owner_pid ON hardware_resource_locks(owner_pid);
+CREATE INDEX IF NOT EXISTS idx_hardware_locks_expires ON hardware_resource_locks(expires_at);
+CREATE INDEX IF NOT EXISTS idx_hardware_queue_resource_key ON hardware_lock_queue(resource_key);
+CREATE INDEX IF NOT EXISTS idx_hardware_queue_waiting_pid ON hardware_lock_queue(waiting_pid);
+CREATE INDEX IF NOT EXISTS idx_hardware_queue_timeout ON hardware_lock_queue(timeout_at);
+
+INSERT OR IGNORE INTO database_migration (migration_id, migration_info) VALUES (3, "Added exclusive hardware resource locking and queuing system.");
 
 

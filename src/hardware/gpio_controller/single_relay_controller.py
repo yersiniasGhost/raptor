@@ -1,5 +1,6 @@
 import subprocess
 import logging
+from hardware.hardware_lock import gpio_lock, HardwareLockTimeout, HardwareLockError
 
 logger = logging.getLogger(__name__)
 
