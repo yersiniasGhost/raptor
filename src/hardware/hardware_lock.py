@@ -88,7 +88,7 @@ class HardwareLock:
     Can be used when context manager syntax is not suitable.
     """
 
-    def __init__(self, resource_key: str, timeout: float = 30.0,
+    def __init__(self, resource_key: str, timeout: float = 2.0,
                  process_id: int = None, lock_info: str = None):
         """
         Initialize hardware lock object.
@@ -252,7 +252,7 @@ def modbus_lock(hardware, timeout: float = 2.0, lock_info: str = None):
     return hardware_lock(resource_key, timeout=timeout, lock_info=lock_info)
 
 
-def gpio_lock(pin_number: int, timeout: float = 30.0, lock_info: str = None):
+def gpio_lock(pin_number: int, timeout: float = 2.0, lock_info: str = None):
     """
     Context manager for GPIO pin locking.
 

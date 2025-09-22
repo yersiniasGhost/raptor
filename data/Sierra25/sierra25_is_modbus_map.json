@@ -24,33 +24,33 @@
     }
   },
   "Converter_DC_Voltage": {
-    "slave_id": 31,
+    "slave_id": 1,
     "type": "input",
     "name": "Converter DC Voltage",
     "data_type": "int16",
     "address": 10,
     "units": "V",
-    "conversion_factor": 10.0,
+    "conversion_factor": 0.1,
     "description": "The DC bus voltage in volt, given by modules."
   },
   "Converter_DC_power": {
-    "slave_id": 31,
+    "slave_id": 1,
     "type": "input",
     "name": "Converter DC Power",
     "data_type": "int16",
     "address": 20,
     "units": "W",
-    "conversion_factor": 0.01,
+    "conversion_factor": 100.0,
     "description": "The sum of the delivered DC power."
   },
   "Converter_DC_current": {
-    "slave_id": 31,
+    "slave_id": 1,
     "type": "input",
     "name": "Converter DC Current",
     "data_type": "int16",
     "address": 21,
     "units": "A",
-    "conversion_factor": 10.0,
+    "conversion_factor": 0.1,
     "description": "The sum of the delivered DC current."
   },
   "Global_Load_power": {
