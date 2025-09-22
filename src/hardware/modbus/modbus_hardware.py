@@ -116,7 +116,6 @@ class ModbusHardware(HardwareBase):
         return raw_value
 
 
-
     # State management implementation
     def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
         """Set the operational state of the modbus hardware"""

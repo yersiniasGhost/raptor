@@ -4,6 +4,8 @@ from .adc_hardware import ADCHardware
 
 class CTHall(ADCHardware):
 
+
+
     @classmethod
     def from_config(cls, config_dict: Dict[str, Any]) -> 'CTHall':
         """Create an CTHall/ADCHardware instance from a configuration dictionary"""
@@ -17,9 +19,17 @@ class CTHall(ADCHardware):
         )
 
 
+    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
+        pass
+
+
     def get_points(self, names: List[str]) -> List:
         return [{"name":"Current", "description": "Calculated current (A)"},
                 {"name":"Voltage", "description": "Calculated voltage (V)"}]
+
+
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
+        pass
 
 
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[str, Any]:
