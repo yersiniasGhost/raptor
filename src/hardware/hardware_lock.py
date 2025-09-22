@@ -16,7 +16,7 @@ class HardwareLockTimeout(HardwareLockError):
 
 
 @contextmanager
-def hardware_lock(resource_key: str, timeout: float = 30.0,
+def hardware_lock(resource_key: str, timeout: float = 2.0,
                  process_id: int = None, lock_info: str = None):
     """
     Context manager for exclusive hardware resource locking.
