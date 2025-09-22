@@ -462,7 +462,7 @@
     "type": "holding",
     "name": "Back To Float",
     "data_type": "int16",
-    "address": 5000,
+    "address": 0,
     "units": "",
     "description": "Command to return to float charging mode"
   },
