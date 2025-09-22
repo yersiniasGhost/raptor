@@ -134,14 +134,11 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
         raise ValueError(f"Invalid class path format: {class_path}. Expected format: 'module.path.ClassName'")
 
     try:
-        # Import the module and get the class
-        # module = importlib.import_module(module_path)
-        # cls = getattr(module, class_name)
         cls = globals().get(class_name, None)
         if not cls:
             logger.error(f"Cannot find class name: {class_name}")
             raise ValueError(f"Cannot find class name: {class_name}")
-        logger.info(f"Instantiating {class_name}")
+        logger.info(f"Instantiating {class_name} With: {hardware.get("parameters")}")
         constructor_config = hardware.get("parameters", {})
         constructor_config['states_config_path'] = "/root/raptor/data/Sierra25/sierra25_states.json"
         hardware_instance = cls(**constructor_config)
