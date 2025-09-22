@@ -150,11 +150,11 @@
 
             console.log('States found:', Object.keys(statesConfig.states));
 
-            const container = document.querySelector('.collapsible-content');
+            const container = document.getElementById('control-panel-content');
             console.log('Container found:', !!container);
 
             if (!container) {
-                console.error('Could not find .collapsible-content container');
+                console.error('Could not find #control-panel-content container');
                 return;
             }
 
