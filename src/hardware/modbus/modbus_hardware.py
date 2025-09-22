@@ -115,7 +115,6 @@ class ModbusHardware(HardwareBase):
         print("BASE method decode_flag-status")
         return raw_value
 
-
     # State management implementation
     def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
         """Set the operational state of the modbus hardware"""
@@ -133,16 +132,17 @@ class ModbusHardware(HardwareBase):
             return {"success": False, "error": f"State '{state_name}' not found in configuration"}
 
         state_config = available_states[state_name]
+        self.logger.info(f"Change state: {state_name}")
 
         # Validate state change
         validation_result = self.validate_state_change(state_name)
+        self.logger.info(f"Validation: {validation_result}")
         if not validation_result["success"]:
             return validation_result
 
         # Use hardware locking for the entire state change operation
         try:
-            with modbus_lock(self, timeout=60.0,
-                            lock_info=f"state change to {state_name}"):
+            with modbus_lock(self, timeout=2.0, lock_info=f"state change to {state_name}"):
 
                 # Store current register values for fallback rollback
                 rollback_values = {}
@@ -159,6 +159,7 @@ class ModbusHardware(HardwareBase):
                                 rollback_values[register_name] = current_values[register_name]
 
                     # Apply all register changes
+                    self.logger.info(f"Got rollback values: {rollback_values}")
                     failed_writes = []
                     parameter_overrides = parameter_overrides or {}
 
@@ -188,7 +189,7 @@ class ModbusHardware(HardwareBase):
                     success = add_hardware_state(self.hardware_id, state_name, self.logger)
                     if not success:
                         self.logger.warning("Failed to record state change in database")
-
+                    self.logger.info("State change successful")
                     return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
 
                 except Exception as e:

@@ -236,7 +236,7 @@ def get_resource_key_for_electrak(device_id: str) -> str:
 
 
 # Convenience functions for common resource types
-def modbus_lock(hardware, timeout: float = 30.0, lock_info: str = None):
+def modbus_lock(hardware, timeout: float = 2.0, lock_info: str = None):
     """
     Context manager for modbus hardware locking.
 
