@@ -179,22 +179,26 @@
 
             return `
                 <div class="scenario-container" id="scenario-${safeId}">
-                    <div class="scenario-header">
-                        <h2 class="scenario-title">${stateName}</h2>
-                        <div class="scenario-controls">
-                            <span class="status-indicator" id="status-${safeId}">✓</span>
-                            <button class="scenario-button" id="btn-${safeId}" onclick="activateScenario('${stateName}')">
-                                Activate
-                            </button>
+                    <div class="scenario-info">
+                        <div class="scenario-header">
+                            <h2 class="scenario-title">${stateName}</h2>
+                            <div class="scenario-controls">
+                                <span class="status-indicator" id="status-${safeId}">✓</span>
+                                <button class="scenario-button" id="btn-${safeId}" onclick="activateScenario('${stateName}')">
+                                    Activate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="scenario-description">
+                            <strong>${stateConfig.description}</strong><br>
+                            ${getScenarioDetailedDescription(stateName)}
                         </div>
                     </div>
-                    <div class="scenario-description">
-                        <strong>${stateConfig.description}</strong><br>
-                        ${getScenarioDetailedDescription(stateName)}
-                    </div>
-                    <button class="toggle-parameters" data-scenario="${safeId}" onclick="toggleParameters('${safeId}')">Show Parameters</button>
-                    <div class="parameter-section" id="parameters-${safeId}">
-                        ${createParameterInputs(stateConfig.registers || [])}
+                    <div class="scenario-parameters">
+                        <div class="parameter-section" id="parameters-${safeId}">
+                            <div class="parameter-section-title">Parameters</div>
+                            ${createParameterInputs(stateConfig.registers || [])}
+                        </div>
                     </div>
                 </div>
             `;
@@ -249,22 +253,6 @@
             }).join('');
         }
 
-        function toggleParameters(scenarioId) {
-            const paramSection = document.getElementById(`parameters-${scenarioId}`);
-            const toggleButton = document.querySelector(`[data-scenario="${scenarioId}"]`);
-
-            if (paramSection && toggleButton) {
-                const isVisible = paramSection.classList.contains('visible');
-
-                if (isVisible) {
-                    paramSection.classList.remove('visible');
-                    toggleButton.textContent = 'Show Parameters';
-                } else {
-                    paramSection.classList.add('visible');
-                    toggleButton.textContent = 'Hide Parameters';
-                }
-            }
-        }
 
         function getParameterUnit(regName) {
             const units = {

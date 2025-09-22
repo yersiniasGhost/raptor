@@ -9,11 +9,24 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-left: 5px solid #007bff;
     position: relative;
+    display: flex;
+    gap: 20px;
 }
 
 .scenario-container.active {
     border-left-color: #28a745;
     background-color: #f8fff9;
+}
+
+/* Two-column layout */
+.scenario-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.scenario-parameters {
+    flex: 1;
+    min-width: 300px;
 }
 
 /* Header and title styling */
@@ -153,12 +166,14 @@
     border: 1px solid #dee2e6;
     border-radius: 5px;
     padding: 15px;
-    margin-top: 15px;
-    display: none;
+    height: fit-content;
 }
 
-.parameter-section.visible {
-    display: block;
+.parameter-section-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #495057;
+    font-size: 1.1em;
 }
 
 .parameter-row {
@@ -205,20 +220,6 @@
     cursor: help;
 }
 
-.toggle-parameters {
-    background: none;
-    border: none;
-    color: #007bff;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 0.9em;
-    padding: 0;
-    margin-top: 10px;
-}
-
-.toggle-parameters:hover {
-    color: #0056b3;
-}
 
 /* Validation feedback */
 .parameter-validation {
@@ -253,6 +254,16 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+    .scenario-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .scenario-info,
+    .scenario-parameters {
+        min-width: auto;
+    }
+
     .scenario-header {
         flex-direction: column;
         align-items: flex-start;
@@ -274,12 +285,12 @@
         flex: none;
     }
 
-    .parameter-input {
+    .parameter-input, .parameter-value {
         flex: none;
         width: 100%;
     }
 
-    .parameter-unit {
+    .parameter-unit, .parameter-readonly {
         flex: none;
     }
 }
