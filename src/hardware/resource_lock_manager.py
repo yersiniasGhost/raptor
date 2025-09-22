@@ -17,7 +17,7 @@ class HardwareResourceLockManager(metaclass=Singleton):
     Other processes queue up and wait their turn.
     """
 
-    DEFAULT_TIMEOUT = 30.0  # Default timeout in seconds
+    DEFAULT_TIMEOUT = 2.0  # Default timeout in seconds
     CLEANUP_INTERVAL = 60   # Cleanup dead processes every 60 seconds
 
     def __init__(self):
