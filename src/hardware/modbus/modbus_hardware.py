@@ -142,61 +142,60 @@ class ModbusHardware(HardwareBase):
 
         # Use hardware locking for the entire state change operation
         try:
-            with modbus_lock(self, timeout=2.0, lock_info=f"state change to {state_name}"):
 
-                # Store current register values for fallback rollback
-                rollback_values = {}
+            # Store current register values for fallback rollback
+            rollback_values = {}
 
-                try:
-                    # Read current values before making changes
-                    for register_config in state_config.get("registers", []):
-                        register_name = register_config["register_name"]
-                        register = self.modbus_map.get_register_by_name(register_name)
-                        if register:
-                            # Use the first device for reading current state
-                            current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
-                            if register_name in current_values:
-                                rollback_values[register_name] = current_values[register_name]
+            try:
+                # Read current values before making changes
+                for register_config in state_config.get("registers", []):
+                    register_name = register_config["register_name"]
+                    register = self.modbus_map.get_register_by_name(register_name)
+                    if register:
+                        # Use the first device for reading current state
+                        current_values = modbus_data_read(self, register_name, slave_id=register.slave_id or 1)
+                        if register_name in current_values:
+                            rollback_values[register_name] = current_values[register_name]
 
-                    # Apply all register changes
-                    self.logger.info(f"Got rollback values: {rollback_values}")
-                    failed_writes = []
-                    parameter_overrides = parameter_overrides or {}
+                # Apply all register changes
+                self.logger.info(f"Got rollback values: {rollback_values}")
+                failed_writes = []
+                parameter_overrides = parameter_overrides or {}
 
-                    for register_config in state_config.get("registers", []):
-                        register_name = register_config["register_name"]
-                        # Use override value if provided, otherwise use default from config
-                        value = parameter_overrides.get(register_name, register_config["value"])
-                        register = self.modbus_map.get_register_by_name(register_name)
+                for register_config in state_config.get("registers", []):
+                    register_name = register_config["register_name"]
+                    # Use override value if provided, otherwise use default from config
+                    value = parameter_overrides.get(register_name, register_config["value"])
+                    register = self.modbus_map.get_register_by_name(register_name)
 
-                        if not register:
-                            failed_writes.append(f"Register {register_name} not found in modbus map")
-                            continue
+                    if not register:
+                        failed_writes.append(f"Register {register_name} not found in modbus map")
+                        continue
 
-                        # Perform the write
-                        write_result = modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=value)
-                        if not write_result.get("success", False):
-                            failed_writes.append(
-                                f"Failed to write {register_name}: {write_result.get('error', 'Unknown error')}")
+                    # Perform the write
+                    write_result = modbus_data_write(self, register_name, slave_id=register.slave_id or 1, value=value)
+                    if not write_result.get("success", False):
+                        failed_writes.append(
+                            f"Failed to write {register_name}: {write_result.get('error', 'Unknown error')}")
 
-                    # If any writes failed, perform hybrid rollback
-                    if failed_writes:
-                        self.logger.error(f"State change failed, attempting rollback: {failed_writes}")
-                        self._perform_hybrid_rollback(rollback_values)
-                        return {"success": False, "error": f"State change failed: {'; '.join(failed_writes)}"}
-
-                    # Record successful state change in database
-                    success = add_hardware_state(self.hardware_id, state_name, self.logger)
-                    if not success:
-                        self.logger.warning("Failed to record state change in database")
-                    self.logger.info("State change successful")
-                    return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
-
-                except Exception as e:
-                    self.logger.error(f"Unexpected error during state change: {e}")
-                    # Attempt hybrid rollback on unexpected error
+                # If any writes failed, perform hybrid rollback
+                if failed_writes:
+                    self.logger.error(f"State change failed, attempting rollback: {failed_writes}")
                     self._perform_hybrid_rollback(rollback_values)
-                    return {"success": False, "error": f"Unexpected error: {str(e)}"}
+                    return {"success": False, "error": f"State change failed: {'; '.join(failed_writes)}"}
+
+                # Record successful state change in database
+                success = add_hardware_state(self.hardware_id, state_name, self.logger)
+                if not success:
+                    self.logger.warning("Failed to record state change in database")
+                self.logger.info("State change successful")
+                return {"success": True, "state": state_name, "message": f"Successfully set state to {state_name}"}
+
+            except Exception as e:
+                self.logger.error(f"Unexpected error during state change: {e}")
+                # Attempt hybrid rollback on unexpected error
+                self._perform_hybrid_rollback(rollback_values)
+                return {"success": False, "error": f"Unexpected error: {str(e)}"}
 
         except HardwareLockTimeout:
             self.logger.error(f"Timeout waiting for modbus lock for state change to {state_name}")
@@ -417,8 +416,7 @@ def modbus_data_read(modbus_hardware: ModbusHardware, register_key: str, slave_i
 
     # Use hardware locking to prevent concurrent access
     try:
-        with modbus_lock(modbus_hardware, timeout=30.0,
-                        lock_info=f"read {register_key}"):
+        with modbus_lock(modbus_hardware, timeout=2.0, lock_info=f"read {register_key}"):
 
             client = modbus_hardware.get_modbus_client()
             if not client.connect():
