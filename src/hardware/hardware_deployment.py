@@ -138,7 +138,7 @@ def instantiate_hardware_from_dict(hardware: Dict[str, Any], logger: Logger,
         if not cls:
             logger.error(f"Cannot find class name: {class_name}")
             raise ValueError(f"Cannot find class name: {class_name}")
-        logger.info(f"Instantiating {class_name} With: {hardware.get("parameters")}")
+        logger.info(f"Instantiating {class_name} With: {hardware.get('parameters')}")
         constructor_config = hardware.get("parameters", {})
         constructor_config['states_config_path'] = "/root/raptor/data/Sierra25/sierra25_states.json"
         hardware_instance = cls(**constructor_config)
