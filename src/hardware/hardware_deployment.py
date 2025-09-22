@@ -97,6 +97,9 @@ class HardwareDeployment:
     def get_available_states(self):
         return self.hardware.get_available_states()
 
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
+        return self.hardware.set_operational_state(state_name, parameter_overrides)
+
 
     def get_identifiers(self):
         try:

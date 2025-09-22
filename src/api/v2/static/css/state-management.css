@@ -22,11 +22,14 @@
 .scenario-info {
     flex: 1;
     min-width: 300px;
+    background-color: rgba(0, 123, 255, 0.1); /* Debug color */
 }
 
 .scenario-parameters {
     flex: 1;
     min-width: 300px;
+    background-color: rgba(255, 0, 0, 0.1); /* Debug color */
+    min-height: 100px; /* Force minimum height */
 }
 
 /* Header and title styling */

@@ -166,8 +166,9 @@
             }
 
             Object.entries(statesConfig.states).forEach(([stateName, stateConfig]) => {
-                console.log('Creating scenario:', stateName);
+                console.log('Creating scenario:', stateName, 'with config:', stateConfig);
                 const scenarioHTML = createScenarioHTML(stateName, stateConfig);
+                console.log('Generated scenario HTML for', stateName, ':', scenarioHTML);
                 container.insertAdjacentHTML('beforeend', scenarioHTML);
             });
 
@@ -198,6 +199,7 @@
                         <div class="parameter-section" id="parameters-${safeId}">
                             <div class="parameter-section-title">Parameters</div>
                             ${createParameterInputs(stateConfig.registers || [])}
+                            ${(stateConfig.registers || []).length === 0 ? '<div class="parameter-row"><span class="parameter-label">No parameters available</span></div>' : ''}
                         </div>
                     </div>
                 </div>
@@ -215,7 +217,8 @@
         }
 
         function createParameterInputs(registers) {
-            return registers.map(reg => {
+            console.log('Creating parameter inputs for registers:', registers);
+            const parameterInputs = registers.map(reg => {
                 const regName = reg.register_name;
                 const unit = getParameterUnit(regName);
                 const min = getParameterMin(regName);
@@ -246,11 +249,14 @@
                             <span class="parameter-label">${formatParameterName(regName)}:</span>
                             <span class="parameter-value">${reg.value}</span>
                             <span class="parameter-unit">${unit}</span>
-                            <span class="parameter-readonly">(read-only)</span>
                         </div>
                     `;
                 }
-            }).join('');
+            });
+            const result = parameterInputs.join('');
+            console.log('Generated parameter HTML:', result);
+            console.log('Parameter inputs length:', parameterInputs.length);
+            return result;
         }
 
 
