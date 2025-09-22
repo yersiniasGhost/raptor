@@ -232,6 +232,25 @@
     display: block;
 }
 
+/* Read-only parameter styling */
+.parameter-value {
+    flex: 0 0 120px;
+    padding: 5px 10px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #495057;
+    text-align: center;
+}
+
+.parameter-readonly {
+    flex: 0 0 80px;
+    font-size: 0.8em;
+    color: #6c757d;
+    font-style: italic;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .scenario-header {

@@ -35,12 +35,14 @@
         {
           "register_name": "AC_Power_Limit_Per_Phase",
           "value": 2250,
-          "description": "Limit AC input to 2250W per phase (50% split)"
+          "description": "Limit AC input to 2250W per phase (50% split)",
+          "editable": true
         },
         {
           "register_name": "Override_Max_Consumed_Power",
           "value": 2250,
-          "description": "Set peak shaving to 2250W"
+          "description": "Set peak shaving to 2250W",
+          "editable": true
         },
         {
           "register_name": "Turn_Converters_ON",
@@ -50,7 +52,8 @@
         {
           "register_name": "Charging_Power_Config",
           "value": 1000,
-          "description": "Allow moderate battery charging at 1000W"
+          "description": "Allow moderate battery charging at power setting in W",
+          "editable": true
         }
       ],
       "validation": {
@@ -123,12 +126,14 @@
         {
           "register_name": "Charging_Power_Config",
           "value": 5000,
-          "description": "Enable full battery charging at 5000W"
+          "description": "Enable full battery charging at set power in W",
+          "editable": true
         },
         {
           "register_name": "Charging_Voltage_Config",
           "value": 542,
-          "description": "Set charging voltage to 54.2V"
+          "description": "Set charging voltage to 54.2V",
+          "editable": true
         }
       ],
       "validation": {

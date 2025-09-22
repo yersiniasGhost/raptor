@@ -192,7 +192,7 @@
                         <strong>${stateConfig.description}</strong><br>
                         ${getScenarioDetailedDescription(stateName)}
                     </div>
-                    <button class="toggle-parameters" data-scenario="${stateName}">Show Parameters</button>
+                    <button class="toggle-parameters" data-scenario="${safeId}" onclick="toggleParameters('${safeId}')">Show Parameters</button>
                     <div class="parameter-section" id="parameters-${safeId}">
                         ${createParameterInputs(stateConfig.registers || [])}
                     </div>
@@ -216,23 +216,54 @@
                 const unit = getParameterUnit(regName);
                 const min = getParameterMin(regName);
                 const max = getParameterMax(regName);
+                const isEditable = reg.editable === true;
 
-                return `
-                    <div class="parameter-row">
-                        <span class="parameter-label">${formatParameterName(regName)}:</span>
-                        <input type="number"
-                               class="parameter-input"
-                               data-parameter="${regName}"
-                               data-default="${reg.value}"
-                               placeholder="${reg.value}"
-                               ${min !== undefined ? `min="${min}"` : ''}
-                               ${max !== undefined ? `max="${max}"` : ''}
-                               title="${reg.description || ''}">
-                        <span class="parameter-unit">${unit}</span>
-                        <div class="parameter-validation"></div>
-                    </div>
-                `;
+                if (isEditable) {
+                    // Editable parameter with input field
+                    return `
+                        <div class="parameter-row">
+                            <span class="parameter-label">${formatParameterName(regName)}:</span>
+                            <input type="number"
+                                   class="parameter-input"
+                                   data-parameter="${regName}"
+                                   data-default="${reg.value}"
+                                   placeholder="${reg.value}"
+                                   ${min !== undefined ? `min="${min}"` : ''}
+                                   ${max !== undefined ? `max="${max}"` : ''}
+                                   title="${reg.description || ''}">
+                            <span class="parameter-unit">${unit}</span>
+                            <div class="parameter-validation"></div>
+                        </div>
+                    `;
+                } else {
+                    // Read-only parameter display
+                    return `
+                        <div class="parameter-row">
+                            <span class="parameter-label">${formatParameterName(regName)}:</span>
+                            <span class="parameter-value">${reg.value}</span>
+                            <span class="parameter-unit">${unit}</span>
+                            <span class="parameter-readonly">(read-only)</span>
+                        </div>
+                    `;
+                }
             }).join('');
+        }
+
+        function toggleParameters(scenarioId) {
+            const paramSection = document.getElementById(`parameters-${scenarioId}`);
+            const toggleButton = document.querySelector(`[data-scenario="${scenarioId}"]`);
+
+            if (paramSection && toggleButton) {
+                const isVisible = paramSection.classList.contains('visible');
+
+                if (isVisible) {
+                    paramSection.classList.remove('visible');
+                    toggleButton.textContent = 'Show Parameters';
+                } else {
+                    paramSection.classList.add('visible');
+                    toggleButton.textContent = 'Hide Parameters';
+                }
+            }
         }
 
         function getParameterUnit(regName) {
