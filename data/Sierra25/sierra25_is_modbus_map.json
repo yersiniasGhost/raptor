@@ -27,10 +27,19 @@
   "slave_id": 100,
     "name": "Number of Modbus Writes",
     "data_type": "uint16",
-    "address": 154,
+    "address": 155,
     "units": "",
     "conversion_factor": 1,
     "description": "Number of Modbus write actions, can overflow"
+  },
+  "Number_of_modbus_writes": {
+  "slave_id": 100,
+    "name": "Number of Modbus Reads",
+    "data_type": "uint16",
+    "address": 154,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Number of Modbus read actions, can overflow"
   },
 "Major_Alarm_Count": {
   "slave_id": 100,
