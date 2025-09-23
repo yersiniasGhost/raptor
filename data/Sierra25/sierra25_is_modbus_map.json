@@ -25,6 +25,7 @@
   },
 "Number_of_modbus_writes": {
   "slave_id": 100,
+    "type": "input",
     "name": "Number of Modbus Writes",
     "data_type": "uint16",
     "address": 155,
@@ -32,8 +33,9 @@
     "conversion_factor": 1,
     "description": "Number of Modbus write actions, can overflow"
   },
-  "Number_of_modbus_writes": {
+  "Number_of_modbus_reads": {
   "slave_id": 100,
+    "type": "input",
     "name": "Number of Modbus Reads",
     "data_type": "uint16",
     "address": 154,
@@ -43,6 +45,7 @@
   },
 "Major_Alarm_Count": {
   "slave_id": 100,
+    "type": "input",
     "name": "Number of Active Major Alarms",
     "data_type": "uint16",
     "address": 46,
@@ -52,6 +55,7 @@
   },
   "Minor_Alarm_Count": {
   "slave_id": 100,
+    "type": "input",
     "name": "Number of Active Alarms",
     "data_type": "uint16",
     "address": 47,
@@ -61,6 +65,7 @@
   },
   "Warning_Count": {
   "slave_id": 100,
+    "type": "input",
     "name": "Number of Active Warnings",
     "data_type": "uint16",
     "address": 47,
