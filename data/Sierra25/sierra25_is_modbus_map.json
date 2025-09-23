@@ -23,6 +23,42 @@
       "3": "at least one major alarm"
     }
   },
+"Number_of_modbus_writes": {
+  "slave_id": 100,
+    "name": "Number of Modbus Writes",
+    "data_type": "uint16",
+    "address": 154,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Number of Modbus write actions, can overflow"
+  },
+"Major_Alarm_Count": {
+  "slave_id": 100,
+    "name": "Number of Active Major Alarms",
+    "data_type": "uint16",
+    "address": 46,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Number of Active Major Alarms"
+  },
+  "Minor_Alarm_Count": {
+  "slave_id": 100,
+    "name": "Number of Active Alarms",
+    "data_type": "uint16",
+    "address": 47,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Number of Active Alarms"
+  },
+  "Warning_Count": {
+  "slave_id": 100,
+    "name": "Number of Active Warnings",
+    "data_type": "uint16",
+    "address": 47,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Number of Active Warnings"
+  },
   "Converter_DC_Voltage": {
     "slave_id": 1,
     "type": "input",
@@ -32,6 +68,15 @@
     "units": "V",
     "conversion_factor": 0.1,
     "description": "The DC bus voltage in volt, given by modules."
+  },
+    "Modbus_Write_Count": {
+  "slave_id": 100,
+    "name": "Number of Modbus Write Request",
+    "data_type": "uint16",
+    "address": 47,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Count of the number of Modbus Write Requests"
   },
   "Converter_DC_power": {
     "slave_id": 1,
@@ -74,14 +119,14 @@
     "description": "Estimation of the load current consumption"
   },
   "Operating_mode":    {
-    "slave_id": 31,
+    "slave_id": 1,
     "type": "input",
     "name": "Operating Mode",
     "data_type": "int16",
     "address": 15,
     "units": "",
     "conversion_factor": 1.0,
-    "description": "The DC system can have 3 values: 'Float'(0), 'Boost'(1), 'Battery Test'(2)"
+    "description": "The DC system can have 3 values: Float (0), Boost(1), Battery Test(2)"
   },
   "DC_Voltage": {
     "slave_id": 31,
@@ -234,7 +279,7 @@
     "description": "AC Input Frequency",
     "access": "RO"
   },
-  "AC_Configuration": {
+  "AC_Power_Consumption": {
     "slave_id": 31,
     "type": "input",
     "name": "Global Load Power",
@@ -246,7 +291,7 @@
   },
   "AC_stop_power": {
     "slave_id": 31,
-    "type": "input",
+    "type": "holding",
     "name": "AC 1 stop power",
     "data_type": "int16",
     "address": 1050,
