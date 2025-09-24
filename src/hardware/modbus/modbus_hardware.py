@@ -283,7 +283,6 @@ class ModbusHardware(HardwareBase):
         return {"success": True, "message": "Validation passed"}
 
 
-
 def convert_register_value(hardware: ModbusHardware, raw_values: List[int],
                            register: ModbusRegister, key: str) -> Union[float, str]:
     """Convert raw register value based on data type and apply conversion factor"""
@@ -360,7 +359,7 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
                     slave_id = register.slave_id
 
                 # Convert value based on register data type
-                write_value = int(value)  # prepare_write_value(value, register)
+                write_value = prepare_write_value(value, register)
 
                 logger.info(f"Attempting write - Register: {register.name}, Address: {register.address}, Type: {register.type}, Slave: {slave_id}, Value: {write_value}")
 
@@ -588,24 +587,31 @@ def modbus_data_write_different(modbus_hardware: ModbusHardware,
 
 def prepare_value_for_register(value: Union[float, int], register: ModbusRegister) -> int:
     """Convert a value to the appropriate format for writing to a register."""
+    # Special case: -1 typically means unlimited/no limit, don't convert
+    if value == -1:
+        return -1
+
+    # Apply inverse conversion (divide by conversion factor)
+    converted_value = value / register.conversion_factor
+
     data_type = register.data_type
     if data_type == ModbusDatatype.INT16:
-        # Ensure value is within INT16 range
-        if not -32768 <= value <= 32767:
-            raise ValueError(f"Value {value} out of range for INT16")
-        return int(value)
+        # Ensure converted value is within INT16 range
+        if not -32768 <= converted_value <= 32767:
+            raise ValueError(f"Converted value {converted_value} out of range for INT16 (original: {value}, factor: {register.conversion_factor})")
+        return int(converted_value)
 
     elif data_type == ModbusDatatype.UINT16:
-        # Ensure value is within UINT16 range
-        if not 0 <= value <= 65535:
-            raise ValueError(f"Value {value} out of range for UINT16")
-        return int(value)
+        # Ensure converted value is within UINT16 range
+        if not 0 <= converted_value <= 65535:
+            raise ValueError(f"Converted value {converted_value} out of range for UINT16 (original: {value}, factor: {register.conversion_factor})")
+        return int(converted_value)
 
     elif data_type == ModbusDatatype.INT8:
-        # Ensure value is within INT8 range
-        if not -128 <= value <= 127:
-            raise ValueError(f"Value {value} out of range for INT8")
-        return int(value)
+        # Ensure converted value is within INT8 range
+        if not -128 <= converted_value <= 127:
+            raise ValueError(f"Converted value {converted_value} out of range for INT8 (original: {value}, factor: {register.conversion_factor})")
+        return int(converted_value)
 
     else:
         raise ValueError(f"Unsupported register type: {register.type}")
