@@ -6,17 +6,20 @@
         {
           "register_name": "Override_Max_Consumed_Power",
           "value": 0,
-          "description": "Set peak shaving to 0 (force battery operation)"
+          "description": "Set peak shaving to 0 (force battery operation)",
+          "units": "W"
         },
         {
           "register_name": "Turn_Converters_ON",
           "value": 1,
-          "description": "Turn ON DC converters"
+          "description": "Turn ON DC converters",
+          "units": ""
         },
         {
           "register_name": "Back_To_Float",
           "value": 1,
-          "description": "Return to float charging mode"
+          "description": "Return to float charging mode",
+          "units": ""
         }
       ],
       "validation": {
@@ -36,24 +39,28 @@
           "register_name": "AC_Power_Limit_Per_Phase",
           "value": 2250,
           "description": "Limit AC input to 2250W per phase (50% split)",
-          "editable": true
+          "editable": true,
+          "units": "W"
         },
         {
           "register_name": "Override_Max_Consumed_Power",
           "value": 2250,
           "description": "Set peak shaving to 2250W",
-          "editable": true
+          "editable": true,
+          "units": "W"
         },
         {
           "register_name": "Turn_Converters_ON",
           "value": 1,
-          "description": "Turn ON DC converters"
+          "description": "Turn ON DC converters",
+          "units": ""
         },
         {
           "register_name": "Charging_Power_Config",
           "value": 1000,
           "description": "Allow moderate battery charging at power setting in W",
-          "editable": true
+          "editable": true,
+          "units": "W"
         }
       ],
       "validation": {
@@ -72,22 +79,26 @@
         {
           "register_name": "AC_Power_Limit_Per_Phase",
           "value": -1,
-          "description": "No AC power limitation (unlimited)"
+          "description": "No AC power limitation (unlimited)",
+          "units": "W"
         },
         {
           "register_name": "Override_Max_Consumed_Power",
           "value": -1,
-          "description": "No peak shaving limit"
+          "description": "No peak shaving limit",
+          "units": "W"
         },
         {
           "register_name": "Charging_Power_Config",
           "value": 0,
-          "description": "Disable battery charging completely"
+          "description": "Disable battery charging completely",
+          "units": "W"
         },
         {
           "register_name": "Turn_Converters_OFF",
           "value": 1,
-          "description": "Turn OFF DC converters"
+          "description": "Turn OFF DC converters",
+          "units": ""
         }
       ],
       "validation": {
@@ -106,34 +117,40 @@
         {
           "register_name": "AC_Power_Limit_Per_Phase",
           "value": -1,
-          "description": "No AC power limitation (full AC capacity)"
+          "description": "No AC power limitation (full AC capacity)",
+          "units": "W"
         },
         {
           "register_name": "Override_Max_Consumed_Power",
           "value": -1,
-          "description": "No peak shaving limit"
+          "description": "No peak shaving limit",
+          "units": "W"
         },
         {
           "register_name": "Turn_Converters_ON",
           "value": 1,
-          "description": "Turn ON DC converters"
+          "description": "Turn ON DC converters",
+          "units": ""
         },
         {
           "register_name": "Start_Boost_Mode",
           "value": 1,
-          "description": "Start boost charging mode"
+          "description": "Start boost charging mode",
+          "units": ""
         },
         {
           "register_name": "Charging_Power_Config",
-          "value": 5000,
+          "value": 2000,
           "description": "Enable full battery charging at set power in W",
-          "editable": true
+          "editable": true,
+          "units": "W"
         },
         {
           "register_name": "Charging_Voltage_Config",
-          "value": 542,
+          "value": 54.22,
           "description": "Set charging voltage to 54.2V",
-          "editable": true
+          "editable": true,
+          "units": "V"
         }
       ],
       "validation": {

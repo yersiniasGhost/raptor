@@ -220,7 +220,7 @@
             console.log('Creating parameter inputs for registers:', registers);
             const parameterInputs = registers.map(reg => {
                 const regName = reg.register_name;
-                const unit = getParameterUnit(regName);
+                const unit = reg.units || '';
                 const min = getParameterMin(regName);
                 const max = getParameterMax(regName);
                 const isEditable = reg.editable === true;
@@ -260,20 +260,6 @@
         }
 
 
-        function getParameterUnit(regName) {
-            const units = {
-                'Override_Max_Consumed_Power': 'W',
-                'AC_Power_Limit_Per_Phase': 'W',
-                'Charging_Power_Config': 'W',
-                'Charging_Voltage_Config': 'V×10',
-                'DC_Voltage_Battery': 'V×10',
-                'Turn_Converters_ON': '',
-                'Turn_Converters_OFF': '',
-                'Back_To_Float': '',
-                'Start_Boost_Mode': ''
-            };
-            return units[regName] || '';
-        }
 
         function formatParameterName(regName) {
             return regName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
