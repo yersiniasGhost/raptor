@@ -359,7 +359,7 @@ def modbus_data_write(modbus_hardware: ModbusHardware,
                     slave_id = register.slave_id
 
                 # Convert value based on register data type
-                write_value = prepare_write_value(value, register)
+                write_value = prepare_value_for_register(value, register)
 
                 logger.info(f"Attempting write - Register: {register.name}, Address: {register.address}, Type: {register.type}, Slave: {slave_id}, Value: {write_value}")
 
