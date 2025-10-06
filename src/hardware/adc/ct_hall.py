@@ -22,6 +22,12 @@ class CTHall(ADCHardware):
                 {"name":"Voltage", "description": "Calculated voltage (V)"}]
 
 
+    def set_operational_state(self, state_name: str, parameter_overrides: Dict[str, Any] = None) -> Dict[str, Any]:
+        pass
+
+    def validate_state_change(self, state_name: str) -> Dict[str, Any]:
+        pass
+
     def data_acquisition(self, devices: List[Dict[str, Any]], scan_group: List[str], hardware_id: str) -> Dict[str, Any]:
         """
         Acquire data from devices

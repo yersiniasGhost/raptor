@@ -9,7 +9,7 @@ from utils import LogManager, EnvVars
 from database.database_manager import DatabaseManager
 from api.v2.auth import (
     AuthenticationMiddleware, verify_password,
-    create_session, destroy_session
+    create_session, destroy_session, is_password_set
 )
 
 
@@ -60,6 +60,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # templates.env.globals["version"] = get_git_version()
 raptor_data = DatabaseManager().get_raptor()
 templates.env.globals["raptor_header"] = (raptor_data or {}).get('name', "Not configured")
+templates.env.globals["auth_enabled"] = is_password_set()
 
 
 # Include routers
@@ -117,7 +118,10 @@ async def login(request: Request, password: str = Form(...)):
 async def logout(request: Request):
     """Handle logout"""
     destroy_session(request)
-    response = RedirectResponse(url="/login", status_code=303)
+
+    # If no password is set, redirect to home instead of login
+    redirect_url = "/login" if is_password_set() else "/"
+    response = RedirectResponse(url=redirect_url, status_code=303)
     response.delete_cookie(key="session_token")
     logger.info("User logged out")
     return response
