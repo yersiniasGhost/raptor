@@ -1,12 +1,16 @@
 from pathlib import Path
 import subprocess
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from utils import LogManager, EnvVars
 from database.database_manager import DatabaseManager
+from api.v2.auth import (
+    AuthenticationMiddleware, verify_password,
+    create_session, destroy_session
+)
 
 
 lm = LogManager("vmc-ui.log")
@@ -44,6 +48,10 @@ def get_git_version():
 
 BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
+
+# Add authentication middleware
+app.add_middleware(AuthenticationMiddleware)
+
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 logger.info("Created FastAPI app")
 
@@ -70,6 +78,49 @@ app.include_router(charge_controller.router)
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """Display login page"""
+    raptor_data = DatabaseManager().get_raptor()
+    raptor_name = (raptor_data or {}).get('name', '')
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "raptor_name": raptor_name
+    })
+
+
+@app.post("/login")
+async def login(request: Request, password: str = Form(...)):
+    """Handle login form submission"""
+    raptor_data = DatabaseManager().get_raptor()
+    raptor_name = (raptor_data or {}).get('name', '')
+
+    if verify_password(password):
+        # Create session
+        session_token = create_session(request)
+        response = RedirectResponse(url="/", status_code=303)
+        response.set_cookie(key="session_token", value=session_token, httponly=True, max_age=86400)
+        logger.info("User logged in successfully")
+        return response
+    else:
+        logger.warning("Failed login attempt")
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "Invalid password",
+            "raptor_name": raptor_name
+        }, status_code=401)
+
+
+@app.get("/logout")
+async def logout(request: Request):
+    """Handle logout"""
+    destroy_session(request)
+    response = RedirectResponse(url="/login", status_code=303)
+    response.delete_cookie(key="session_token")
+    logger.info("User logged out")
+    return response
 
 if __name__ == "__main__":
     import uvicorn

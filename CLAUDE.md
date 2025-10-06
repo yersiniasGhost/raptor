@@ -1,251 +1,195 @@
-# Project: Raptor IIoT firmware code base.
-## Project description
-This code runs on a single board computer (called raptor) and interfaces with hardware components in a solar microgrid.  Data is collected through modbus, canbus and sensor readings.
-Data is sent periodically to a MQTT server for processing.   
-# CE+T Converter Operating Modes - Modbus Configuration Guide
+# CLAUDE.md
 
-## Overview
-This guide provides Modbus register configurations for setting up your Sierra 25 CE+T converter in four different operating modes using the Inview S interface.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Key Control Registers Reference
+## Project Overview
 
-### Primary Control Registers
-- **45301** - Override Maximum Consumed Power (AC-input Power Limitation)
-- **45501** - Override Voltage SetPoint (DC Bus 1)
-- **45503** - Override Power SetPoint (DC Bus 1)
-- **45511** - Turn All Converters ON (DC Bus 1)
-- **45512** - Turn All Converters OFF (DC Bus 1)
-- **45101** - Turn All Converters ON (AC-output Global)
-- **45102** - Turn All Converters OFF (AC-output Global)
+Raptor is IIoT firmware that runs on a single-board computer interfacing with solar microgrid hardware components. It collects data via Modbus, CANbus, and sensors, then sends telemetry to an MQTT server.
 
-### Configuration Registers (Key Settings)
-- **41044** - Reinjection allowed (AC-input Modes)
-- **41068** - Max Consumed Power (AC-input Power Limitation)
-- **41071** - Sierra Mode (DC Modes - Battery charger activation)
-- **40090** - Battery Presence (DC System)
+## System Architecture
 
----
+### Core Components
 
-## Mode 1: AC for Load + Battery Charging
+**Three Main Services** (configured as systemd services via install/08-services.sh):
 
-**Purpose:** Comprehensive AC mode where grid power handles the load while simultaneously charging batteries.
+1. **VMC-UI** (`src/api/v2/vmc.py`) - FastAPI web interface for engineers to monitor and control the Raptor
+   - Runs on port 8002 via uvicorn
+   - Routes in `src/api/v2/routes/`
+   - Templates in `src/api/v2/templates/`
+   - Uses Jinja2 templating with static files
 
-### Modbus Configuration Sequence:
+2. **IoT Controller** (`src/jobs/iot_controller.py`) - Data acquisition and telemetry
+   - Periodically reads hardware devices (PV, Meter, BMS, Converters, IoT, Charge Controller, Generation)
+   - Implements distributed sampling with configurable averaging (mean/median/mode)
+   - Formats data as InfluxDB line protocol
+   - Uploads to MQTT server with exponential backoff on failure
+   - Stores local CSV files for debugging
 
-1. **Enable Battery Presence and Charging**
-   ```
-   Write to 40090: 1    # Enable battery presence
-   Write to 41071: 1    # Activate battery charger mode
-   ```
+3. **Command Controller** (`src/jobs/cmd_controller.py`) - MQTT command listener
+   - Listens for commands on MQTT topics
+   - Executes actions via ActionFactory pattern
+   - Sends responses back to cloud
 
-2. **Set AC Input Parameters**
-   ```
-   Write to 41044: 1    # Enable AC-in reinjection
-   Write to 41068: -1   # No maximum power consumed (system capacity)
-   Write to 45301: -1   # No peak shaving limit
-   ```
+### Action System
 
-3. **Configure DC Voltage for Charging**
-   ```
-   Write to 45501: 542  # Set DC voltage to 54.2V (multiplied by 10)
-   Write to 45503: 0    # No power setpoint limitation
-   ```
+Actions are defined in `src/actions/` following a plugin architecture:
+- All actions inherit from `Action` base class (src/actions/base_action.py)
+- Must implement `execute()` method returning `(ActionStatus, JSON)`
+- Dynamically loaded by `ActionFactory` using naming convention: `{action_name}_action.py` → `{ActionName}Action` class
+- Examples: firmware_update_action.py, reboot_action.py, systemctl_action.py
 
-4. **Turn ON Systems**
-   ```
-   Write to 45101: 1    # Turn ON AC-output
-   Write to 45511: 1    # Turn ON DC Bus (charger)
-   ```
+### Hardware Abstraction
 
-### Expected Behavior:
-- Grid power supplies the load
-- Batteries charge automatically based on voltage settings
-- System switches between float and boost charging as needed
+Hardware devices are configured in SQLite database and instantiated via:
+- `HardwareDeployment` dataclass wraps hardware instances with device configs and scan groups
+- `instantiate_hardware_from_dict()` dynamically creates hardware instances from DB configuration
+- Hardware drivers in `src/hardware/`:
+  - `modbus/` - Modbus devices (InviewGateway, EveBattery, Tristar charge controller)
+  - `simulators/` - Software simulators for testing without physical hardware
+  - `adc/` - Analog-to-digital converters
+  - `gpio_controller/` - GPIO relay control
+  - `iot/` - IoT sensor interfaces
 
----
+Each hardware instance has:
+- `devices`: List of device configurations (MAC addresses, unit IDs)
+- `scan_groups`: Organized register groups (DATA, ALARM, DIAGNOSTIC, CONTROL)
+- `data_acquisition()`: Returns dict of register values
 
-## Mode 2: AC Only - Batteries Disconnected
+### Configuration & Database
 
-**Purpose:** Full AC power mode with battery charging disabled and minimal battery interaction.
+- **SQLite3** (`src/database/database_manager.py`) - Single connection with WAL mode
+  - Singleton pattern ensures one connection per process
+  - Stores: hardware configs, telemetry buffer, MQTT config, raptor config
+  - Schema: `src/database/` (migrations via database_migrator.py)
 
-### Modbus Configuration Sequence:
+- **Config Classes** (`src/config/`):
+  - `RaptorConfig` - raptor_id, firmware_tag, api_key
+  - `MQTTConfig` - MQTT broker connection settings
+  - `TelemetryConfig` - Sampling interval, averaging method, upload mode
 
-1. **Disable Battery Charging**
-   ```
-   Write to 41071: 0    # Deactivate battery charger mode
-   Write to 45512: 1    # Turn OFF DC Bus
-   ```
+### Modbus Device Operating Modes
 
-2. **Set AC-Only Operation**
-   ```
-   Write to 41044: 0    # Disable AC-in reinjection
-   Write to 41068: -1   # No maximum power consumed
-   Write to 45301: -1   # No peak shaving
-   ```
+For CE+T Converters (Sierra 25), the system supports 4 operating modes controlled via Modbus registers (see CLAUDE.md lines 5-226):
+1. AC for Load + Battery Charging (registers 40090, 41071, 45501, etc.)
+2. AC Only - Batteries Disconnected
+3. Low Batteries - Split Load (50% Battery + 50% AC)
+4. Batteries Charged - Handle Load from Battery
 
-3. **Ensure AC Output is Active**
-   ```
-   Write to 45101: 1    # Turn ON AC-output
-   ```
+Key control registers: 45301 (AC power limit), 45501 (DC voltage), 45503 (DC power), 45511/45512 (DC bus on/off)
 
-4. **Optional: Disconnect Battery Physically**
-   ```
-   Write to 40090: 0    # Disable battery presence (if applicable)
-   ```
+## Development Commands
 
-### Expected Behavior:
-- Grid handles entire electrical load
-- No battery charging occurs
-- System operates as AC pass-through
-- Batteries remain in standby
-
----
-
-## Mode 3: Low Batteries - Split Load (50% Battery + 50% AC)
-
-**Purpose:** Balanced mode splitting load between battery power and AC input (50/50 split).
-
-### Modbus Configuration Sequence:
-
-1. **Enable Battery System**
-   ```
-   Write to 40090: 1    # Enable battery presence
-   Write to 41071: 1    # Activate battery charger mode
-   ```
-
-2. **Set Power Limitation for 50% Split**
-   ```
-   # Calculate 50% of your total load capacity
-   # Example: If total load is 4500W, set AC limit to 2250W
-   Write to 41068: 225000  # 2250W (divided by 100 format)
-   Write to 45301: 225000  # Set peak shaving to 2250W
-   ```
-
-3. **Configure DC Operation**
-   ```
-   Write to 45501: 480   # Set lower DC voltage (48.0V) to encourage battery use
-   Write to 45503: 225000 # Set DC power setpoint to 2250W (50% of capacity)
-   ```
-
-4. **Enable Both Systems**
-   ```
-   Write to 45101: 1     # Turn ON AC-output
-   Write to 45511: 1     # Turn ON DC Bus
-   ```
-
-### Expected Behavior:
-- AC input limited to 50% of total capacity
-- Battery provides remaining 50% of load
-- System maintains power balance between sources
-- Extends battery life during moderate discharge
-
----
-
-## Mode 4: Batteries Charged - Handle Load from Battery
-
-**Purpose:** Battery-priority mode where DC power handles the load with AC input disabled.
-
-### Modbus Configuration Sequence:
-
-1. **Prioritize Battery Operation**
-   ```
-   Write to 40090: 1    # Enable battery presence
-   Write to 41071: 1    # Activate battery charger mode (for monitoring)
-   ```
-
-2. **Disable/Limit AC Input**
-   ```
-   Write to 41068: 0    # Set maximum consumed power to 0 (no AC consumption)
-   Write to 45301: 0    # Set peak shaving to 0 (force battery operation)
-   Write to 41044: 0    # Disable AC-in reinjection
-   ```
-
-3. **Configure Battery-Priority DC Settings**
-   ```
-   Write to 45501: 520   # Set DC voltage to 52.0V (battery discharge level)
-   Write to 45503: -450000 # Negative power setpoint to force discharge
-   ```
-
-4. **Enable DC Output, Monitor AC**
-   ```
-   Write to 45511: 1     # Turn ON DC Bus
-   Write to 45101: 1     # Keep AC-output available for monitoring
-   ```
-
-### Expected Behavior:
-- Battery provides primary power to load
-- AC input consumption minimized or disabled
-- System monitors battery voltage and current
-- Low voltage protection remains active
-
----
-
-## Important Notes and Safety Considerations
-
-### Battery Protection Settings
-Always verify these protection settings are properly configured:
-
-- **Low Voltage Disconnect:** Register 40311 (42.0V default)
-- **High Voltage Stop:** Register 41005 (61.0V default)
-- **Temperature Monitoring:** Registers 40121-40123
-
-### Monitoring Registers
-Monitor these key status registers:
-
-- **30501** - DC Bus Voltage (multiplied by 10)
-- **30502** - DC Bus Current (multiplied by 10)
-- **30503** - DC Bus Power (divided by 100)
-- **30321** - AC Input Voltage Phase 1
-- **30121** - AC Output Voltage Phase 1
-
-### Configuration Application
-After making changes:
-```
-Write to 45601: 1    # Apply Configuration to Gateway
-Write to 45021: 1    # Save XML User Configuration
+### Environment Setup
+```bash
+# Activate Python environment
+conda activate raptor  # Local development
+# OR on device:
+source /root/raptor/venv/bin/activate
 ```
 
-### Mode Switching Best Practices
+### Running Services Locally
+```bash
+# Run VMC-UI (web interface)
+cd src/api/v2
+python vmc.py
+# Access at http://localhost:8002
 
-1. **Always check battery voltage before switching modes**
-2. **Allow 10-15 seconds between mode changes**
-3. **Monitor system status registers during transitions**
-4. **Verify load requirements match mode capabilities**
-5. **Test mode changes during low-load periods when possible**
+# Run IoT Controller (data acquisition)
+python src/jobs/iot_controller.py -l  # -l for local CSV storage
 
-### Emergency Procedures
-
-**To immediately return to safe AC-only mode:**
-```
-Write to 45301: -1   # Remove AC power limitations
-Write to 41068: -1   # Remove max consumed power limit
-Write to 45101: 1    # Ensure AC output is ON
-Write to 45512: 1    # Turn OFF DC bus if needed
+# Run Command Controller (MQTT listener)
+python src/jobs/cmd_controller.py
 ```
 
-This configuration guide should allow you to safely switch between operating modes while maintaining system protection and monitoring capabilities.
+### Testing
+```bash
+# Run hardware-specific tests
+python src/hardware/test_modbus_integration.py
+python tests/modbus/test_modbus_device.py
+```
 
-### Jobs running on raptor
-* A UI called VMC-UI runs which allows users to see
-all the data and control the raptor remotely.  It interfaces with the configuration, and hardware components
-* A cmd-controller which listens to a MQTT server for commands.  All commands are implemented by src/actions.
-* A iot-controller which reads and aggregates data and sends to the MQTT server.
+### Deployment
+```bash
+# Installation scripts in install/
+./install/01-setup-wifi.sh
+./install/04-setup-cell.sh
+./install/08-services.sh  # Creates systemd services
 
-## Project structure
-- /data/*/ - Files used for hardware modbus maps, etc.
-- /install - bash scripts used to configure new raptors.
-- /src - main source code
-  - /actions - actions the raptor can take through UI, commands and schedules
-  - /api/v2 - vmc UI for engineering purposes
-  - /cloud - code dealing with git, mqtt, and cloud interaction
-  - /config - configuration classes
-  - /database - SQLite3 database tools, and schema
-  - /hardware - code to interact with hardware of different types
-  - /jobs - entry point for iot-controller and cmd-controller
-  - /utils - utility methods and classes
+# Service management on device
+sudo systemctl status vmc-ui
+sudo systemctl status iot-controller
+sudo systemctl status cmd-controller
+sudo systemctl restart vmc-ui
+```
 
-## Environment setup
-- python environment set up on each raptor
-- local development uses conda activate raptor
-- 
+### Viewing Logs
+```bash
+# Application logs (with rotation)
+tail -f /root/raptor/src/jobs/iot-controller.log
+tail -f /root/raptor/src/jobs/cmd-controller.log
+tail -f /root/raptor/src/api/v2/vmc-ui.log
 
+# Systemd journal
+journalctl -u vmc-ui -f
+journalctl -u iot-controller -f
+```
+
+## Key Design Patterns
+
+### Singleton Pattern
+- `DatabaseManager` - Ensures single DB connection per process
+- `LogManager` - Centralized logging configuration
+- Used via metaclass: `class Foo(metaclass=Singleton)`
+
+### Factory Pattern
+- `ActionFactory` - Dynamically loads and executes actions by name
+- Converts snake_case action names to CamelCase class names
+
+### Distributed Sampling
+IoTController implements synchronized sampling across all hardware:
+- Takes N samples distributed evenly over the telemetry interval
+- Averages samples using configurable method (mean/median/mode)
+- Single synchronized snapshot ensures temporal consistency across devices
+
+### Simulator Mode
+- Enabled via `EnvVars().enable_simulators`
+- Allows testing without physical hardware
+- Simulators in `src/hardware/simulators/` (PV panels, BMS, loads, weather)
+- Historical data playback from CSV files in `data/weather/`
+
+## Important Notes
+
+- **Modbus Locking**: Hardware access is synchronized to prevent concurrent access conflicts
+- **MQTT Resilience**: Both controllers implement exponential backoff and auto-reconnection
+- **Telemetry Buffering**: Telemetry stored in SQLite before upload, cleared after successful transmission
+- **Git Version**: UI displays firmware version from git tags via `git describe --tags --abbrev=0`
+- **MAC Address**: Used as device identifier, obtained via `utils.get_mac_address()`
+
+## File Structure
+- `/data/` - Hardware Modbus maps, state configurations (e.g., Sierra25/sierra25_states.json)
+- `/install/` - Bash scripts for Raptor provisioning and service setup
+- `/src/actions/` - Command actions executed via MQTT
+- `/src/api/v2/` - VMC-UI FastAPI application
+- `/src/cloud/` - MQTT communication, firmware updates
+- `/src/config/` - Configuration dataclasses
+- `/src/database/` - SQLite management and schema
+- `/src/hardware/` - Hardware driver implementations
+- `/src/jobs/` - Entry points for main services
+- `/src/utils/` - Utility functions and classes
+- `/tests/` - Test files
+
+## Adding a New Hardware Device
+
+1. Create driver class in `src/hardware/{category}/` inheriting from `HardwareBase`
+2. Implement required methods: `data_acquisition()`, `get_points()`, etc.
+3. Add Modbus map JSON file to `/data/` if applicable
+4. Add device configuration to database via VMC-UI or direct SQL
+5. Configure scan_groups (DATA, ALARM, DIAGNOSTIC, CONTROL) in device config
+
+## Adding a New Action
+
+1. Create `src/actions/{action_name}_action.py`
+2. Define class `{ActionName}Action(Action)`
+3. Implement `async def execute(self, telemetry_config, mqtt_config) -> Tuple[ActionStatus, JSON]`
+4. ActionFactory will automatically discover and load it
+5. Trigger via MQTT: `{"action": "{action_name}", "params": {...}, "action_id": "..."}`
