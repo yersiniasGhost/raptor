@@ -5,7 +5,7 @@ from typing import Annotated
 from collections import deque
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
-from . import templates
+from . import templates, get_auth_context
 
 from hardware.hardware_deployment import HardwareDeployment
 from bms_store import BMSDataStore
@@ -189,7 +189,8 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
     if not batteries:
         return templates.TemplateResponse('hardware_not_configured.html',
                                           {"request": request,
-                                           "hardware": "Battery Management System"}
+                                           "hardware": "Battery Management System",
+                                           **get_auth_context(request)}
                                           )
     batteries.get_identifiers()
     logger.info("Got BMS identifiers")
@@ -207,7 +208,8 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
                 "register_map": register_map,
                 "modbus_map": modbus_map,
                 "error": None,
-                "page": "BMS"
+                "page": "BMS",
+                **get_auth_context(request)
             }
         )
     except Exception as e:
@@ -219,6 +221,7 @@ async def bms(request: Request, hardware: Annotated[HardwareDeploymentRoute, Dep
                 "request": request,
                 "bms_data": {},
                 "register_map": None,
-                "error": str(e)
+                "error": str(e),
+                **get_auth_context(request)
             }
         )

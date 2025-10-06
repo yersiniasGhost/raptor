@@ -1,7 +1,7 @@
 import csv
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from . import templates
+from . import templates, get_auth_context
 from utils.system_status import collect_system_stats
 from hardware.power_5v.power_5v import Power5V
 from database.database_manager import DatabaseManager
@@ -53,6 +53,7 @@ async def system_status(request: Request):
             "cpu_history": cpu_history,
             "memory_history": memory_history,
             "disk_history": disk_history,
+            **get_auth_context(request)
         })
     except Exception as e:
         logger.error(f"Error collecting system status: {e}")
@@ -65,6 +66,7 @@ async def system_status(request: Request):
             "cpu_history": [],
             "memory_history": [],
             "disk_history": [],
+            **get_auth_context(request)
         })
 
 

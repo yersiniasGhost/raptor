@@ -5,7 +5,7 @@ from typing import Annotated
 from collections import deque
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
-from . import templates
+from . import templates, get_auth_context
 
 from hardware.hardware_deployment import HardwareDeployment
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
@@ -70,7 +70,8 @@ async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, 
     if not charge_controller:
         return templates.TemplateResponse('hardware_not_configured.html',
                                           {"request": request,
-                                           "hardware": "Charge Controller"}
+                                           "hardware": "Charge Controller",
+                                           **get_auth_context(request)}
                                           )
     modbus_map = charge_controller.get_modbus_maps()
     charge_controller.get_identifiers()
@@ -86,7 +87,8 @@ async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, 
                 "register_map": register_map,
                 "modbus_map": modbus_map,
                 "error": None,
-                "page": "ChargeController"
+                "page": "ChargeController",
+                **get_auth_context(request)
             }
         )
     except Exception as e:
@@ -98,6 +100,7 @@ async def charge(request: Request, hardware: Annotated[HardwareDeploymentRoute, 
                 "request": request,
                 "charge_data": {},
                 "register_map": None,
-                "error": str(e)
+                "error": str(e),
+                **get_auth_context(request)
             }
         )

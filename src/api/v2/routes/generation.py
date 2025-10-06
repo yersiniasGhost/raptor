@@ -2,7 +2,7 @@ from collections import deque
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
-from . import templates
+from . import templates, get_auth_context
 
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from bms_store import BMSDataStore
@@ -22,7 +22,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
         if not cts:
             return templates.TemplateResponse('hardware_not_configured.html',
                                               {"request": request,
-                                               "hardware": "PV Generation CT's"})
+                                               "hardware": "PV Generation CT's",
+                                               **get_auth_context(request)})
 
         cts.get_identifiers()
         logger.info("Got Inverter identifiers")
@@ -38,7 +39,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "request": request,
                 "data": data,
                 "register_map": register_map,
-                "error": None
+                "error": None,
+                **get_auth_context(request)
             }
         )
     except Exception as e:
@@ -49,7 +51,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "hardware": [],
                 "request": request,
                 "register_map": {},
-                "error": str(e)
+                "error": str(e),
+                **get_auth_context(request)
             }
         )
 

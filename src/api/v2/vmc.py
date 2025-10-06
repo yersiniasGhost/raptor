@@ -46,6 +46,14 @@ def get_git_version():
         return "V0.1.0"
 
 
+def get_auth_context(request: Request) -> dict:
+    """Helper to get authentication context for templates"""
+    return {
+        "is_authenticated": getattr(request.state, "is_authenticated", False),
+        "auth_enabled": getattr(request.state, "auth_enabled", False)
+    }
+
+
 BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI(title="Valexy Microcontroller System", lifespan=lifespan)
 
@@ -60,7 +68,6 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # templates.env.globals["version"] = get_git_version()
 raptor_data = DatabaseManager().get_raptor()
 templates.env.globals["raptor_header"] = (raptor_data or {}).get('name', "Not configured")
-templates.env.globals["auth_enabled"] = is_password_set()
 
 
 # Include routers
@@ -78,7 +85,10 @@ app.include_router(charge_controller.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+    return templates.TemplateResponse("home.html", {
+        "request": request,
+        **get_auth_context(request)
+    })
 
 
 @app.get("/login", response_class=HTMLResponse)

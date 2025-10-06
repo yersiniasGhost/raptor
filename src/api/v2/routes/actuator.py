@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
-from . import templates
+from . import templates, get_auth_context
 from .hardware_deployment_route import get_hardware, HardwareDeploymentRoute
 from hardware.electrak.actuator_manager import ActuatorManager
 from hardware.gpio_controller.banner_alarm import BannerAlarm, BannerAlarmException
@@ -126,13 +126,15 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
     if not am:
         return templates.TemplateResponse('hardware_not_configured.html',
                                           {"request": request,
-                                           "hardware": "Actuator Controller"}
+                                           "hardware": "Actuator Controller",
+                                           **get_auth_context(request)}
                                           )
     return templates.TemplateResponse(
         "actuators.html",
         {
             "request": request,
             "manager": am,
-            "error": None
+            "error": None,
+            **get_auth_context(request)
          }
     )

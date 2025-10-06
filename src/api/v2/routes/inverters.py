@@ -2,7 +2,7 @@ from typing import Annotated
 from collections import deque
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
-from . import templates
+from . import templates, get_auth_context
 from bms_store import BMSDataStore
 from .hardware_deployment_route import HardwareDeploymentRoute, get_hardware
 from utils import LogManager
@@ -30,7 +30,8 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
     if not hardware:
         return templates.TemplateResponse('hardware_not_configured.html',
                                           {"request": request,
-                                           "hardware": "Inverters/Converters"}
+                                           "hardware": "Inverters/Converters",
+                                           **get_auth_context(request)}
                                           )
     try:
 
@@ -58,7 +59,8 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
                 "page": "Inverter",
                 "api_endpoint": "inverters",
                 "has_ac_in": has_ac_input,
-                "error": None
+                "error": None,
+                **get_auth_context(request)
             }
         )
     except Exception as e:
@@ -69,7 +71,8 @@ async def inverters(request: Request, deployment: Annotated[HardwareDeploymentRo
                 "hardware": hardware,
                 "request": request,
                 "register_map": {},
-                "error": str(e)
+                "error": str(e),
+                **get_auth_context(request)
             }
         )
 

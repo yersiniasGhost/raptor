@@ -85,6 +85,10 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
     PUBLIC_PATHS = {"/login", "/static"}
 
     async def dispatch(self, request: Request, call_next):
+        # Store authentication status in request state for templates
+        request.state.is_authenticated = validate_session(request)
+        request.state.auth_enabled = is_password_set()
+
         # Allow static files and public paths
         if any(request.url.path.startswith(path) for path in self.PUBLIC_PATHS):
             return await call_next(request)
@@ -96,7 +100,7 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # Check if user is authenticated
-        if not validate_session(request):
+        if not request.state.is_authenticated:
             # Redirect to login if not authenticated
             return RedirectResponse(url="/login", status_code=303)
 

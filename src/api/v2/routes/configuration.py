@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Request, HTTPException, Depends, UploadFile, File, Form
 from fastapi.responses import RedirectResponse
 from fastapi.responses import JSONResponse
-from . import templates
+from . import templates, get_auth_context
 import json
 from typing import Annotated
 
@@ -83,7 +83,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "raptor_name": raptor_data['name'],
                 "raptor_client": raptor_data['client'],
                 "migration_id": migration_id,
-                "migration_info": migration_info
+                "migration_info": migration_info,
+                **get_auth_context(request)
             }
         )
     except Exception as e:
@@ -96,7 +97,8 @@ async def index(request: Request, hardware: Annotated[HardwareDeploymentRoute, D
                 "git_branches": get_git_branches(),
                 'raptor_common_branches': get_git_branches(COMMON_PATH),
                 "current_branch": get_current_branch(),
-                "hardware": hardware
+                "hardware": hardware,
+                **get_auth_context(request)
             }
         )
 
@@ -149,7 +151,8 @@ async def recommission(request: Request):
                 "error_message": f"Failed to recommission system: {str(e)}",
                 "git_branches": get_git_branches(),
                 'raptor_common_branches': get_git_branches(COMMON_PATH),
-                "current_branch": get_current_branch()
+                "current_branch": get_current_branch(),
+                **get_auth_context(request)
             }
         )
 
@@ -178,7 +181,8 @@ async def reconfigure(request: Request, hardware: Annotated[HardwareDeploymentRo
                 "error_message": f"Failed to reconfigure system: {str(e)}",
                 "git_branches": get_git_branches(),
                 'raptor_common_branches': get_git_branches(COMMON_PATH),
-                "current_branch": get_current_branch()
+                "current_branch": get_current_branch(),
+                **get_auth_context(request)
             }
         )
 
@@ -212,7 +216,8 @@ async def update_firmware(
                 "error_message": f"Failed to update firmware: {str(e)}",
                 "git_branches": get_git_branches(),
                 'raptor_common_branches': get_git_branches(COMMON_PATH),
-                "current_branch": get_current_branch()
+                "current_branch": get_current_branch(),
+                **get_auth_context(request)
             }
         )
 
