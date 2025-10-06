@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from . import templates
 from utils.system_status import collect_system_stats
 from hardware.power_5v.power_5v import Power5V
+from database.database_manager import DatabaseManager
 
 from utils import LogManager
 logger = LogManager().get_logger(__name__)
@@ -30,6 +31,14 @@ async def system_status(request: Request):
     active_pids, dead_pids = Power5V().get_process_states()
     power_state = Power5V().check_state()
 
+    # Get queued IoT messages count
+    queued_messages = 0
+    try:
+        db = DatabaseManager()
+        queued_messages = db.count_stored_telemetry_data()
+    except Exception as e:
+        logger.error(f"Error getting queued message count: {e}")
+
     try:
         current_stats = collect_system_stats()
 
@@ -38,6 +47,7 @@ async def system_status(request: Request):
             "power5v_state": power_state,
             "dead_requests": len(dead_pids),
             "on_requests": len(active_pids),
+            "queued_messages": queued_messages,
             "current_stats": current_stats,
             "timestamps": timestamps,
             "cpu_history": cpu_history,
@@ -49,6 +59,7 @@ async def system_status(request: Request):
         return templates.TemplateResponse("system_status.html", {
             "request": request,
             "error": str(e),
+            "queued_messages": 0,
             "current_stats": [],
             "timestamps": [],
             "cpu_history": [],

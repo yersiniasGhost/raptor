@@ -91,6 +91,21 @@
     </div>
 </div>
 
+<div class="collapsible-section">
+    <h2 class="collapsible-header" onclick="toggleCollapse('iot-content', 'iot-icon')">
+        <span class="collapse-icon" id="iot-icon">▶</span>
+        IoT Telemetry Queue
+    </h2>
+    <div id="iot-content" class="collapsible-content" style="display: none;">
+        <div class="power5v-grid">
+            <div class="power5v-card">
+                <div class="power5v-label">Queued Messages</div>
+                <div class="power5v-value">{{ queued_messages | default(0) }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="status-grid">
     <div class="status-card">
         <h3>CPU Usage</h3>
