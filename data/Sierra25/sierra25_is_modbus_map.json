@@ -186,7 +186,7 @@
     "data_type": "int16",
     "address": 320,
     "units": "V",
-    "conversion_factor": 10.0,
+    "conversion_factor": 0.1,
     "description": "AC Input Voltage",
     "access": "RO"
   },
@@ -197,7 +197,7 @@
     "data_type": "int16",
     "address": 321,
     "units": "A",
-    "conversion_factor": 10.0,
+    "conversion_factor": 0.1,
     "description": "AC Input Current",
     "access": "RO"
   },
@@ -230,11 +230,11 @@
     "data_type": "int16",
     "address": 324,
     "units": "Hz",
-    "conversion_factor": 10.0,
+    "conversion_factor": 0.1,
     "description": "AC Input Frequency",
     "access": "RO"
   },
-  "AC_Configuration": {
+  "AC_global_load": {
     "slave_id": 31,
     "type": "input",
     "name": "Global Load Power",
@@ -253,6 +253,16 @@
     "units": "",
     "conversion_factor": 1,
     "description": "0: Normal Mode, 1: AC input power stage in converter is de-activated."
+  },
+  "Sierra_mode": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Sierra Mode for battery charging",
+    "data_type": "int16",
+    "address": 1070,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Value: 0 = disabled, 1 = Sierra mode enabled"
   },
   "AC_max_power": {
     "slave_id": 100,
