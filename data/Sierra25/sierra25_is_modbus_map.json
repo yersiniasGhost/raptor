@@ -510,7 +510,7 @@
     "description": "High voltage alarm threshold (value × 100)"
   },
   "Turn_on_all_converters": {
-    "slave_id": 21,
+    "slave_id": 31,
     "type": "holding",
     "name": "Turn on all converters",
     "data_type": "int16",
@@ -518,5 +518,15 @@
     "units": "",
     "conversion_factor": 1,
     "description": "Write 1 to execute"
+  },
+  "Push_parameters_to_converters": {
+    "slave_id": 31,
+    "type": "holding",
+    "name": "Push parameters to converters",
+    "data_type": "int16",
+    "address": 600,
+    "units": "",
+    "conversion_factor": 1,
+    "description": "Write 1 to execute force parameters to converters"
   }
 }
